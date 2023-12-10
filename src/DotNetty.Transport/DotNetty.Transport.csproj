@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="NuGet">
-    <TargetFramework>netstandard2.1</TargetFramework>
     <IsPackable>true</IsPackable>
     <PackageId>DotNetty.Transport</PackageId>
     <Description>Transport model in DotNetty</Description>
@@ -24,6 +23,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Azure/DotNetty/</RepositoryUrl>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard2.0' ">2.0.3</NetStandardImplicitPackageVersion>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\shared\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />

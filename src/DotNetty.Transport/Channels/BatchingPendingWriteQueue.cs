@@ -88,7 +88,7 @@ namespace DotNetty.Transport.Channels
             }
 
             var promise = new TaskCompletionSource();
-            PendingWrite write = PendingWrite.NewInstance(msg, messageSize, promise);
+            PendingWrite write = PendingWrite.Acquire(msg, messageSize, promise);
             if (currentTail == null)
             {
                 this.tail = this.head = write;
@@ -303,8 +303,7 @@ namespace DotNetty.Transport.Channels
                     Contract.Assert(this.size > 0);
                 }
             }
-
-            write.Recycle();
+            PendingWrite.Recycle(write);
             // We need to guard against null as channel.unsafe().outboundBuffer() may returned null
             // if the channel was already closed when constructing the PendingWriteQueue.
             // See https://github.com/netty/netty/issues/3967
@@ -320,28 +319,28 @@ namespace DotNetty.Transport.Channels
         }
 
         /// <summary>Holds all meta-data and construct the linked-list structure.</summary>
-        sealed class PendingWrite
+        private sealed class PendingWrite : IRecycle
         {
-            static readonly ThreadLocalPool<PendingWrite> Pool = new ThreadLocalPool<PendingWrite>(handle => new PendingWrite(handle));
+            private static readonly RecyclerThreadLocalPool<PendingWrite> Pool = new RecyclerThreadLocalPool<PendingWrite>(() => new PendingWrite());
 
-            readonly ThreadLocalPool.Handle handle;
             public PendingWrite Next;
             public long Size;
             public TaskCompletionSource Promise;
-            public readonly List<object> Messages;
+            public readonly List<object> Messages = new List<object>();
+            private IRecycleHandle<PendingWrite> handle;
 
-            PendingWrite(ThreadLocalPool.Handle handle)
+            public static PendingWrite Acquire(object msg, int size, TaskCompletionSource promise)
             {
-                this.Messages = new List<object>();
-                this.handle = handle;
-            }
-
-            public static PendingWrite NewInstance(object msg, int size, TaskCompletionSource promise)
-            {
-                PendingWrite write = Pool.Take();
+                var write = Pool.Acquire(out var handle);
                 write.Add(msg, size);
                 write.Promise = promise;
+                write.handle = handle;
                 return write;
+            }
+            
+            public static void Recycle(PendingWrite obj)
+            {
+                Pool.Recycle(obj.handle);
             }
 
             public void Add(object msg, int size)
@@ -350,13 +349,12 @@ namespace DotNetty.Transport.Channels
                 this.Size += size;
             }
 
-            public void Recycle()
+            void IRecycle.Recycle()
             {
                 this.Size = 0;
                 this.Next = null;
                 this.Messages.Clear();
                 this.Promise = null;
-                this.handle.Release(this);
             }
         }
     }

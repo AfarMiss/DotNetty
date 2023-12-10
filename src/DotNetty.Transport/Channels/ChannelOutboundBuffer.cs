@@ -61,7 +61,7 @@ namespace DotNetty.Transport.Channels
         /// <param name="promise">The <see cref="TaskCompletionSource"/> to notify once the message is written.</param>
         public void AddMessage(object msg, int size, TaskCompletionSource promise)
         {
-            Entry entry = Entry.NewInstance(msg, size, promise);
+            Entry entry = Entry.Acquire(msg, size, promise);
             if (this.tailEntry == null)
             {
                 this.flushedEntry = null;
@@ -215,7 +215,7 @@ namespace DotNetty.Transport.Channels
             }
 
             // recycle the entry
-            e.Recycle();
+            Entry.Recycle(e);
 
             return true;
         }
@@ -253,7 +253,7 @@ namespace DotNetty.Transport.Channels
             }
 
             // recycle the entry
-            e.Recycle();
+            Entry.Recycle(e);
 
             return true;
         }
@@ -783,11 +783,9 @@ namespace DotNetty.Transport.Channels
             bool ProcessMessage(object msg);
         }
 
-        sealed class Entry
+        private sealed class Entry : IRecycle
         {
-            static readonly ThreadLocalPool<Entry> Pool = new ThreadLocalPool<Entry>(h => new Entry(h));
-
-            readonly ThreadLocalPool.Handle handle;
+            private static readonly RecyclerThreadLocalPool<Entry> Pool = new RecyclerThreadLocalPool<Entry>();
             public Entry Next;
             public object Message;
             public ArraySegment<byte>[] Buffers;
@@ -796,21 +794,23 @@ namespace DotNetty.Transport.Channels
             public int PendingSize;
             public int Count = -1;
             public bool Cancelled;
+            private IRecycleHandle<Entry> handle;
 
-            Entry(ThreadLocalPool.Handle handle)
+            public static Entry Acquire(object msg, int size, TaskCompletionSource promise)
             {
-                this.handle = handle;
-            }
-
-            public static Entry NewInstance(object msg, int size, TaskCompletionSource promise)
-            {
-                Entry entry = Pool.Take();
+                var entry = Pool.Acquire(out var handle);
                 entry.Message = msg;
                 entry.PendingSize = size;
                 entry.Promise = promise;
+                entry.handle = handle;
                 return entry;
             }
 
+            public static void Recycle(Entry obj)
+            {
+                Pool.Recycle(obj.handle);
+            }
+            
             public int Cancel()
             {
                 if (!this.Cancelled)
@@ -830,7 +830,7 @@ namespace DotNetty.Transport.Channels
                 return 0;
             }
 
-            public void Recycle()
+            void IRecycle.Recycle()
             {
                 this.Next = null;
                 this.Buffers = null;
@@ -840,13 +840,12 @@ namespace DotNetty.Transport.Channels
                 this.PendingSize = 0;
                 this.Count = -1;
                 this.Cancelled = false;
-                this.handle.Release(this);
             }
 
             public Entry RecycleAndGetNext()
             {
                 Entry next = this.Next;
-                this.Recycle();
+                Recycle(this);
                 return next;
             }
         }

@@ -21,12 +21,12 @@ namespace DotNetty.Codecs
         public override Task WriteAsync(IChannelHandlerContext ctx, object msg)
         {
             Task result;
-            ThreadLocalObjectList output = null;
+            RecycleList output = null;
             try
             {
                 if (this.AcceptOutboundMessage(msg))
                 {
-                    output = ThreadLocalObjectList.NewInstance();
+                    output = ThreadLocalListPool.Acquire();
                     var cast = (T)msg;
                     try
                     {
@@ -39,7 +39,7 @@ namespace DotNetty.Codecs
 
                     if (output.Count == 0)
                     {
-                        output.Return();
+                        ThreadLocalListPool.Recycle(output);
                         output = null;
 
                         throw new EncoderException(this.GetType().Name + " must produce at least one message.");
@@ -81,7 +81,7 @@ namespace DotNetty.Codecs
                         // 0 items in output - must never get here
                         result = null;
                     }
-                    output.Return();
+                    ThreadLocalListPool.Recycle(output);
                 }
                 else
                 {

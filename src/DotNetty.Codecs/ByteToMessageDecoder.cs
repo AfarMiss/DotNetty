@@ -179,7 +179,7 @@ namespace DotNetty.Codecs
             var data = message as IByteBuffer;
             if (data != null)
             {
-                ThreadLocalObjectList output = ThreadLocalObjectList.NewInstance();
+                var output = ThreadLocalListPool.Acquire();
                 try
                 {
                     this.first = this.cumulation == null;
@@ -215,7 +215,7 @@ namespace DotNetty.Codecs
                     {
                         context.FireChannelRead(output[i]);
                     }
-                    output.Return();
+                    ThreadLocalListPool.Recycle(output);
                 }
             }
             else
@@ -255,7 +255,7 @@ namespace DotNetty.Codecs
 
         public override void ChannelInactive(IChannelHandlerContext ctx)
         {
-            ThreadLocalObjectList output = ThreadLocalObjectList.NewInstance();
+            var output = ThreadLocalListPool.Acquire();
             try
             {
                 if (this.cumulation != null)
@@ -300,7 +300,7 @@ namespace DotNetty.Codecs
                 finally
                 {
                     // recycle in all cases
-                    output.Return();
+                    ThreadLocalListPool.Recycle(output);
                 }
             }
         }

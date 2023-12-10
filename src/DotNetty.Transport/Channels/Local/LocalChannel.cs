@@ -263,20 +263,19 @@ namespace DotNetty.Transport.Channels.Local
 
         protected override void DoBeginRead()
         {
+            if (this.readInProgress)
+            {
+                return;
+            }
+            
+            IChannelPipeline pipeline = this.Pipeline;
+            IQueue<object> inboundBuffer = this.inboundBuffer;
+            if (inboundBuffer.IsEmpty)
+            {
+                this.readInProgress = true;
+                return;
+            }
             throw new NotImplementedException();
-            // if (this.readInProgress)
-            // {
-            //     return;
-            // }
-            //
-            // IChannelPipeline pipeline = this.Pipeline;
-            // IQueue<object> inboundBuffer = this.inboundBuffer;
-            // if (inboundBuffer.IsEmpty)
-            // {
-            //     this.readInProgress = true;
-            //     return;
-            // }
-            //
             // ThreadLocalMap threadLocals = ThreadLocalMap.Get();
             // int stackDepth = threadLocals.LocalChannelReaderStackDepth;
             // if (stackDepth < MAX_READER_STACK_DEPTH)

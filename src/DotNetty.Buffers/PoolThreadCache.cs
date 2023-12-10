@@ -405,12 +405,12 @@ namespace DotNetty.Buffers
              */
             public bool Add(PoolChunk<T> chunk, long handle)
             {
-                Entry entry = NewEntry(chunk, handle);
+                Entry entry = Entry.Acquire(chunk, handle);
                 bool queued = this.queue.TryEnqueue(entry);
                 if (!queued)
                 {
                     // If it was not possible to cache the chunk, immediately recycle the entry
-                    entry.Recycle();
+                    Entry.Recycle(entry);
                 }
 
                 return queued;
@@ -425,8 +425,8 @@ namespace DotNetty.Buffers
                 {
                     return false;
                 }
-                this.InitBuf(entry.Chunk, entry.Handle, buf, reqCapacity);
-                entry.Recycle();
+                this.InitBuf(entry.Chunk, entry.HandleId, buf, reqCapacity);
+                Entry.Recycle(entry);
 
                 // allocations is not thread-safe which is fine as this is only called from the same thread all time.
                 ++this.allocations;
@@ -474,42 +474,42 @@ namespace DotNetty.Buffers
             void FreeEntry(Entry entry)
             {
                 PoolChunk<T> chunk = entry.Chunk;
-                long handle = entry.Handle;
+                long handle = entry.HandleId;
 
                 // recycle now so PoolChunk can be GC'ed.
-                entry.Recycle();
+                Entry.Recycle(entry);
 
                 chunk.Arena.FreeChunk(chunk, handle, this.sizeClass);
             }
 
-            sealed class Entry
+            sealed class Entry : IRecycle
             {
-                readonly ThreadLocalPool.Handle recyclerHandle;
+                static readonly RecyclerThreadLocalPool<Entry> Recycler = new RecyclerThreadLocalPool<Entry>();
+
                 public PoolChunk<T> Chunk;
-                public long Handle = -1;
+                public long HandleId = -1;
+                public IRecycleHandle<Entry> handle;
 
-                public Entry(ThreadLocalPool.Handle recyclerHandle)
-                {
-                    this.recyclerHandle = recyclerHandle;
-                }
-
-                internal void Recycle()
+                void IRecycle.Recycle()
                 {
                     this.Chunk = null;
-                    this.Handle = -1;
-                    this.recyclerHandle.Release(this);
+                    this.HandleId = -1;
+                }
+                
+                public static Entry Acquire(PoolChunk<T> chunk, long handleId)
+                {
+                    Entry entry = Recycler.Acquire(out var handle);
+                    entry.Chunk = chunk;
+                    entry.HandleId = handleId;
+                    entry.handle = handle;
+                    return entry;
+                }
+                
+                public static void Recycle(Entry obj)
+                {
+                    Recycler.Recycle(obj.handle);
                 }
             }
-
-            static Entry NewEntry(PoolChunk<T> chunk, long handle)
-            {
-                Entry entry = Recycler.Take();
-                entry.Chunk = chunk;
-                entry.Handle = handle;
-                return entry;
-            }
-
-            static readonly ThreadLocalPool<Entry> Recycler = new ThreadLocalPool<Entry>(handle => new Entry(handle));
         }
     }
 }

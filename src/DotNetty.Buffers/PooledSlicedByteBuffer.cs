@@ -12,10 +12,8 @@ namespace DotNetty.Buffers
     using DotNetty.Common.Utilities;
     using static AbstractUnpooledSlicedByteBuffer;
 
-    sealed class PooledSlicedByteBuffer : AbstractPooledDerivedByteBuffer
+    sealed class PooledSlicedByteBuffer : AbstractPooledDerivedByteBuffer<PooledSlicedByteBuffer>
     {
-        static readonly ThreadLocalPool<PooledSlicedByteBuffer> Recycler = new ThreadLocalPool<PooledSlicedByteBuffer>(handle => new PooledSlicedByteBuffer(handle));
-
         internal static PooledSlicedByteBuffer NewInstance(AbstractByteBuffer unwrapped, IByteBuffer wrapped, int index, int length)
         {
             CheckSliceOutOfBounds(index, length, unwrapped);
@@ -24,8 +22,9 @@ namespace DotNetty.Buffers
 
         static PooledSlicedByteBuffer NewInstance0(AbstractByteBuffer unwrapped, IByteBuffer wrapped, int adjustment, int length)
         {
-            PooledSlicedByteBuffer slice = Recycler.Take();
-            slice.Init<PooledSlicedByteBuffer>(unwrapped, wrapped, 0, length, length);
+            PooledSlicedByteBuffer slice = Recycler.Acquire(out var handle);
+            slice.handle = handle;
+            slice.Init(unwrapped, wrapped, 0, length, length);
             slice.DiscardMarks();
             slice.adjustment = adjustment;
 
@@ -33,11 +32,6 @@ namespace DotNetty.Buffers
         }
 
         int adjustment;
-
-        PooledSlicedByteBuffer(ThreadLocalPool.Handle handle)
-            : base(handle)
-        {
-        }
 
         public override int Capacity => this.MaxCapacity;
 

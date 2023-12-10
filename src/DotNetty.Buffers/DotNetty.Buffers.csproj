@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="NuGet">
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <Description>Buffer management in DotNetty</Description>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>

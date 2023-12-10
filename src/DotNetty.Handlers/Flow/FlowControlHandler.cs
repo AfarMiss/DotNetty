@@ -47,7 +47,6 @@ namespace DotNetty.Handlers.Flow
     {
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<FlowControlHandler>();
 
-        static readonly ThreadLocalPool<RecyclableQueue> Recycler = new ThreadLocalPool<RecyclableQueue>(h => new RecyclableQueue(h));
 
         readonly bool releaseMessages;
 
@@ -93,7 +92,7 @@ namespace DotNetty.Handlers.Flow
                     }
                 }
 
-                this.queue.Recycle();
+                RecyclableQueue.Recycle(this.queue);
                 this.queue = null;
             }
         }
@@ -125,7 +124,7 @@ namespace DotNetty.Handlers.Flow
         {
             if (this.queue == null)
             {
-                this.queue = Recycler.Take();
+                this.queue = RecyclableQueue.Acquire();
             }
 
             this.queue.TryEnqueue(msg);
@@ -185,19 +184,26 @@ namespace DotNetty.Handlers.Flow
         }
     }
 
-    sealed class RecyclableQueue : CompatibleConcurrentQueue<object>
+    internal sealed class RecyclableQueue : CompatibleConcurrentQueue<object>, IRecycle
     {
-        readonly ThreadLocalPool.Handle handle;
+        private static readonly RecyclerThreadLocalPool<RecyclableQueue> Pool = new RecyclerThreadLocalPool<RecyclableQueue>();
+        private IRecycleHandle<RecyclableQueue> handle;
 
-        internal RecyclableQueue(ThreadLocalPool.Handle handle)
-        {
-            this.handle = handle;
-        }
-
-        public void Recycle()
+        void IRecycle.Recycle()
         {
             ((IQueue<object>)this).Clear();
-            this.handle.Release(this);
+        }
+        
+        public static RecyclableQueue Acquire()
+        {
+            var queue = Pool.Acquire(out var handle);
+            queue.handle = handle;
+            return queue;
+        }
+        
+        public static void Recycle(RecyclableQueue obj)
+        {
+            Pool.Recycle(obj.handle);
         }
     }
 }

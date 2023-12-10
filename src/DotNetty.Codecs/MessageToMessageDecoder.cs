@@ -18,7 +18,7 @@ namespace DotNetty.Codecs
 
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
-            ThreadLocalObjectList output = ThreadLocalObjectList.NewInstance();
+            var output = ThreadLocalListPool.Acquire();
 
             try
             {
@@ -54,7 +54,7 @@ namespace DotNetty.Codecs
                 {
                     context.FireChannelRead(output[i]);
                 }
-                output.Return();
+                ThreadLocalListPool.Recycle(output);
             }
         }
 

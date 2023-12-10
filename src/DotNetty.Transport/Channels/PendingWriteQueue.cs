@@ -83,7 +83,7 @@ namespace DotNetty.Transport.Channels
                 messageSize = 0;
             }
             var promise = new TaskCompletionSource();
-            PendingWrite write = PendingWrite.NewInstance(msg, messageSize, promise);
+            PendingWrite write = PendingWrite.Acquire(msg, messageSize, promise);
             PendingWrite currentTail = this.tail;
             if (currentTail == null)
             {
@@ -270,7 +270,7 @@ namespace DotNetty.Transport.Channels
                 }
             }
 
-            write.Recycle();
+            PendingWrite.Recycle(write);
             // We need to guard against null as channel.unsafe().outboundBuffer() may returned null
             // if the channel was already closed when constructing the PendingWriteQueue.
             // See https://github.com/netty/netty/issues/3967
@@ -280,37 +280,37 @@ namespace DotNetty.Transport.Channels
         /// <summary>
         /// Holds all meta-data and constructs the linked-list structure.
         /// </summary>
-        sealed class PendingWrite
+        sealed class PendingWrite : IRecycle
         {
-            static readonly ThreadLocalPool<PendingWrite> Pool = new ThreadLocalPool<PendingWrite>(handle => new PendingWrite(handle));
+            private static readonly RecyclerThreadLocalPool<PendingWrite> Pool = new RecyclerThreadLocalPool<PendingWrite>();
 
-            readonly ThreadLocalPool.Handle handle;
             public PendingWrite Next;
             public long Size;
             public TaskCompletionSource Promise;
             public object Msg;
+            private IRecycleHandle<PendingWrite> handle;
 
-            PendingWrite(ThreadLocalPool.Handle handle)
+            public static PendingWrite Acquire(object msg, int size, TaskCompletionSource promise)
             {
-                this.handle = handle;
-            }
-
-            public static PendingWrite NewInstance(object msg, int size, TaskCompletionSource promise)
-            {
-                PendingWrite write = Pool.Take();
+                var write = Pool.Acquire(out var handle);
                 write.Size = size;
                 write.Msg = msg;
                 write.Promise = promise;
+                write.handle = handle;
                 return write;
             }
 
-            public void Recycle()
+            public static void Recycle(PendingWrite obj)
+            {
+                Pool.Recycle(obj.handle);
+            }
+            
+            void IRecycle.Recycle()
             {
                 this.Size = 0;
                 this.Next = null;
                 this.Msg = null;
                 this.Promise = null;
-                this.handle.Release(this);
             }
         }
     }

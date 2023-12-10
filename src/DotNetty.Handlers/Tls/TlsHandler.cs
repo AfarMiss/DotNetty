@@ -144,7 +144,7 @@ namespace DotNetty.Handlers.Tls
                     // Unwrap any pending app data packets in case, when read completed and no more messages in the channel.
                     if (self.pendingDataPackets != null && self.pendingDataPackets.Count > 0)
                     {
-                        ThreadLocalObjectList output = ThreadLocalObjectList.NewInstance();
+                        var output = ThreadLocalListPool.Acquire();
                         try
                         {
                             self.Unwrap(self.capturedContext, Unpooled.Empty, 0, 0, new List<(int packetLength, byte packetContentType)>(0), output);
@@ -159,7 +159,7 @@ namespace DotNetty.Handlers.Tls
                         }
                         finally
                         {
-                            output.Return();
+                            ThreadLocalListPool.Recycle(output);
                         }
                     }
 

@@ -2,13 +2,17 @@
 
 namespace DotNetty.Common
 {
-    public class RecyclerThreadLocalPool<T> where T : IRecycle
+    public class RecyclerThreadLocalPool<T> where T : IRecycle, new()
     {
         private readonly FastThreadLocalPool threadLocal;
         private readonly Func<T> valueFactory;
 
-        public RecyclerThreadLocalPool(Func<T> valueFactory, int capacity = 0)
+        public RecyclerThreadLocalPool(Func<T> valueFactory = null, int capacity = 0)
         {
+            if (valueFactory == null)
+            {
+                valueFactory = () => new T();
+            }
             this.valueFactory = valueFactory;
             this.threadLocal = new FastThreadLocalPool(capacity);
         }

@@ -9,23 +9,17 @@ namespace DotNetty.Buffers
     using System.Threading.Tasks;
     using DotNetty.Common;
 
-    sealed class PooledDuplicatedByteBuffer : AbstractPooledDerivedByteBuffer
+    sealed class PooledDuplicatedByteBuffer : AbstractPooledDerivedByteBuffer<PooledDuplicatedByteBuffer>
     {
-        static readonly ThreadLocalPool<PooledDuplicatedByteBuffer> Recycler = new ThreadLocalPool<PooledDuplicatedByteBuffer>(handle => new PooledDuplicatedByteBuffer(handle));
-
         internal static PooledDuplicatedByteBuffer NewInstance(AbstractByteBuffer unwrapped, IByteBuffer wrapped, int readerIndex, int writerIndex)
         {
-            PooledDuplicatedByteBuffer duplicate = Recycler.Take();
-            duplicate.Init<PooledDuplicatedByteBuffer>(unwrapped, wrapped, readerIndex, writerIndex, unwrapped.MaxCapacity);
+            PooledDuplicatedByteBuffer duplicate = Recycler.Acquire(out var handle);
+            duplicate.handle = handle;
+            duplicate.Init(unwrapped, wrapped, readerIndex, writerIndex, unwrapped.MaxCapacity);
             duplicate.MarkReaderIndex();
             duplicate.MarkWriterIndex();
 
             return duplicate;
-        }
-
-        public PooledDuplicatedByteBuffer(ThreadLocalPool.Handle recyclerHandle)
-            : base(recyclerHandle)
-        {
         }
 
         public override int Capacity => this.Unwrap().Capacity;

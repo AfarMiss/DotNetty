@@ -300,7 +300,7 @@ namespace DotNetty.Codecs.Mqtt
             const int VariableHeaderSize = PacketIdLength;
             int payloadBufferSize = 0;
 
-            ThreadLocalObjectList encodedTopicFilters = ThreadLocalObjectList.NewInstance();
+            var encodedTopicFilters = ThreadLocalListPool.Acquire();
 
             IByteBuffer buf = null;
             try
@@ -337,7 +337,7 @@ namespace DotNetty.Codecs.Mqtt
             finally
             {
                 buf?.SafeRelease();
-                encodedTopicFilters.Return();
+                ThreadLocalListPool.Recycle(encodedTopicFilters);
             }
         }
 
@@ -373,7 +373,7 @@ namespace DotNetty.Codecs.Mqtt
             const int VariableHeaderSize = 2;
             int payloadBufferSize = 0;
 
-            ThreadLocalObjectList encodedTopicFilters = ThreadLocalObjectList.NewInstance();
+            var encodedTopicFilters = ThreadLocalListPool.Acquire();
 
             IByteBuffer buf = null;
             try
@@ -409,7 +409,7 @@ namespace DotNetty.Codecs.Mqtt
             finally
             {
                 buf?.SafeRelease();
-                encodedTopicFilters.Return();
+                ThreadLocalListPool.Recycle(encodedTopicFilters);
             }
         }
 

@@ -294,7 +294,7 @@ namespace DotNetty.Transport.Channels.Embedded
                 return IsNotEmpty(this.outboundMessages);
             }
 
-            ThreadLocalObjectList futures = ThreadLocalObjectList.NewInstance(msgs.Length);
+            var futures = ThreadLocalListPool.Acquire(msgs.Length);
 
             foreach (object m in msgs)
             {
@@ -323,8 +323,7 @@ namespace DotNetty.Transport.Channels.Embedded
                     future.ContinueWith(t => this.RecordException(t));
                 }
             }
-            futures.Return();
-
+            ThreadLocalListPool.Recycle(futures);
             this.RunPendingTasks();
             this.CheckException();
             return IsNotEmpty(this.outboundMessages);

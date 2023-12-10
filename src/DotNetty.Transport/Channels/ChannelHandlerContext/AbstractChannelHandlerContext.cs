@@ -873,26 +873,19 @@ namespace DotNetty.Transport.Channels
             return this.WriteAndFlushAsync(msg);
         }
 
-        Task WriteAsync(object msg, bool flush)
+        private Task WriteAsync(object msg, bool flush)
         {
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            object m = this.pipeline.Touch(msg, next);
-            IEventExecutor nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
+            var outbound = this.FindContextOutbound();
+            var eventExecutor = outbound.Executor;
+            if (eventExecutor.InEventLoop)
             {
-                return flush
-                    ? next.InvokeWriteAndFlushAsync(m)
-                    : next.InvokeWriteAsync(m);
+                return flush ? outbound.InvokeWriteAndFlushAsync(msg) : outbound.InvokeWriteAsync(msg);
             }
-            else
-            {
-                var promise = new TaskCompletionSource();
-                AbstractWriteTask task = flush 
-                    ? WriteAndFlushTask.NewInstance(next, m, promise)
-                    : (AbstractWriteTask)WriteTask.NewInstance(next, m, promise);
-                SafeExecuteOutbound(nextExecutor, task, promise, msg);
-                return promise.Task;
-            }
+
+            var promise = new TaskCompletionSource();
+            var task = flush ? WriteAndFlushTask.Create(outbound, msg, promise) : (IRunnable)WriteTask.Create(outbound, msg, promise);
+            SafeExecuteOutbound(eventExecutor, task, promise, msg);
+            return promise.Task;
         }
 
         void NotifyHandlerException(Exception cause)
@@ -977,27 +970,36 @@ namespace DotNetty.Transport.Channels
         public override string ToString() => $"{typeof(IChannelHandlerContext).Name} ({this.Name}, {this.Channel})";
 
 
-        abstract class AbstractWriteTask : IRunnable
+        private abstract class AbstractWriteTask<T> : IRunnable , IRecycle where T : AbstractWriteTask<T>, new()
         {
-            static readonly bool EstimateTaskSizeOnSubmit =
-                SystemPropertyUtil.GetBoolean("io.netty.transport.estimateSizeOnSubmit", true);
-
+            private static readonly RecyclerThreadLocalPool<T> Pool = new RecyclerThreadLocalPool<T>(() => new T());
+            private static readonly bool EstimateTaskSizeOnSubmit = SystemPropertyUtil.GetBoolean("io.netty.transport.estimateSizeOnSubmit", true);
             // Assuming a 64-bit .NET VM, 16 bytes object header, 4 reference fields and 2 int field
-            static readonly int WriteTaskOverhead =
-                SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 56);
+            private static readonly int WriteTaskOverhead = SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 56);
+            
+            private AbstractChannelHandlerContext ctx;
+            private TaskCompletionSource promise;
+            private IRecycleHandle<T> handle;
+            private object msg;
+            private int size;
+            
+            protected abstract Task WriteAsync(AbstractChannelHandlerContext ctx, object msg);
 
-            ThreadLocalPool.Handle handle;
-            AbstractChannelHandlerContext ctx;
-            object msg;
-            TaskCompletionSource promise;
-            int size;
-
-            protected static void Init(AbstractWriteTask task, AbstractChannelHandlerContext ctx, object msg, TaskCompletionSource promise)
+            void IRecycle.Recycle()
             {
+                this.ctx = null;
+                this.msg = null;
+                promise = null;
+            }
+
+            public static T Create(AbstractChannelHandlerContext ctx, object msg, TaskCompletionSource promise)
+            {
+                var task = Pool.Acquire(out var handle);
                 task.ctx = ctx;
                 task.msg = msg;
                 task.promise = promise;
-
+                task.handle = handle;
+                
                 if (EstimateTaskSizeOnSubmit)
                 {
                     ChannelOutboundBuffer buffer = ctx.Channel.Unsafe.OutboundBuffer;
@@ -1017,14 +1019,10 @@ namespace DotNetty.Transport.Channels
                 {
                     task.size = 0;
                 }
+                return task;
             }
-
-            protected AbstractWriteTask(ThreadLocalPool.Handle handle)
-            {
-                this.handle = handle;
-            }
-
-            public void Run()
+            
+            void IRunnable.Run()
             {
                 try
                 {
@@ -1042,52 +1040,19 @@ namespace DotNetty.Transport.Channels
                     this.ctx = null;
                     this.msg = null;
                     this.promise = null;
-                    this.handle.Release(this);
+                    Pool.Recycle(this.handle);
                 }
             }
-
-            protected virtual Task WriteAsync(AbstractChannelHandlerContext ctx, object msg) => ctx.InvokeWriteAsync(msg);
-        }
-        sealed class WriteTask : AbstractWriteTask {
-
-            static readonly ThreadLocalPool<WriteTask> Recycler = new ThreadLocalPool<WriteTask>(handle => new WriteTask(handle));
-
-            public static WriteTask NewInstance(AbstractChannelHandlerContext ctx, object msg, TaskCompletionSource promise)
-            {
-                WriteTask task = Recycler.Take();
-                Init(task, ctx, msg, promise);
-                return task;
-            }
-
-            WriteTask(ThreadLocalPool.Handle handle)
-                : base(handle)
-            {
-            }
         }
 
-        sealed class WriteAndFlushTask : AbstractWriteTask
-    {
+        private sealed class WriteTask : AbstractWriteTask<WriteTask>
+        {
+            protected override Task WriteAsync(AbstractChannelHandlerContext ctx, object msg) => ctx.InvokeWriteAsync(msg);
+        }
 
-            static readonly ThreadLocalPool<WriteAndFlushTask> Recycler = new ThreadLocalPool<WriteAndFlushTask>(handle => new WriteAndFlushTask(handle));
-
-            public static WriteAndFlushTask NewInstance(
-                    AbstractChannelHandlerContext ctx, object msg,  TaskCompletionSource promise) {
-                WriteAndFlushTask task = Recycler.Take();
-                Init(task, ctx, msg, promise);
-                return task;
-            }
-
-            WriteAndFlushTask(ThreadLocalPool.Handle handle)
-                : base(handle)
-            {
-            }
-
-            protected override Task WriteAsync(AbstractChannelHandlerContext ctx, object msg)
-            {
-                Task result = base.WriteAsync(ctx, msg);
-                ctx.InvokeFlush();
-                return result;
-            }
+        private sealed class WriteAndFlushTask : AbstractWriteTask<WriteAndFlushTask>
+        {
+            protected override Task WriteAsync(AbstractChannelHandlerContext ctx, object msg) => ctx.InvokeWriteAndFlushAsync(msg);
         }
     }
 }

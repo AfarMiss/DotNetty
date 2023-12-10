@@ -7,22 +7,19 @@ namespace DotNetty.Buffers
     using System.Diagnostics;
     using DotNetty.Common;
 
-    abstract class AbstractPooledDerivedByteBuffer : AbstractReferenceCountedByteBuffer
+    abstract class AbstractPooledDerivedByteBuffer: AbstractReferenceCountedByteBuffer
     {
-        readonly ThreadLocalPool.Handle recyclerHandle;
-        AbstractByteBuffer rootParent;
-          
+        protected AbstractByteBuffer rootParent;
+
         // Deallocations of a pooled derived buffer should always propagate through the entire chain of derived buffers.
         // This is because each pooled derived buffer maintains its own reference count and we should respect each one.
         // If deallocations cause a release of the "root parent" then then we may prematurely release the underlying
         // content before all the derived buffers have been released.
         //
-        IByteBuffer parent;
+        protected IByteBuffer parent;
 
-        protected AbstractPooledDerivedByteBuffer(ThreadLocalPool.Handle recyclerHandle) 
-            : base(0)
+        protected AbstractPooledDerivedByteBuffer() : base(0)
         {
-            this.recyclerHandle = recyclerHandle;
         }
 
         // Called from within SimpleLeakAwareByteBuf and AdvancedLeakAwareByteBuffer.
@@ -36,9 +33,7 @@ namespace DotNetty.Buffers
 
         protected AbstractByteBuffer UnwrapCore() => this.rootParent;
 
-        internal T Init<T>(
-            AbstractByteBuffer unwrapped, IByteBuffer wrapped, int readerIndex, int writerIndex, int maxCapacity)
-            where T : AbstractPooledDerivedByteBuffer
+        internal void Init(AbstractByteBuffer unwrapped, IByteBuffer wrapped, int readerIndex, int writerIndex, int maxCapacity)
         {
             wrapped.Retain(); // Retain up front to ensure the parent is accessible before doing more work.
             this.parent = wrapped;
@@ -51,7 +46,6 @@ namespace DotNetty.Buffers
                 this.SetReferenceCount(1);
                 
                 wrapped = null;
-                return (T)this;
             }
             finally
             {
@@ -61,16 +55,6 @@ namespace DotNetty.Buffers
                     wrapped.Release();
                 }
             }
-        }
-
-        protected internal sealed override void Deallocate()
-        {
-            // We need to first store a reference to the parent before recycle this instance. This is needed as
-            // otherwise it is possible that the same AbstractPooledDerivedByteBuf is again obtained and init(...) is
-            // called before we actually have a chance to call release(). This leads to call release() on the wrong parent.
-            IByteBuffer parentBuf = this.parent;
-            this.recyclerHandle.Release(this);
-            parentBuf.Release();
         }
 
         public sealed override IByteBufferAllocator Allocator => this.Unwrap().Allocator;
@@ -212,6 +196,34 @@ namespace DotNetty.Buffers
             }
 
             public override IByteBuffer RetainedSlice(int index, int length) => PooledSlicedByteBuffer.NewInstance(this.UnwrapCore(), this, this.Idx(index), length);
+        }
+    }
+
+    
+    abstract class AbstractPooledDerivedByteBuffer<T> : AbstractPooledDerivedByteBuffer, IRecycle where T : IRecycle, new()
+    {
+        protected IRecycleHandle<T> handle;
+        protected static readonly RecyclerThreadLocalPool<T> Recycler = new RecyclerThreadLocalPool<T>();
+
+        // Deallocations of a pooled derived buffer should always propagate through the entire chain of derived buffers.
+        // This is because each pooled derived buffer maintains its own reference count and we should respect each one.
+        // If deallocations cause a release of the "root parent" then then we may prematurely release the underlying
+        // content before all the derived buffers have been released.
+        //
+
+        void IRecycle.Recycle()
+        {
+            
+        }
+        
+        protected internal sealed override void Deallocate()
+        {
+            // We need to first store a reference to the parent before recycle this instance. This is needed as
+            // otherwise it is possible that the same AbstractPooledDerivedByteBuf is again obtained and init(...) is
+            // called before we actually have a chance to call release(). This leads to call release() on the wrong parent.
+            IByteBuffer parentBuf = this.parent;
+            Recycler.Recycle(this.handle);
+            parentBuf.Release();
         }
     }
 }
