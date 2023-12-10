@@ -390,124 +390,126 @@ namespace DotNetty.Common.Utilities
 
         public static ICharSequence UnescapeCsv(ICharSequence value)
         {
-            Contract.Requires(value != null);
-            int length = value.Count;
-            if (length == 0)
-            {
-                return value;
-            }
-            int last = length - 1;
-            bool quoted = IsDoubleQuote(value[0]) && IsDoubleQuote(value[last]) && length != 1;
-            if (!quoted)
-            {
-                ValidateCsvFormat(value);
-                return value;
-            }
-            StringBuilder unescaped = InternalThreadLocalMap.Get().StringBuilder;
-            for (int i = 1; i < last; i++)
-            {
-                char current = value[i];
-                if (current == DoubleQuote)
-                {
-                    if (IsDoubleQuote(value[i + 1]) && (i + 1) != last)
-                    {
-                        // Followed by a double-quote but not the last character
-                        // Just skip the next double-quote
-                        i++;
-                    }
-                    else
-                    {
-                        // Not followed by a double-quote or the following double-quote is the last character
-                        throw NewInvalidEscapedCsvFieldException(value, i);
-                    }
-                }
-                unescaped.Append(current);
-            }
-
-            return new StringCharSequence(unescaped.ToString());
+            throw new NotImplementedException();
+            // Contract.Requires(value != null);
+            // int length = value.Count;
+            // if (length == 0)
+            // {
+            //     return value;
+            // }
+            // int last = length - 1;
+            // bool quoted = IsDoubleQuote(value[0]) && IsDoubleQuote(value[last]) && length != 1;
+            // if (!quoted)
+            // {
+            //     ValidateCsvFormat(value);
+            //     return value;
+            // }
+            // StringBuilder unescaped = ThreadLocalMap.Get().StringBuilder;
+            // for (int i = 1; i < last; i++)
+            // {
+            //     char current = value[i];
+            //     if (current == DoubleQuote)
+            //     {
+            //         if (IsDoubleQuote(value[i + 1]) && (i + 1) != last)
+            //         {
+            //             // Followed by a double-quote but not the last character
+            //             // Just skip the next double-quote
+            //             i++;
+            //         }
+            //         else
+            //         {
+            //             // Not followed by a double-quote or the following double-quote is the last character
+            //             throw NewInvalidEscapedCsvFieldException(value, i);
+            //         }
+            //     }
+            //     unescaped.Append(current);
+            // }
+            //
+            // return new StringCharSequence(unescaped.ToString());
         }
 
         public static IList<ICharSequence> UnescapeCsvFields(ICharSequence value)
         {
-            var unescaped = new List<ICharSequence>(2);
-            StringBuilder current = InternalThreadLocalMap.Get().StringBuilder;
-            bool quoted = false;
-            int last = value.Count - 1;
-            for (int i = 0; i <= last; i++)
-            {
-                char c = value[i];
-                if (quoted)
-                {
-                    switch (c)
-                    {
-                        case DoubleQuote:
-                            if (i == last)
-                            {
-                                // Add the last field and return
-                                unescaped.Add((StringCharSequence)current.ToString());
-                                return unescaped;
-                            }
-                            char next = value[++i];
-                            if (next == DoubleQuote)
-                            {
-                                // 2 double-quotes should be unescaped to one
-                                current.Append(DoubleQuote);
-                            }
-                            else if (next == Comma)
-                            {
-                                // This is the end of a field. Let's start to parse the next field.
-                                quoted = false;
-                                unescaped.Add((StringCharSequence)current.ToString());
-                                current.Length = 0;
-                            }
-                            else
-                            {
-                                // double-quote followed by other character is invalid
-                                throw new ArgumentException($"invalid escaped CSV field: {value} index: {i - 1}");
-                            }
-                            break;
-                        default:
-                            current.Append(c);
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (c)
-                    {
-                        case Comma:
-                            // Start to parse the next field
-                            unescaped.Add((StringCharSequence)current.ToString());
-                            current.Length = 0;
-                            break;
-                        case DoubleQuote:
-                            if (current.Length == 0)
-                            {
-                                quoted = true;
-                            }
-                            else
-                            {
-                                // double-quote appears without being enclosed with double-quotes
-                                current.Append(c);
-                            }
-                            break;
-                        case LineFeed:
-                        case CarriageReturn:
-                            // special characters appears without being enclosed with double-quotes
-                            throw new ArgumentException($"invalid escaped CSV field: {value} index: {i}");
-                        default:
-                            current.Append(c);
-                            break;
-                    }
-                }
-            }
-            if (quoted)
-            {
-                throw new ArgumentException($"invalid escaped CSV field: {value} index: {last}");
-            }
-
-            unescaped.Add((StringCharSequence)current.ToString());
-            return unescaped;
+            throw new NotImplementedException();
+            // var unescaped = new List<ICharSequence>(2);
+            // StringBuilder current = ThreadLocalMap.Get().StringBuilder;
+            // bool quoted = false;
+            // int last = value.Count - 1;
+            // for (int i = 0; i <= last; i++)
+            // {
+            //     char c = value[i];
+            //     if (quoted)
+            //     {
+            //         switch (c)
+            //         {
+            //             case DoubleQuote:
+            //                 if (i == last)
+            //                 {
+            //                     // Add the last field and return
+            //                     unescaped.Add((StringCharSequence)current.ToString());
+            //                     return unescaped;
+            //                 }
+            //                 char next = value[++i];
+            //                 if (next == DoubleQuote)
+            //                 {
+            //                     // 2 double-quotes should be unescaped to one
+            //                     current.Append(DoubleQuote);
+            //                 }
+            //                 else if (next == Comma)
+            //                 {
+            //                     // This is the end of a field. Let's start to parse the next field.
+            //                     quoted = false;
+            //                     unescaped.Add((StringCharSequence)current.ToString());
+            //                     current.Length = 0;
+            //                 }
+            //                 else
+            //                 {
+            //                     // double-quote followed by other character is invalid
+            //                     throw new ArgumentException($"invalid escaped CSV field: {value} index: {i - 1}");
+            //                 }
+            //                 break;
+            //             default:
+            //                 current.Append(c);
+            //                 break;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         switch (c)
+            //         {
+            //             case Comma:
+            //                 // Start to parse the next field
+            //                 unescaped.Add((StringCharSequence)current.ToString());
+            //                 current.Length = 0;
+            //                 break;
+            //             case DoubleQuote:
+            //                 if (current.Length == 0)
+            //                 {
+            //                     quoted = true;
+            //                 }
+            //                 else
+            //                 {
+            //                     // double-quote appears without being enclosed with double-quotes
+            //                     current.Append(c);
+            //                 }
+            //                 break;
+            //             case LineFeed:
+            //             case CarriageReturn:
+            //                 // special characters appears without being enclosed with double-quotes
+            //                 throw new ArgumentException($"invalid escaped CSV field: {value} index: {i}");
+            //             default:
+            //                 current.Append(c);
+            //                 break;
+            //         }
+            //     }
+            // }
+            // if (quoted)
+            // {
+            //     throw new ArgumentException($"invalid escaped CSV field: {value} index: {last}");
+            // }
+            //
+            // unescaped.Add((StringCharSequence)current.ToString());
+            // return unescaped;
         }
 
         static void ValidateCsvFormat(ICharSequence value)

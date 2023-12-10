@@ -813,59 +813,60 @@ namespace DotNetty.Common.Utilities
 
         public AsciiString[] Split(char delim)
         {
-            List<AsciiString> res = InternalThreadLocalMap.Get().AsciiStringList();
-
-            int start = 0;
-            int count = this.length;
-            for (int i = start; i < count; i++)
-            {
-                if (this[i] == delim)
-                {
-                    if (start == i)
-                    {
-                        res.Add(Empty);
-                    }
-                    else
-                    {
-                        res.Add(new AsciiString(this.value, start + this.offset, i - start, false));
-                    }
-                    start = i + 1;
-                }
-            }
-
-            if (start == 0)
-            { 
-                // If no delimiter was found in the value
-                res.Add(this);
-            }
-            else
-            {
-                if (start != count)
-                {
-                    // Add the last element if it's not empty.
-                    res.Add(new AsciiString(this.value, start + this.offset, count - start, false));
-                }
-                else
-                {
-                    // Truncate trailing empty elements.
-                    while (res.Count > 0)
-                    {
-                        int i = res.Count - 1;
-                        if (!res[i].IsEmpty)
-                        {
-                            res.RemoveAt(i);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            var strings = new AsciiString[res.Count];
-            res.CopyTo(strings);
-            return strings;
+            throw new NotImplementedException();
+            // List<AsciiString> res = ThreadLocalMap.Get().AsciiStringList();
+            //
+            // int start = 0;
+            // int count = this.length;
+            // for (int i = start; i < count; i++)
+            // {
+            //     if (this[i] == delim)
+            //     {
+            //         if (start == i)
+            //         {
+            //             res.Add(Empty);
+            //         }
+            //         else
+            //         {
+            //             res.Add(new AsciiString(this.value, start + this.offset, i - start, false));
+            //         }
+            //         start = i + 1;
+            //     }
+            // }
+            //
+            // if (start == 0)
+            // { 
+            //     // If no delimiter was found in the value
+            //     res.Add(this);
+            // }
+            // else
+            // {
+            //     if (start != count)
+            //     {
+            //         // Add the last element if it's not empty.
+            //         res.Add(new AsciiString(this.value, start + this.offset, count - start, false));
+            //     }
+            //     else
+            //     {
+            //         // Truncate trailing empty elements.
+            //         while (res.Count > 0)
+            //         {
+            //             int i = res.Count - 1;
+            //             if (!res[i].IsEmpty)
+            //             {
+            //                 res.RemoveAt(i);
+            //             }
+            //             else
+            //             {
+            //                 break;
+            //             }
+            //         }
+            //     }
+            // }
+            //
+            // var strings = new AsciiString[res.Count];
+            // res.CopyTo(strings);
+            // return strings;
         }
 
         // ReSharper disable NonReadonlyMemberInGetHashCode

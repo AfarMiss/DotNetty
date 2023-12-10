@@ -1,47 +1,23 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNetty.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using System.Threading;
-    using DotNetty.Common.Utilities;
-
-    /// <summary>
-    /// The internal data structure that stores the thread-local variables for DotNetty and all
-    /// <see cref="FastThreadLocal"/>s. Note that this class is for internal use only and is subject to change at any
-    /// time. Use <see cref="FastThreadLocal"/> unless you know what you are doing.
-    /// </summary>
-    public sealed class InternalThreadLocalMap
+    public sealed class ThreadLocalMap
     {
-        const int DefaultArrayListInitialCapacity = 8;
-
-        public static readonly object Unset = new object();
-        [ThreadStatic]
-        static InternalThreadLocalMap slowThreadLocalMap;
-
-        static int nextIndex;
-
         /// <summary>
-        /// Used by <see cref="FastThreadLocal"/>.
+        /// 线程回收时候自动释放
         /// </summary>
-        object[] indexedVariables;
+        [ThreadStatic]
+        private static ThreadLocalMap threadLocalMap;
+        private static int nextIndex;
 
-        // Core thread-locals
-        int futureListenerStackDepth;
-        int localChannelReaderStackDepth;
+        public static readonly object UNSET = new object();
+        private object[] slotArray = CreateNewTable();
 
-        // String-related thread-locals
-        StringBuilder stringBuilder;
-
-        // ArrayList-related thread-locals
-        List<ICharSequence> charSequences;
-        List<AsciiString> asciiStrings;
-
-        internal static int NextVariableIndex()
+        // TODO ~ThreadLocalMap时Slot为ThreadLocalQueue<T>的对象标记回收 ~RecycleHandle时判断Queue标记可判定释放泄露 
+        internal static int NextIndex()
         {
             int index = Interlocked.Increment(ref nextIndex);
             if (index < 0)
@@ -53,201 +29,92 @@ namespace DotNetty.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static InternalThreadLocalMap GetIfSet() => slowThreadLocalMap;
+        public static ThreadLocalMap GetIfSet() => threadLocalMap;
 
+        /// <summary>
+        /// 获取当前线程的映射值
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static InternalThreadLocalMap Get()
+        public static ThreadLocalMap Get()
         {
-            InternalThreadLocalMap ret = slowThreadLocalMap;
+            var ret = threadLocalMap;
             if (ret == null)
             {
-                ret = new InternalThreadLocalMap();
-                slowThreadLocalMap = ret;
+                ret = new ThreadLocalMap();
+                threadLocalMap = ret;
             }
             return ret;
         }
 
-        public static void Remove() => slowThreadLocalMap = null;
-
-        public static void Destroy() => slowThreadLocalMap = null;
-
-        // Cache line padding (must be public)
-        // With CompressedOops enabled, an instance of this class should occupy at least 128 bytes.
-        // ReSharper disable InconsistentNaming
-        public long rp1, rp2, rp3, rp4, rp5, rp6, rp7, rp8, rp9;
-        // ReSharper restore InconsistentNaming
-
-        InternalThreadLocalMap()
-        {
-            this.indexedVariables = CreateIndexedVariableTable();
-        }
-
-        static object[] CreateIndexedVariableTable()
+        private static object[] CreateNewTable()
         {
             var array = new object[32];
-
-            array.Fill(Unset);
+            Array.Fill(array, UNSET);
             return array;
         }
 
-        public int Count
+        private void GrowTable(int index)
         {
-            get
-            {
-                int count = 0;
-
-                if (this.futureListenerStackDepth != 0)
-                {
-                    count++;
-                }
-                if (this.localChannelReaderStackDepth != 0)
-                {
-                    count++;
-                }
-                if (this.stringBuilder != null)
-                {
-                    count++;
-                }
-                foreach (object o in this.indexedVariables)
-                {
-                    if (o != Unset)
-                    {
-                        count++;
-                    }
-                }
-
-                // We should subtract 1 from the count because the first element in 'indexedVariables' is reserved
-                // by 'FastThreadLocal' to keep the list of 'FastThreadLocal's to remove on 'FastThreadLocal.RemoveAll()'.
-                return count - 1;
-            }
-        }
-
-        public StringBuilder StringBuilder
-        {
-            get
-            {
-                StringBuilder builder = this.stringBuilder;
-                if (builder == null)
-                {
-                    this.stringBuilder = builder = new StringBuilder(512);
-                }
-                else
-                {
-                    builder.Length = 0;
-                }
-                return builder;
-            }
-        }
-
-        public List<ICharSequence> CharSequenceList(int minCapacity = DefaultArrayListInitialCapacity)
-        {
-            List<ICharSequence> localList = this.charSequences;
-            if (localList == null)
-            {
-                this.charSequences = new List<ICharSequence>(minCapacity);
-                return this.charSequences;
-            }
-
-            localList.Clear();
-            // ensureCapacity
-            localList.Capacity = minCapacity;
-            return localList;
-        }
-
-        public List<AsciiString> AsciiStringList(int minCapacity = DefaultArrayListInitialCapacity)
-        {
-            List<AsciiString> localList = this.asciiStrings;
-            if (localList == null)
-            {
-                this.asciiStrings = new List<AsciiString>(minCapacity);
-                return this.asciiStrings;
-            }
-
-            localList.Clear();
-            // ensureCapacity
-            localList.Capacity = minCapacity;
-            return localList;
-        }
-
-        public int FutureListenerStackDepth
-        {
-            get => this.futureListenerStackDepth;
-            set => this.futureListenerStackDepth = value;
-        }
-
-        public int LocalChannelReaderStackDepth
-        {
-            get => this.localChannelReaderStackDepth;
-            set => this.localChannelReaderStackDepth = value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public object GetIndexedVariable(int index)
-        {
-            object[] lookup = this.indexedVariables;
-            return index < lookup.Length ? lookup[index] : Unset;
-        }
-
-        /// <summary>
-        /// Sets a value at the given index in this <see cref="InternalThreadLocalMap"/>.
-        /// </summary>
-        /// <param name="index">The desired index at which a value should be set.</param>
-        /// <param name="value">The value to set at the given index.</param>
-        /// <returns><c>true</c> if and only if a new thread-local variable has been created.</returns>
-        public bool SetIndexedVariable(int index, object value)
-        {
-            object[] lookup = this.indexedVariables;
-            if (index < lookup.Length)
-            {
-                object oldValue = lookup[index];
-                lookup[index] = value;
-                return oldValue == Unset;
-            }
-            else
-            {
-                this.ExpandIndexedVariableTableAndSet(index, value);
-                return true;
-            }
-        }
-
-        void ExpandIndexedVariableTableAndSet(int index, object value)
-        {
-            object[] oldArray = this.indexedVariables;
+            object[] oldArray = this.slotArray;
             int oldCapacity = oldArray.Length;
             int newCapacity = index;
-            newCapacity |= newCapacity.RightUShift(1);
-            newCapacity |= newCapacity.RightUShift(2);
-            newCapacity |= newCapacity.RightUShift(4);
-            newCapacity |= newCapacity.RightUShift(8);
-            newCapacity |= newCapacity.RightUShift(16);
+            newCapacity |= newCapacity >> 1;
+            newCapacity |= newCapacity >> 2;
+            newCapacity |= newCapacity >> 4;
+            newCapacity |= newCapacity >> 8;
+            newCapacity |= newCapacity >> 16;
+
             newCapacity++;
 
             var newArray = new object[newCapacity];
             oldArray.CopyTo(newArray, 0);
-            newArray.Fill(oldCapacity, newArray.Length - oldCapacity, Unset);
-            newArray[index] = value;
-            this.indexedVariables = newArray;
+            Array.Fill(newArray, UNSET, oldCapacity, newArray.Length - oldCapacity);
+            this.slotArray = newArray;
         }
 
-        public object RemoveIndexedVariable(int index)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object GetSlot(int index)
         {
-            object[] lookup = this.indexedVariables;
+            var lookup = this.slotArray;
+            return index < lookup.Length ? lookup[index] : UNSET;
+        }
+
+        public bool SetSlot(int index, object value)
+        {
+            object[] lookup = this.slotArray;
+            if (index < lookup.Length)
+            {
+                object oldValue = lookup[index];
+                lookup[index] = value;
+                return oldValue == UNSET;
+            }
+
+            this.GrowTable(index);
+            this.slotArray[index] = value;
+            return true;
+        }
+
+        public object Remove(int index)
+        {
+            object[] lookup = this.slotArray;
             if (index < lookup.Length)
             {
                 object v = lookup[index];
-                lookup[index] = Unset;
+                lookup[index] = UNSET;
                 return v;
             }
-            else
-            {
-                return Unset;
-            }
+
+            return UNSET;
         }
 
-        public bool IsIndexedVariableSet(int index)
+        public bool Contains(int index)
         {
-            object[] lookup = this.indexedVariables;
-            return index < lookup.Length && lookup[index] != Unset;
+            object[] lookup = this.slotArray;
+            return index < lookup.Length && lookup[index] != UNSET;
         }
+        
+        public static void Remove() => threadLocalMap = null;
+
+        public static void Destroy() => threadLocalMap = null;
     }
 }

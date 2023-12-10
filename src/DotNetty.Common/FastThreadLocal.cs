@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 namespace DotNetty.Common
 {
     using System.Collections.Generic;
@@ -8,28 +5,26 @@ namespace DotNetty.Common
 
     public abstract class FastThreadLocal
     {
-        static readonly int VariablesToRemoveIndex = InternalThreadLocalMap.NextVariableIndex();
+        /// <summary>
+        /// 全局管理 映射<see cref="FastThreadLocal"/>
+        /// </summary>
+        public static readonly int RemoveIndex = ThreadLocalMap.NextIndex();
 
         /// <summary>
-        ///     Removes all <see cref="FastThreadLocal"/> variables bound to the current thread.  This operation is useful when you
-        ///     are in a container environment, and you don't want to leave the thread local variables in the threads you do not
-        ///     manage.
+        /// 当前线程移除所有
         /// </summary>
         public static void RemoveAll()
         {
-            InternalThreadLocalMap threadLocalMap = InternalThreadLocalMap.GetIfSet();
-            if (threadLocalMap == null)
-            {
-                return;
-            }
+            ThreadLocalMap threadLocalMap = ThreadLocalMap.GetIfSet();
+            if (threadLocalMap == null) return;
 
             try
             {
-                object v = threadLocalMap.GetIndexedVariable(VariablesToRemoveIndex);
-                if (v != null && v != InternalThreadLocalMap.Unset)
+                var v = threadLocalMap.GetSlot(RemoveIndex);
+                if (v != null && v != ThreadLocalMap.UNSET)
                 {
                     var variablesToRemove = (HashSet<FastThreadLocal>)v;
-                    foreach (FastThreadLocal tlv in variablesToRemove) // todo: do we need to make a snapshot?
+                    foreach (var tlv in variablesToRemove)
                     {
                         tlv.Remove(threadLocalMap);
                     }
@@ -37,7 +32,7 @@ namespace DotNetty.Common
             }
             finally
             {
-                InternalThreadLocalMap.Remove();
+                ThreadLocalMap.Remove();
             }
         }
 
@@ -47,16 +42,16 @@ namespace DotNetty.Common
         /// you do not want to leave the thread local variables in the threads you do not manage.  Call this method when
         /// your application is being unloaded from the container.
         /// </summary>
-        public static void Destroy() => InternalThreadLocalMap.Destroy();
+        public static void Destroy() => ThreadLocalMap.Destroy();
 
-        protected static void AddToVariablesToRemove(InternalThreadLocalMap threadLocalMap, FastThreadLocal variable)
+        protected static void Add(ThreadLocalMap threadLocalMap, FastThreadLocal variable)
         {
-            object v = threadLocalMap.GetIndexedVariable(VariablesToRemoveIndex);
+            object v = threadLocalMap.GetSlot(RemoveIndex);
             HashSet<FastThreadLocal> variablesToRemove;
-            if (v == InternalThreadLocalMap.Unset || v == null)
+            if (v == ThreadLocalMap.UNSET || v == null)
             {
                 variablesToRemove = new HashSet<FastThreadLocal>(); // Collections.newSetFromMap(new IdentityHashMap<FastThreadLocal<?>, Boolean>());
-                threadLocalMap.SetIndexedVariable(VariablesToRemoveIndex, variablesToRemove);
+                threadLocalMap.SetSlot(RemoveIndex, variablesToRemove);
             }
             else
             {
@@ -66,11 +61,11 @@ namespace DotNetty.Common
             variablesToRemove.Add(variable);
         }
 
-        protected static void RemoveFromVariablesToRemove(InternalThreadLocalMap threadLocalMap, FastThreadLocal variable)
+        protected static void Remove(ThreadLocalMap threadLocalMap, FastThreadLocal variable)
         {
-            object v = threadLocalMap.GetIndexedVariable(VariablesToRemoveIndex);
+            object v = threadLocalMap.GetSlot(RemoveIndex);
 
-            if (v == InternalThreadLocalMap.Unset || v == null)
+            if (v == ThreadLocalMap.UNSET || v == null)
             {
                 return;
             }
@@ -83,42 +78,25 @@ namespace DotNetty.Common
         ///     Sets the value to uninitialized; a proceeding call to get() will trigger a call to GetInitialValue().
         /// </summary>
         /// <param name="threadLocalMap"></param>
-        public abstract void Remove(InternalThreadLocalMap threadLocalMap);
+        protected abstract void Remove(ThreadLocalMap threadLocalMap);
     }
 
-    public class FastThreadLocal<T> : FastThreadLocal
-        where T : class
+    public class FastThreadLocal<T> : FastThreadLocal where T : class
     {
-        readonly int index;
+        private readonly int index = ThreadLocalMap.NextIndex();
 
-        /// <summary>
-        ///     Returns the number of thread local variables bound to the current thread.
-        /// </summary>
-        public static int Count => InternalThreadLocalMap.GetIfSet()?.Count ?? 0;
-
-        public FastThreadLocal()
-        {
-            this.index = InternalThreadLocalMap.NextVariableIndex();
-        }
-
-        /// <summary>
-        ///     Gets or sets current value for the current thread.
-        /// </summary>
+        /// <inheritdoc cref="ThreadLocalMap.Get()"/>
         public T Value
         {
-            get { return this.Get(InternalThreadLocalMap.Get()); }
-            set { this.Set(InternalThreadLocalMap.Get(), value); }
+            get => this.Get(ThreadLocalMap.Get());
+            set => this.Set(ThreadLocalMap.Get(), value);
         }
 
-        /// <summary>
-        ///     Returns the current value for the specified thread local map.
-        ///     The specified thread local map must be for the current thread.
-        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Get(InternalThreadLocalMap threadLocalMap)
+        private T Get(ThreadLocalMap threadLocalMap)
         {
-            object v = threadLocalMap.GetIndexedVariable(this.index);
-            if (v != InternalThreadLocalMap.Unset)
+            object v = threadLocalMap.GetSlot(this.index);
+            if (v != ThreadLocalMap.UNSET)
             {
                 return (T)v;
             }
@@ -127,45 +105,42 @@ namespace DotNetty.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T Initialize(InternalThreadLocalMap threadLocalMap)
+        private T Initialize(ThreadLocalMap threadLocalMap)
         {
             T v = this.GetInitialValue();
 
-            threadLocalMap.SetIndexedVariable(this.index, v);
-            AddToVariablesToRemove(threadLocalMap, this);
+            threadLocalMap.SetSlot(this.index, v);
+            Add(threadLocalMap, this);
             return v;
         }
 
-        /// <summary>
-        /// Set the value for the specified thread local map. The specified thread local map must be for the current thread.
-        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Set(InternalThreadLocalMap threadLocalMap, T value)
+        private void Set(ThreadLocalMap threadLocalMap, T value)
         {
-            if (threadLocalMap.SetIndexedVariable(this.index, value))
+            if (threadLocalMap.SetSlot(this.index, value))
             {
-                AddToVariablesToRemove(threadLocalMap, this);
+                Add(threadLocalMap, this);
             }
         }
 
         /// <summary>
         /// Returns <c>true</c> if and only if this thread-local variable is set.
         /// </summary>
-        public bool IsSet() => this.IsSet(InternalThreadLocalMap.GetIfSet());
+        public bool IsSet() => this.IsSet(ThreadLocalMap.GetIfSet());
 
         /// <summary>
         /// Returns <c>true</c> if and only if this thread-local variable is set.
         /// The specified thread local map must be for the current thread.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsSet(InternalThreadLocalMap threadLocalMap) => threadLocalMap != null && threadLocalMap.IsIndexedVariableSet(this.index);
+        public bool IsSet(ThreadLocalMap threadLocalMap) => threadLocalMap != null && threadLocalMap.Contains(this.index);
 
         /// <summary>
         /// Returns the initial value for this thread-local variable.
         /// </summary>
         protected virtual T GetInitialValue() => null;
 
-        public void Remove() => this.Remove(InternalThreadLocalMap.GetIfSet());
+        public void Remove() => this.Remove(ThreadLocalMap.GetIfSet());
 
         /// <summary>
         /// Sets the value to uninitialized for the specified thread local map;
@@ -173,30 +148,22 @@ namespace DotNetty.Common
         /// The specified thread local map must be for the current thread.
         /// </summary>
         /// <param name="threadLocalMap">
-        /// The <see cref="InternalThreadLocalMap"/> from which this <see cref="FastThreadLocal"/> should be removed.
+        /// The <see cref="ThreadLocalMap"/> from which this <see cref="FastThreadLocal"/> should be removed.
         /// </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public sealed override void Remove(InternalThreadLocalMap threadLocalMap)
+        protected sealed override void Remove(ThreadLocalMap threadLocalMap)
         {
-            if (threadLocalMap == null)
-            {
-                return;
-            }
+            if (threadLocalMap == null) return;
 
-            object v = threadLocalMap.RemoveIndexedVariable(this.index);
-            RemoveFromVariablesToRemove(threadLocalMap, this);
+            object v = threadLocalMap.Remove(this.index);
+            Remove(threadLocalMap, this);
 
-            if (v != InternalThreadLocalMap.Unset)
+            if (v != ThreadLocalMap.UNSET)
             {
-                this.OnRemoval((T)v);
+                this.OnRemove((T)v);
             }
         }
 
-        /// <summary>
-        /// Invoked when this thread local variable is removed by <see cref="Remove()"/>.
-        /// </summary>
-        protected virtual void OnRemoval(T value)
-        {
-        }
+        protected virtual void OnRemove(T value) { }
     }
 }

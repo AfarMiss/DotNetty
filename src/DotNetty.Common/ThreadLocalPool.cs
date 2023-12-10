@@ -780,7 +780,7 @@ namespace DotNetty.Common
                 return stack;
             }
 
-            protected override void OnRemoval(Stack value)
+            protected override void OnRemove(Stack value)
             {
                 // Let us remove the WeakOrderQueue from the WeakHashMap directly if its safe to remove some overhead
                 if (value.threadRef.TryGetTarget(out Thread valueThread) && valueThread == Thread.CurrentThread)

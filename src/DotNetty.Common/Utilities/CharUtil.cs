@@ -173,47 +173,48 @@ namespace DotNetty.Common.Utilities
 
         public static ICharSequence[] Split(ICharSequence sequence, int startIndex, params char[] delimiters)
         {
-            Contract.Requires(sequence != null);
-            Contract.Requires(delimiters != null);
-            Contract.Requires(startIndex >= 0 && startIndex < sequence.Count);
-
-            List<ICharSequence> result = InternalThreadLocalMap.Get().CharSequenceList();
-
-            int i = startIndex;
-            int length = sequence.Count;
-
-            while (i < length)
-            {
-                while (i < length && IndexOf(delimiters, sequence[i]) >= 0)
-                {
-                    i++;
-                }
-
-                int position = i;
-                if (i < length)
-                {
-                    if (IndexOf(delimiters, sequence[position]) >= 0)
-                    {
-                        result.Add(sequence.SubSequence(position++, i + 1));
-                    }
-                    else
-                    {
-                        ICharSequence seq = null;
-                        for (position++; position < length; position++)
-                        {
-                            if (IndexOf(delimiters, sequence[position]) >= 0)
-                            {
-                                seq = sequence.SubSequence(i, position);
-                                break;
-                            }
-                        }
-                        result.Add(seq ?? sequence.SubSequence(i));
-                    }
-                    i = position;
-                }
-            }
-
-            return result.Count == 0 ? new[] { sequence } : result.ToArray();
+            throw new NotImplementedException();
+            // Contract.Requires(sequence != null);
+            // Contract.Requires(delimiters != null);
+            // Contract.Requires(startIndex >= 0 && startIndex < sequence.Count);
+            //
+            // List<ICharSequence> result = ThreadLocalMap.Get().CharSequenceList();
+            //
+            // int i = startIndex;
+            // int length = sequence.Count;
+            //
+            // while (i < length)
+            // {
+            //     while (i < length && IndexOf(delimiters, sequence[i]) >= 0)
+            //     {
+            //         i++;
+            //     }
+            //
+            //     int position = i;
+            //     if (i < length)
+            //     {
+            //         if (IndexOf(delimiters, sequence[position]) >= 0)
+            //         {
+            //             result.Add(sequence.SubSequence(position++, i + 1));
+            //         }
+            //         else
+            //         {
+            //             ICharSequence seq = null;
+            //             for (position++; position < length; position++)
+            //             {
+            //                 if (IndexOf(delimiters, sequence[position]) >= 0)
+            //                 {
+            //                     seq = sequence.SubSequence(i, position);
+            //                     break;
+            //                 }
+            //             }
+            //             result.Add(seq ?? sequence.SubSequence(i));
+            //         }
+            //         i = position;
+            //     }
+            // }
+            //
+            // return result.Count == 0 ? new[] { sequence } : result.ToArray();
         }
 
         internal static bool ContentEquals(ICharSequence left, ICharSequence right)
