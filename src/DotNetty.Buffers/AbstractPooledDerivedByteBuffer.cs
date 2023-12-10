@@ -203,7 +203,7 @@ namespace DotNetty.Buffers
     abstract class AbstractPooledDerivedByteBuffer<T> : AbstractPooledDerivedByteBuffer, IRecycle where T : IRecycle, new()
     {
         protected IRecycleHandle<T> handle;
-        protected static readonly RecyclerThreadLocalPool<T> Recycler = new RecyclerThreadLocalPool<T>();
+        protected static readonly ThreadLocalPool<T> Recycler = new ThreadLocalPool<T>();
 
         // Deallocations of a pooled derived buffer should always propagate through the entire chain of derived buffers.
         // This is because each pooled derived buffer maintains its own reference count and we should respect each one.

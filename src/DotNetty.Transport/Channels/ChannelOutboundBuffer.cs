@@ -785,7 +785,7 @@ namespace DotNetty.Transport.Channels
 
         private sealed class Entry : IRecycle
         {
-            private static readonly RecyclerThreadLocalPool<Entry> Pool = new RecyclerThreadLocalPool<Entry>();
+            private static readonly ThreadLocalPool<Entry> Pool = new ThreadLocalPool<Entry>();
             public Entry Next;
             public object Message;
             public ArraySegment<byte>[] Buffers;

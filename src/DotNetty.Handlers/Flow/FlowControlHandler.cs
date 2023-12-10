@@ -186,7 +186,7 @@ namespace DotNetty.Handlers.Flow
 
     internal sealed class RecyclableQueue : CompatibleConcurrentQueue<object>, IRecycle
     {
-        private static readonly RecyclerThreadLocalPool<RecyclableQueue> Pool = new RecyclerThreadLocalPool<RecyclableQueue>();
+        private static readonly ThreadLocalPool<RecyclableQueue> Pool = new ThreadLocalPool<RecyclableQueue>();
         private IRecycleHandle<RecyclableQueue> handle;
 
         void IRecycle.Recycle()

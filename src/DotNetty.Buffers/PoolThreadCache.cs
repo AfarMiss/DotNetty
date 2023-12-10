@@ -484,7 +484,7 @@ namespace DotNetty.Buffers
 
             sealed class Entry : IRecycle
             {
-                static readonly RecyclerThreadLocalPool<Entry> Recycler = new RecyclerThreadLocalPool<Entry>();
+                static readonly ThreadLocalPool<Entry> Recycler = new ThreadLocalPool<Entry>();
 
                 public PoolChunk<T> Chunk;
                 public long HandleId = -1;

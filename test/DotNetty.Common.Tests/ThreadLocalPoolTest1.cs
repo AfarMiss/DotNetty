@@ -12,8 +12,8 @@ namespace DotNetty.Common.Tests
     {
         private Dictionary<int, WeakReference<IRecycleHandle<HandledObject>>> fff1;
 
-        private static RecyclerThreadLocalPool<HandledObject> NewPool(int max)
-            => new RecyclerThreadLocalPool<HandledObject>(() => new HandledObject(), max);
+        private static ThreadLocalPool<HandledObject> NewPool(int max)
+            => new ThreadLocalPool<HandledObject>(() => new HandledObject(), max);
 
         //Not use Task to do all `AtDifferentThreadTest`, because can't promise Task won't be run inline.
 

@@ -321,7 +321,7 @@ namespace DotNetty.Transport.Channels
         /// <summary>Holds all meta-data and construct the linked-list structure.</summary>
         private sealed class PendingWrite : IRecycle
         {
-            private static readonly RecyclerThreadLocalPool<PendingWrite> Pool = new RecyclerThreadLocalPool<PendingWrite>(() => new PendingWrite());
+            private static readonly ThreadLocalPool<PendingWrite> Pool = new ThreadLocalPool<PendingWrite>(() => new PendingWrite());
 
             public PendingWrite Next;
             public long Size;
