@@ -361,8 +361,8 @@ namespace DotNetty.Transport.Channels
 
             long ioBufferSize = 0;
             int nioBufferCount = 0;
-            InternalThreadLocalMap threadLocalMap = InternalThreadLocalMap.Get();
-            List<ArraySegment<byte>> nioBuffers = NioBuffers.Get(threadLocalMap);
+            ThreadLocalMap threadLocalMap = ThreadLocalMap.Get();
+            List<ArraySegment<byte>> nioBuffers = NioBuffers.Value;
             Entry entry = this.flushedEntry;
             while (this.IsFlushedEntry(entry) && entry.Message is IByteBuffer)
             {

@@ -263,57 +263,58 @@ namespace DotNetty.Transport.Channels.Local
 
         protected override void DoBeginRead()
         {
-            if (this.readInProgress)
-            {
-                return;
-            }
-
-            IChannelPipeline pipeline = this.Pipeline;
-            IQueue<object> inboundBuffer = this.inboundBuffer;
-            if (inboundBuffer.IsEmpty)
-            {
-                this.readInProgress = true;
-                return;
-            }
-
-            InternalThreadLocalMap threadLocals = InternalThreadLocalMap.Get();
-            int stackDepth = threadLocals.LocalChannelReaderStackDepth;
-            if (stackDepth < MAX_READER_STACK_DEPTH)
-            {
-                threadLocals.LocalChannelReaderStackDepth = stackDepth + 1;
-
-                try
-                {
-                    for (;;)
-                    {
-                        if (!inboundBuffer.TryDequeue(out object received))
-                        {
-                            break;
-                        }
-
-                        pipeline.FireChannelRead(received);
-                    }
-                    pipeline.FireChannelReadComplete();
-                }
-                finally
-                {
-                    threadLocals.LocalChannelReaderStackDepth = stackDepth;
-                }
-            }
-            else
-            {
-                try
-                {
-                    this.EventLoop.Execute(this.InternalRead);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Warn("Closing Local channels {}-{} because exception occurred!", this, this.peer, ex);
-                    this.CloseAsync();
-                    this.peer.CloseAsync();
-                    throw;
-                }
-            }
+            throw new NotImplementedException();
+            // if (this.readInProgress)
+            // {
+            //     return;
+            // }
+            //
+            // IChannelPipeline pipeline = this.Pipeline;
+            // IQueue<object> inboundBuffer = this.inboundBuffer;
+            // if (inboundBuffer.IsEmpty)
+            // {
+            //     this.readInProgress = true;
+            //     return;
+            // }
+            //
+            // ThreadLocalMap threadLocals = ThreadLocalMap.Get();
+            // int stackDepth = threadLocals.LocalChannelReaderStackDepth;
+            // if (stackDepth < MAX_READER_STACK_DEPTH)
+            // {
+            //     threadLocals.LocalChannelReaderStackDepth = stackDepth + 1;
+            //
+            //     try
+            //     {
+            //         for (;;)
+            //         {
+            //             if (!inboundBuffer.TryDequeue(out object received))
+            //             {
+            //                 break;
+            //             }
+            //
+            //             pipeline.FireChannelRead(received);
+            //         }
+            //         pipeline.FireChannelReadComplete();
+            //     }
+            //     finally
+            //     {
+            //         threadLocals.LocalChannelReaderStackDepth = stackDepth;
+            //     }
+            // }
+            // else
+            // {
+            //     try
+            //     {
+            //         this.EventLoop.Execute(this.InternalRead);
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         Logger.Warn("Closing Local channels {}-{} because exception occurred!", this, this.peer, ex);
+            //         this.CloseAsync();
+            //         this.peer.CloseAsync();
+            //         throw;
+            //     }
+            // }
         }
 
         protected override void DoWrite(ChannelOutboundBuffer buffer)

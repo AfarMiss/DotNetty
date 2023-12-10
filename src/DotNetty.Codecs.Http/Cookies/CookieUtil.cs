@@ -78,7 +78,11 @@ namespace DotNetty.Codecs.Http.Cookies
             return bitArray;
         }
 
-        internal static StringBuilder StringBuilder() => InternalThreadLocalMap.Get().StringBuilder;
+        internal static StringBuilder StringBuilder()
+        {
+            throw new NotImplementedException();
+            // return ThreadLocalMap.Get().StringBuilder;
+        }
 
         internal static string StripTrailingSeparatorOrNull(StringBuilder buf) => 
             buf.Length == 0 ? null : StripTrailingSeparator(buf);

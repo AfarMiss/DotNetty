@@ -299,7 +299,7 @@ namespace DotNetty.Buffers
                 }
             }
 
-            protected override void OnRemoval(PoolThreadCache<byte[]> threadCache) => threadCache.Free();
+            protected override void OnRemove(PoolThreadCache<byte[]> threadCache) => threadCache.Free();
 
             PoolArena<T> LeastUsedArena<T>(PoolArena<T>[] arenas)
             {

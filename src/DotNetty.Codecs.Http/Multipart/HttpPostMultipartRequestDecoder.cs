@@ -1519,46 +1519,47 @@ namespace DotNetty.Codecs.Http.Multipart
 
         static ICharSequence[] SplitMultipartHeaderValues(ICharSequence svalue)
         {
-            List<ICharSequence> values = InternalThreadLocalMap.Get().CharSequenceList(1);
-            bool inQuote = false;
-            bool escapeNext = false;
-            int start = 0;
-            for (int i = 0; i < svalue.Count; i++)
-            {
-                char c = svalue[i];
-                if (inQuote)
-                {
-                    if (escapeNext)
-                    {
-                        escapeNext = false;
-                    }
-                    else
-                    {
-                        if (c == '\\')
-                        {
-                            escapeNext = true;
-                        }
-                        else if (c == '"')
-                        {
-                            inQuote = false;
-                        }
-                    }
-                }
-                else
-                {
-                    if (c == '"')
-                    {
-                        inQuote = true;
-                    }
-                    else if (c == ';')
-                    {
-                        values.Add(svalue.SubSequence(start, i));
-                        start = i + 1;
-                    }
-                }
-            }
-            values.Add(svalue.SubSequence(start));
-            return values.ToArray();
+            throw new NotImplementedException();
+            // List<ICharSequence> values = ThreadLocalMap.Get().CharSequenceList(1);
+            // bool inQuote = false;
+            // bool escapeNext = false;
+            // int start = 0;
+            // for (int i = 0; i < svalue.Count; i++)
+            // {
+            //     char c = svalue[i];
+            //     if (inQuote)
+            //     {
+            //         if (escapeNext)
+            //         {
+            //             escapeNext = false;
+            //         }
+            //         else
+            //         {
+            //             if (c == '\\')
+            //             {
+            //                 escapeNext = true;
+            //             }
+            //             else if (c == '"')
+            //             {
+            //                 inQuote = false;
+            //             }
+            //         }
+            //     }
+            //     else
+            //     {
+            //         if (c == '"')
+            //         {
+            //             inQuote = true;
+            //         }
+            //         else if (c == ';')
+            //         {
+            //             values.Add(svalue.SubSequence(start, i));
+            //             start = i + 1;
+            //         }
+            //     }
+            // }
+            // values.Add(svalue.SubSequence(start));
+            // return values.ToArray();
         }
     }
 }
