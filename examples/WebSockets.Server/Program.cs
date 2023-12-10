@@ -16,7 +16,6 @@ namespace WebSockets.Server
     using DotNetty.Transport.Bootstrapping;
     using DotNetty.Transport.Channels;
     using DotNetty.Transport.Channels.Sockets;
-    using DotNetty.Transport.Libuv;
     using Examples.Common;
 
     class Program
@@ -47,17 +46,8 @@ namespace WebSockets.Server
 
             IEventLoopGroup bossGroup;
             IEventLoopGroup workGroup;
-            if (useLibuv)
-            {
-                var dispatcher = new DispatcherEventLoopGroup();
-                bossGroup = dispatcher;
-                workGroup = new WorkerEventLoopGroup(dispatcher);
-            }
-            else
-            {
-                bossGroup = new MultithreadEventLoopGroup(1);
-                workGroup = new MultithreadEventLoopGroup();
-            }
+            bossGroup = new MultithreadEventLoopGroup(1);
+            workGroup = new MultithreadEventLoopGroup();
 
             X509Certificate2 tlsCertificate = null;
             if (ServerSettings.IsSsl)
@@ -69,21 +59,7 @@ namespace WebSockets.Server
                 var bootstrap = new ServerBootstrap();
                 bootstrap.Group(bossGroup, workGroup);
 
-                if (useLibuv)
-                {
-                    bootstrap.Channel<TcpServerChannel>();
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                        || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    {
-                        bootstrap
-                            .Option(ChannelOption.SoReuseport, true)
-                            .ChildOption(ChannelOption.SoReuseaddr, true);
-                    }
-                }
-                else
-                {
-                    bootstrap.Channel<TcpServerSocketChannel>();
-                }
+                bootstrap.Channel<TcpServerSocketChannel>();
 
                 bootstrap
                     .Option(ChannelOption.SoBacklog, 8192)

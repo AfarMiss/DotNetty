@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Buffers;
+
 namespace DotNetty.Buffers.Tests
 {
     using System;
@@ -140,15 +142,22 @@ namespace DotNetty.Buffers.Tests
 
             buf.Release();
         }
-
+        
         [Fact]
         public void CompositeToSingleBuffer()
         {
             CompositeByteBuffer buf = Unpooled.CompositeBuffer(3);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            Assert.Equal(1, buf.NumComponents);
+            var bytes1 = new byte[] { 1, 2, 3 };
+            var directBuffer = Unpooled.DirectBuffer();
+            directBuffer.WriteBytes(bytes1);
+            var readByte = directBuffer.ReadByte();
 
+            var wrappedBuffer = Unpooled.WrappedBuffer(directBuffer);
+            buf.AddComponent(wrappedBuffer);
+            Assert.Equal(1, buf.NumComponents);
+            wrappedBuffer.SetByte(0, 2);
+            
             buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4 }));
             Assert.Equal(2, buf.NumComponents);
 

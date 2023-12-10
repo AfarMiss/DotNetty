@@ -17,7 +17,6 @@ namespace WebSockets.Client
     using DotNetty.Transport.Bootstrapping;
     using DotNetty.Transport.Channels;
     using DotNetty.Transport.Channels.Sockets;
-    using DotNetty.Transport.Libuv;
     using Examples.Common;
 
     class Program
@@ -44,14 +43,7 @@ namespace WebSockets.Client
             Console.WriteLine("Transport type : " + (useLibuv ? "Libuv" : "Socket"));
 
             IEventLoopGroup group;
-            if (useLibuv)
-            {
-                group = new EventLoopGroup();
-            }
-            else
-            {
-                group = new MultithreadEventLoopGroup();
-            }
+            group = new MultithreadEventLoopGroup();
 
             X509Certificate2 cert = null;
             string targetHost = null;
@@ -66,14 +58,7 @@ namespace WebSockets.Client
                 bootstrap
                     .Group(group)
                     .Option(ChannelOption.TcpNodelay, true);
-                if (useLibuv)
-                {
-                    bootstrap.Channel<TcpChannel>();
-                }
-                else
-                {
-                    bootstrap.Channel<TcpSocketChannel>();
-                }
+                bootstrap.Channel<TcpSocketChannel>();
 
                 // Connect with V13 (RFC 6455 aka HyBi-17). You can change it to V08 or V00.
                 // If you change it to V00, ping is not supported and remember to change

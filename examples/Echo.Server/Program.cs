@@ -13,7 +13,6 @@ namespace Echo.Server
     using DotNetty.Transport.Bootstrapping;
     using DotNetty.Transport.Channels;
     using DotNetty.Transport.Channels.Sockets;
-    using DotNetty.Transport.Libuv;
     using Examples.Common;
 
     class Program
@@ -25,17 +24,8 @@ namespace Echo.Server
             IEventLoopGroup bossGroup;
             IEventLoopGroup workerGroup;
 
-            if (ServerSettings.UseLibuv)
-            {
-                var dispatcher = new DispatcherEventLoopGroup();
-                bossGroup = dispatcher;
-                workerGroup = new WorkerEventLoopGroup(dispatcher);
-            }
-            else
-            {
-                bossGroup = new MultithreadEventLoopGroup(1);
-                workerGroup = new MultithreadEventLoopGroup();
-            }
+            bossGroup = new MultithreadEventLoopGroup(1);
+            workerGroup = new MultithreadEventLoopGroup();
 
             X509Certificate2 tlsCertificate = null;
             if (ServerSettings.IsSsl)
@@ -47,14 +37,7 @@ namespace Echo.Server
                 var bootstrap = new ServerBootstrap();
                 bootstrap.Group(bossGroup, workerGroup);
 
-                if (ServerSettings.UseLibuv)
-                {
-                    bootstrap.Channel<TcpServerChannel>();
-                }
-                else
-                {
-                    bootstrap.Channel<TcpServerSocketChannel>();
-                }
+                bootstrap.Channel<TcpServerSocketChannel>();
 
                 bootstrap
                     .Option(ChannelOption.SoBacklog, 100)
