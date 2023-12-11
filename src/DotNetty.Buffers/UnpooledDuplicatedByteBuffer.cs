@@ -23,10 +23,6 @@
             {
                 this.buffer = duplicated.buffer;
             }
-            else if (buffer is AbstractPooledDerivedByteBuffer)
-            {
-                this.buffer = (AbstractByteBuffer)buffer.Unwrap();
-            }
             else
             {
                 this.buffer = buffer;

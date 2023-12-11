@@ -26,11 +26,6 @@ namespace DotNetty.Buffers
             this.emptyBuffer = new EmptyByteBuffer(this);
         }
 
-        protected AbstractByteBufferAllocator(bool preferDirect)
-        {
-            this.emptyBuffer = new EmptyByteBuffer(this);
-        }
-
         public IByteBuffer Buffer() => this.HeapBuffer();
 
         public IByteBuffer Buffer(int initialCapacity) => this.HeapBuffer(initialCapacity);
@@ -52,20 +47,6 @@ namespace DotNetty.Buffers
             return this.NewHeapBuffer(initialCapacity, maxCapacity);
         }
 
-        // public unsafe IByteBuffer DirectBuffer() => this.DirectBuffer(DefaultInitialCapacity, DefaultMaxCapacity);
-        //
-        // public unsafe IByteBuffer DirectBuffer(int initialCapacity) => this.DirectBuffer(initialCapacity, DefaultMaxCapacity);
-        //
-        // public unsafe IByteBuffer DirectBuffer(int initialCapacity, int maxCapacity)
-        // {
-        //     if (initialCapacity == 0 && maxCapacity == 0)
-        //     {
-        //         return this.emptyBuffer;
-        //     }
-        //     Validate(initialCapacity, maxCapacity);
-        //     return this.NewDirectBuffer(initialCapacity, maxCapacity);
-        // }
-
         public CompositeByteBuffer CompositeBuffer() => this.CompositeHeapBuffer();
 
         public CompositeByteBuffer CompositeBuffer(int maxComponents) => this.CompositeHeapBuffer(maxComponents);
@@ -73,10 +54,6 @@ namespace DotNetty.Buffers
         public CompositeByteBuffer CompositeHeapBuffer() => this.CompositeHeapBuffer(DefaultMaxComponents);
 
         public virtual CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents) => new CompositeByteBuffer(this, false, maxNumComponents);
-
-        // public unsafe CompositeByteBuffer CompositeDirectBuffer() => this.CompositeDirectBuffer(DefaultMaxComponents);
-        //
-        // public unsafe virtual CompositeByteBuffer CompositeDirectBuffer(int maxNumComponents) => new CompositeByteBuffer(this, true, maxNumComponents);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Validate(int initialCapacity, int maxCapacity)
@@ -93,8 +70,6 @@ namespace DotNetty.Buffers
         }
 
         protected abstract IByteBuffer NewHeapBuffer(int initialCapacity, int maxCapacity);
-
-        // protected unsafe abstract IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity);
 
         public int CalculateNewCapacity(int minNewCapacity, int maxCapacity)
         {

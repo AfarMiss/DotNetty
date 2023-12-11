@@ -21,7 +21,6 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
         internal static readonly IByteBufferAllocator[] Allocators =
         {
-            PooledByteBufferAllocator.Default,
             UnpooledByteBufferAllocator.Default
         };
 

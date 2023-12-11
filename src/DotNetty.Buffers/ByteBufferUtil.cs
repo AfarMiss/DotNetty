@@ -18,32 +18,7 @@ namespace DotNetty.Buffers
 
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(ByteBufferUtil));
 
-        public static readonly IByteBufferAllocator DefaultAllocator;
-
-        static ByteBufferUtil()
-        {
-            string allocType = SystemPropertyUtil.Get("io.netty.allocator.type", "pooled");
-            allocType = allocType.Trim();
-
-            IByteBufferAllocator alloc;
-            if ("unpooled".Equals(allocType, StringComparison.OrdinalIgnoreCase))
-            {
-                alloc = UnpooledByteBufferAllocator.Default;
-                Logger.Debug("-Dio.netty.allocator.type: {}", allocType);
-            }
-            else if ("pooled".Equals(allocType, StringComparison.OrdinalIgnoreCase))
-            {
-                alloc = PooledByteBufferAllocator.Default;
-                Logger.Debug("-Dio.netty.allocator.type: {}", allocType);
-            }
-            else
-            {
-                alloc = PooledByteBufferAllocator.Default;
-                Logger.Debug("-Dio.netty.allocator.type: pooled (unknown: {})", allocType);
-            }
-
-            DefaultAllocator = alloc;
-        }
+        public static readonly IByteBufferAllocator DefaultAllocator = UnpooledByteBufferAllocator.Default;
 
         /// <summary>
         ///     Returns a <a href="http://en.wikipedia.org/wiki/Hex_dump">hex dump</a>

@@ -806,7 +806,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReleasesItsComponents()
         {
-            IByteBuffer buffer = PooledByteBufferAllocator.Default.Buffer(); // 1
+            IByteBuffer buffer = UnpooledByteBufferAllocator.Default.Buffer(); // 1
 
             buffer.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
 
@@ -815,7 +815,7 @@ namespace DotNetty.Buffers.Tests
             var s3 = (IByteBuffer)s2.ReadSlice(2).Retain(); // 4
             var s4 = (IByteBuffer)s3.ReadSlice(2).Retain(); // 5
 
-            IByteBuffer composite = PooledByteBufferAllocator.Default.CompositeBuffer()
+            IByteBuffer composite = UnpooledByteBufferAllocator.Default.CompositeBuffer()
                 .AddComponent(s1)
                 .AddComponents(s2, s3, s4);
 

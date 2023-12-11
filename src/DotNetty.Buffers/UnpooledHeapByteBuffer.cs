@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace DotNetty.Buffers
@@ -42,11 +43,11 @@ namespace DotNetty.Buffers
 
         protected virtual byte[] AllocateArray(int initialCapacity) => this.NewArray(initialCapacity);
 
-        protected byte[] NewArray(int initialCapacity) => new byte[initialCapacity];
+        protected byte[] NewArray(int initialCapacity) => ArrayPool<byte>.Shared.Rent(initialCapacity);
 
         protected virtual void FreeArray(byte[] bytes)
         {
-            // NOOP
+            ArrayPool<byte>.Shared.Return(bytes);
         }
 
         protected void SetArray(byte[] initialArray) => this.array = initialArray;

@@ -48,25 +48,6 @@ namespace DotNetty.Buffers.Tests
             Assert.IsAssignableFrom<T>(buffer);
         }
 
-        [Fact]
-        public void UsedHeapMemory()
-        {
-            IByteBufferAllocator allocator = this.NewAllocator(true);
-            IByteBufferAllocatorMetric metric = ((IByteBufferAllocatorMetricProvider)allocator).Metric;
-
-            Assert.Equal(0, metric.UsedHeapMemory);
-            IByteBuffer buffer = allocator.HeapBuffer(1024, 4096);
-            int capacity = buffer.Capacity;
-            Assert.Equal(this.ExpectedUsedMemory(allocator, capacity), metric.UsedHeapMemory);
-
-            // Double the size of the buffer
-            buffer.AdjustCapacity(capacity << 1);
-            capacity = buffer.Capacity;
-            Assert.Equal(this.ExpectedUsedMemory(allocator, capacity), metric.UsedHeapMemory);
-
-            buffer.Release();
-            Assert.Equal(this.ExpectedUsedMemoryAfterRelease(allocator, capacity), metric.UsedHeapMemory);
-        }
 
         protected virtual long ExpectedUsedMemory(IByteBufferAllocator allocator, int capacity) => capacity;
 

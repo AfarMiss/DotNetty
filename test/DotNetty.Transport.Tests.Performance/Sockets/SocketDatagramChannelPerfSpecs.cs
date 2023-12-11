@@ -132,7 +132,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.datagramChannelReads = context.GetCounter(SocketDatagramChannelReads);
 
             this.inboundCounter = new InboundCounter(MessageCount, this.datagramChannelReads);
-            this.serverBufferAllocator = new PooledByteBufferAllocator();
+            this.serverBufferAllocator = new UnpooledByteBufferAllocator();
             this.serverGroup = new MultithreadEventLoopGroup(1);
             this.serverBootstrap = new Bootstrap();
             this.serverBootstrap
@@ -158,7 +158,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.outboundCounter = new OutboundCounter(this.datagramChannelWrites);
 
             this.clientGroup = new MultithreadEventLoopGroup(1);
-            this.clientBufferAllocator = new PooledByteBufferAllocator();
+            this.clientBufferAllocator = new UnpooledByteBufferAllocator();
             this.clientBootstrap = new Bootstrap();
             this.clientBootstrap
                 .Group(this.clientGroup)

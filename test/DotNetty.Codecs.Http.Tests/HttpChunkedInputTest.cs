@@ -34,7 +34,7 @@ namespace DotNetty.Codecs.Http.Tests
             var input = new EmptyChunkedInput();
             var httpInput = new HttpChunkedInput(input);
 
-            IHttpContent result = httpInput.ReadChunk(PooledByteBufferAllocator.Default);
+            IHttpContent result = httpInput.ReadChunk(UnpooledByteBufferAllocator.Default);
             Assert.Null(result);
         }
 
