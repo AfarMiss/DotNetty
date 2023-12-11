@@ -18,7 +18,6 @@ namespace DotNetty.Buffers
         public const int DefaultMaxCapacity = int.MaxValue;
         const int CalculateThreshold = 1048576 * 4; // 4 MiB page
 
-
         readonly IByteBuffer emptyBuffer;
 
         protected AbstractByteBufferAllocator()
