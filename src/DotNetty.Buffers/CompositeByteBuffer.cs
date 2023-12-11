@@ -1,8 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-// ReSharper disable ConvertToAutoProperty
-namespace DotNetty.Buffers
+﻿namespace DotNetty.Buffers
 {
     using System;
     using System.Collections;
@@ -21,7 +17,7 @@ namespace DotNetty.Buffers
     {
         #region IByteBuffer
 
-        static readonly IList<IByteBuffer> EmptyList = new ReadOnlyCollection<IByteBuffer>(new IByteBuffer[0]);
+        static readonly IList<IByteBuffer> EmptyList = new ReadOnlyCollection<IByteBuffer>(System.Array.Empty<IByteBuffer>());
 
         class ComponentEntry
         {
@@ -78,8 +74,7 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, GetCapacity(this.components));
         }
 
-        public CompositeByteBuffer(
-            IByteBufferAllocator allocator, bool direct, int maxNumComponents, IEnumerable<IByteBuffer> buffers)
+        public CompositeByteBuffer(IByteBufferAllocator allocator, bool direct, int maxNumComponents, IEnumerable<IByteBuffer> buffers)
             : base(AbstractByteBufferAllocator.DefaultMaxCapacity)
         {
             Contract.Requires(allocator != null);
@@ -94,8 +89,7 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, GetCapacity(this.components));
         }
 
-        static List<ComponentEntry> NewList(int maxNumComponents) =>
-            new List<ComponentEntry>(Math.Min(AbstractByteBufferAllocator.DefaultMaxComponents, maxNumComponents));
+        static List<ComponentEntry> NewList(int maxNumComponents) => new List<ComponentEntry>(Math.Min(AbstractByteBufferAllocator.DefaultMaxComponents, maxNumComponents));
 
         // Special constructor used by WrappedCompositeByteBuf
         internal CompositeByteBuffer(IByteBufferAllocator allocator) : base(int.MaxValue)
@@ -584,27 +578,6 @@ namespace DotNetty.Buffers
             return buffers.ToArray();
         }
 
-
-        public override bool IsDirect
-        {
-            get
-            {
-                int size = this.components.Count;
-                if (size == 0)
-                {
-                    return false;
-                }
-                for (int i = 0; i < size; i++)
-                {
-                    if (!this.components[i].Buffer.IsDirect)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-
         public override bool HasArray
         {
             get
@@ -1089,7 +1062,9 @@ namespace DotNetty.Buffers
         public override IByteBuffer Unwrap() => null;
 
         #endregion
-        
+
+        #region IByteBufferProvider
+
         protected internal override unsafe T _Get<T>(int index)
         {
             var c = this.FindComponent(index);
@@ -1189,5 +1164,7 @@ namespace DotNetty.Buffers
                 i++;
             }
         }
+
+        #endregion
     }
 }

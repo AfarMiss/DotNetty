@@ -35,8 +35,6 @@ namespace DotNetty.Buffers
         /// </summary>
         IByteBufferAllocator Allocator { get; }
 
-        bool IsDirect { get; }
-
         int ReaderIndex { get; }
 
         int WriterIndex { get; }

@@ -13,6 +13,7 @@ namespace DotNetty.Buffers
 
         readonly IByteBufferAllocator allocator;
         byte[] array;
+        private bool isPool;
 
         protected internal UnpooledHeapByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
             : base(maxCapacity)
@@ -43,18 +44,23 @@ namespace DotNetty.Buffers
 
         protected virtual byte[] AllocateArray(int initialCapacity) => this.NewArray(initialCapacity);
 
-        protected byte[] NewArray(int initialCapacity) => ArrayPool<byte>.Shared.Rent(initialCapacity);
+        protected byte[] NewArray(int initialCapacity)
+        {
+            isPool = true;
+            return ArrayPool<byte>.Shared.Rent(initialCapacity);
+        }
 
         protected virtual void FreeArray(byte[] bytes)
         {
-            ArrayPool<byte>.Shared.Return(bytes);
+            if (isPool)
+            {
+                ArrayPool<byte>.Shared.Return(bytes);
+            }
         }
 
         protected void SetArray(byte[] initialArray) => this.array = initialArray;
 
         public override IByteBufferAllocator Allocator => this.allocator;
-
-        public override bool IsDirect => false;
 
         public override int Capacity
         {

@@ -50,8 +50,6 @@ namespace DotNetty.Buffers
 
         public IByteBuffer Unwrap() => this.Buf;
 
-        public bool IsDirect => this.Buf.IsDirect;
-
         public int ReaderIndex => this.Buf.ReaderIndex;
 
         public IByteBuffer SetReaderIndex(int readerIndex)

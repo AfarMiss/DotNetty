@@ -130,11 +130,15 @@ namespace DotNetty.Buffers.Tests
             buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1 }));
             Assert.Equal(1, buf.NumComponents);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 2, 3 }));
+            var wrappedBuffer = Unpooled.Buffer();
+            wrappedBuffer.WriteBytes(new byte[] { 2, 3 });
+            buf.AddComponent(wrappedBuffer);
             Assert.Equal(2, buf.NumComponents);
 
             buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4, 5, 6 }));
-
+            var byteBuffer = buf.Slice();
+            wrappedBuffer.Release();
+            
             Assert.Equal(1, buf.NumComponents);
             Assert.True(buf.HasArray);
             Assert.NotNull(buf.Array);

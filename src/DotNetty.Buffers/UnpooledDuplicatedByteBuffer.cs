@@ -40,8 +40,6 @@
 
         public override IByteBufferAllocator Allocator => this.Unwrap().Allocator;
 
-        public override bool IsDirect => this.Unwrap().IsDirect;
-
         public override int Capacity => this.Unwrap().Capacity;
 
         public override IByteBuffer AdjustCapacity(int newCapacity) => this.Unwrap().AdjustCapacity(newCapacity);

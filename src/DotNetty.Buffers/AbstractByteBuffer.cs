@@ -545,8 +545,6 @@ namespace DotNetty.Buffers
 
         public abstract IByteBuffer Unwrap();
 
-        public abstract bool IsDirect { get; }
-
         public abstract int ReferenceCount { get; }
 
         public abstract IReferenceCounted Retain();

@@ -42,8 +42,6 @@ namespace DotNetty.Buffers
 
         public override IByteBufferAllocator Allocator => this.Unwrap().Allocator;
 
-        public override bool IsDirect => this.Unwrap().IsDirect;
-
         public override IByteBuffer AdjustCapacity(int newCapacity) => throw new NotSupportedException("sliced buffer");
 
         public override bool HasArray => this.Unwrap().HasArray;

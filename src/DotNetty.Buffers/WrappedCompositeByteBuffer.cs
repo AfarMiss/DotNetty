@@ -322,8 +322,6 @@ namespace DotNetty.Buffers
 
         public sealed override int MaxCapacity => this.wrapped.MaxCapacity;
 
-        public sealed override bool IsDirect => this.wrapped.IsDirect;
-
         public override IByteBuffer ReadRetainedSlice(int length) => this.wrapped.ReadRetainedSlice(length);
 
         public override IByteBuffer RetainedDuplicate() => this.wrapped.RetainedDuplicate();
@@ -333,7 +331,5 @@ namespace DotNetty.Buffers
         public override IByteBuffer RetainedSlice(int index, int length) => this.wrapped.RetainedSlice(index, length);
 
         #endregion
-        
-        protected internal sealed override T _Get<T>(int index) => this.wrapped._Get<T>(index);
     }
 }

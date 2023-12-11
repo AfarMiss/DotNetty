@@ -213,7 +213,6 @@ namespace DotNetty.Buffers.Tests
 
         static void AssertBuffer(IByteBuffer buffer, bool expectedDirect, int expectedCapacity, int expectedMaxCapacity)
         {
-            Assert.Equal(expectedDirect, buffer.IsDirect);
             Assert.Equal(expectedCapacity, buffer.Capacity);
             Assert.Equal(expectedMaxCapacity, buffer.MaxCapacity);
         }
