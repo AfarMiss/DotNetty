@@ -5,7 +5,7 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    public class UnpooledSlicedByteBuffer : AbstractDerivedByteBuffer
+    public class SlicedByteBuffer : AbstractDerivedByteBuffer
     {
         #region IByteBuffer
 
@@ -13,16 +13,16 @@ namespace DotNetty.Buffers
         readonly int adjustment;
         public override int Capacity => this.MaxCapacity;
 
-        public UnpooledSlicedByteBuffer(IByteBuffer buffer, int index, int length) : base(length)
+        public SlicedByteBuffer(IByteBuffer buffer, int index, int length) : base(length)
         {
             CheckSliceOutOfBounds(index, length, buffer);
 
-            if (buffer is UnpooledSlicedByteBuffer byteBuffer)
+            if (buffer is SlicedByteBuffer byteBuffer)
             {
                 this.buffer = byteBuffer.buffer;
                 this.adjustment = byteBuffer.adjustment + index;
             }
-            else if (buffer is UnpooledDuplicatedByteBuffer)
+            else if (buffer is DuplicateByteBuffer)
             {
                 this.buffer = buffer.Unwrap();
                 this.adjustment = index;
@@ -158,7 +158,7 @@ namespace DotNetty.Buffers
             this.Unwrap().GetBytes(this.Idx(index), dst, dstIndex, length);
         }
         
-        public override void GetBytes(int index, byte[] dst, int dstIndex, int length)
+        public override void GetBytes(int index, Span<byte> dst, int dstIndex, int length)
         {
             this.CheckIndex0(index, length);
             this.Unwrap().GetBytes(this.Idx(index), dst, dstIndex, length);
@@ -170,7 +170,7 @@ namespace DotNetty.Buffers
             this.Unwrap().SetBytes(this.Idx(index), src, srcIndex, length);
         }
         
-        public override void SetBytes(int index, byte[] src, int srcIndex, int length)
+        public override void SetBytes(int index, Span<byte> src, int srcIndex, int length)
         {
             this.CheckIndex0(index, length);
             this.Unwrap().SetBytes(this.Idx(index), src, srcIndex, length);

@@ -1111,7 +1111,7 @@ namespace DotNetty.Buffers
             }
         }
 
-        public override void GetBytes(int index, byte[] dst, int dstIndex, int length)
+        public override void GetBytes(int index, Span<byte> dst, int dstIndex, int length)
         {
             this.CheckDstIndex(index, length, dstIndex, dst.Length);
             if (length == 0) return;
@@ -1151,7 +1151,7 @@ namespace DotNetty.Buffers
             }
         }
 
-        public override void SetBytes(int index, byte[] src, int srcIndex, int length)
+        public override void SetBytes(int index, Span<byte> src, int srcIndex, int length)
         {
             this.CheckSrcIndex(index, length, srcIndex, src.Length);
             if (length == 0) return;

@@ -37,7 +37,7 @@ namespace DotNetty.Buffers
         ///     A modification on the specified array's content will be visible to the returned buffer.
         /// </summary>
         public static IByteBuffer WrappedBuffer(byte[] array) =>
-            array.Length == 0 ? Empty  : new UnpooledHeapByteBuffer(Allocator, array, array.Length);
+            array.Length == 0 ? Empty  : new HeapByteBuffer(Allocator, array, array.Length);
 
         /// <summary>
         ///     Creates a new big-endian buffer which wraps the sub-region of the

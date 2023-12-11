@@ -26,7 +26,6 @@ namespace DotNetty.Buffers
         protected WrappedByteBuffer(IByteBuffer buf)
         {
             Contract.Requires(buf != null);
-
             this.Buf = buf;
         }
 
@@ -194,17 +193,17 @@ namespace DotNetty.Buffers
 
         public virtual void GetBytes(int index, IByteBuffer dst, int dstIndex, int length) => this.Buf.GetBytes(index, dst, length);
 
-        public virtual void GetBytes(int index, byte[] dst, int? length = null) => this.Buf.GetBytes(index, dst);
+        public virtual void GetBytes(int index, Span<byte> dst, int? length = null) => this.Buf.GetBytes(index, dst);
 
-        public virtual void GetBytes(int index, byte[] dst, int dstIndex, int length) => this.Buf.GetBytes(index, dst, dstIndex, length);
+        public virtual void GetBytes(int index, Span<byte> dst, int dstIndex, int length) => this.Buf.GetBytes(index, dst, dstIndex, length);
 
         public virtual void SetBytes(int index, IByteBuffer src, int? length = null) => this.Buf.SetBytes(index, src, length);
 
         public virtual void SetBytes(int index, IByteBuffer src, int srcIndex, int length) => this.Buf.SetBytes(index, src, srcIndex, length);
 
-        public virtual void SetBytes(int index, byte[] src, int? length = null) => this.Buf.SetBytes(index, src, length);
+        public virtual void SetBytes(int index, Span<byte> src, int? length = null) => this.Buf.SetBytes(index, src, length);
 
-        public virtual void SetBytes(int index, byte[] src, int srcIndex, int length) => this.Buf.SetBytes(index, src, srcIndex, length);
+        public virtual void SetBytes(int index, Span<byte> src, int srcIndex, int length) => this.Buf.SetBytes(index, src, srcIndex, length);
 
         public virtual void SkipBytes(int length) => this.Buf.SkipBytes(length);
 
@@ -212,17 +211,17 @@ namespace DotNetty.Buffers
 
         public virtual void ReadBytes(IByteBuffer dst, int dstIndex, int length) => this.Buf.ReadBytes(dst, dstIndex, length);
 
-        public virtual void ReadBytes(byte[] dst, int? length = null) => this.Buf.ReadBytes(dst, length);
+        public virtual void ReadBytes(Span<byte> dst, int? length = null) => this.Buf.ReadBytes(dst, length);
 
-        public virtual void ReadBytes(byte[] dst, int dstIndex, int length) => this.Buf.ReadBytes(dst, dstIndex, length);
+        public virtual void ReadBytes(Span<byte> dst, int dstIndex, int length) => this.Buf.ReadBytes(dst, dstIndex, length);
 
         public virtual void WriteBytes(IByteBuffer src, int? length = null) => this.Buf.WriteBytes(src, length);
 
         public virtual void WriteBytes(IByteBuffer src, int srcIndex, int length) => this.Buf.WriteBytes(src, srcIndex, length);
 
-        public virtual void WriteBytes(byte[] src, int? length = null) => this.Buf.WriteBytes(src, length);
+        public virtual void WriteBytes(Span<byte> src, int? length = null) => this.Buf.WriteBytes(src, length);
 
-        public virtual void WriteBytes(byte[] src, int srcIndex, int length) => this.Buf.WriteBytes(src, srcIndex, length);
+        public virtual void WriteBytes(Span<byte> src, int srcIndex, int length) => this.Buf.WriteBytes(src, srcIndex, length);
 
         public string GetString(int index, int length, Encoding encoding) => this.Buf.GetString(index, length, encoding);
 

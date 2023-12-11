@@ -10,7 +10,7 @@ namespace DotNetty.Buffers.Tests
         protected override IByteBuffer NewBuffer(int length, int maxCapacity)
         {
             IByteBuffer wrapped = Unpooled.Buffer(length, maxCapacity);
-            IByteBuffer buffer = new UnpooledDuplicatedByteBuffer((AbstractByteBuffer)wrapped);
+            IByteBuffer buffer = new DuplicateByteBuffer((AbstractByteBuffer)wrapped);
             Assert.Equal(wrapped.WriterIndex, buffer.WriterIndex);
             Assert.Equal(wrapped.ReaderIndex, buffer.ReaderIndex);
             return buffer;
@@ -38,7 +38,7 @@ namespace DotNetty.Buffers.Tests
             {
                 wrapped.SetWriterIndex(6);
                 wrapped.SetReaderIndex(1);
-                IByteBuffer duplicate = new UnpooledDuplicatedByteBuffer((AbstractByteBuffer)wrapped);
+                IByteBuffer duplicate = new DuplicateByteBuffer((AbstractByteBuffer)wrapped);
 
                 // Test writer mark
                 duplicate.SetWriterIndex(duplicate.WriterIndex + 1);

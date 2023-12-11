@@ -13,10 +13,7 @@ namespace DotNetty.Buffers
     /// </summary>
     public abstract class AbstractDerivedByteBuffer : AbstractByteBuffer
     {
-        protected AbstractDerivedByteBuffer(int maxCapacity)
-            : base(maxCapacity)
-        {
-        }
+        protected AbstractDerivedByteBuffer(int maxCapacity) : base(maxCapacity) { }
 
         public sealed override int ReferenceCount => this.ReferenceCount0();
 
@@ -37,6 +34,5 @@ namespace DotNetty.Buffers
         public override ArraySegment<byte> GetIoBuffer(int index, int length) => this.Unwrap().GetIoBuffer(index, length);
 
         public override ArraySegment<byte>[] GetIoBuffers(int index, int length) => this.Unwrap().GetIoBuffers(index, length);
-
     }
 }

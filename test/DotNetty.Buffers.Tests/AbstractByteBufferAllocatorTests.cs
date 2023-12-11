@@ -39,7 +39,7 @@ namespace DotNetty.Buffers.Tests
         //     directBuffer.Release();
         //
         //     IByteBuffer heapBuffer = allocator.HeapBuffer();
-        //     AssertInstanceOf<UnpooledHeapByteBuffer>(heapBuffer);
+        //     AssertInstanceOf<HeapByteBuffer>(heapBuffer);
         //     heapBuffer.Release();
         // }
 

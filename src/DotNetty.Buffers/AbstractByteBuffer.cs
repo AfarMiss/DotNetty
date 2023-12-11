@@ -242,7 +242,7 @@ namespace DotNetty.Buffers
 
         public abstract IByteBuffer Copy(int index, int length);
 
-        public virtual IByteBuffer Duplicate() => new UnpooledDuplicatedByteBuffer(this);
+        public virtual IByteBuffer Duplicate() => new DuplicateByteBuffer(this);
 
         public virtual IByteBuffer RetainedDuplicate() => (IByteBuffer)this.Duplicate().Retain();
 
@@ -250,7 +250,7 @@ namespace DotNetty.Buffers
 
         public virtual IByteBuffer RetainedSlice() => (IByteBuffer)this.Slice().Retain();
 
-        public virtual IByteBuffer Slice(int index, int length) => new UnpooledSlicedByteBuffer(this, index, length);
+        public virtual IByteBuffer Slice(int index, int length) => new SlicedByteBuffer(this, index, length);
 
         public virtual IByteBuffer RetainedSlice(int index, int length) => (IByteBuffer)this.Slice(index, length).Retain();
 
@@ -538,12 +538,12 @@ namespace DotNetty.Buffers
         }
         public abstract void GetBytes(int index, IByteBuffer dst, int dstIndex, int length);
 
-        public virtual void GetBytes(int index, byte[] dst, int? length = null)
+        public virtual void GetBytes(int index, Span<byte> dst, int? length = null)
         {
             var writeLength = length.GetValueOrDefault(dst.Length);
             this.GetBytes(index, dst, 0, writeLength);
         }
-        public abstract void GetBytes(int index, byte[] dst, int dstIndex, int length);
+        public abstract void GetBytes(int index, Span<byte> dst, int dstIndex, int length);
 
         public void SetBytes(int index, IByteBuffer src, int? length = null)
         {
@@ -558,12 +558,12 @@ namespace DotNetty.Buffers
         }
         public abstract void SetBytes(int index, IByteBuffer src, int srcIndex, int length);
 
-        public void SetBytes(int index, byte[] src, int? length = null)
+        public void SetBytes(int index, Span<byte> src, int? length = null)
         {
             var readLength = length.GetValueOrDefault(src.Length);
             this.SetBytes(index, src, 0, readLength);
         }
-        public abstract void SetBytes(int index, byte[] src, int srcIndex, int length);
+        public abstract void SetBytes(int index, Span<byte> src, int srcIndex, int length);
         
         public virtual void SkipBytes(int length)
         {
@@ -589,13 +589,13 @@ namespace DotNetty.Buffers
             this.readerIndex += length;
         }
 
-        public virtual void ReadBytes(byte[] dst, int? length = null)
+        public virtual void ReadBytes(Span<byte> dst, int? length = null)
         {
             var readLength = length.GetValueOrDefault(dst.Length);
             this.ReadBytes(dst, 0, readLength);
         }
 
-        public virtual void ReadBytes(byte[] dst, int dstIndex, int length)
+        public virtual void ReadBytes(Span<byte> dst, int dstIndex, int length)
         {
             this.CheckReadableBytes(length);
             this.GetBytes(this.readerIndex, dst, dstIndex, length);
@@ -620,13 +620,13 @@ namespace DotNetty.Buffers
             this.writerIndex += length;
         }
 
-        public void WriteBytes(byte[] src, int? length = null)
+        public void WriteBytes(Span<byte> src, int? length = null)
         {
             var writeLength = length.GetValueOrDefault(src.Length);
             this.WriteBytes(src, 0, writeLength);
         }
 
-        public virtual void WriteBytes(byte[] src, int srcIndex, int length)
+        public virtual void WriteBytes(Span<byte> src, int srcIndex, int length)
         {
             this.EnsureWritable(length);
             this.SetBytes(this.writerIndex, src, srcIndex, length);

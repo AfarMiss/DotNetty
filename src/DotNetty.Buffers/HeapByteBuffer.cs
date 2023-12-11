@@ -7,7 +7,7 @@ namespace DotNetty.Buffers
     using System.Diagnostics.Contracts;
     using DotNetty.Common.Internal;
 
-    public class UnpooledHeapByteBuffer : AbstractRefByteBuffer
+    public class HeapByteBuffer : AbstractRefByteBuffer
     {
         #region IByteBuffer
 
@@ -15,7 +15,7 @@ namespace DotNetty.Buffers
         byte[] array;
         private bool isPool;
 
-        protected internal UnpooledHeapByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
+        protected internal HeapByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
             : base(maxCapacity)
         {
             Contract.Requires(alloc != null);
@@ -26,7 +26,7 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, 0);
         }
 
-        protected internal UnpooledHeapByteBuffer(IByteBufferAllocator alloc, byte[] initialArray, int maxCapacity)
+        protected internal HeapByteBuffer(IByteBufferAllocator alloc, byte[] initialArray, int maxCapacity)
             : base(maxCapacity)
         {
             Contract.Requires(alloc != null);
@@ -151,7 +151,7 @@ namespace DotNetty.Buffers
             var copiedArray = new byte[length];
             PlatformDependent.CopyMemory(this.array, index, copiedArray, 0, length);
 
-            return new UnpooledHeapByteBuffer(this.Allocator, copiedArray, this.MaxCapacity);
+            return new HeapByteBuffer(this.Allocator, copiedArray, this.MaxCapacity);
         }
 
         protected internal override void Deallocate()
@@ -196,7 +196,7 @@ namespace DotNetty.Buffers
             }
         }
 
-        public override void GetBytes(int index, byte[] dst, int dstIndex, int length)
+        public override void GetBytes(int index, Span<byte> dst, int dstIndex, int length)
         {
             this.CheckDstIndex(index, length, dstIndex, dst.Length);
             if (length > 0)
@@ -218,7 +218,7 @@ namespace DotNetty.Buffers
             }
         }
 
-        public override void SetBytes(int index, byte[] src, int srcIndex, int length)
+        public override void SetBytes(int index, Span<byte> src, int srcIndex, int length)
         {
             this.CheckSrcIndex(index, length, srcIndex, src.Length);
             if (length > 0)

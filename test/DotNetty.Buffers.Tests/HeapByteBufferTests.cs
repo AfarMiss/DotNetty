@@ -9,7 +9,7 @@ namespace DotNetty.Buffers.Tests
     {
         protected override IByteBuffer NewBuffer(int length, int maxCapacity)
         {
-            IByteBuffer buffer = new UnpooledHeapByteBuffer(UnpooledByteBufferAllocator.Default, length, maxCapacity);
+            IByteBuffer buffer = new HeapByteBuffer(UnpooledByteBufferAllocator.Default, length, maxCapacity);
             Assert.Equal(0, buffer.WriterIndex);
             return buffer;
         }

@@ -5,7 +5,7 @@
         public static readonly UnpooledByteBufferAllocator Default = new UnpooledByteBufferAllocator();
 
         protected override IByteBuffer NewHeapBuffer(int initialCapacity, int maxCapacity) =>
-            new UnpooledHeapByteBuffer(this, initialCapacity, maxCapacity);
+            new HeapByteBuffer(this, initialCapacity, maxCapacity);
 
         public override CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents)
         {

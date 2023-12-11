@@ -14,7 +14,7 @@ namespace DotNetty.Buffers.Tests
             buf.SetIndex(1, 7);
             IByteBuffer slice = buf.Slice(1, 7);
 
-            Assert.IsAssignableFrom<UnpooledSlicedByteBuffer>(slice);
+            Assert.IsAssignableFrom<SlicedByteBuffer>(slice);
             Assert.Same(slice.Unwrap(), buf);
             Assert.Equal(0, slice.ReaderIndex);
             Assert.Equal(7, slice.WriterIndex);
@@ -34,7 +34,7 @@ namespace DotNetty.Buffers.Tests
             IByteBuffer slice2 = slice.Slice(0, 6);
 
             Assert.NotSame(slice2, slice);
-            Assert.IsAssignableFrom<UnpooledSlicedByteBuffer>(slice2);
+            Assert.IsAssignableFrom<SlicedByteBuffer>(slice2);
             Assert.Same(slice2.Unwrap(), buf);
             Assert.Equal(6, slice2.WriterIndex);
             Assert.Equal(6, slice2.Capacity);
@@ -47,7 +47,7 @@ namespace DotNetty.Buffers.Tests
             buf.SetIndex(1, 7);
             IByteBuffer dup = buf.Duplicate();
 
-            Assert.IsAssignableFrom<UnpooledDuplicatedByteBuffer>(dup);
+            Assert.IsAssignableFrom<DuplicateByteBuffer>(dup);
             Assert.Same(dup.Unwrap(), buf);
             Assert.Equal(dup.ReaderIndex, buf.ReaderIndex);
             Assert.Equal(dup.WriterIndex, buf.WriterIndex);
@@ -69,7 +69,7 @@ namespace DotNetty.Buffers.Tests
             IByteBuffer dup2 = dup.Duplicate();
 
             Assert.NotSame(dup2, dup);
-            Assert.IsAssignableFrom<UnpooledDuplicatedByteBuffer>(dup2);
+            Assert.IsAssignableFrom<DuplicateByteBuffer>(dup2);
             Assert.Same(dup2.Unwrap(), buf);
             Assert.Equal(dup2.ReaderIndex, dup.ReaderIndex);
             Assert.Equal(dup2.WriterIndex, dup.WriterIndex);

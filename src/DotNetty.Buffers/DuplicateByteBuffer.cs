@@ -1,25 +1,22 @@
-﻿namespace DotNetty.Buffers
-{
-    using System;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Utilities;
+﻿using System;
+using DotNetty.Common.Utilities;
 
-    class UnpooledDuplicatedByteBuffer : AbstractDerivedByteBuffer
+namespace DotNetty.Buffers
+{
+    public sealed class DuplicateByteBuffer : AbstractDerivedByteBuffer
     {
         #region IByteBuffer
 
-        readonly AbstractByteBuffer buffer;
+        private readonly AbstractByteBuffer buffer;
 
-        public UnpooledDuplicatedByteBuffer(AbstractByteBuffer buffer) : this(buffer, buffer.ReaderIndex, buffer.WriterIndex)
+        public DuplicateByteBuffer(AbstractByteBuffer buffer) : this(buffer, buffer.ReaderIndex, buffer.WriterIndex)
         {
         }
 
-        internal UnpooledDuplicatedByteBuffer(AbstractByteBuffer buffer, int readerIndex, int writerIndex)
+        internal DuplicateByteBuffer(AbstractByteBuffer buffer, int readerIndex, int writerIndex)
             : base(buffer.MaxCapacity)
         {
-            if (buffer is UnpooledDuplicatedByteBuffer duplicated)
+            if (buffer is DuplicateByteBuffer duplicated)
             {
                 this.buffer = duplicated.buffer;
             }
@@ -75,7 +72,7 @@
             this.Unwrap().GetBytes(index, dst, dstIndex, length);
         }
 
-        public override void GetBytes(int index, byte[] dst, int dstIndex, int length)
+        public override void GetBytes(int index, Span<byte> dst, int dstIndex, int length)
         {
             this.Unwrap().GetBytes(index, dst, dstIndex, length);
         }
@@ -85,7 +82,7 @@
             this.Unwrap().SetBytes(index, src, srcIndex, length);
         }
 
-        public override void SetBytes(int index, byte[] src, int srcIndex, int length)
+        public override void SetBytes(int index, Span<byte> src, int srcIndex, int length)
         {
             this.Unwrap().SetBytes(index, src, srcIndex, length);
         }

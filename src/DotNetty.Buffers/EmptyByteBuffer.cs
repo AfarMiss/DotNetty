@@ -284,17 +284,17 @@ namespace DotNetty.Buffers
 
         public void GetBytes(int index, IByteBuffer dst, int dstIndex, int length) => NoMethod();
 
-        public void GetBytes(int index, byte[] dst, int? length = null) => NoMethod();
+        public void GetBytes(int index, Span<byte> dst, int? length = null) => NoMethod();
 
-        public void GetBytes(int index, byte[] dst, int dstIndex, int length) => NoMethod();
+        public void GetBytes(int index, Span<byte> dst, int dstIndex, int length) => NoMethod();
 
         public void SetBytes(int index, IByteBuffer src, int? length = null) => NoMethod();
 
         public void SetBytes(int index, IByteBuffer src, int srcIndex, int length) => NoMethod();
 
-        public void SetBytes(int index, byte[] src, int? length = null) => NoMethod();
+        public void SetBytes(int index, Span<byte> src, int? length = null) => NoMethod();
 
-        public void SetBytes(int index, byte[] src, int srcIndex, int length) => NoMethod();
+        public void SetBytes(int index, Span<byte> src, int srcIndex, int length) => NoMethod();
 
         public void SkipBytes(int length) => NoMethod();
 
@@ -302,24 +302,23 @@ namespace DotNetty.Buffers
 
         public void ReadBytes(IByteBuffer dst, int dstIndex, int length) => NoMethod();
 
-        public void ReadBytes(byte[] dst, int? length = null) => NoMethod();
+        public void ReadBytes(Span<byte> dst, int? length = null) => NoMethod();
 
-        public void ReadBytes(byte[] dst, int dstIndex, int length) => NoMethod();
+        public void ReadBytes(Span<byte> dst, int dstIndex, int length) => NoMethod();
 
         public void WriteBytes(IByteBuffer src, int? length = null) => NoMethod();
         
         public void WriteBytes(IByteBuffer src, int srcIndex, int length) => NoMethod();
 
-        public void WriteBytes(byte[] src, int? length = null) => NoMethod();
+        public void WriteBytes(Span<byte> src, int? length = null) => NoMethod();
 
-        public void WriteBytes(byte[] src, int srcIndex, int length) => NoMethod();
+        public void WriteBytes(Span<byte> src, int srcIndex, int length) => NoMethod();
 
         public string GetString(int index, int length, Encoding encoding) => string.Empty;
 
         public void SetString(int index, string value, Encoding encoding) => NoMethod();
 
         public string ReadString(int length, Encoding encoding) => string.Empty;
-
 
         public void WriteString(string value, Encoding encoding) => NoMethod();
 
