@@ -38,22 +38,6 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public sealed override IReferenceCounted Touch() => this.Touch0();
-
-        protected virtual IByteBuffer Touch0()
-        {
-            this.Unwrap().Touch();
-            return this;
-        }
-
-        public sealed override IReferenceCounted Touch(object hint) => this.Touch0(hint);
-
-        protected virtual IByteBuffer Touch0(object hint)
-        {
-            this.Unwrap().Touch(hint);
-            return this;
-        }
-
         public sealed override bool Release() => this.Release0();
 
         protected virtual bool Release0() => this.Unwrap().Release();

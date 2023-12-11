@@ -1,4 +1,6 @@
-﻿namespace DotNetty.Buffers
+﻿using System.Runtime.InteropServices;
+
+namespace DotNetty.Buffers
 {
     using System;
     using System.Collections;
@@ -13,7 +15,7 @@
     using DotNetty.Common.Internal;
     using DotNetty.Common.Utilities;
 
-    public class CompositeByteBuffer : AbstractReferenceCountedByteBuffer, IEnumerable<IByteBuffer>
+    public class CompositeByteBuffer : AbstractRefByteBuffer, IEnumerable<IByteBuffer>
     {
         #region IByteBuffer
 
@@ -1036,10 +1038,6 @@
             return $"{result}, components={this.components.Count})";
         }
 
-        public override IReferenceCounted Touch() => this;
-
-        public override IReferenceCounted Touch(object hint) => this;
-
         public override IByteBuffer DiscardSomeReadBytes() => this.DiscardReadComponents();
 
         protected internal override void Deallocate()
@@ -1072,7 +1070,10 @@
             {
                 return c.Buffer.Get<T>(index - c.Offset);
             }
-            throw new NotImplementedException();
+
+            var bytes = new byte[sizeof(T)];
+            this.GetBytes(index, bytes, sizeof(T));
+            return MemoryMarshal.Read<T>(bytes);
         }
 
         protected internal override unsafe void _Set<T>(int index, T value)
@@ -1082,7 +1083,12 @@
             {
                 c.Buffer.Set<T>(index - c.Offset, value);
             }
-            throw new NotImplementedException();
+            else
+            {
+                var span = MemoryMarshal.CreateSpan(ref value, 1);
+                var asBytes = MemoryMarshal.AsBytes(span);
+                this.SetBytes(index, asBytes.ToArray());
+            }
         }
 
         public override void GetBytes(int index, IByteBuffer dst, int dstIndex, int length)

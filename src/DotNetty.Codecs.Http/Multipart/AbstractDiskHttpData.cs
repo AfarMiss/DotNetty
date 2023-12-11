@@ -336,7 +336,5 @@ namespace DotNetty.Codecs.Http.Multipart
         }
 
         public override FileStream GetFile() => this.fileStream;
-
-        public override IReferenceCounted Touch(object hint) => this;
     }
 }

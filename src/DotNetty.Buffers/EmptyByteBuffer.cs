@@ -22,6 +22,7 @@ namespace DotNetty.Buffers
 
         static readonly ArraySegment<byte> EmptyBuffer = new ArraySegment<byte>(ArrayExtensions.ZeroBytes);
         static readonly ArraySegment<byte>[] EmptyBuffers = { EmptyBuffer };
+        private static Action NoMethod => () => { };
 
         public EmptyByteBuffer(IByteBufferAllocator allocator)
         {
@@ -223,10 +224,6 @@ namespace DotNetty.Buffers
 
         public IReferenceCounted Retain(int increment) => this;
 
-        public IReferenceCounted Touch() => this;
-
-        public IReferenceCounted Touch(object hint) => this;
-
         public bool Release() => false;
 
         public bool Release(int decrement) => false;
@@ -277,140 +274,60 @@ namespace DotNetty.Buffers
 
         #region IByteBufferProvider
 
-        public T Get<T>(int index) where T : unmanaged
-        {
-            throw new NotImplementedException();
-        }
+        public T Get<T>(int index) where T : unmanaged => throw new NotImplementedException();
 
-        public void Set<T>(int index, T value) where T : unmanaged
-        {
-            throw new NotImplementedException();
-        }
+        public void Set<T>(int index, T value) where T : unmanaged => NoMethod();
 
-        public void Set<T>(int index, int value) where T : unmanaged
-        {
-            throw new NotImplementedException();
-        }
+        public void Set<T>(int index, int value) where T : unmanaged => NoMethod();
 
-        public T Read<T>() where T : unmanaged
-        {
-            throw new NotImplementedException();
-        }
+        public T Read<T>() where T : unmanaged => throw new NotImplementedException();
 
-        public void Write<T>(T value) where T : unmanaged
-        {
-            throw new NotImplementedException();
-        }
+        public void Write<T>(T value) where T : unmanaged => NoMethod();
+        
+        public void Write<T>(int value) where T : unmanaged => NoMethod();
 
-        public void Write<T>(int value) where T : unmanaged
-        {
-            throw new NotImplementedException();
-        }
+        public void GetBytes(int index, IByteBuffer dst, int? length = null) => NoMethod();
 
-        public void GetBytes(int index, IByteBuffer dst, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void GetBytes(int index, IByteBuffer dst, int dstIndex, int length) => NoMethod();
 
-        public void GetBytes(int index, IByteBuffer dst, int dstIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void GetBytes(int index, byte[] dst, int? length = null) => NoMethod();
 
-        public void GetBytes(int index, byte[] dst, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void GetBytes(int index, byte[] dst, int dstIndex, int length) => NoMethod();
 
-        public void GetBytes(int index, byte[] dst, int dstIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetBytes(int index, IByteBuffer src, int? length = null) => NoMethod();
 
-        public void SetBytes(int index, IByteBuffer src, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetBytes(int index, IByteBuffer src, int srcIndex, int length) => NoMethod();
 
-        public void SetBytes(int index, IByteBuffer src, int srcIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetBytes(int index, byte[] src, int? length = null) => NoMethod();
 
-        public void SetBytes(int index, byte[] src, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetBytes(int index, byte[] src, int srcIndex, int length) => NoMethod();
 
-        public void SetBytes(int index, byte[] src, int srcIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void SkipBytes(int length) => NoMethod();
 
-        public void SkipBytes(int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void ReadBytes(IByteBuffer dst, int? length = null) => NoMethod();
 
-        public void ReadBytes(IByteBuffer dst, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void ReadBytes(IByteBuffer dst, int dstIndex, int length) => NoMethod();
 
-        public void ReadBytes(IByteBuffer dst, int dstIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void ReadBytes(byte[] dst, int? length = null) => NoMethod();
 
-        public void ReadBytes(byte[] dst, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void ReadBytes(byte[] dst, int dstIndex, int length) => NoMethod();
 
-        public void ReadBytes(byte[] dst, int dstIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void WriteBytes(IByteBuffer src, int? length = null) => NoMethod();
+        
+        public void WriteBytes(IByteBuffer src, int srcIndex, int length) => NoMethod();
 
-        public void WriteBytes(IByteBuffer src, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public void WriteBytes(byte[] src, int? length = null) => NoMethod();
 
-        public void WriteBytes(IByteBuffer src, int srcIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void WriteBytes(byte[] src, int srcIndex, int length) => NoMethod();
 
-        public void WriteBytes(byte[] src, int? length = null)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetString(int index, int length, Encoding encoding) => string.Empty;
 
-        public void WriteBytes(byte[] src, int srcIndex, int length)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetString(int index, string value, Encoding encoding) => NoMethod();
 
-        public string GetString(int index, int length, Encoding encoding)
-        {
-            throw new NotImplementedException();
-        }
+        public string ReadString(int length, Encoding encoding) => string.Empty;
 
-        public void SetString(int index, string value, Encoding encoding)
-        {
-            throw new NotImplementedException();
-        }
 
-        public string ReadString(int length, Encoding encoding)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WriteString(string value, Encoding encoding)
-        {
-            throw new NotImplementedException();
-        }
+        public void WriteString(string value, Encoding encoding) => NoMethod();
 
         #endregion
     }

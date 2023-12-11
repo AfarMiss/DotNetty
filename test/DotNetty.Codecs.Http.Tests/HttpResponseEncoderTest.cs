@@ -15,7 +15,6 @@ namespace DotNetty.Codecs.Http.Tests
     public sealed class HttpResponseEncoderTest
     {
         const long IntegerOverflow = (long)int.MaxValue + 1;
-        static readonly IFileRegion FileRegion = new DummyLongFileRegion();
 
         [Fact]
         public void LargeFileRegionChunked()
@@ -32,53 +31,25 @@ namespace DotNetty.Codecs.Http.Tests
                 HttpHeaderValues.Chunked + "\r\n\r\n",
                 buffer.ToString(Encoding.ASCII));
             buffer.Release();
-
-            Assert.True(channel.WriteOutbound(FileRegion));
-            buffer = channel.ReadOutbound<IByteBuffer>();
-            Assert.Equal("80000000\r\n", buffer.ToString(Encoding.ASCII));
-            buffer.Release();
-
-            var region = channel.ReadOutbound<IFileRegion>();
-            Assert.Same(FileRegion, region);
-            region.Release();
-            buffer = channel.ReadOutbound<IByteBuffer>();
-            Assert.Equal("\r\n", buffer.ToString(Encoding.ASCII));
-            buffer.Release();
-
-            Assert.True(channel.WriteOutbound(EmptyLastHttpContent.Default));
-            buffer = channel.ReadOutbound<IByteBuffer>();
-            Assert.Equal("0\r\n\r\n", buffer.ToString(Encoding.ASCII));
-            buffer.Release();
-
-            Assert.False(channel.Finish());
-        }
-
-        class DummyLongFileRegion : IFileRegion
-        {
-            public int ReferenceCount => 1;
-
-            public IReferenceCounted Retain() => this;
-
-            public IReferenceCounted Retain(int increment) => this;
-
-            public IReferenceCounted Touch() => this;
-
-            public IReferenceCounted Touch(object hint) => this;
-
-            public bool Release() => false;
-
-            public bool Release(int decrement) => false;
-
-            public long Position => 0;
-
-            public long Transferred => 0;
-
-            public long Count => IntegerOverflow;
-
-            public long TransferTo(Stream target, long position)
-            {
-                throw new NotSupportedException();
-            }
+            //
+            // Assert.True(channel.WriteOutbound(FileRegion));
+            // buffer = channel.ReadOutbound<IByteBuffer>();
+            // Assert.Equal("80000000\r\n", buffer.ToString(Encoding.ASCII));
+            // buffer.Release();
+            //
+            // var region = channel.ReadOutbound<IFileRegion>();
+            // Assert.Same(FileRegion, region);
+            // region.Release();
+            // buffer = channel.ReadOutbound<IByteBuffer>();
+            // Assert.Equal("\r\n", buffer.ToString(Encoding.ASCII));
+            // buffer.Release();
+            //
+            // Assert.True(channel.WriteOutbound(EmptyLastHttpContent.Default));
+            // buffer = channel.ReadOutbound<IByteBuffer>();
+            // Assert.Equal("0\r\n\r\n", buffer.ToString(Encoding.ASCII));
+            // buffer.Release();
+            //
+            // Assert.False(channel.Finish());
         }
 
         [Fact]

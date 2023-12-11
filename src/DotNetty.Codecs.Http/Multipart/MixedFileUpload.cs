@@ -210,18 +210,6 @@ namespace DotNetty.Codecs.Http.Multipart
             return this;
         }
 
-        public IReferenceCounted Touch()
-        {
-            this.fileUpload.Touch();
-            return this;
-        }
-
-        public IReferenceCounted Touch(object hint)
-        {
-            this.fileUpload.Touch(hint);
-            return this;
-        }
-
         public bool Release() => this.fileUpload.Release();
 
         public bool Release(int decrement) => this.fileUpload.Release(decrement);

@@ -290,18 +290,6 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public override IReferenceCounted Touch()
-        {
-            this.wrapped.Touch();
-            return this;
-        }
-
-        public override IReferenceCounted Touch(object hint)
-        {
-            this.wrapped.Touch(hint);
-            return this;
-        }
-
         public override IByteBuffer DiscardSomeReadBytes()
         {
             this.wrapped.DiscardSomeReadBytes();

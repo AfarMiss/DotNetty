@@ -1033,18 +1033,6 @@ namespace DotNetty.Codecs.Http.Multipart
                 return this;
             }
 
-            public IReferenceCounted Touch()
-            {
-                this.content.Touch();
-                return this;
-            }
-
-            public IReferenceCounted Touch(object hint)
-            {
-                this.content.Touch(hint);
-                return this;
-            }
-
             public IByteBuffer Content => this.content.Content;
 
             public HttpHeaders TrailingHeaders

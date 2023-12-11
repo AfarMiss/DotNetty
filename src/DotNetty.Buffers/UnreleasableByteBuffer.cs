@@ -41,10 +41,6 @@ namespace DotNetty.Buffers
 
         public override IReferenceCounted Retain(int increment) => this;
 
-        public override IReferenceCounted Touch() => this;
-
-        public override IReferenceCounted Touch(object hint) => this;
-
         public override bool Release() => false;
 
         public override bool Release(int decrement) => false;

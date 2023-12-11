@@ -171,6 +171,5 @@ namespace DotNetty.Buffers
             this.CheckIndex0(index, length);
             this.Unwrap().SetBytes(this.Idx(index), src, srcIndex, length);
         }
-
     }
 }

@@ -49,10 +49,6 @@ namespace DotNetty.Codecs.Redis.Messages
 
             public IByteBufferHolder Replace(IByteBuffer content) => this;
 
-            public IReferenceCounted Touch() => this;
-
-            public IReferenceCounted Touch(object hint) => this;
-
             public bool Release() => false;
 
             public bool Release(int decrement) => false;
@@ -78,10 +74,6 @@ namespace DotNetty.Codecs.Redis.Messages
 
 
             public IByteBufferHolder Replace(IByteBuffer content) => this;
-
-            public IReferenceCounted Touch() => this;
-
-            public IReferenceCounted Touch(object hint) => this;
 
             public bool Release() => false;
 

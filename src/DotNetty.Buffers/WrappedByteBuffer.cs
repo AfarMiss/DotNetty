@@ -206,18 +206,6 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public virtual IReferenceCounted Touch()
-        {
-            this.Buf.Touch();
-            return this;
-        }
-
-        public virtual IReferenceCounted Touch(object hint)
-        {
-            this.Buf.Touch(hint);
-            return this;
-        }
-
         public bool IsReadable(int size) => this.Buf.IsReadable(size);
 
         public bool IsWritable(int size) => this.Buf.IsWritable(size);

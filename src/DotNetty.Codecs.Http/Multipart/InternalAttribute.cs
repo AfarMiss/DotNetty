@@ -120,14 +120,5 @@ namespace DotNetty.Codecs.Http.Multipart
             }
             return this;
         }
-
-        public override IReferenceCounted Touch(object hint)
-        {
-            foreach (IByteBuffer buf in this.value)
-            {
-                buf.Touch(hint);
-            }
-            return this;
-        }
     }
 }

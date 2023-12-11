@@ -198,11 +198,5 @@ namespace DotNetty.Codecs.Http.Multipart
         }
 
         public override FileStream GetFile() => throw new IOException("Not represented by a stream");
-
-        public override IReferenceCounted Touch(object hint)
-        {
-            this.byteBuf?.Touch(hint);
-            return this;
-        }
     }
 }

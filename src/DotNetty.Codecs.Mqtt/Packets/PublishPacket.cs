@@ -45,18 +45,6 @@ namespace DotNetty.Codecs.Mqtt.Packets
             return this;
         }
 
-        public IReferenceCounted Touch()
-        {
-            this.Payload.Touch();
-            return this;
-        }
-
-        public IReferenceCounted Touch(object hint)
-        {
-            this.Payload.Touch(hint);
-            return this;
-        }
-
         public bool Release() => this.Payload.Release();
 
         public bool Release(int decrement) => this.Payload.Release(decrement);

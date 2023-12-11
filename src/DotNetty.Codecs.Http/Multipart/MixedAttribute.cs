@@ -230,18 +230,6 @@ namespace DotNetty.Codecs.Http.Multipart
             return this;
         }
 
-        public IReferenceCounted Touch()
-        {
-            this.attribute.Touch();
-            return this;
-        }
-
-        public IReferenceCounted Touch(object hint)
-        {
-            this.attribute.Touch(hint);
-            return this;
-        }
-
         public bool Release() => this.attribute.Release();
 
         public bool Release(int decrement) => this.attribute.Release(decrement);

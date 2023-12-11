@@ -1,28 +1,20 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-#pragma warning disable 420
+using System.Diagnostics.Contracts;
+using System.Threading;
+using DotNetty.Common;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-    using DotNetty.Common;
-    using DotNetty.Common.Utilities;
-
-    public abstract class AbstractReferenceCountedByteBuffer : AbstractByteBuffer
+    public abstract class AbstractRefByteBuffer : AbstractByteBuffer
     {
-        volatile int referenceCount = 1;
-
-        protected AbstractReferenceCountedByteBuffer(int maxCapacity)
-            : base(maxCapacity)
-        {
-        }
-
+        private volatile int referenceCount = 1;
         public override int ReferenceCount => this.referenceCount;
 
-        //An unsafe operation intended for use by a subclass that sets the reference count of the buffer directly
-        protected internal void SetReferenceCount(int value) => this.referenceCount = value;
+        protected internal abstract void Deallocate();
+
+        protected AbstractRefByteBuffer(int maxCapacity) : base(maxCapacity)
+        {
+        }
 
         public override IReferenceCounted Retain() => this.Retain0(1);
 
@@ -33,7 +25,7 @@ namespace DotNetty.Buffers
             return this.Retain0(increment);
         }
 
-        IReferenceCounted Retain0(int increment)
+        private IReferenceCounted Retain0(int increment)
         {
             while (true)
             {
@@ -53,10 +45,6 @@ namespace DotNetty.Buffers
 
             return this;
         }
-
-        public override IReferenceCounted Touch() => this;
-
-        public override IReferenceCounted Touch(object hint) => this;
 
         public override bool Release() => this.Release0(1);
 
@@ -90,6 +78,5 @@ namespace DotNetty.Buffers
             }
         }
 
-        protected internal abstract void Deallocate();
     }
 }

@@ -52,18 +52,6 @@ namespace DotNetty.Transport.Channels
             return this;
         }
 
-        public virtual IReferenceCounted Touch()
-        {
-            ReferenceCountUtil.Touch(this.Content);
-            return this;
-        }
-
-        public virtual IReferenceCounted Touch(object hint)
-        {
-            ReferenceCountUtil.Touch(this.Content, hint);
-            return this;
-        }
-
         public bool Release() => ReferenceCountUtil.Release(this.Content);
 
         public bool Release(int decrement) => ReferenceCountUtil.Release(this.Content, decrement);

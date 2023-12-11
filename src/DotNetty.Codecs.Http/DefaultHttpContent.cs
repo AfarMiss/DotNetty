@@ -45,18 +45,6 @@ namespace DotNetty.Codecs.Http
             return this;
         }
 
-        public IReferenceCounted Touch()
-        {
-            this.content.Touch();
-            return this;
-        }
-
-        public IReferenceCounted Touch(object hint)
-        {
-            this.content.Touch(hint);
-            return this;
-        }
-
         public bool Release() => this.content.Release();
 
         public bool Release(int decrement) => this.content.Release(decrement);

@@ -53,18 +53,6 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public IReferenceCounted Touch()
-        {
-            this.data.Touch();
-            return this;
-        }
-
-        public IReferenceCounted Touch(object hint)
-        {
-            this.data.Touch(hint);
-            return this;
-        }
-
         public bool Release() => this.data.Release();
 
         public bool Release(int decrement) => this.data.Release(decrement);

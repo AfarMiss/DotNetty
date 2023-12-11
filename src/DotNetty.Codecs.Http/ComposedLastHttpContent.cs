@@ -42,10 +42,6 @@ namespace DotNetty.Codecs.Http
 
         public IReferenceCounted Retain(int increment) => this;
 
-        public IReferenceCounted Touch() => this;
-
-        public IReferenceCounted Touch(object hint) => this;
-
         public IByteBuffer Content => Unpooled.Empty;
 
         public DecoderResult Result

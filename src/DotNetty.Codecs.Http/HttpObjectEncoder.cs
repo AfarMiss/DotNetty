@@ -73,7 +73,7 @@ namespace DotNetty.Codecs.Http
                 }
             }
 
-            if (message is IHttpContent || message is IByteBuffer || message is IFileRegion)
+            if (message is IHttpContent || message is IByteBuffer)
             {
                 switch (this.state)
                 {
@@ -207,7 +207,7 @@ namespace DotNetty.Codecs.Http
 
         protected virtual bool IsContentAlwaysEmpty(T msg) => false;
 
-        public override bool AcceptOutboundMessage(object msg) => msg is IHttpObject || msg is IByteBuffer || msg is IFileRegion;
+        public override bool AcceptOutboundMessage(object msg) => msg is IHttpObject || msg is IByteBuffer;
 
         static object EncodeAndRetain(object message)
         {
@@ -218,10 +218,6 @@ namespace DotNetty.Codecs.Http
             if (message is IHttpContent content)
             {
                 return content.Content.Retain();
-            }
-            if (message is IFileRegion region) 
-            {
-                return region.Retain();
             }
             throw new InvalidOperationException($"unexpected message type: {StringUtil.SimpleClassName(message)}");
         }
@@ -235,10 +231,6 @@ namespace DotNetty.Codecs.Http
             if (message is IByteBuffer buffer)
             {
                 return buffer.ReadableBytes;
-            }
-            if (message is IFileRegion region) 
-            {
-                return region.Count;
             }
             throw new InvalidOperationException($"unexpected message type: {StringUtil.SimpleClassName(message)}");
         }

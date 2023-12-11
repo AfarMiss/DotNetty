@@ -101,18 +101,6 @@ namespace DotNetty.Codecs.Http
                 return this;
             }
 
-            public IReferenceCounted Touch()
-            {
-                this.upgradeRequest.Touch();
-                return this;
-            }
-
-            public IReferenceCounted Touch(object hint)
-            {
-                this.upgradeRequest.Touch(hint);
-                return this;
-            }
-
             public bool Release() => this.upgradeRequest.Release();
 
             public bool Release(int decrement) => this.upgradeRequest.Release(decrement);

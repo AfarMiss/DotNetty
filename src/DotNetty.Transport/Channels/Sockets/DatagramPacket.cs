@@ -38,17 +38,5 @@ namespace DotNetty.Transport.Channels.Sockets
             base.Retain(increment);
             return this;
         }
-
-        public override IReferenceCounted Touch()
-        {
-            base.Touch();
-            return this;
-        }
-
-        public override IReferenceCounted Touch(object hint)
-        {
-            base.Touch(hint);
-            return this;
-        }
     }
 }

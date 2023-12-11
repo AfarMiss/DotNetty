@@ -42,36 +42,6 @@ namespace DotNetty.Common.Utilities
         }
 
         /// <summary>
-        /// Tries to call <see cref="IReferenceCounted.Touch()" /> if the specified message implements
-        /// <see cref="IReferenceCounted" />.
-        /// If the specified message doesn't implement <see cref="IReferenceCounted" />, this method does nothing.
-        /// </summary>
-        public static T Touch<T>(T msg)
-        {
-            var refCnt = msg as IReferenceCounted;
-            if (refCnt != null)
-            {
-                return (T)refCnt.Touch();
-            }
-            return msg;
-        }
-
-        /// <summary>
-        /// Tries to call <see cref="IReferenceCounted.Touch(object)" /> if the specified message implements
-        /// <see cref="IReferenceCounted" />. If the specified message doesn't implement
-        /// <see cref="IReferenceCounted" />, this method does nothing.
-        /// </summary>
-        public static T Touch<T>(T msg, object hint)
-        {
-            var refCnt = msg as IReferenceCounted;
-            if (refCnt != null)
-            {
-                return (T)refCnt.Touch(hint);
-            }
-            return msg;
-        }
-
-        /// <summary>
         /// Tries to call <see cref="IReferenceCounted.Release()" /> if the specified message implements
         /// <see cref="IReferenceCounted"/>. If the specified message doesn't implement
         /// <see cref="IReferenceCounted"/>, this method does nothing.

@@ -28,10 +28,6 @@ namespace DotNetty.Codecs.Http
 
         public IReferenceCounted Retain(int increment) => this;
 
-        public IReferenceCounted Touch() => this;
-
-        public IReferenceCounted Touch(object hint) => this;
-
         public bool Release() => false;
 
         public bool Release(int decrement) => false;

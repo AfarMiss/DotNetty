@@ -7,7 +7,7 @@ namespace DotNetty.Buffers
     using System.Diagnostics.Contracts;
     using DotNetty.Common.Internal;
 
-    public class UnpooledHeapByteBuffer : AbstractReferenceCountedByteBuffer
+    public class UnpooledHeapByteBuffer : AbstractRefByteBuffer
     {
         #region IByteBuffer
 

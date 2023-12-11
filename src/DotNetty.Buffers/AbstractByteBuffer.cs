@@ -551,9 +551,6 @@ namespace DotNetty.Buffers
 
         public abstract IReferenceCounted Retain(int increment);
 
-        public abstract IReferenceCounted Touch();
-
-        public abstract IReferenceCounted Touch(object hint);
 
         public abstract bool Release();
 

@@ -34,15 +34,6 @@ namespace DotNetty.Codecs.Redis.Messages
             }
         }
 
-        public override IReferenceCounted Touch(object hint)
-        {
-            foreach (IRedisMessage message in this.Children)
-            {
-                ReferenceCountUtil.Touch(message);
-            }
-            return this;
-        }
-
         public override string ToString() =>
             new StringBuilder(StringUtil.SimpleClassName(this))
                 .Append('[')
@@ -60,10 +51,6 @@ namespace DotNetty.Codecs.Redis.Messages
             public IReferenceCounted Retain() => this;
 
             public IReferenceCounted Retain(int increment) => this;
-
-            public IReferenceCounted Touch() => this;
-
-            public IReferenceCounted Touch(object hint) => this;
 
             public bool Release() => false;
 
@@ -83,10 +70,6 @@ namespace DotNetty.Codecs.Redis.Messages
             public IReferenceCounted Retain() => this;
 
             public IReferenceCounted Retain(int increment) => this;
-
-            public IReferenceCounted Touch() => this;
-
-            public IReferenceCounted Touch(object hint) => this;
 
             public bool Release() => false;
 

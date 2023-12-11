@@ -42,10 +42,6 @@ namespace DotNetty.Common.Utilities
             return this;
         }
 
-        public IReferenceCounted Touch() => this.Touch(null);
-
-        public abstract IReferenceCounted Touch(object hint);
-
         public bool Release() => this.ReleaseCore(1);
 
         public bool Release(int decrement)
