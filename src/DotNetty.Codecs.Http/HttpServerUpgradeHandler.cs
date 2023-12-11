@@ -89,21 +89,13 @@ namespace DotNetty.Codecs.Http
 
             public int ReferenceCount => this.upgradeRequest.ReferenceCount;
 
-            public IReferenceCounted Retain()
-            {
-                this.upgradeRequest.Retain();
-                return this;
-            }
-
-            public IReferenceCounted Retain(int increment)
+            public IReferenceCounted Retain(int increment = 1)
             {
                 this.upgradeRequest.Retain(increment);
                 return this;
             }
 
-            public bool Release() => this.upgradeRequest.Release();
-
-            public bool Release(int decrement) => this.upgradeRequest.Release(decrement);
+            public bool Release(int decrement = 1) => this.upgradeRequest.Release(decrement);
 
             public override string ToString() => $"UpgradeEvent [protocol={this.protocol}, upgradeRequest={this.upgradeRequest}]";
         }

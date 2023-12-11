@@ -43,17 +43,16 @@ namespace DotNetty.Buffers
 
         public int ReaderIndex => 0;
 
-        public IByteBuffer SetReaderIndex(int readerIndex) => this.CheckIndex(readerIndex);
+        public void SetReaderIndex(int readerIndex) => this.CheckIndex(readerIndex);
 
         public int WriterIndex => 0;
 
-        public IByteBuffer SetWriterIndex(int writerIndex) => this.CheckIndex(writerIndex);
+        public void SetWriterIndex(int writerIndex) => this.CheckIndex(writerIndex);
 
-        public IByteBuffer SetIndex(int readerIndex, int writerIndex)
+        public void SetIndex(int readerIndex, int writerIndex)
         {
             this.CheckIndex(readerIndex);
             this.CheckIndex(writerIndex);
-            return this;
         }
 
         public int ReadableBytes => 0;
@@ -66,15 +65,15 @@ namespace DotNetty.Buffers
 
         public bool IsWritable(int size) => false;
 
-        public IByteBuffer Clear() => this;
+        public void ResetIndex() => NoMethod();
 
-        public IByteBuffer MarkReaderIndex() => this;
+        public void MarkReaderIndex() => NoMethod();
 
-        public IByteBuffer ResetReaderIndex() => this;
+        public void ResetReaderIndex() => NoMethod();
 
-        public IByteBuffer MarkWriterIndex() => this;
+        public void MarkWriterIndex() => NoMethod();
 
-        public IByteBuffer ResetWriterIndex() => this;
+        public void ResetWriterIndex() => NoMethod();
 
         public IByteBuffer DiscardReadBytes() => this;
 
@@ -217,16 +216,11 @@ namespace DotNetty.Buffers
         public bool IsReadable(int size) => false;
 
         public int ReferenceCount => 1;
-
-        public IReferenceCounted Retain() => this;
-
         public IByteBuffer RetainedDuplicate() => this;
 
-        public IReferenceCounted Retain(int increment) => this;
+        public IReferenceCounted Retain(int increment = 1) => this;
 
-        public bool Release() => false;
-
-        public bool Release(int decrement) => false;
+        public bool Release(int decrement = 1) => false;
 
         public IByteBuffer ReadSlice(int length) => this.CheckLength(length);
 

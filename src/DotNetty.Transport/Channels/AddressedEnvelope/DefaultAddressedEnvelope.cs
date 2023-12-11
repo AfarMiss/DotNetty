@@ -39,22 +39,13 @@ namespace DotNetty.Transport.Channels
                 return counted?.ReferenceCount ?? 1;
             }
         }
-
-        public virtual IReferenceCounted Retain()
-        {
-            ReferenceCountUtil.Retain(this.Content);
-            return this;
-        }
-
-        public virtual IReferenceCounted Retain(int increment)
+        public virtual IReferenceCounted Retain(int increment = 1)
         {
             ReferenceCountUtil.Retain(this.Content, increment);
             return this;
         }
 
-        public bool Release() => ReferenceCountUtil.Release(this.Content);
-
-        public bool Release(int decrement) => ReferenceCountUtil.Release(this.Content, decrement);
+        public bool Release(int decrement = 1) => ReferenceCountUtil.Release(this.Content, decrement);
 
         public override string ToString() => $"DefaultAddressedEnvelope<{typeof(T)}>"
             + (this.Sender != null

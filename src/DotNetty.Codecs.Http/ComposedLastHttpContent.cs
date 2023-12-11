@@ -38,9 +38,7 @@ namespace DotNetty.Codecs.Http
             return dup;
         }
 
-        public IReferenceCounted Retain() => this;
-
-        public IReferenceCounted Retain(int increment) => this;
+        public IReferenceCounted Retain(int increment = 1) => this;
 
         public IByteBuffer Content => Unpooled.Empty;
 
@@ -52,8 +50,6 @@ namespace DotNetty.Codecs.Http
 
         public int ReferenceCount => 1;
 
-        public bool Release() => false;
-
-        public bool Release(int decrement) => false;
+        public bool Release(int decrement = 1) => false;
     }
 }

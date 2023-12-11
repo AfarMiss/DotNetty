@@ -27,13 +27,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         public IByteBufferHolder Replace(IByteBuffer content) => new DatagramPacket(content, this.Recipient, this.Sender);
 
-        public override IReferenceCounted Retain()
-        {
-            base.Retain();
-            return this;
-        }
-
-        public override IReferenceCounted Retain(int increment)
+        public override IReferenceCounted Retain(int increment = 1)
         {
             base.Retain(increment);
             return this;

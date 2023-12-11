@@ -32,7 +32,8 @@ namespace DotNetty.Microbench.Http
         public IByteBuffer ShortInt()
         {
             this.buf.Write<short>(CrlfShort);
-            return this.buf.ResetWriterIndex();
+            this.buf.ResetWriterIndex();
+            return this.buf;
         }
 
         // [Benchmark]
@@ -42,14 +43,16 @@ namespace DotNetty.Microbench.Http
         public IByteBuffer ByteArray2()
         {
             this.buf.WriteBytes(Crlf);
-            return this.buf.ResetWriterIndex();
+            this.buf.ResetWriterIndex();
+            return this.buf;
         }
 
         [Benchmark]
         public IByteBuffer ByteArray3()
         {
             this.buf.WriteBytes(ZeroCrlf);
-            return this.buf.ResetWriterIndex();
+            this.buf.ResetWriterIndex();
+            return this.buf;
         }
 
         [Benchmark]
@@ -57,7 +60,8 @@ namespace DotNetty.Microbench.Http
         {
             this.buf.Write<byte>(HttpConstants.CarriageReturn);
             this.buf.Write<byte>(HttpConstants.LineFeed);
-            return this.buf.ResetWriterIndex();
+            this.buf.ResetWriterIndex();
+            return this.buf;
         }
 
         [Benchmark]
@@ -66,7 +70,8 @@ namespace DotNetty.Microbench.Http
             this.buf.Write<byte>('0');
             this.buf.Write<byte>(HttpConstants.CarriageReturn);
             this.buf.Write<byte>(HttpConstants.LineFeed);
-            return this.buf.ResetWriterIndex();
+            this.buf.ResetWriterIndex();
+            return this.buf;
         }
 
         [GlobalCleanup]

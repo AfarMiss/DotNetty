@@ -41,21 +41,13 @@ namespace DotNetty.Buffers
 
         public virtual int ReferenceCount => this.data.ReferenceCount;
 
-        public IReferenceCounted Retain()
-        {
-            this.data.Retain();
-            return this;
-        }
-
-        public IReferenceCounted Retain(int increment)
+        public IReferenceCounted Retain(int increment = 1)
         {
             this.data.Retain(increment);
             return this;
         }
 
-        public bool Release() => this.data.Release();
-
-        public bool Release(int decrement) => this.data.Release(decrement);
+        public bool Release(int decrement = 1) => this.data.Release(decrement);
 
         protected string ContentToString() => this.data.ToString();
 

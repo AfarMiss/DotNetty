@@ -42,7 +42,7 @@ namespace DotNetty.Common.Utilities
         }
 
         /// <summary>
-        /// Tries to call <see cref="IReferenceCounted.Release()" /> if the specified message implements
+        /// Tries to call <see cref="IReferenceCounted.Release" /> if the specified message implements
         /// <see cref="IReferenceCounted"/>. If the specified message doesn't implement
         /// <see cref="IReferenceCounted"/>, this method does nothing.
         /// </summary>
@@ -72,10 +72,10 @@ namespace DotNetty.Common.Utilities
         }
 
         /// <summary>
-        /// Tries to call <see cref="IReferenceCounted.Release()" /> if the specified message implements
+        /// Tries to call <see cref="IReferenceCounted.Release" /> if the specified message implements
         /// <see cref="IReferenceCounted"/>. If the specified message doesn't implement
         /// <see cref="IReferenceCounted"/>, this method does nothing. Unlike <see cref="Release(object)"/>, this
-        /// method catches an exception raised by <see cref="IReferenceCounted.Release()" /> and logs it, rather than
+        /// method catches an exception raised by <see cref="IReferenceCounted.Release" /> and logs it, rather than
         /// rethrowing it to the caller. It is usually recommended to use <see cref="Release(object)"/> instead, unless
         /// you absolutely need to swallow an exception.
         /// </summary>

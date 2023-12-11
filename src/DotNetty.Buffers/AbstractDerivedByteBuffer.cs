@@ -22,15 +22,7 @@ namespace DotNetty.Buffers
 
         protected virtual int ReferenceCount0() => this.Unwrap().ReferenceCount;
 
-        public sealed override IReferenceCounted Retain() => this.Retain0();
-
-        protected virtual IByteBuffer Retain0()
-        {
-            this.Unwrap().Retain();
-            return this;
-        }
-
-        public sealed override IReferenceCounted Retain(int increment) => this.Retain0(increment);
+        public sealed override IReferenceCounted Retain(int increment = 1) => this.Retain0(increment);
 
         protected virtual IByteBuffer Retain0(int increment)
         {
@@ -38,11 +30,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public sealed override bool Release() => this.Release0();
-
-        protected virtual bool Release0() => this.Unwrap().Release();
-
-        public sealed override bool Release(int decrement) => this.Release0(decrement);
+        public sealed override bool Release(int decrement = 1) => this.Release0(decrement);
 
         protected virtual bool Release0(int decrement) => this.Unwrap().Release(decrement);
 

@@ -24,13 +24,9 @@ namespace DotNetty.Codecs.Http
 
         public int ReferenceCount => 1;
 
-        public IReferenceCounted Retain() => this;
+        public IReferenceCounted Retain(int increment = 1) => this;
 
-        public IReferenceCounted Retain(int increment) => this;
-
-        public bool Release() => false;
-
-        public bool Release(int decrement) => false;
+        public bool Release(int decrement = 1) => false;
 
         public IByteBuffer Content { get; }
 

@@ -24,9 +24,7 @@ namespace DotNetty.Buffers
             this.SetMaxCapacity(this.wrapped.MaxCapacity);
         }
 
-        public override bool Release() => this.wrapped.Release();
-
-        public override bool Release(int decrement) => this.wrapped.Release(decrement);
+        public override bool Release(int decrement = 1) => this.wrapped.Release(decrement);
 
         public sealed override int ReaderIndex => this.wrapped.ReaderIndex;
 
@@ -224,53 +222,19 @@ namespace DotNetty.Buffers
 
         public sealed override string ToString() => this.wrapped.ToString();
 
-        public sealed override IByteBuffer SetReaderIndex(int readerIndex)
-        {
-            this.wrapped.SetReaderIndex(readerIndex);
-            return this;
-        }
+        public sealed override void SetReaderIndex(int readerIndex) => this.wrapped.SetReaderIndex(readerIndex);
+        public sealed override void SetWriterIndex(int writerIndex) => this.wrapped.SetWriterIndex(writerIndex);
+        public sealed override void SetIndex(int readerIndex, int writerIndex) => this.wrapped.SetIndex(readerIndex, writerIndex);
 
-        public sealed override IByteBuffer SetWriterIndex(int writerIndex)
-        {
-            this.wrapped.SetWriterIndex(writerIndex);
-            return this;
-        }
+        public sealed override void ResetIndex() => this.wrapped.ResetIndex();
 
-        public sealed override IByteBuffer SetIndex(int readerIndex, int writerIndex)
-        {
-            this.wrapped.SetIndex(readerIndex, writerIndex);
-            return this;
-        }
+        public sealed override void MarkReaderIndex() => this.wrapped.MarkReaderIndex();
 
-        public sealed override IByteBuffer Clear()
-        {
-            this.wrapped.Clear();
-            return this;
-        }
+        public sealed override void ResetReaderIndex() => this.wrapped.ResetReaderIndex();
 
-        public sealed override IByteBuffer MarkReaderIndex()
-        {
-            this.wrapped.MarkReaderIndex();
-            return this;
-        }
+        public sealed override void MarkWriterIndex() => this.wrapped.MarkWriterIndex();
 
-        public sealed override IByteBuffer ResetReaderIndex()
-        {
-            this.wrapped.ResetReaderIndex();
-            return this;
-        }
-
-        public sealed override IByteBuffer MarkWriterIndex()
-        {
-            this.wrapped.MarkWriterIndex();
-            return this;
-        }
-
-        public sealed override IByteBuffer ResetWriterIndex()
-        {
-            this.wrapped.ResetWriterIndex();
-            return this;
-        }
+        public sealed override void ResetWriterIndex() => this.wrapped.ResetWriterIndex();
 
         public override IByteBuffer EnsureWritable(int minWritableBytes)
         {
@@ -278,15 +242,9 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public override IReferenceCounted Retain(int increment)
+        public override IReferenceCounted Retain(int increment = 1)
         {
             this.wrapped.Retain(increment);
-            return this;
-        }
-
-        public override IReferenceCounted Retain()
-        {
-            this.wrapped.Retain();
             return this;
         }
 

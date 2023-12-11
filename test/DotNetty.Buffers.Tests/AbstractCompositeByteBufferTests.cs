@@ -546,7 +546,9 @@ namespace DotNetty.Buffers.Tests
         public void ComponentMustBeDuplicate()
         {
             CompositeByteBuffer buf = Unpooled.CompositeBuffer();
-            buf.AddComponent(Unpooled.Buffer(4, 6).SetIndex(1, 3));
+            var byteBuffer = Unpooled.Buffer(4, 6);
+            byteBuffer.SetIndex(1, 3);
+            buf.AddComponent(byteBuffer);
             Assert.IsAssignableFrom<AbstractDerivedByteBuffer>(buf[0]);
             Assert.Equal(4, buf[0].Capacity);
             Assert.Equal(6, buf[0].MaxCapacity);

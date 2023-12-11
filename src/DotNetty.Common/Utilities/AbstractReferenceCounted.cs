@@ -11,9 +11,7 @@ namespace DotNetty.Common.Utilities
 
         public int ReferenceCount => this.referenceCount;
 
-        public IReferenceCounted Retain() => this.RetainCore(1);
-
-        public IReferenceCounted Retain(int increment)
+        public IReferenceCounted Retain(int increment = 1)
         {
             Contract.Requires(increment > 0);
 
@@ -42,9 +40,7 @@ namespace DotNetty.Common.Utilities
             return this;
         }
 
-        public bool Release() => this.ReleaseCore(1);
-
-        public bool Release(int decrement)
+        public bool Release(int decrement = 1)
         {
             Contract.Requires(decrement > 0);
 

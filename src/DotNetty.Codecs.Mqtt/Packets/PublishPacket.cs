@@ -33,21 +33,13 @@ namespace DotNetty.Codecs.Mqtt.Packets
 
         public int ReferenceCount => this.Payload.ReferenceCount;
 
-        public IReferenceCounted Retain()
-        {
-            this.Payload.Retain();
-            return this;
-        }
-
-        public IReferenceCounted Retain(int increment)
+        public IReferenceCounted Retain(int increment = 1)
         {
             this.Payload.Retain(increment);
             return this;
         }
 
-        public bool Release() => this.Payload.Release();
-
-        public bool Release(int decrement) => this.Payload.Release(decrement);
+        public bool Release(int decrement = 1) => this.Payload.Release(decrement);
 
         IByteBuffer IByteBufferHolder.Content => this.Payload;
 

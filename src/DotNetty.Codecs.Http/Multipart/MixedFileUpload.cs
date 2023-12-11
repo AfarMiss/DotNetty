@@ -198,20 +198,12 @@ namespace DotNetty.Codecs.Http.Multipart
 
         public int ReferenceCount => this.fileUpload.ReferenceCount;
 
-        public IReferenceCounted Retain()
-        {
-            this.fileUpload.Retain();
-            return this;
-        }
-
-        public IReferenceCounted Retain(int increment)
+        public IReferenceCounted Retain(int increment = 1)
         {
             this.fileUpload.Retain(increment);
             return this;
         }
 
-        public bool Release() => this.fileUpload.Release();
-
-        public bool Release(int decrement) => this.fileUpload.Release(decrement);
+        public bool Release(int decrement = 1) => this.fileUpload.Release(decrement);
     }
 }

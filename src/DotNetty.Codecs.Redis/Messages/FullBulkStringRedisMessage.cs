@@ -42,16 +42,12 @@ namespace DotNetty.Codecs.Redis.Messages
 
             public int ReferenceCount => 1;
 
-            public IReferenceCounted Retain() => this;
-
-            public IReferenceCounted Retain(int increment) => this;
+            public IReferenceCounted Retain(int increment = 1) => this;
 
 
             public IByteBufferHolder Replace(IByteBuffer content) => this;
 
-            public bool Release() => false;
-
-            public bool Release(int decrement) => false;
+            public bool Release(int decrement = 1) => false;
         }
 
         sealed class EmptyFullBulkStringRedisMessage : IFullBulkStringRedisMessage
@@ -68,16 +64,12 @@ namespace DotNetty.Codecs.Redis.Messages
 
             public int ReferenceCount => 1;
 
-            public IReferenceCounted Retain() => this;
-
-            public IReferenceCounted Retain(int increment) => this;
+            public IReferenceCounted Retain(int increment = 1) => this;
 
 
             public IByteBufferHolder Replace(IByteBuffer content) => this;
 
-            public bool Release() => false;
-
-            public bool Release(int decrement) => false;
+            public bool Release(int decrement = 1) => false;
         }
 
         public override IByteBufferHolder Replace(IByteBuffer content) => new FullBulkStringRedisMessage(content);

@@ -1,61 +1,44 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using System.Text;
+using DotNetty.Common;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Utilities;
 
-// ReSharper disable InconsistentNaming
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.IO;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
-    /// <inheritdoc />
     /// <summary>
-    ///     Abstract base class implementation of a <see cref="T:DotNetty.Buffers.IByteBuffer" />
+    /// <see cref="IByteBuffer"/> 基础实现
     /// </summary>
     public abstract class AbstractByteBuffer : IByteBuffer
     {
         #region IByteBuffer
 
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractByteBuffer>();
-        const string PropMode = "io.netty.buffer.bytebuf.checkAccessible";
-        static readonly bool CheckAccessible;
+        private int readerIndex;
+        private int writerIndex;
 
-        int readerIndex;
-        int writerIndex;
+        private int markedReaderIndex;
+        private int markedWriterIndex;
+        private int maxCapacity;
 
-        int markedReaderIndex;
-        int markedWriterIndex;
-        int maxCapacity;
-
-        static AbstractByteBuffer()
-        {
-            CheckAccessible = SystemPropertyUtil.GetBoolean(PropMode, true);
-            if (Logger.DebugEnabled)
-            {
-                Logger.Debug("-D{}: {}", PropMode, CheckAccessible);
-            }
-        }
-
+        public virtual int MaxCapacity => this.maxCapacity;
+        public virtual int ReaderIndex => this.readerIndex;
+        public virtual int WriterIndex => this.writerIndex;
+        public virtual int ReadableBytes => this.writerIndex - this.readerIndex;
+        public virtual int WritableBytes => this.Capacity - this.writerIndex;
+        public virtual int MaxWritableBytes => this.MaxCapacity - this.writerIndex;
+        
+        public abstract int Capacity { get; }
+        public abstract IByteBufferAllocator Allocator { get; }
+        
         protected AbstractByteBuffer(int maxCapacity)
         {
             Contract.Requires(maxCapacity >= 0);
-
             this.maxCapacity = maxCapacity;
         }
 
-        public abstract int Capacity { get; }
-
         public abstract IByteBuffer AdjustCapacity(int newCapacity);
-
-        public virtual int MaxCapacity => this.maxCapacity;
 
         protected void SetMaxCapacity(int newMaxCapacity)
         {
@@ -64,11 +47,7 @@ namespace DotNetty.Buffers
             this.maxCapacity = newMaxCapacity;
         }
 
-        public abstract IByteBufferAllocator Allocator { get; }
-
-        public virtual int ReaderIndex => this.readerIndex;
-
-        public virtual IByteBuffer SetReaderIndex(int index)
+        public virtual void SetReaderIndex(int index)
         {
             if (index < 0 || index > this.writerIndex)
             {
@@ -76,12 +55,9 @@ namespace DotNetty.Buffers
             }
 
             this.readerIndex = index;
-            return this;
         }
 
-        public virtual int WriterIndex => this.writerIndex;
-
-        public virtual IByteBuffer SetWriterIndex(int index)
+        public virtual void SetWriterIndex(int index)
         {
             if (index < this.readerIndex || index > this.Capacity)
             {
@@ -89,7 +65,6 @@ namespace DotNetty.Buffers
             }
 
             this.SetWriterIndex0(index);
-            return this;
         }
 
         protected void SetWriterIndex0(int index)
@@ -97,7 +72,7 @@ namespace DotNetty.Buffers
             this.writerIndex = index;
         }
 
-        public virtual IByteBuffer SetIndex(int readerIdx, int writerIdx)
+        public virtual void SetIndex(int readerIdx, int writerIdx)
         {
             if (readerIdx < 0 || readerIdx > writerIdx || writerIdx > this.Capacity)
             {
@@ -105,52 +80,22 @@ namespace DotNetty.Buffers
             }
 
             this.SetIndex0(readerIdx, writerIdx);
-            return this;
         }
 
-        public virtual IByteBuffer Clear()
-        {
-            this.readerIndex = this.writerIndex = 0;
-            return this;
-        }
-
+        public virtual void ResetIndex() => this.readerIndex = this.writerIndex = 0;
+        
         public virtual bool IsReadable() => this.writerIndex > this.readerIndex;
-
         public virtual bool IsReadable(int size) => this.writerIndex - this.readerIndex >= size;
-
         public virtual bool IsWritable() => this.Capacity > this.writerIndex;
-
         public virtual bool IsWritable(int size) => this.Capacity - this.writerIndex >= size;
 
-        public virtual int ReadableBytes => this.writerIndex - this.readerIndex;
+        public virtual void MarkReaderIndex() => this.markedReaderIndex = this.readerIndex;
 
-        public virtual int WritableBytes => this.Capacity - this.writerIndex;
+        public virtual void ResetReaderIndex() => this.SetReaderIndex(this.markedReaderIndex);
 
-        public virtual int MaxWritableBytes => this.MaxCapacity - this.writerIndex;
+        public virtual void MarkWriterIndex() => this.markedWriterIndex = this.writerIndex;
 
-        public virtual IByteBuffer MarkReaderIndex()
-        {
-            this.markedReaderIndex = this.readerIndex;
-            return this;
-        }
-
-        public virtual IByteBuffer ResetReaderIndex()
-        {
-            this.SetReaderIndex(this.markedReaderIndex);
-            return this;
-        }
-
-        public virtual IByteBuffer MarkWriterIndex()
-        {
-            this.markedWriterIndex = this.writerIndex;
-            return this;
-        }
-
-        public virtual IByteBuffer ResetWriterIndex()
-        {
-            this.SetWriterIndex(this.markedWriterIndex);
-            return this;
-        }
+        public virtual void ResetWriterIndex() => this.SetWriterIndex(this.markedWriterIndex);
 
         protected void MarkIndex()
         {
@@ -504,10 +449,7 @@ namespace DotNetty.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void EnsureAccessible()
         {
-            if (CheckAccessible && this.ReferenceCount == 0)
-            {
-                ThrowHelper.ThrowIllegalReferenceCountException(0);
-            }
+            if (this.ReferenceCount == 0) ThrowHelper.ThrowIllegalReferenceCountException(0);
         }
 
         protected void SetIndex0(int readerIdx, int writerIdx)
@@ -546,15 +488,8 @@ namespace DotNetty.Buffers
         public abstract IByteBuffer Unwrap();
 
         public abstract int ReferenceCount { get; }
-
-        public abstract IReferenceCounted Retain();
-
-        public abstract IReferenceCounted Retain(int increment);
-
-
-        public abstract bool Release();
-
-        public abstract bool Release(int decrement);
+        public abstract IReferenceCounted Retain(int increment = 1);
+        public abstract bool Release(int decrement = 1);
 
         #endregion
 

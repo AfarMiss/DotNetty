@@ -10,7 +10,8 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void Slice()
         {
-            IByteBuffer buf = Unpooled.Buffer(8).SetIndex(1, 7);
+            IByteBuffer buf = Unpooled.Buffer(8);
+            buf.SetIndex(1, 7);
             IByteBuffer slice = buf.Slice(1, 7);
 
             Assert.IsAssignableFrom<UnpooledSlicedByteBuffer>(slice);
@@ -42,7 +43,8 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void Duplicate()
         {
-            IByteBuffer buf = Unpooled.Buffer(8).SetIndex(1, 7);
+            IByteBuffer buf = Unpooled.Buffer(8);
+            buf.SetIndex(1, 7);
             IByteBuffer dup = buf.Duplicate();
 
             Assert.IsAssignableFrom<UnpooledDuplicatedByteBuffer>(dup);
@@ -60,8 +62,10 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void DuplicateOfDuplicate()
         {
-            IByteBuffer buf = Unpooled.Buffer(8).SetIndex(1, 7);
-            IByteBuffer dup = buf.Duplicate().SetIndex(2, 6);
+            IByteBuffer buf = Unpooled.Buffer(8);
+            buf.SetIndex(1, 7);
+            IByteBuffer dup = buf.Duplicate();
+            dup.SetIndex(2, 6);
             IByteBuffer dup2 = dup.Duplicate();
 
             Assert.NotSame(dup2, dup);

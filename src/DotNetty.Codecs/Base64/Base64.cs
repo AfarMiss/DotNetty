@@ -182,7 +182,9 @@ namespace DotNetty.Codecs.Base64
                     destLength = EncodeUsingGetSet(alphabet, src, dest, offset, length, breakLines);
                 }
             }
-            return dest.SetIndex(destIndex, destIndex + destLength);
+
+            dest.SetIndex(destIndex, destIndex + destLength);
+            return dest;
         }
 
         public static IByteBuffer Decode(IByteBuffer src) => Decode(src, Base64Dialect.STANDARD);
@@ -345,7 +347,8 @@ namespace DotNetty.Codecs.Base64
                 }
             }
 
-            return dest.SetIndex(destIndex, destIndex + charCount);
+            dest.SetIndex(destIndex, destIndex + charCount);
+            return dest;
         }
     }
 }

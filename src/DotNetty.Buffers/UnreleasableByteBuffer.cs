@@ -37,12 +37,8 @@ namespace DotNetty.Buffers
         // So we just use duplicate() because the end result should be logically equivalent.
         public override IByteBuffer RetainedDuplicate() => this.Duplicate();
 
-        public override IReferenceCounted Retain() => this;
+        public override IReferenceCounted Retain(int increment = 1) => this;
 
-        public override IReferenceCounted Retain(int increment) => this;
-
-        public override bool Release() => false;
-
-        public override bool Release(int decrement) => false;
+        public override bool Release(int decrement = 1) => false;
     }
 }

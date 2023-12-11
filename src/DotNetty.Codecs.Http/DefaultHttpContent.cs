@@ -33,21 +33,13 @@ namespace DotNetty.Codecs.Http
 
         public int ReferenceCount => this.content.ReferenceCount;
 
-        public IReferenceCounted Retain()
-        {
-            this.content.Retain();
-            return this;
-        }
-
-        public IReferenceCounted Retain(int increment)
+        public IReferenceCounted Retain(int increment = 1)
         {
             this.content.Retain(increment);
             return this;
         }
 
-        public bool Release() => this.content.Release();
-
-        public bool Release(int decrement) => this.content.Release(decrement);
+        public bool Release(int decrement = 1) => this.content.Release(decrement);
 
         public override string ToString() => $"{StringUtil.SimpleClassName(this)} (data: {this.content}, decoderResult: {this.Result})";
     }

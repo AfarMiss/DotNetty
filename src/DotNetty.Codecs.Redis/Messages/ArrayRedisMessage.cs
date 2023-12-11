@@ -48,13 +48,9 @@ namespace DotNetty.Codecs.Redis.Messages
 
             public bool IsNull => true;
 
-            public IReferenceCounted Retain() => this;
+            public IReferenceCounted Retain(int increment = 1) => this;
 
-            public IReferenceCounted Retain(int increment) => this;
-
-            public bool Release() => false;
-
-            public bool Release(int decrement) => false;
+            public bool Release(int decrement = 1) => false;
 
             public IList<IRedisMessage> Children => ImmutableList<IRedisMessage>.Empty;
 
@@ -67,13 +63,9 @@ namespace DotNetty.Codecs.Redis.Messages
 
             public bool IsNull => false;
 
-            public IReferenceCounted Retain() => this;
+            public IReferenceCounted Retain(int increment = 1) => this;
 
-            public IReferenceCounted Retain(int increment) => this;
-
-            public bool Release() => false;
-
-            public bool Release(int decrement) => false;
+            public bool Release(int decrement = 1) => false;
 
             public IList<IRedisMessage> Children => ImmutableList<IRedisMessage>.Empty;
 

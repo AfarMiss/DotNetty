@@ -218,20 +218,12 @@ namespace DotNetty.Codecs.Http.Multipart
 
         public int ReferenceCount => this.attribute.ReferenceCount;
 
-        public IReferenceCounted Retain()
-        {
-            this.attribute.Retain();
-            return this;
-        }
-
-        public IReferenceCounted Retain(int increment)
+        public IReferenceCounted Retain(int increment = 1)
         {
             this.attribute.Retain(increment);
             return this;
         }
 
-        public bool Release() => this.attribute.Release();
-
-        public bool Release(int decrement) => this.attribute.Release(decrement);
+        public bool Release(int decrement = 1) => this.attribute.Release(decrement);
     }
 }

@@ -549,7 +549,8 @@ namespace DotNetty.Handlers.Tls
         static void AddBufferToOutput(IByteBuffer outputBuffer, int length, List<object> output)
         {
             Contract.Assert(length > 0);
-            output.Add(outputBuffer.SetWriterIndex(outputBuffer.WriterIndex + length));
+            outputBuffer.SetWriterIndex(outputBuffer.WriterIndex + length);
+            output.Add(outputBuffer);
         }
 
         Task<int> ReadFromSslStreamAsync(IByteBuffer outputBuffer, int outputBufferLength)

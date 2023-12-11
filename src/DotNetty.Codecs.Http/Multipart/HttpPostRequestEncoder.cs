@@ -632,7 +632,7 @@ namespace DotNetty.Codecs.Http.Multipart
                     IByteBuffer chunkContent = chunk.Content;
                     if (!ReferenceEquals(fullRequest.Content, chunkContent))
                     {
-                        fullRequest.Content.Clear();
+                        fullRequest.Content.ResetIndex();
                         fullRequest.Content.WriteBytes(chunkContent);
                         chunkContent.Release();
                     }
@@ -1021,15 +1021,9 @@ namespace DotNetty.Codecs.Http.Multipart
                 return duplicate;
             }
 
-            public IReferenceCounted Retain(int increment)
+            public IReferenceCounted Retain(int increment = 1)
             {
                 this.content.Retain(increment);
-                return this;
-            }
-
-            public IReferenceCounted Retain()
-            {
-                this.content.Retain();
                 return this;
             }
 
@@ -1050,9 +1044,7 @@ namespace DotNetty.Codecs.Http.Multipart
 
             public int ReferenceCount => this.content.ReferenceCount;
 
-            public bool Release() => this.content.Release();
-
-            public bool Release(int decrement) => this.content.Release(decrement);
+            public bool Release(int decrement = 1) => this.content.Release(decrement);
         }
 
         sealed class ListIterator

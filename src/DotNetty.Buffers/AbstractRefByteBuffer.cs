@@ -16,9 +16,7 @@ namespace DotNetty.Buffers
         {
         }
 
-        public override IReferenceCounted Retain() => this.Retain0(1);
-
-        public override IReferenceCounted Retain(int increment)
+        public override IReferenceCounted Retain(int increment = 1)
         {
             Contract.Requires(increment > 0);
 
@@ -46,9 +44,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public override bool Release() => this.Release0(1);
-
-        public override bool Release(int decrement)
+        public override bool Release(int decrement = 1)
         {
             Contract.Requires(decrement > 0);
 

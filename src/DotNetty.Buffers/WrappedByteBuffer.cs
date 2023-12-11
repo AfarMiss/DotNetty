@@ -51,26 +51,11 @@ namespace DotNetty.Buffers
         public IByteBuffer Unwrap() => this.Buf;
 
         public int ReaderIndex => this.Buf.ReaderIndex;
-
-        public IByteBuffer SetReaderIndex(int readerIndex)
-        {
-            this.Buf.SetReaderIndex(readerIndex);
-            return this;
-        }
-
         public int WriterIndex => this.Buf.WriterIndex;
 
-        public IByteBuffer SetWriterIndex(int writerIndex)
-        {
-            this.Buf.SetWriterIndex(writerIndex);
-            return this;
-        }
-
-        public virtual IByteBuffer SetIndex(int readerIndex, int writerIndex)
-        {
-            this.Buf.SetIndex(readerIndex, writerIndex);
-            return this;
-        }
+        public void SetReaderIndex(int readerIndex) => this.Buf.SetReaderIndex(readerIndex);
+        public void SetWriterIndex(int writerIndex) => this.Buf.SetWriterIndex(writerIndex);
+        public virtual void SetIndex(int readerIndex, int writerIndex) => this.Buf.SetIndex(readerIndex, writerIndex);
 
         public int ReadableBytes => this.Buf.ReadableBytes;
 
@@ -82,35 +67,15 @@ namespace DotNetty.Buffers
 
         public bool IsWritable() => this.Buf.IsWritable();
 
-        public IByteBuffer Clear()
-        {
-            this.Buf.Clear();
-            return this;
-        }
+        public void ResetIndex() => this.Buf.ResetIndex();
 
-        public IByteBuffer MarkReaderIndex()
-        {
-            this.Buf.MarkReaderIndex();
-            return this;
-        }
+        public void MarkReaderIndex() => this.Buf.MarkReaderIndex();
 
-        public IByteBuffer ResetReaderIndex()
-        {
-            this.Buf.ResetReaderIndex();
-            return this;
-        }
+        public void ResetReaderIndex() => this.Buf.ResetReaderIndex();
 
-        public IByteBuffer MarkWriterIndex()
-        {
-            this.Buf.MarkWriterIndex();
-            return this;
-        }
+        public void MarkWriterIndex() => this.Buf.MarkWriterIndex();
 
-        public IByteBuffer ResetWriterIndex()
-        {
-            this.Buf.ResetWriterIndex();
-            return this;
-        }
+        public void ResetWriterIndex() => this.Buf.ResetWriterIndex();
 
         public virtual IByteBuffer DiscardReadBytes()
         {
@@ -194,15 +159,9 @@ namespace DotNetty.Buffers
 
         public override string ToString() => this.GetType().Name + '(' + this.Buf + ')';
 
-        public virtual IReferenceCounted Retain(int increment)
+        public virtual IReferenceCounted Retain(int increment = 1)
         {
             this.Buf.Retain(increment);
-            return this;
-        }
-
-        public virtual IReferenceCounted Retain()
-        {
-            this.Buf.Retain();
             return this;
         }
 
@@ -212,9 +171,7 @@ namespace DotNetty.Buffers
 
         public int ReferenceCount => this.Buf.ReferenceCount;
 
-        public virtual bool Release() => this.Buf.Release();
-
-        public virtual bool Release(int decrement) => this.Buf.Release(decrement);
+        public virtual bool Release(int decrement = 1) => this.Buf.Release(decrement);
 
         public virtual IByteBuffer ReadSlice(int length) => this.Buf.ReadSlice(length);
 

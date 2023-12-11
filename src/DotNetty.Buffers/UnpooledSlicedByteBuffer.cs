@@ -64,7 +64,11 @@ namespace DotNetty.Buffers
             return ptr + this.adjustment;
         }
 
-        public override IByteBuffer Duplicate() => this.Unwrap().Duplicate().SetIndex(this.Idx(this.ReaderIndex), this.Idx(this.WriterIndex));
+        public override IByteBuffer Duplicate()
+        {
+            this.Unwrap().Duplicate().SetIndex(this.Idx(this.ReaderIndex), this.Idx(this.WriterIndex));
+            return this;
+        }
 
         public override IByteBuffer Copy(int index, int length)
         {

@@ -1,103 +1,46 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Text;
+using DotNetty.Common;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Utilities;
-
-    /// <summary>
-    ///     Inspired by the Netty ByteBuffer implementation
-    ///     (https://github.com/netty/netty/blob/master/buffer/src/main/java/io/netty/buffer/ByteBuf.java)
-    ///     Provides circular-buffer-esque security around a byte array, allowing reads and writes to occur independently.
-    ///     In general, the <see cref="T:DotNetty.Buffers.IByteBuffer" /> guarantees:
-    ///     /// <see cref="P:DotNetty.Buffers.IByteBuffer.ReaderIndex" /> LESS THAN OR EQUAL TO <see cref="P:DotNetty.Buffers.IByteBuffer.WriterIndex" /> LESS THAN OR EQUAL TO
-    ///     <see cref="P:DotNetty.Buffers.IByteBuffer.Capacity" />.
-    /// </summary>
     public interface IByteBuffer : IByteBufferProvider, IReferenceCounted, IComparable<IByteBuffer>, IEquatable<IByteBuffer>
     {
         int Capacity { get; }
-
-        /// <summary>
-        ///     Expands the capacity of this buffer so long as it is less than <see cref="MaxCapacity" />.
-        /// </summary>
-        IByteBuffer AdjustCapacity(int newCapacity);
-
         int MaxCapacity { get; }
 
-        /// <summary>
-        ///     The allocator who created this buffer
-        /// </summary>
-        IByteBufferAllocator Allocator { get; }
-
         int ReaderIndex { get; }
-
         int WriterIndex { get; }
-
-        /// <summary>
-        ///     Sets the <see cref="WriterIndex" /> of this buffer
-        /// </summary>
-        /// <exception cref="IndexOutOfRangeException">thrown if <see cref="WriterIndex" /> exceeds the length of the buffer</exception>
-        IByteBuffer SetWriterIndex(int writerIndex);
-
-        /// <summary>
-        ///     Sets the <see cref="ReaderIndex" /> of this buffer
-        /// </summary>
-        /// <exception cref="IndexOutOfRangeException">
-        ///     thrown if <see cref="ReaderIndex" /> is greater than
-        ///     <see cref="WriterIndex" /> or less than <c>0</c>.
-        /// </exception>
-        IByteBuffer SetReaderIndex(int readerIndex);
-
-        /// <summary>
-        ///     Sets both indexes
-        /// </summary>
-        /// <exception cref="IndexOutOfRangeException">
-        ///     thrown if <see cref="WriterIndex" /> or <see cref="ReaderIndex" /> exceeds
-        ///     the length of the buffer
-        /// </exception>
-        IByteBuffer SetIndex(int readerIndex, int writerIndex);
-
+        
         int ReadableBytes { get; }
-
         int WritableBytes { get; }
-
         int MaxWritableBytes { get; }
+        
+        IByteBufferAllocator Allocator { get; }
+        
+        IByteBuffer AdjustCapacity(int newCapacity);
+
+        void SetWriterIndex(int writerIndex);
+        void SetReaderIndex(int readerIndex);
+        void SetIndex(int readerIndex, int writerIndex);
 
         /// <summary>
-        ///     Returns true if <see cref="WriterIndex" /> - <see cref="ReaderIndex" /> is greater than <c>0</c>.
+        /// <see cref="WriterIndex"/> - <see cref="ReaderIndex"/>大于0则true
         /// </summary>
         bool IsReadable();
-
-        /// <summary>
-        ///     Is the buffer readable if and only if the buffer contains equal or more than the specified number of elements
-        /// </summary>
-        /// <param name="size">The number of elements we would like to read</param>
         bool IsReadable(int size);
 
         /// <summary>
-        ///     Returns true if and only if <see cref="Capacity" /> - <see cref="WriterIndex" /> is greater than zero.
+        ///  <see cref="Capacity"/> - <see cref="WriterIndex"/>大于0则true
         /// </summary>
         bool IsWritable();
-
-        /// <summary>
-        ///     Returns true if and only if the buffer has enough <see cref="Capacity" /> to accomodate <paramref name="size" />
-        ///     additional bytes.
-        /// </summary>
-        /// <param name="size">The number of additional elements we would like to write.</param>
         bool IsWritable(int size);
 
         /// <summary>
-        ///     Sets the <see cref="WriterIndex" /> and <see cref="ReaderIndex" /> to <c>0</c>. Does not erase any of the data
-        ///     written into the buffer already,
-        ///     but it will overwrite that data.
+        /// 重置索引为0 不会清楚数据 可重新覆盖数据
         /// </summary>
-        IByteBuffer Clear();
+        void ResetIndex();
 
         /// <summary>
         ///     Marks the current <see cref="ReaderIndex" /> in this buffer. You can reposition the current
@@ -105,7 +48,7 @@ namespace DotNetty.Buffers
         ///     to the marked <see cref="ReaderIndex" /> by calling <see cref="ResetReaderIndex" />.
         ///     The initial value of the marked <see cref="ReaderIndex" /> is <c>0</c>.
         /// </summary>
-        IByteBuffer MarkReaderIndex();
+        void MarkReaderIndex();
 
         /// <summary>
         ///     Repositions the current <see cref="ReaderIndex" /> to the marked <see cref="ReaderIndex" /> in this buffer.
@@ -114,7 +57,7 @@ namespace DotNetty.Buffers
         ///     is thrown if the current <see cref="WriterIndex" /> is less than the
         ///     marked <see cref="ReaderIndex" />
         /// </exception>
-        IByteBuffer ResetReaderIndex();
+        void ResetReaderIndex();
 
         /// <summary>
         ///     Marks the current <see cref="WriterIndex" /> in this buffer. You can reposition the current
@@ -122,7 +65,7 @@ namespace DotNetty.Buffers
         ///     to the marked <see cref="WriterIndex" /> by calling <see cref="ResetWriterIndex" />.
         ///     The initial value of the marked <see cref="WriterIndex" /> is <c>0</c>.
         /// </summary>
-        IByteBuffer MarkWriterIndex();
+        void MarkWriterIndex();
 
         /// <summary>
         ///     Repositions the current <see cref="WriterIndex" /> to the marked <see cref="WriterIndex" /> in this buffer.
@@ -131,7 +74,7 @@ namespace DotNetty.Buffers
         ///     is thrown if the current <see cref="ReaderIndex" /> is greater than the
         ///     marked <see cref="WriterIndex" />
         /// </exception>
-        IByteBuffer ResetWriterIndex();
+        void ResetWriterIndex();
 
         /// <summary>
         ///     Discards the bytes between the 0th index and <see cref="ReaderIndex" />.
@@ -150,15 +93,9 @@ namespace DotNetty.Buffers
         IByteBuffer DiscardSomeReadBytes();
 
         /// <summary>
-        ///     Makes sure the number of <see cref="WritableBytes" /> is equal to or greater than
-        ///     the specified value (<paramref name="minWritableBytes" />.) If there is enough writable bytes in this buffer,
-        ///     the method returns with no side effect. Otherwise, it raises an <see cref="ArgumentOutOfRangeException" />.
+        /// 确保<see cref="WritableBytes"/>大于<paramref name="minWritableBytes"/>
         /// </summary>
-        /// <param name="minWritableBytes">The expected number of minimum writable bytes</param>
-        /// <exception cref="IndexOutOfRangeException">
-        ///     if <see cref="WriterIndex" /> + <paramref name="minWritableBytes" /> >
-        ///     <see cref="MaxCapacity" />.
-        /// </exception>
+        /// <exception cref="IndexOutOfRangeException"> </exception>
         IByteBuffer EnsureWritable(int minWritableBytes);
 
         /// <summary>
@@ -181,8 +118,6 @@ namespace DotNetty.Buffers
         ///     <c>3</c> if the buffer does not have enough bytes, but its capacity has been increased to its maximum.
         /// </returns>
         int EnsureWritable(int minWritableBytes, bool force);
-
-       
 
         /// <summary>
         ///     Returns the maximum <see cref="ArraySegment{T}" /> of <see cref="Byte" /> that this buffer holds. Note that

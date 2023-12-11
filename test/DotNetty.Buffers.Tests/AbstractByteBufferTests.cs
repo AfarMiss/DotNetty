@@ -1099,7 +1099,7 @@ namespace DotNetty.Buffers.Tests
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
-                value.Clear();
+                value.ResetIndex();
                 this.buffer.GetBytes(i, value);
                 Assert.Equal(0, value.ReaderIndex);
                 Assert.Equal(BlockSize, value.WriterIndex);
@@ -1840,13 +1840,17 @@ namespace DotNetty.Buffers.Tests
             byte[] bytes = { 1, 2, 3, 4 };
             byte[] bytesReversed = { 4, 3, 2, 1 };
 
-            var buf1 = this.NewBuffer(4).Clear();
+            var buf1 = this.NewBuffer(4);
+            buf1.ResetIndex();
             buf1.WriteBytes(bytes);
-            var buf2 = this.NewBuffer(4).Clear();
+            var buf2 = this.NewBuffer(4);
+            buf2.ResetIndex();
             buf2.WriteBytes(bytesReversed);
-            var buf3 = this.NewBuffer(4).Clear();
+            var buf3 = this.NewBuffer(4);
+            buf3.ResetIndex();
             buf3.WriteBytes(bytes);
-            var buf4 = this.NewBuffer(4).Clear();
+            var buf4 = this.NewBuffer(4);
+            buf4.ResetIndex();
             buf4.WriteBytes(bytesReversed);
             try
             {
@@ -1868,7 +1872,7 @@ namespace DotNetty.Buffers.Tests
         public void String()
         {
             IByteBuffer copied = Unpooled.CopiedBuffer(Encoding.GetEncoding("ISO-8859-1").GetBytes("Hello, World!"));
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             this.buffer.WriteBytes(copied);
             Assert.Equal("Hello, World!", this.buffer.ToString(Encoding.GetEncoding("ISO-8859-1")));
             copied.Release();
@@ -1877,7 +1881,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void IndexOf()
         {
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             this.buffer.Write<byte>(1);
             this.buffer.Write<byte>(2);
             this.buffer.Write<byte>(3);
@@ -1901,7 +1905,7 @@ namespace DotNetty.Buffers.Tests
 
             var value = new byte[this.buffer.Capacity];
             this.random.NextBytes(value);
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             this.buffer.WriteBytes(value);
 
             AssertRemainingEquals(new ArraySegment<byte>(value), this.buffer.GetIoBuffer());
@@ -1918,7 +1922,7 @@ namespace DotNetty.Buffers.Tests
 
             var value = new byte[this.buffer.Capacity];
             this.random.NextBytes(value);
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             this.buffer.WriteBytes(value);
 
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
@@ -1968,14 +1972,14 @@ namespace DotNetty.Buffers.Tests
             IByteBuffer elemBCopy = this.ReleaseLater(elemB.Copy());
             Assert.Contains(elemBCopy, set);
 
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             this.buffer.WriteBytes(elemA.Duplicate());
 
             Assert.True(set.Remove(this.buffer));
             Assert.DoesNotContain(elemA, set);
             Assert.Single(set);
 
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             this.buffer.WriteBytes(elemB.Duplicate());
             Assert.True(set.Remove(this.buffer));
             Assert.DoesNotContain(elemB, set);
@@ -1994,7 +1998,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ForEachByte()
         {
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             for (int i = 0; i < Capacity; i ++)
             {
                 this.buffer.Write<byte>(i + 1);
@@ -2019,7 +2023,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ForEachByteAbort()
         {
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             for (int i = 0; i < Capacity; i ++)
             {
                 this.buffer.Write<byte>(i + 1);
@@ -2043,7 +2047,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ForEachByteDesc()
         {
-            this.buffer.Clear();
+            this.buffer.ResetIndex();
             for (int i = 0; i < Capacity; i ++)
             {
                 this.buffer.Write<byte>(i + 1);
@@ -2699,11 +2703,16 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void RetainedSliceAndRetainedDuplicateContentIsExpected()
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected1 = this.NewBuffer(6).ResetWriterIndex();
-            IByteBuffer expected2 = this.NewBuffer(5).ResetWriterIndex();
-            IByteBuffer expected3 = this.NewBuffer(4).ResetWriterIndex();
-            IByteBuffer expected4 = this.NewBuffer(3).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected1 = this.NewBuffer(6);
+            expected1.ResetWriterIndex();
+            IByteBuffer expected2 = this.NewBuffer(5);
+            expected2.ResetWriterIndex();
+            IByteBuffer expected3 = this.NewBuffer(4);
+            expected3.ResetWriterIndex();
+            IByteBuffer expected4 = this.NewBuffer(3);
+            expected4.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected1.WriteBytes(new byte[] { 2, 3, 4, 5, 6, 7 });
             expected2.WriteBytes(new byte[] { 3, 4, 5, 6, 7 });
@@ -2763,10 +2772,14 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void RetainedDuplicateAndRetainedSliceContentIsExpected()
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected1 = this.NewBuffer(6).ResetWriterIndex();
-            IByteBuffer expected2 = this.NewBuffer(5).ResetWriterIndex();
-            IByteBuffer expected3 = this.NewBuffer(4).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected1 = this.NewBuffer(6);
+            expected1.ResetWriterIndex();
+            IByteBuffer expected2 = this.NewBuffer(5);
+            expected2.ResetWriterIndex();
+            IByteBuffer expected3 = this.NewBuffer(4);
+            expected3.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected1.WriteBytes(new byte[] { 2, 3, 4, 5, 6, 7 });
             expected2.WriteBytes(new byte[] { 3, 4, 5, 6, 7 });
@@ -2978,8 +2991,10 @@ namespace DotNetty.Buffers.Tests
 
         void SliceContents0(bool retainedSlice)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected = this.NewBuffer(3).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected = this.NewBuffer(3);
+            expected.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected.WriteBytes(new byte[] { 4, 5, 6 });
             IByteBuffer slice = retainedSlice ? buf.RetainedSlice(buf.ReaderIndex + 3, 3)
@@ -3006,9 +3021,12 @@ namespace DotNetty.Buffers.Tests
 
         void SliceReleaseOriginal(bool retainedSlice1, bool retainedSlice2)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected1 = this.NewBuffer(3).ResetWriterIndex();
-            IByteBuffer expected2 = this.NewBuffer(2).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected1 = this.NewBuffer(3);
+            expected1.ResetWriterIndex();
+            IByteBuffer expected2 = this.NewBuffer(2);
+            expected2.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected1.WriteBytes(new byte[] { 6, 7, 8 });
             expected2.WriteBytes(new byte[] { 7, 8 });
@@ -3041,12 +3059,18 @@ namespace DotNetty.Buffers.Tests
 
         void MultipleLevelRetainedSliceWithNonRetained(bool doSlice1, bool doSlice2)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected1 = this.NewBuffer(6).ResetWriterIndex();
-            IByteBuffer expected2 = this.NewBuffer(4).ResetWriterIndex();
-            IByteBuffer expected3 = this.NewBuffer(2).ResetWriterIndex();
-            IByteBuffer expected4SliceSlice = this.NewBuffer(1).ResetWriterIndex();
-            IByteBuffer expected4DupSlice = this.NewBuffer(1).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected1 = this.NewBuffer(6);
+            expected1.ResetWriterIndex();
+            IByteBuffer expected2 = this.NewBuffer(4);
+            expected2.ResetWriterIndex();
+            IByteBuffer expected3 = this.NewBuffer(2);
+            expected3.ResetWriterIndex();
+            IByteBuffer expected4SliceSlice = this.NewBuffer(1);
+            expected4SliceSlice.ResetWriterIndex();
+            IByteBuffer expected4DupSlice = this.NewBuffer(1);
+            expected4DupSlice.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected1.WriteBytes(new byte[] { 2, 3, 4, 5, 6, 7 });
             expected2.WriteBytes(new byte[] { 3, 4, 5, 6 });
@@ -3120,8 +3144,10 @@ namespace DotNetty.Buffers.Tests
 
         void DuplicateReleaseOriginal(bool retainedDuplicate1, bool retainedDuplicate2)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected = this.NewBuffer(8).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected = this.NewBuffer(8);
+            expected.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected.WriteBytes(buf, buf.ReaderIndex, buf.ReadableBytes);
             IByteBuffer dup1 = retainedDuplicate1 ? buf.RetainedDuplicate()
@@ -3152,10 +3178,14 @@ namespace DotNetty.Buffers.Tests
 
         void MultipleRetainedSliceReleaseOriginal(bool retainedSlice1, bool retainedSlice2)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected1 = this.NewBuffer(3).ResetWriterIndex();
-            IByteBuffer expected2 = this.NewBuffer(2).ResetWriterIndex();
-            IByteBuffer expected3 = this.NewBuffer(2).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected1 = this.NewBuffer(3);
+            expected1.ResetWriterIndex();
+            IByteBuffer expected2 = this.NewBuffer(2);
+            expected2.ResetWriterIndex();
+            IByteBuffer expected3 = this.NewBuffer(2);
+            expected3.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected1.WriteBytes(new byte[] { 6, 7, 8 });
             expected2.WriteBytes(new byte[] { 7, 8 });
@@ -3197,8 +3227,10 @@ namespace DotNetty.Buffers.Tests
 
         void MultipleRetainedDuplicateReleaseOriginal(bool retainedDuplicate1, bool retainedDuplicate2)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
-            IByteBuffer expected = this.NewBuffer(8).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
+            IByteBuffer expected = this.NewBuffer(8);
+            expected.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             expected.WriteBytes(buf, buf.ReaderIndex, buf.ReadableBytes);
             IByteBuffer dup1 = retainedDuplicate1 ? buf.RetainedDuplicate() : (IByteBuffer)buf.Duplicate().Retain();
@@ -3243,7 +3275,8 @@ namespace DotNetty.Buffers.Tests
 
         void DuplicateContents0(bool retainedDuplicate)
         {
-            IByteBuffer buf = this.NewBuffer(8).ResetWriterIndex();
+            IByteBuffer buf = this.NewBuffer(8);
+            buf.ResetWriterIndex();
             buf.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             IByteBuffer dup = retainedDuplicate ? buf.RetainedDuplicate() : buf.Duplicate();
             try
@@ -3421,7 +3454,7 @@ namespace DotNetty.Buffers.Tests
         public void EmptyIoBuffers()
         {
             IByteBuffer buf =this.NewBuffer(8);
-            buf.Clear();
+            buf.ResetIndex();
             Assert.False(buf.IsReadable());
             ArraySegment<byte>[] nioBuffers = buf.GetIoBuffers();
             Assert.Single(nioBuffers);
