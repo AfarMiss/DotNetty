@@ -144,7 +144,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
             Assert.Equal(readable, testDataLength);
             for (int i = 0; i < testDataLength; i++)
             {
-                Assert.Equal(this.binTestData.GetByte(i), binFrame.Content.GetByte(i));
+                Assert.Equal(this.binTestData.Get<byte>(i), binFrame.Content.Get<byte>(i));
             }
 
             binFrame.Release();

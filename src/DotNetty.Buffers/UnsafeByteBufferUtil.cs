@@ -243,28 +243,29 @@ namespace DotNetty.Buffers
 
         internal static Task<int> SetBytesAsync(AbstractByteBuffer buf, byte* addr, int index, Stream input, int length, CancellationToken cancellationToken)
         {
-            if (length == 0)
-            {
-                return TaskEx.Zero;
-            }
-
-            IByteBuffer tmpBuf = buf.Allocator.HeapBuffer(length);
-            return tmpBuf.SetBytesAsync(0, input, length, cancellationToken)
-                .ContinueWith(t => {
-                    try
-                    {
-                        var read = t.Result;
-                        if (read > 0)
-                        {
-                            PlatformDependent.CopyMemory(tmpBuf.Array, tmpBuf.ArrayOffset, addr, read);
-                        }
-                        return read;
-                    }
-                    finally
-                    {
-                        tmpBuf.Release();
-                    }
-                });
+            throw new NotImplementedException();
+            // if (length == 0)
+            // {
+            //     return TaskEx.Zero;
+            // }
+            //
+            // IByteBuffer tmpBuf = buf.Allocator.HeapBuffer(length);
+            // return tmpBuf.SetBytesAsync(0, input, length, cancellationToken)
+            //     .ContinueWith(t => {
+            //         try
+            //         {
+            //             var read = t.Result;
+            //             if (read > 0)
+            //             {
+            //                 PlatformDependent.CopyMemory(tmpBuf.Array, tmpBuf.ArrayOffset, addr, read);
+            //             }
+            //             return read;
+            //         }
+            //         finally
+            //         {
+            //             tmpBuf.Release();
+            //         }
+            //     });
         }
 
         internal static void GetBytes(AbstractByteBuffer buf, byte* addr, int index, IByteBuffer dst, int dstIndex, int length)

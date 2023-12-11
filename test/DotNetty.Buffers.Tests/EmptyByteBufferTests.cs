@@ -21,7 +21,8 @@ namespace DotNetty.Buffers.Tests
         {
             var empty = new EmptyByteBuffer(UnpooledByteBufferAllocator.Default);
             empty.WriteBytes(Unpooled.Empty); // Ok
-            IByteBuffer nonEmpty = UnpooledByteBufferAllocator.Default.Buffer().WriteBoolean(false);
+            IByteBuffer nonEmpty = UnpooledByteBufferAllocator.Default.Buffer();
+            nonEmpty.Write<bool>(false);
             Assert.Throws<IndexOutOfRangeException>(() => empty.WriteBytes(nonEmpty));
             nonEmpty.Release();
         }

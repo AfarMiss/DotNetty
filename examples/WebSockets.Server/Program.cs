@@ -22,7 +22,7 @@ namespace WebSockets.Server
     {
         static Program()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
         }
 
         static async Task RunServerAsync()

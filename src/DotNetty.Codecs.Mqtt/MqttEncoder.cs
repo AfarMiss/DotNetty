@@ -129,24 +129,24 @@ namespace DotNetty.Codecs.Mqtt
             try
             {
                 buf = bufferAllocator.Buffer(fixedHeaderBufferSize + variablePartSize);
-                buf.WriteByte(CalculateFirstByteOfFixedHeader(packet));
+                buf.Write<byte>(CalculateFirstByteOfFixedHeader(packet));
                 WriteVariableLengthInt(buf, variablePartSize);
 
-                buf.WriteShort(protocolNameBytes.Length);
+                buf.Write<short>(protocolNameBytes.Length);
                 buf.WriteBytes(protocolNameBytes);
 
-                buf.WriteByte(Util.ProtocolLevel);
-                buf.WriteByte(CalculateConnectFlagsByte(packet));
-                buf.WriteShort(packet.KeepAliveInSeconds);
+                buf.Write<byte>(Util.ProtocolLevel);
+                buf.Write<byte>(CalculateConnectFlagsByte(packet));
+                buf.Write<short>(packet.KeepAliveInSeconds);
 
                 // Payload
-                buf.WriteShort(clientIdBytes.Length);
+                buf.Write<short>(clientIdBytes.Length);
                 buf.WriteBytes(clientIdBytes, 0, clientIdBytes.Length);
                 if (packet.HasWill)
                 {
-                    buf.WriteShort(willTopicBytes.Length);
+                    buf.Write<short>(willTopicBytes.Length);
                     buf.WriteBytes(willTopicBytes, 0, willTopicBytes.Length);
-                    buf.WriteShort(willMessage.ReadableBytes);
+                    buf.Write<short>(willMessage.ReadableBytes);
                     if (willMessage.IsReadable())
                     {
                         buf.WriteBytes(willMessage);
@@ -156,12 +156,12 @@ namespace DotNetty.Codecs.Mqtt
                 }
                 if (packet.HasUsername)
                 {
-                    buf.WriteShort(userNameBytes.Length);
+                    buf.Write<short>(userNameBytes.Length);
                     buf.WriteBytes(userNameBytes, 0, userNameBytes.Length);
 
                     if (packet.HasPassword)
                     {
-                        buf.WriteShort(passwordBytes.Length);
+                        buf.Write<short>(passwordBytes.Length);
                         buf.WriteBytes(passwordBytes, 0, passwordBytes.Length);
                     }
                 }
@@ -209,17 +209,17 @@ namespace DotNetty.Codecs.Mqtt
             try
             {
                 buffer = bufferAllocator.Buffer(4);
-                buffer.WriteByte(CalculateFirstByteOfFixedHeader(message));
-                buffer.WriteByte(2); // remaining length
+                buffer.Write<byte>(CalculateFirstByteOfFixedHeader(message));
+                buffer.Write<byte>(2); // remaining length
                 if (message.SessionPresent)
                 {
-                    buffer.WriteByte(1); // 7 reserved 0-bits and SP = 1
+                    buffer.Write<byte>(1); // 7 reserved 0-bits and SP = 1
                 }
                 else
                 {
-                    buffer.WriteByte(0); // 7 reserved 0-bits and SP = 0
+                    buffer.Write<byte>(0); // 7 reserved 0-bits and SP = 0
                 }
-                buffer.WriteByte((byte)message.ReturnCode);
+                buffer.Write<byte>((byte)message.ReturnCode);
 
 
                 output.Add(buffer);
@@ -249,13 +249,13 @@ namespace DotNetty.Codecs.Mqtt
             try
             {
                 buf = bufferAllocator.Buffer(fixedHeaderBufferSize + variablePartSize);
-                buf.WriteByte(CalculateFirstByteOfFixedHeader(packet));
+                buf.Write<byte>(CalculateFirstByteOfFixedHeader(packet));
                 WriteVariableLengthInt(buf, variablePartSize);
-                buf.WriteShort(topicNameBytes.Length);
+                buf.Write<short>(topicNameBytes.Length);
                 buf.WriteBytes(topicNameBytes);
                 if (packet.QualityOfService > QualityOfService.AtMostOnce)
                 {
-                    buf.WriteShort(packet.PacketId);
+                    buf.Write<short>(packet.PacketId);
                 }
 
                 output.Add(buf);
@@ -282,9 +282,9 @@ namespace DotNetty.Codecs.Mqtt
             try
             {
                 buffer = bufferAllocator.Buffer(fixedHeaderBufferSize + VariableHeaderBufferSize);
-                buffer.WriteByte(CalculateFirstByteOfFixedHeader(packet));
+                buffer.Write<byte>(CalculateFirstByteOfFixedHeader(packet));
                 WriteVariableLengthInt(buffer, VariableHeaderBufferSize);
-                buffer.WriteShort(msgId);
+                buffer.Write<short>(msgId);
 
                 output.Add(buffer);
                 buffer = null;
@@ -316,19 +316,19 @@ namespace DotNetty.Codecs.Mqtt
                 int fixedHeaderBufferSize = 1 + MaxVariableLength;
 
                 buf = bufferAllocator.Buffer(fixedHeaderBufferSize + variablePartSize);
-                buf.WriteByte(CalculateFirstByteOfFixedHeader(packet));
+                buf.Write<byte>(CalculateFirstByteOfFixedHeader(packet));
                 WriteVariableLengthInt(buf, variablePartSize);
 
                 // Variable Header
-                buf.WriteShort(packet.PacketId); // todo: review: validate?
+                buf.Write<short>(packet.PacketId); // todo: review: validate?
 
                 // Payload
                 for (int i = 0; i < encodedTopicFilters.Count; i++)
                 {
                     var topicFilterBytes = (byte[])encodedTopicFilters[i];
-                    buf.WriteShort(topicFilterBytes.Length);
+                    buf.Write<short>(topicFilterBytes.Length);
                     buf.WriteBytes(topicFilterBytes, 0, topicFilterBytes.Length);
-                    buf.WriteByte((int)packet.Requests[i].QualityOfService);
+                    buf.Write<byte>((int)packet.Requests[i].QualityOfService);
                 }
 
                 output.Add(buf);
@@ -350,12 +350,12 @@ namespace DotNetty.Codecs.Mqtt
             try
             {
                 buf = bufferAllocator.Buffer(fixedHeaderBufferSize + variablePartSize);
-                buf.WriteByte(CalculateFirstByteOfFixedHeader(message));
+                buf.Write<byte>(CalculateFirstByteOfFixedHeader(message));
                 WriteVariableLengthInt(buf, variablePartSize);
-                buf.WriteShort(message.PacketId);
+                buf.Write<short>(message.PacketId);
                 foreach (QualityOfService qos in message.ReturnCodes)
                 {
-                    buf.WriteByte((byte)qos);
+                    buf.Write<byte>((byte)qos);
                 }
 
                 output.Add(buf);
@@ -389,17 +389,17 @@ namespace DotNetty.Codecs.Mqtt
                 int fixedHeaderBufferSize = 1 + MaxVariableLength;
 
                 buf = bufferAllocator.Buffer(fixedHeaderBufferSize + variablePartSize);
-                buf.WriteByte(CalculateFirstByteOfFixedHeader(packet));
+                buf.Write<byte>(CalculateFirstByteOfFixedHeader(packet));
                 WriteVariableLengthInt(buf, variablePartSize);
 
                 // Variable Header
-                buf.WriteShort(packet.PacketId); // todo: review: validate?
+                buf.Write<short>(packet.PacketId); // todo: review: validate?
 
                 // Payload
                 for (int i = 0; i < encodedTopicFilters.Count; i++)
                 {
                     var topicFilterBytes = (byte[])encodedTopicFilters[i];
-                    buf.WriteShort(topicFilterBytes.Length);
+                    buf.Write<short>(topicFilterBytes.Length);
                     buf.WriteBytes(topicFilterBytes, 0, topicFilterBytes.Length);
                 }
 
@@ -419,8 +419,8 @@ namespace DotNetty.Codecs.Mqtt
             try
             {
                 buffer = bufferAllocator.Buffer(2);
-                buffer.WriteByte(CalculateFirstByteOfFixedHeader(packet));
-                buffer.WriteByte(0);
+                buffer.Write<byte>(CalculateFirstByteOfFixedHeader(packet));
+                buffer.Write<byte>(0);
 
                 output.Add(buffer);
                 buffer = null;
@@ -457,7 +457,7 @@ namespace DotNetty.Codecs.Mqtt
                 {
                     digit |= 0x80;
                 }
-                buffer.WriteByte(digit);
+                buffer.Write<byte>(digit);
             }
             while (value > 0);
         }

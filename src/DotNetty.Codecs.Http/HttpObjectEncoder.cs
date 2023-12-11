@@ -53,7 +53,7 @@ namespace DotNetty.Codecs.Http
                 this.SanitizeHeadersBeforeEncode(m, this.state == StContentAlwaysEmpty);
 
                 this.EncodeHeaders(m.Headers, buf);
-                buf.WriteShort(HttpConstants.CrlfShort);
+                buf.Write<short>(HttpConstants.CrlfShort);
 
                 this.headersEncodedSizeAccumulator = HeadersWeightNew * PadSizeForAccumulation(buf.ReadableBytes) 
                     + HeadersWeightHistorical * this.headersEncodedSizeAccumulator;
@@ -164,8 +164,9 @@ namespace DotNetty.Codecs.Http
             {
                 var lengthHex = new AsciiString(Convert.ToString(contentLength, 16), Encoding.ASCII);
                 IByteBuffer buf = context.Allocator.Buffer(lengthHex.Count + 2);
-                buf.WriteCharSequence(lengthHex, Encoding.ASCII);
-                buf.WriteShort(HttpConstants.CrlfShort);
+                throw new NotImplementedException();
+                // buf.WriteCharSequence(lengthHex, Encoding.ASCII);
+                buf.Write<short>(HttpConstants.CrlfShort);
                 output.Add(buf);
                 output.Add(EncodeAndRetain(message));
                 output.Add(HttpConstants.CrlfBuf.Duplicate());
@@ -181,9 +182,10 @@ namespace DotNetty.Codecs.Http
                 else
                 {
                     IByteBuffer buf = context.Allocator.Buffer((int)this.trailersEncodedSizeAccumulator);
-                    buf.WriteMedium(HttpConstants.ZeroCrlfMedium);
+                    throw new NotImplementedException();
+                    // buf.WriteMedium(HttpConstants.ZeroCrlfMedium);
                     this.EncodeHeaders(headers, buf);
-                    buf.WriteShort(HttpConstants.CrlfShort);
+                    buf.Write<short>(HttpConstants.CrlfShort);
                     this.trailersEncodedSizeAccumulator = TrailersWeightNew * PadSizeForAccumulation(buf.ReadableBytes) 
                         + TrailersWeightHistorical * this.trailersEncodedSizeAccumulator;
                     output.Add(buf);

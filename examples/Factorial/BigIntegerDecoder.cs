@@ -20,13 +20,13 @@ namespace Factorial
             }
             input.MarkReaderIndex();
 
-            int magicNumber = input.ReadByte();
+            int magicNumber = input.Read<byte>();
             if (magicNumber != 'F')
             {
                 input.ResetReaderIndex();
                 throw new Exception("Invalid magic number: " + magicNumber);
             }
-            int dataLength = input.ReadInt();
+            int dataLength = input.Read<int>();
             if (input.ReadableBytes < dataLength)
             {
                 input.ResetReaderIndex();

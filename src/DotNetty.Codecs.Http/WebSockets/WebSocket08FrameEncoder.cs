@@ -108,9 +108,9 @@ namespace DotNetty.Codecs.Http.WebSockets
                         size += length;
                     }
                     buf = ctx.Allocator.Buffer(size);
-                    buf.WriteByte(b0);
+                    buf.Write<byte>(b0);
                     byte b = (byte)(this.maskPayload ? 0x80 | (byte)length : (byte)length);
-                    buf.WriteByte(b);
+                    buf.Write<byte>(b);
                 }
                 else if (length <= 0xFFFF)
                 {
@@ -120,10 +120,10 @@ namespace DotNetty.Codecs.Http.WebSockets
                         size += length;
                     }
                     buf = ctx.Allocator.Buffer(size);
-                    buf.WriteByte(b0);
-                    buf.WriteByte(this.maskPayload ? 0xFE : 126);
-                    buf.WriteByte(length.RightUShift(8) & 0xFF);
-                    buf.WriteByte(length & 0xFF);
+                    buf.Write<byte>(b0);
+                    buf.Write<byte>(this.maskPayload ? 0xFE : 126);
+                    buf.Write<byte>(length.RightUShift(8) & 0xFF);
+                    buf.Write<byte>(length & 0xFF);
                 }
                 else
                 {
@@ -133,9 +133,9 @@ namespace DotNetty.Codecs.Http.WebSockets
                         size += length;
                     }
                     buf = ctx.Allocator.Buffer(size);
-                    buf.WriteByte(b0);
-                    buf.WriteByte(this.maskPayload ? 0xFF : 127);
-                    buf.WriteLong(length);
+                    buf.Write<byte>(b0);
+                    buf.Write<byte>(this.maskPayload ? 0xFF : 127);
+                    buf.Write<long>(length);
                 }
 
                 // Write payload
@@ -151,7 +151,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                     *(mask + 3) = (byte)unsignedValue;
 
                     // Mask in BE
-                    buf.WriteInt(intMask);
+                    buf.Write<int>(intMask);
 
                     int counter = 0;
                     int i = data.ReaderIndex;
@@ -159,13 +159,13 @@ namespace DotNetty.Codecs.Http.WebSockets
 
                     for (; i + 3 < end; i += 4)
                     {
-                        int intData = data.GetInt(i);
-                        buf.WriteInt(intData ^ intMask);
+                        int intData = data.Get<int>(i);
+                        buf.Write<int>(intData ^ intMask);
                     }
                     for (; i < end; i++)
                     {
-                        byte byteData = data.GetByte(i);
-                        buf.WriteByte(byteData ^ mask[counter++ % 4]);
+                        byte byteData = data.Get<byte>(i);
+                        buf.Write<byte>(byteData ^ mask[counter++ % 4]);
                     }
                     output.Add(buf);
                 }

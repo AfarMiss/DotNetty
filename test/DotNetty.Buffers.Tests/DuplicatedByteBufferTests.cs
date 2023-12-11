@@ -22,12 +22,12 @@ namespace DotNetty.Buffers.Tests
         {
             IByteBuffer buffer = this.NewBuffer(8);
             IByteBuffer wrapped = buffer.Unwrap();
-            wrapped.WriteByte(0);
+            wrapped.Write<byte>(0);
             wrapped.SetReaderIndex(wrapped.ReaderIndex + 1);
             buffer.SetWriterIndex(buffer.WriterIndex + 1);
             wrapped.AdjustCapacity(wrapped.Capacity * 2);
 
-            Assert.Equal((byte)0, buffer.ReadByte());
+            Assert.Equal((byte)0, buffer.Read<byte>());
         }
 
         [Fact]

@@ -28,7 +28,7 @@ namespace DotNetty.Codecs.Tests.Frame
             ch.WriteOutbound(this.msg);
             var buf = ch.ReadOutbound<IByteBuffer>();
             Assert.Equal(4, buf.ReadableBytes);
-            Assert.Equal(this.msg.ReadableBytes, buf.ReadInt());
+            Assert.Equal(this.msg.ReadableBytes, buf.Read<int>());
             buf.Release();
 
             buf = ch.ReadOutbound<IByteBuffer>();
@@ -43,7 +43,7 @@ namespace DotNetty.Codecs.Tests.Frame
             ch.WriteOutbound(this.msg);
             var buf = ch.ReadOutbound<IByteBuffer>();
             Assert.Equal(4, buf.ReadableBytes);
-            Assert.Equal(5, buf.ReadInt());
+            Assert.Equal(5, buf.Read<int>());
             buf.Release();
 
             buf = ch.ReadOutbound<IByteBuffer>();
@@ -58,7 +58,7 @@ namespace DotNetty.Codecs.Tests.Frame
             ch.WriteOutbound(this.msg);
             var buf = ch.ReadOutbound<IByteBuffer>();
             Assert.Equal(4, buf.ReadableBytes);
-            Assert.Equal(this.msg.ReadableBytes - 1, buf.ReadInt());
+            Assert.Equal(this.msg.ReadableBytes - 1, buf.Read<int>());
             buf.Release();
 
             buf = ch.ReadOutbound<IByteBuffer>();

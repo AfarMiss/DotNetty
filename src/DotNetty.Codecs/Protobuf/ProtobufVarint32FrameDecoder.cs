@@ -63,7 +63,7 @@ namespace DotNetty.Codecs.Protobuf
             }
 
             buffer.MarkReaderIndex();
-            byte rawByte = buffer.ReadByte();
+            byte rawByte = buffer.Read<byte>();
             if (rawByte < 128)
             {
                 return rawByte;
@@ -76,7 +76,7 @@ namespace DotNetty.Codecs.Protobuf
                 return 0;
             }
 
-            rawByte = buffer.ReadByte();
+            rawByte = buffer.Read<byte>();
             if (rawByte < 128)
             {
                 result |= rawByte << 7;
@@ -90,7 +90,7 @@ namespace DotNetty.Codecs.Protobuf
                     return 0;
                 }
 
-                rawByte = buffer.ReadByte();
+                rawByte = buffer.Read<byte>();
                 if (rawByte < 128)
                 {
                     result |= rawByte << 14;
@@ -104,7 +104,7 @@ namespace DotNetty.Codecs.Protobuf
                         return 0;
                     }
 
-                    rawByte = buffer.ReadByte();
+                    rawByte = buffer.Read<byte>();
                     if (rawByte < 128)
                     {
                         result |= rawByte << 21;
@@ -118,7 +118,7 @@ namespace DotNetty.Codecs.Protobuf
                             return 0;
                         }
 
-                        rawByte = buffer.ReadByte();
+                        rawByte = buffer.Read<byte>();
                         result |= rawByte << 28;
 
                         if (rawByte >= 128)

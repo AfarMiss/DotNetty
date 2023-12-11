@@ -392,7 +392,7 @@ namespace DotNetty.Codecs.Http.Tests
 
             Assert.True(channel.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/")));
             Assert.True(channel.WriteOutbound(new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK)));
-            var content = new DefaultHttpContent(Unpooled.Buffer().WriteZero(10));
+            var content = new DefaultHttpContent(Unpooled.Buffer(10));
             Assert.True(channel.WriteOutbound(content));
             Assert.Equal(1, content.ReferenceCount);
 

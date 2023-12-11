@@ -24,10 +24,10 @@ namespace DotNetty.Microbench.Allocators
         readonly Random rand = new Random();
         readonly IByteBuffer[] buffers = new IByteBuffer[MaxLiveBuffers];
 
-        static AbstractByteBufferAllocatorBenchmark()
-        {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
-        }
+        // static AbstractByteBufferAllocatorBenchmark()
+        // {
+        //     ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+        // }
 
         protected AbstractByteBufferAllocatorBenchmark(IByteBufferAllocator allocator)
         {

@@ -53,7 +53,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
                     foreach (byte expectedByte in this.expectedData)
                     {
-                        if (expectedByte != buffer.ReadByte())
+                        if (expectedByte != buffer.Read<byte>())
                         {
                             this.sequenceEqual = false;
                             break;
@@ -98,9 +98,11 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 {
                     foreach (bool bindClient in BindClientOption)
                     {
+                        var byteBuffer = Unpooled.Buffer();
+                        byteBuffer.WriteBytes(Data);
                         yield return new object[]
                         {
-                                Unpooled.Buffer().WriteBytes(Data),
+                                byteBuffer,
                                 bindClient,
                                 allocator,
                                 addressFamily,
@@ -108,9 +110,11 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                                 1
                         };
 
+                        var buffer = Unpooled.Buffer();
+                        buffer.WriteBytes(Data);
                         yield return new object[]
                         {
-                                Unpooled.Buffer().WriteBytes(Data),
+                            buffer,
                                 bindClient,
                                 allocator,
                                 addressFamily,

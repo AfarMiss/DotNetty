@@ -27,8 +27,8 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         {
             var buf = channel.ReadOutbound<IByteBuffer>();
             Assert.Equal(2, buf.ReadableBytes);
-            Assert.Equal((byte)0xFF, buf.ReadByte());
-            Assert.Equal((byte)0x00, buf.ReadByte());
+            Assert.Equal((byte)0xFF, buf.Read<byte>());
+            Assert.Equal((byte)0x00, buf.Read<byte>());
             buf.Release();
         }
     }

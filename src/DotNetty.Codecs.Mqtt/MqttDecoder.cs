@@ -71,7 +71,7 @@ namespace DotNetty.Codecs.Mqtt
                 return false;
             }
 
-            int signature = buffer.ReadByte();
+            int signature = buffer.Read<byte>();
 
             int remainingLength;
             if (!this.TryDecodeRemainingLength(buffer, out remainingLength) || !buffer.IsReadable(remainingLength))
@@ -203,7 +203,7 @@ namespace DotNetty.Codecs.Mqtt
                     value = default(int);
                     return false;
                 }
-                digit = buffer.ReadByte();
+                digit = buffer.Read<byte>();
                 result += (digit & 0x7f) * multiplier;
                 multiplier <<= 7;
                 read++;
@@ -235,7 +235,7 @@ namespace DotNetty.Codecs.Mqtt
             packet.ProtocolName = Util.ProtocolName;
 
             DecreaseRemainingLength(ref remainingLength, 1);
-            packet.ProtocolLevel = buffer.ReadByte();
+            packet.ProtocolLevel = buffer.Read<byte>();
 
             if (packet.ProtocolLevel != Util.ProtocolLevel)
             {
@@ -246,7 +246,7 @@ namespace DotNetty.Codecs.Mqtt
             }
 
             DecreaseRemainingLength(ref remainingLength, 1);
-            int connectFlags = buffer.ReadByte();
+            int connectFlags = buffer.Read<byte>();
 
             packet.CleanSession = (connectFlags & 0x02) == 0x02;
 
@@ -289,7 +289,9 @@ namespace DotNetty.Codecs.Mqtt
                 packet.WillTopicName = DecodeString(buffer, ref remainingLength);
                 int willMessageLength = DecodeUnsignedShort(buffer, ref remainingLength);
                 DecreaseRemainingLength(ref remainingLength, willMessageLength);
-                packet.WillMessage = buffer.ReadBytes(willMessageLength);
+                var byteBuffer = buffer.Allocator.Buffer(willMessageLength);
+                buffer.ReadBytes(byteBuffer, willMessageLength);
+                packet.WillMessage = byteBuffer;
             }
 
             if (packet.HasUsername)
@@ -353,7 +355,7 @@ namespace DotNetty.Codecs.Mqtt
                 ValidateTopicFilter(topicFilter);
 
                 DecreaseRemainingLength(ref remainingLength, 1);
-                int qos = buffer.ReadByte();
+                int qos = buffer.Read<byte>();
                 if (qos >= (int)QualityOfService.Reserved)
                 {
                     throw new DecoderException($"[MQTT-3.8.3-4]. Invalid QoS value: {qos}.");
@@ -404,7 +406,7 @@ namespace DotNetty.Codecs.Mqtt
             var returnCodes = new QualityOfService[remainingLength];
             for (int i = 0; i < remainingLength; i++)
             {
-                var returnCode = (QualityOfService)buffer.ReadByte();
+                var returnCode = (QualityOfService)buffer.Read<byte>();
                 if (returnCode > QualityOfService.ExactlyOnce && returnCode != QualityOfService.Failure)
                 {
                     throw new DecoderException($"[MQTT-3.9.3-2]. Invalid return code: {returnCode}");
@@ -439,7 +441,7 @@ namespace DotNetty.Codecs.Mqtt
         static int DecodeUnsignedShort(IByteBuffer buffer, ref int remainingLength)
         {
             DecreaseRemainingLength(ref remainingLength, 2);
-            return buffer.ReadUnsignedShort();
+            return buffer.Read<ushort>();
         }
 
         static string DecodeString(IByteBuffer buffer, ref int remainingLength) => DecodeString(buffer, ref remainingLength, 0, int.MaxValue);

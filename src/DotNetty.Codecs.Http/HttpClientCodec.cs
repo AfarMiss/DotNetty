@@ -147,7 +147,10 @@ namespace DotNetty.Codecs.Http
                         // https://github.com/netty/netty/issues/1159
                         return;
                     }
-                    output.Add(buffer.ReadBytes(readable));
+
+                    var byteBuffer = buffer.Allocator.Buffer(readable);
+                    buffer.ReadBytes(byteBuffer, readable);
+                    output.Add(byteBuffer);
                 }
                 else
                 {

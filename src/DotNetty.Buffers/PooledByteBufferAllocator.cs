@@ -251,7 +251,7 @@ namespace DotNetty.Buffers
                 buf = new UnpooledHeapByteBuffer(this, initialCapacity, maxCapacity);
             }
 
-            return ToLeakAwareBuffer(buf);
+            return buf;
         }
 
         protected unsafe override IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity)
@@ -269,7 +269,7 @@ namespace DotNetty.Buffers
                 buf = UnsafeByteBufferUtil.NewUnsafeDirectByteBuffer(this, initialCapacity, maxCapacity);
             }
 
-            return ToLeakAwareBuffer(buf);
+            return buf;
         }
 
         public static bool DefaultPreferDirect => PlatformDependent.DirectBufferPreferred;

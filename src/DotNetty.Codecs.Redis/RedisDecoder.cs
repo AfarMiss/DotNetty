@@ -249,7 +249,7 @@ namespace DotNetty.Codecs.Redis
 
         static void ReadEndOfLine(IByteBuffer input)
         {
-            short delim = input.ReadShort();
+            short delim = input.Read<short>();
             if (RedisConstants.EndOfLineShort == delim)
             {
                 return;
@@ -313,7 +313,7 @@ namespace DotNetty.Codecs.Redis
         long ParseRedisNumber(IByteBuffer byteBuf)
         {
             int readableBytes = byteBuf.ReadableBytes;
-            bool negative = readableBytes > 0 && byteBuf.GetByte(byteBuf.ReaderIndex) == '-';
+            bool negative = readableBytes > 0 && byteBuf.Get<byte>(byteBuf.ReaderIndex) == '-';
             int extraOneByteForNegative = negative ? 1 : 0;
             if (readableBytes <= extraOneByteForNegative)
             {
@@ -325,7 +325,8 @@ namespace DotNetty.Codecs.Redis
             }
             if (negative)
             {
-                return -this.ParsePositiveNumber(byteBuf.SkipBytes(extraOneByteForNegative));
+                byteBuf.SkipBytes(extraOneByteForNegative);
+                return -this.ParsePositiveNumber(byteBuf);
             }
             return this.ParsePositiveNumber(byteBuf);
         }

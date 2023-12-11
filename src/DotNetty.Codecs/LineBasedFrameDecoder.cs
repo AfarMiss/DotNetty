@@ -89,7 +89,7 @@ namespace DotNetty.Codecs
                 {
                     IByteBuffer frame;
                     int length = eol - buffer.ReaderIndex;
-                    int delimLength = buffer.GetByte(eol) == '\r' ? 2 : 1;
+                    int delimLength = buffer.Get<byte>(eol) == '\r' ? 2 : 1;
 
                     if (length > this.maxLength)
                     {
@@ -131,7 +131,7 @@ namespace DotNetty.Codecs
                 if (eol >= 0)
                 {
                     int length = this.discardedBytes + eol - buffer.ReaderIndex;
-                    int delimLength = buffer.GetByte(eol) == '\r' ? 2 : 1;
+                    int delimLength = buffer.Get<byte>(eol) == '\r' ? 2 : 1;
                     buffer.SetReaderIndex(eol + delimLength);
                     this.discardedBytes = 0;
                     this.discarding = false;
@@ -161,7 +161,7 @@ namespace DotNetty.Codecs
         int FindEndOfLine(IByteBuffer buffer)
         {
             int i = buffer.ForEachByte(ByteProcessor.FindLF);
-            if (i > 0 && buffer.GetByte(i - 1) == '\r')
+            if (i > 0 && buffer.Get<byte>(i - 1) == '\r')
             {
                 i--;
             }

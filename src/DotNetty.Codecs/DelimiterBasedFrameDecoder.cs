@@ -127,7 +127,7 @@ namespace DotNetty.Codecs
                 a = delimiters[1];
                 b = delimiters[0];
             }
-            return a.Capacity == 2 && b.Capacity == 1 && a.GetByte(0) == '\r' && a.GetByte(1) == '\n' && b.GetByte(0) == '\n';
+            return a.Capacity == 2 && b.Capacity == 1 && a.Get<byte>(0) == '\r' && a.Get<byte>(1) == '\n' && b.Get<byte>(0) == '\n';
         }
 
         /// <summary>ReturnsReturn true if the current instance is a subclass of DelimiterBasedFrameDecoder</summary>
@@ -259,7 +259,7 @@ namespace DotNetty.Codecs
                 int needleIndex;
                 for (needleIndex = 0; needleIndex < needle.Capacity; needleIndex++)
                 {
-                    if (haystack.GetByte(haystackIndex) != needle.GetByte(needleIndex))
+                    if (haystack.Get<byte>(haystackIndex) != needle.Get<byte>(needleIndex))
                     {
                         break;
                     }

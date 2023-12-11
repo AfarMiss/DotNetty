@@ -35,7 +35,7 @@ namespace DotNetty.Codecs.Redis.Messages
         public static RedisMessageType ReadFrom(IByteBuffer input, bool decodeInlineCommands)
         {
             int initialIndex = input.ReaderIndex;
-            RedisMessageType type = ValueOf(input.ReadByte());
+            RedisMessageType type = ValueOf(input.Read<byte>());
             if (type == InlineCommand)
             {
                 if (!decodeInlineCommands)
@@ -54,7 +54,7 @@ namespace DotNetty.Codecs.Redis.Messages
             {
                 return;
             }
-            output.WriteByte(this.value);
+            output.Write<byte>(this.value);
         }
 
         static RedisMessageType ValueOf(byte value)

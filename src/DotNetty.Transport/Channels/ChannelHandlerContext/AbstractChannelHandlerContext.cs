@@ -504,11 +504,10 @@ namespace DotNetty.Transport.Channels
         {
             Contract.Requires(msg != null);
 
-            object m = next.pipeline.Touch(msg, next);
             IEventExecutor nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
-                next.InvokeChannelRead(m);
+                next.InvokeChannelRead(msg);
             }
             else
             {

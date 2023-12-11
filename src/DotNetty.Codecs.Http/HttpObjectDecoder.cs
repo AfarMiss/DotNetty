@@ -296,7 +296,7 @@ namespace DotNetty.Codecs.Http
                     int rIdx = buffer.ReaderIndex;
                     while (wIdx > rIdx)
                     {
-                        byte next = buffer.GetByte(rIdx++);
+                        byte next = buffer.Get<byte>(rIdx++);
                         if (next == HttpConstants.LineFeed)
                         {
                             this.currentState = State.ReadChunkSize;
@@ -340,7 +340,9 @@ namespace DotNetty.Codecs.Http
                         // other handler will replace this codec with the upgraded protocol codec to
                         // take the traffic over at some point then.
                         // See https://github.com/netty/netty/issues/2173
-                        output.Add(buffer.ReadBytes(readableBytes));
+                        var byteBuffer = buffer.Allocator.Buffer(readableBytes);
+                        buffer.ReadBytes(byteBuffer, readableBytes);
+                        output.Add(byteBuffer);
                     }
                     break;
                 }
@@ -531,7 +533,7 @@ namespace DotNetty.Codecs.Http
             int rIdx = buffer.ReaderIndex;
             while (wIdx > rIdx)
             {
-                byte c = buffer.GetByte(rIdx++);
+                byte c = buffer.Get<byte>(rIdx++);
                 if (!CharUtil.IsISOControl(c) && !IsWhiteSpace(c))
                 {
                     rIdx--;

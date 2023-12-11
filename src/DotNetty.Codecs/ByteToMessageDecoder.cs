@@ -157,7 +157,8 @@ namespace DotNetty.Codecs
             int readable = buf.ReadableBytes;
             if (readable > 0)
             {
-                IByteBuffer bytes = buf.ReadBytes(readable);
+                var bytes = buf.Allocator.Buffer(readable, buf.MaxCapacity);
+                buf.ReadBytes(bytes, readable);
                 buf.Release();
                 context.FireChannelRead(bytes);
             }

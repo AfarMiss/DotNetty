@@ -41,7 +41,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
 
             // Decode a frame otherwise.
-            byte type = input.ReadByte();
+            byte type = input.Read<byte>();
             WebSocketFrame frame;
             if ((type & 0x80) == 0x80)
             {
@@ -67,7 +67,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             byte b;
             do
             {
-                b = buffer.ReadByte();
+                b = buffer.Read<byte>();
                 frameSize <<= 7;
                 frameSize |= (uint)(b & 0x7f);
                 if (frameSize > this.maxFrameSize)

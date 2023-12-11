@@ -30,7 +30,7 @@ namespace DotNetty.Microbench.Headers
         [GlobalSetup]
         public void GlobalSetup()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
             Dictionary<HeaderExample, Dictionary<string, string>> headersSet = ExampleHeaders.GetExamples();
             Dictionary<string, string> headers = headersSet[(HeaderExample)this.HeaderSize];
             this.httpNames = new AsciiString[headers.Count];

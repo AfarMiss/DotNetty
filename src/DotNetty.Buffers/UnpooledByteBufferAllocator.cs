@@ -13,25 +13,16 @@ namespace DotNetty.Buffers
     public sealed class UnpooledByteBufferAllocator : AbstractByteBufferAllocator, IByteBufferAllocatorMetricProvider
     {
         readonly UnpooledByteBufferAllocatorMetric metric = new UnpooledByteBufferAllocatorMetric();
-        readonly bool disableLeakDetector;
 
         public static readonly UnpooledByteBufferAllocator Default =
             new UnpooledByteBufferAllocator(PlatformDependent.DirectBufferPreferred);
 
-        public UnpooledByteBufferAllocator()
-            : this(false, false)
+        public UnpooledByteBufferAllocator() : this(false)
         {
         }
 
-        public unsafe UnpooledByteBufferAllocator(bool preferDirect)
-            : this(preferDirect, false)
+        public unsafe UnpooledByteBufferAllocator(bool preferDirect) : base(preferDirect)
         {
-        }
-
-        public unsafe UnpooledByteBufferAllocator(bool preferDirect, bool disableLeakDetector)
-            : base(preferDirect)
-        {
-            this.disableLeakDetector = disableLeakDetector;
         }
 
         protected override IByteBuffer NewHeapBuffer(int initialCapacity, int maxCapacity) =>
@@ -40,19 +31,19 @@ namespace DotNetty.Buffers
         protected unsafe override IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity)
         {
             IByteBuffer buf = new InstrumentedUnpooledUnsafeDirectByteBuffer(this, initialCapacity, maxCapacity);
-            return this.disableLeakDetector ? buf : ToLeakAwareBuffer(buf);
+            return buf;
         }
 
         public override CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents)
         {
             var buf = new CompositeByteBuffer(this, false, maxNumComponents);
-            return this.disableLeakDetector ? buf : ToLeakAwareBuffer(buf);
+            return buf;
         }
 
         public unsafe override CompositeByteBuffer CompositeDirectBuffer(int maxNumComponents)
         {
             var buf = new CompositeByteBuffer(this, true, maxNumComponents);
-            return this.disableLeakDetector ? buf : ToLeakAwareBuffer(buf);
+            return buf;
         }
 
         public override bool IsDirectBufferPooled => false;

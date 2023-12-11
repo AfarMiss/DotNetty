@@ -147,13 +147,13 @@ namespace DotNetty.Codecs.Http.Tests
             {
                 var c = channel.ReadInbound<IHttpContent>();
                 Assert.Equal(1, c.Content.ReadableBytes);
-                Assert.Equal(content[content.Length - i], c.Content.ReadByte());
+                Assert.Equal(content[content.Length - i], c.Content.Read<byte>());
                 c.Release();
             }
 
             var last = channel.ReadInbound<ILastHttpContent>();
             Assert.Equal(1, last.Content.ReadableBytes);
-            Assert.Equal(content[content.Length - 1], last.Content.ReadByte());
+            Assert.Equal(content[content.Length - 1], last.Content.Read<byte>());
             last.Release();
 
             Assert.False(channel.Finish());

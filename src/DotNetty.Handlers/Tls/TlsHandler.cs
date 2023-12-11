@@ -656,7 +656,8 @@ namespace DotNetty.Handlers.Tls
                         }
                     }
 
-                    buf.ReadBytes(this.sslStream, buf.ReadableBytes); // this leads to FinishWrap being called 0+ times
+                    throw new NotImplementedException();
+                    // buf.ReadBytes(this.sslStream, buf.ReadableBytes); // this leads to FinishWrap being called 0+ times
                     buf.Release();
 
                     TaskCompletionSource promise = this.pendingUnencryptedWrites.Remove();

@@ -81,11 +81,11 @@ namespace DotNetty.Codecs.Http.WebSockets
                     BeginningSpace.Replace(key1, "").Length);
                 int b = (int)(long.Parse(BeginningDigit.Replace(key2, "")) /
                     BeginningSpace.Replace(key2, "").Length);
-                long c = req.Content.ReadLong();
+                long c = req.Content.Read<long>();
                 IByteBuffer input = Unpooled.Buffer(16);
-                input.WriteInt(a);
-                input.WriteInt(b);
-                input.WriteLong(c);
+                input.Write<int>(a);
+                input.Write<int>(b);
+                input.Write<long>(c);
                 res.Content.WriteBytes(WebSocketUtil.Md5(input.Array));
             }
             else

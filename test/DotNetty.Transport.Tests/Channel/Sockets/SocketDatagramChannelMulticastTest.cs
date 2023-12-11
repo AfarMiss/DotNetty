@@ -47,7 +47,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 }
                 try
                 {
-                    this.done = msg.Content.ReadInt() == 1;
+                    this.done = msg.Content.Read<int>() == 1;
                 }
                 finally
                 {
@@ -155,7 +155,9 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 Assert.True(joinTask.Wait(TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds * 5)),
                     $"Multicast server join group {groupAddress} timed out!");
 
-                clientChannel.WriteAndFlushAsync(new DatagramPacket(Unpooled.Buffer().WriteInt(1), groupAddress)).Wait();
+                var byteBuffer = Unpooled.Buffer();
+                byteBuffer.Write<int>(1);
+                clientChannel.WriteAndFlushAsync(new DatagramPacket(byteBuffer, groupAddress)).Wait();
                 Assert.True(multicastHandler.WaitForResult(), "Multicast server should have receivied the message.");
 
                 Task leaveTask = serverChannel.LeaveGroup(groupAddress, loopback);
@@ -166,7 +168,9 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 Task.Delay(DefaultTimeOutInMilliseconds).Wait();
 
                 // we should not receive a message anymore as we left the group before
-                clientChannel.WriteAndFlushAsync(new DatagramPacket(Unpooled.Buffer().WriteInt(1), groupAddress)).Wait();
+                var buffer = Unpooled.Buffer();
+                buffer.Write<int>(1);
+                clientChannel.WriteAndFlushAsync(new DatagramPacket(buffer, groupAddress)).Wait();
                 Assert.False(multicastHandler.WaitForResult(), "Multicast server should not receive the message.");
             }
             finally

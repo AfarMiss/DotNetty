@@ -58,7 +58,7 @@ namespace DotNetty.Handlers.Tls
             int packetLength = 0;
 
             // SSLv3 or TLS - Check ContentType
-            contentType = buffer.GetByte(offset); 
+            contentType = buffer.Get<byte>(offset); 
             switch (contentType)
             {
                 case SSL_CONTENT_TYPE_CHANGE_CIPHER_SPEC:
@@ -71,11 +71,11 @@ namespace DotNetty.Handlers.Tls
                     return -1;
             }
             // SSLv3 or TLS - Check ProtocolVersion
-            int majorVersion = buffer.GetByte(offset + 1);
+            int majorVersion = buffer.Get<byte>(offset + 1);
             if (majorVersion == 3)
             {
                 // SSLv3 or TLS
-                packetLength = buffer.GetUnsignedShort(offset + 3) + SSL_RECORD_HEADER_LENGTH;
+                packetLength = buffer.Get<ushort>(offset + 3) + SSL_RECORD_HEADER_LENGTH;
                 if (packetLength <= SSL_RECORD_HEADER_LENGTH)
                 {
                     // Neither SSLv3 or TLSv1 (i.e. SSLv2 or bad data)

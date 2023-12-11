@@ -84,7 +84,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                     this.framePayloadLength = 0;
 
                     // FIN, RSV, OPCODE
-                    byte b = input.ReadByte();
+                    byte b = input.Read<byte>();
                     this.frameFinalFlag = (b & 0x80) != 0;
                     this.frameRsv = (b & 0x70) >> 4;
                     this.frameOpcode = b & 0x0F;
@@ -103,7 +103,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                     }
 
                     // MASK, PAYLOAD LEN 1
-                    b = input.ReadByte();
+                    b = input.Read<byte>();
                     this.frameMasked = (b & 0x80) != 0;
                     this.framePayloadLen1 = b & 0x7F;
 
@@ -189,7 +189,8 @@ namespace DotNetty.Codecs.Http.WebSockets
                         {
                             return;
                         }
-                        this.framePayloadLength = input.ReadUnsignedShort();
+
+                        this.framePayloadLength = input.Read<ushort>();
                         if (this.framePayloadLength < 126)
                         {
                             this.ProtocolViolation(context, "invalid data frame length (not using minimal length encoding)");
@@ -202,7 +203,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                         {
                             return;
                         }
-                        this.framePayloadLength = input.ReadLong();
+                        this.framePayloadLength = input.Read<long>();
                         // TODO: check if it's bigger than 0x7FFFFFFFFFFFFFFF, Maybe
                         // just check if it's negative?
 
@@ -340,7 +341,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                     {
                         // If we don't keep reading Netty will throw an exception saying
                         // we can't return null if no bytes read and state not changed.
-                        input.ReadByte();
+                        input.Read<byte>();
                     }
                     return;
                 default:
@@ -371,12 +372,12 @@ namespace DotNetty.Codecs.Http.WebSockets
 
             for (; i + 3 < end; i += 4)
             {
-                int unmasked = frame.GetInt(i) ^ intMask;
-                frame.SetInt(i, unmasked);
+                int unmasked = frame.Get<int>(i) ^ intMask;
+                frame.Set<int>(i, unmasked);
             }
             for (; i < end; i++)
             {
-                frame.SetByte(i, frame.GetByte(i) ^ this.maskingKey[i % 4]);
+                frame.Set<byte>(i, frame.Get<byte>(i) ^ this.maskingKey[i % 4]);
             }
         }
 
@@ -440,7 +441,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             buffer.SetReaderIndex(0);
 
             // Must have 2 byte integer within the valid range
-            int statusCode = buffer.ReadShort();
+            int statusCode = buffer.Read<short>();
             if (statusCode >= 0 && statusCode <= 999 || statusCode >= 1004 && statusCode <= 1006
                 || statusCode >= 1012 && statusCode <= 2999)
             {

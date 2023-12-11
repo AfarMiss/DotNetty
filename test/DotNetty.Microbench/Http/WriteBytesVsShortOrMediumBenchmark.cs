@@ -24,29 +24,50 @@ namespace DotNetty.Microbench.Http
         [GlobalSetup]
         public void GlobalSetup()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
             this.buf = Unpooled.Buffer(16);
         }
 
         [Benchmark]
-        public IByteBuffer ShortInt() => this.buf.WriteShort(CrlfShort).ResetWriterIndex();
+        public IByteBuffer ShortInt()
+        {
+            this.buf.Write<short>(CrlfShort);
+            return this.buf.ResetWriterIndex();
+        }
+
+        // [Benchmark]
+        // public IByteBuffer MediumInt() => this.buf.WriteMedium(ZeroCrlfMedium).ResetWriterIndex();
 
         [Benchmark]
-        public IByteBuffer MediumInt() => this.buf.WriteMedium(ZeroCrlfMedium).ResetWriterIndex();
+        public IByteBuffer ByteArray2()
+        {
+            this.buf.WriteBytes(Crlf);
+            return this.buf.ResetWriterIndex();
+        }
 
         [Benchmark]
-        public IByteBuffer ByteArray2() => this.buf.WriteBytes(Crlf).ResetWriterIndex();
+        public IByteBuffer ByteArray3()
+        {
+            this.buf.WriteBytes(ZeroCrlf);
+            return this.buf.ResetWriterIndex();
+        }
 
         [Benchmark]
-        public IByteBuffer ByteArray3() => this.buf.WriteBytes(ZeroCrlf).ResetWriterIndex();
+        public IByteBuffer ChainedBytes2()
+        {
+            this.buf.Write<byte>(HttpConstants.CarriageReturn);
+            this.buf.Write<byte>(HttpConstants.LineFeed);
+            return this.buf.ResetWriterIndex();
+        }
 
         [Benchmark]
-        public IByteBuffer ChainedBytes2() => 
-            this.buf.WriteByte(HttpConstants.CarriageReturn).WriteByte(HttpConstants.LineFeed).ResetWriterIndex();
-
-        [Benchmark]
-        public IByteBuffer ChainedBytes3() => 
-            this.buf.WriteByte('0').WriteByte(HttpConstants.CarriageReturn).WriteByte(HttpConstants.LineFeed).ResetWriterIndex();
+        public IByteBuffer ChainedBytes3()
+        {
+            this.buf.Write<byte>('0');
+            this.buf.Write<byte>(HttpConstants.CarriageReturn);
+            this.buf.Write<byte>(HttpConstants.LineFeed);
+            return this.buf.ResetWriterIndex();
+        }
 
         [GlobalCleanup]
         public void GlobalCleanup()

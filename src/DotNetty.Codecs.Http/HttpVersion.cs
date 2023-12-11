@@ -228,7 +228,8 @@ namespace DotNetty.Codecs.Http
         {
             if (this.bytes == null)
             {
-                buf.WriteCharSequence(this.text, Encoding.ASCII);
+                throw new NotImplementedException();
+                // buf.WriteCharSequence(this.text, Encoding.ASCII);
             }
             else
             {

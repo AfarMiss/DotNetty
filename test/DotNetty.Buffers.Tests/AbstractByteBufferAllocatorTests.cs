@@ -45,7 +45,7 @@ namespace DotNetty.Buffers.Tests
 
         protected static void AssertInstanceOf<T>(IByteBuffer buffer) where T : IByteBuffer
         {
-            Assert.IsAssignableFrom<T>(buffer is SimpleLeakAwareByteBuffer ? buffer.Unwrap() : buffer);
+            Assert.IsAssignableFrom<T>(buffer);
         }
 
         [Fact]

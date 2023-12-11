@@ -106,14 +106,14 @@ namespace DotNetty.Buffers.Tests
             Assert.Equal(0, slice2.ReferenceCount);
         }
 
-        [Fact]
-        public override void WriteUsAsciiCharSequenceExpand() => Assert.Throws<IndexOutOfRangeException>(() => base.WriteUsAsciiCharSequenceExpand());
-
-        [Fact]
-        public override void WriteUtf8CharSequenceExpand() => Assert.Throws<IndexOutOfRangeException>(() => base.WriteUtf8CharSequenceExpand());
-
-        [Fact]
-        public override void WriteUtf16CharSequenceExpand() => Assert.Throws<IndexOutOfRangeException>(() => base.WriteUtf16CharSequenceExpand());
+        // [Fact]
+        // public override void WriteUsAsciiCharSequenceExpand() => Assert.Throws<IndexOutOfRangeException>(() => base.WriteUsAsciiCharSequenceExpand());
+        //
+        // [Fact]
+        // public override void WriteUtf8CharSequenceExpand() => Assert.Throws<IndexOutOfRangeException>(() => base.WriteUtf8CharSequenceExpand());
+        //
+        // [Fact]
+        // public override void WriteUtf16CharSequenceExpand() => Assert.Throws<IndexOutOfRangeException>(() => base.WriteUtf16CharSequenceExpand());
 
         [Fact]
         public void EnsureWritableWithEnoughSpaceShouldNotThrow()

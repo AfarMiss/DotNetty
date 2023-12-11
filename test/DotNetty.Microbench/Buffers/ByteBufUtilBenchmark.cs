@@ -24,7 +24,7 @@ namespace DotNetty.Microbench.Buffers
 
         static ByteBufUtilBenchmark()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
         }
 
         [GlobalSetup]

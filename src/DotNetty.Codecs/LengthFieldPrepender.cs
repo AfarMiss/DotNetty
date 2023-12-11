@@ -95,7 +95,7 @@ namespace DotNetty.Codecs
         /// </param>
         /// <param name="lengthAdjustment">The compensation value to add to the value of the length field.</param>
         public LengthFieldPrepender(int lengthFieldLength, int lengthAdjustment, bool lengthFieldIncludesLengthFieldLength)
-            : this(ByteOrder.BigEndian, lengthFieldLength, lengthAdjustment, lengthFieldIncludesLengthFieldLength)
+            : this(ByteBufferEx.DefaultByteOrder, lengthFieldLength, lengthAdjustment, lengthFieldIncludesLengthFieldLength)
         {
         }
 
@@ -148,36 +148,70 @@ namespace DotNetty.Codecs
                     {
                         throw new ArgumentException("length of object does not fit into one byte: " + length);
                     }
-                    output.Add(context.Allocator.Buffer(1).WriteByte((byte)length));
+                    // output.Add(context.Allocator.Buffer(1).Write<byte>((byte)length));
+                    var byteBuffer = context.Allocator.Buffer(1);
+                    byteBuffer.Write<byte>(length);
+                    output.Add(byteBuffer);
                     break;
                 case 2:
+                {
                     if (length >= 65536)
                     {
                         throw new ArgumentException("length of object does not fit into a short integer: " + length);
                     }
-                    output.Add(this.byteOrder == ByteOrder.BigEndian 
-                        ? context.Allocator.Buffer(2).WriteShort((short)length) 
-                        : context.Allocator.Buffer(2).WriteShortLE((short)length));
-                    break;
-                case 3:
-                    if (length >= 16777216)
+
+                    var buffer = context.Allocator.Buffer(2);
+                    if (this.byteOrder == ByteOrder.BigEndian)
                     {
-                        throw new ArgumentException("length of object does not fit into a medium integer: " + length);
+                        buffer.Write<short>((short)length);
                     }
-                    output.Add(this.byteOrder == ByteOrder.BigEndian
-                        ? context.Allocator.Buffer(3).WriteMedium(length)
-                        : context.Allocator.Buffer(3).WriteMediumLE(length));
+                    else
+                    {
+                        buffer.Write<short>((short)length);
+                    }
+                    output.Add(buffer);
+                    break;
+                }
+                case 3:
+                    throw new NotImplementedException();
+                    // if (length >= 16777216)
+                    // {
+                    //     throw new ArgumentException("length of object does not fit into a medium integer: " + length);
+                    // }
+                    // output.Add(this.byteOrder == ByteOrder.BigEndian
+                    //     ? context.Allocator.Buffer(3).WriteMedium(length)
+                    //     : context.Allocator.Buffer(3).WriteMediumLE(length));
                     break;
                 case 4:
-                    output.Add(this.byteOrder == ByteOrder.BigEndian
-                        ? context.Allocator.Buffer(4).WriteInt(length)
-                        : context.Allocator.Buffer(4).WriteIntLE(length));
+                {
+                    var buffer = context.Allocator.Buffer(4);
+                    if (this.byteOrder == ByteOrder.BigEndian)
+                    {
+                        buffer.Write<int>(length);
+                    }
+                    else
+                    {
+                        buffer.Write<int>(length);
+                    }
+                    output.Add(buffer);
                     break;
+                }
                 case 8:
-                    output.Add(this.byteOrder == ByteOrder.BigEndian
-                        ? context.Allocator.Buffer(8).WriteLong(length)
-                        : context.Allocator.Buffer(8).WriteLongLE(length));
-                    break;
+                {
+                    {
+                        var buffer = context.Allocator.Buffer(4);
+                        if (this.byteOrder == ByteOrder.BigEndian)
+                        {
+                            buffer.Write<long>(length);
+                        }
+                        else
+                        {
+                            buffer.Write<long>(length);
+                        }
+                        output.Add(buffer);
+                        break;
+                    }
+                }
                 default:
                     throw new Exception("Unknown length field length");
             }

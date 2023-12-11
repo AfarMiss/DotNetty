@@ -74,8 +74,8 @@ namespace DotNetty.Codecs.Http.Multipart
                     // empty file
                     return;
                 }
-
-                buffer.GetBytes(buffer.ReaderIndex, this.fileStream, buffer.ReadableBytes);
+                throw new NotImplementedException();
+                // buffer.GetBytes(buffer.ReaderIndex, this.fileStream, buffer.ReadableBytes);
                 buffer.SetReaderIndex(buffer.ReaderIndex + buffer.ReadableBytes);
                 this.fileStream.Flush();
                 this.SetCompleted();
@@ -104,7 +104,8 @@ namespace DotNetty.Codecs.Http.Multipart
                     {
                         this.fileStream = this.TempFile();
                     }
-                    buffer.GetBytes(buffer.ReaderIndex, this.fileStream, buffer.ReadableBytes);
+                    throw new NotImplementedException();
+                    // buffer.GetBytes(buffer.ReaderIndex, this.fileStream, buffer.ReadableBytes);
                     buffer.SetReaderIndex(buffer.ReaderIndex + localsize);
                     this.fileStream.Flush();
 

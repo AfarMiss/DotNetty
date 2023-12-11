@@ -26,7 +26,7 @@ namespace DotNetty.Microbench.Buffers
 
         static ByteBufferBenchmark()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
             Environment.SetEnvironmentVariable(PropMode, "false");
         }
 
@@ -41,10 +41,10 @@ namespace DotNetty.Microbench.Buffers
         }
 
         [Benchmark]
-        public void SetByteUnpooled() => this.unpooledBuffer.SetByte(0, 0);
+        public void SetByteUnpooled() => this.unpooledBuffer.Set<byte>(0, 0);
 
         [Benchmark]
-        public void SetBytePooled() =>this.pooledBuffer.SetByte(0, 0);
+        public void SetBytePooled() =>this.pooledBuffer.Set<byte>(0, 0);
 
         [GlobalCleanup]
         public void GlobalCleanup()

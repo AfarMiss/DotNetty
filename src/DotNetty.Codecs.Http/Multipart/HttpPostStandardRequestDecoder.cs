@@ -249,7 +249,7 @@ namespace DotNetty.Codecs.Http.Multipart
                 int ampersandpos;
                 while (this.undecodedChunk.IsReadable() && contRead)
                 {
-                    char read = (char)this.undecodedChunk.ReadByte();
+                    char read = (char)this.undecodedChunk.Read<byte>();
                     currentpos++;
                     switch (this.currentStatus)
                     {
@@ -290,7 +290,7 @@ namespace DotNetty.Codecs.Http.Multipart
                             {
                                 if (this.undecodedChunk.IsReadable())
                                 {
-                                    read = (char)this.undecodedChunk.ReadByte();
+                                    read = (char)this.undecodedChunk.Read<byte>();
                                     currentpos++;
                                     if (read == HttpConstants.LineFeed)
                                     {

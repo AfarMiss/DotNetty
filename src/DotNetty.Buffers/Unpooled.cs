@@ -346,7 +346,7 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyInt(int value)
         {
             IByteBuffer buf = Buffer(4);
-            buf.WriteInt(value);
+            buf.Write(value);
             return buf;
         }
 
@@ -363,7 +363,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 4);
             foreach (int v in values)
             {
-                buffer.WriteInt(v);
+                buffer.Write(v);
             }
 
             return buffer;
@@ -375,7 +375,7 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyShort(int value)
         {
             IByteBuffer buf = Buffer(2);
-            buf.WriteShort(value);
+            buf.Write((short)value);
             return buf;
         }
 
@@ -392,7 +392,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 2);
             foreach (short v in values)
             {
-                buffer.WriteShort(v);
+                buffer.Write(v);
             }
 
             return buffer;
@@ -411,7 +411,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 2);
             foreach (int v in values)
             {
-                buffer.WriteShort(v);
+                buffer.Write((short)v);
             }
             return buffer;
         }
@@ -422,7 +422,8 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyMedium(int value)
         {
             IByteBuffer buf = Buffer(3);
-            buf.WriteMedium(value);
+            throw new NotImplementedException();
+            // buf.WriteMedium(value);
             return buf;
         }
 
@@ -439,7 +440,8 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 3);
             foreach (int v in values)
             {
-                buffer.WriteMedium(v);
+                throw new NotImplementedException();
+                // buffer.WriteMedium(v);
             }
 
             return buffer;
@@ -451,7 +453,7 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyLong(long value)
         {
             IByteBuffer buf = Buffer(8);
-            buf.WriteLong(value);
+            buf.Write(value);
             return buf;
         }
 
@@ -468,7 +470,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 8);
             foreach (long v in values)
             {
-                buffer.WriteLong(v);
+                buffer.Write(v);
             }
 
             return buffer;
@@ -480,7 +482,7 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyBoolean(bool value)
         {
             IByteBuffer buf = Buffer(1);
-            buf.WriteBoolean(value);
+            buf.Write(value);
             return buf;
         }
 
@@ -497,7 +499,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length);
             foreach (bool v in values)
             {
-                buffer.WriteBoolean(v);
+                buffer.Write(v);
             }
 
             return buffer;
@@ -509,7 +511,7 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyFloat(float value)
         {
             IByteBuffer buf = Buffer(4);
-            buf.WriteFloat(value);
+            buf.Write(value);
             return buf;
         }
 
@@ -526,7 +528,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 4);
             foreach (float v in values)
             {
-                buffer.WriteFloat(v);
+                buffer.Write(v);
             }
 
             return buffer;
@@ -538,7 +540,7 @@ namespace DotNetty.Buffers
         public static IByteBuffer CopyDouble(double value)
         {
             IByteBuffer buf = Buffer(8);
-            buf.WriteDouble(value);
+            buf.Write(value);
             return buf;
         }
 
@@ -555,7 +557,7 @@ namespace DotNetty.Buffers
             IByteBuffer buffer = Buffer(values.Length * 8);
             foreach (double v in values)
             {
-                buffer.WriteDouble(v);
+                buffer.Write(v);
             }
 
             return buffer;

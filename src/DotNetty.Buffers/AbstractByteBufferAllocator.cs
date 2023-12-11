@@ -18,63 +18,63 @@ namespace DotNetty.Buffers
         public const int DefaultMaxCapacity = int.MaxValue;
         const int CalculateThreshold = 1048576 * 4; // 4 MiB page
 
-        protected static IByteBuffer ToLeakAwareBuffer(IByteBuffer buf)
-        {
-            IResourceLeakTracker leak;
-            switch (ResourceLeakDetector.Level)
-            {
-                case ResourceLeakDetector.DetectionLevel.Simple:
-                    leak = AbstractByteBuffer.LeakDetector.Track(buf);
-                    if (leak != null)
-                    {
-                        buf = new SimpleLeakAwareByteBuffer(buf, leak);
-                    }
-                    break;
-                case ResourceLeakDetector.DetectionLevel.Advanced:
-                case ResourceLeakDetector.DetectionLevel.Paranoid:
-                    leak = AbstractByteBuffer.LeakDetector.Track(buf);
-                    if (leak != null)
-                    {
-                        buf = new AdvancedLeakAwareByteBuffer(buf, leak);
-                    }
-                    break;
-                case ResourceLeakDetector.DetectionLevel.Disabled:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return buf;
-        }
-
-        protected static CompositeByteBuffer ToLeakAwareBuffer(CompositeByteBuffer buf)
-        {
-            IResourceLeakTracker leak;
-            switch (ResourceLeakDetector.Level)
-            {
-                case ResourceLeakDetector.DetectionLevel.Simple:
-                    leak = AbstractByteBuffer.LeakDetector.Track(buf);
-                    if (leak != null)
-                    {
-                        buf = new SimpleLeakAwareCompositeByteBuffer(buf, leak);
-                    }
-                    break;
-                case ResourceLeakDetector.DetectionLevel.Advanced:
-                case ResourceLeakDetector.DetectionLevel.Paranoid:
-                    leak = AbstractByteBuffer.LeakDetector.Track(buf);
-                    if (leak != null)
-                    {
-                        buf = new AdvancedLeakAwareCompositeByteBuffer(buf, leak);
-                    }
-                    break;
-                case ResourceLeakDetector.DetectionLevel.Disabled:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return buf;
-        }
+        // protected static IByteBuffer ToLeakAwareBuffer(IByteBuffer buf)
+        // {
+        //     IResourceLeakTracker leak;
+        //     switch (ResourceLeakDetector.Level)
+        //     {
+        //         case ResourceLeakDetector.DetectionLevel.Simple:
+        //             leak = AbstractByteBuffer.LeakDetector.Track(buf);
+        //             if (leak != null)
+        //             {
+        //                 buf = new SimpleLeakAwareByteBuffer(buf, leak);
+        //             }
+        //             break;
+        //         case ResourceLeakDetector.DetectionLevel.Advanced:
+        //         case ResourceLeakDetector.DetectionLevel.Paranoid:
+        //             leak = AbstractByteBuffer.LeakDetector.Track(buf);
+        //             if (leak != null)
+        //             {
+        //                 buf = new AdvancedLeakAwareByteBuffer(buf, leak);
+        //             }
+        //             break;
+        //         case ResourceLeakDetector.DetectionLevel.Disabled:
+        //             break;
+        //         default:
+        //             throw new ArgumentOutOfRangeException();
+        //     }
+        //
+        //     return buf;
+        // }
+        //
+        // protected static CompositeByteBuffer ToLeakAwareBuffer(CompositeByteBuffer buf)
+        // {
+        //     IResourceLeakTracker leak;
+        //     switch (ResourceLeakDetector.Level)
+        //     {
+        //         case ResourceLeakDetector.DetectionLevel.Simple:
+        //             leak = AbstractByteBuffer.LeakDetector.Track(buf);
+        //             if (leak != null)
+        //             {
+        //                 buf = new SimpleLeakAwareCompositeByteBuffer(buf, leak);
+        //             }
+        //             break;
+        //         case ResourceLeakDetector.DetectionLevel.Advanced:
+        //         case ResourceLeakDetector.DetectionLevel.Paranoid:
+        //             leak = AbstractByteBuffer.LeakDetector.Track(buf);
+        //             if (leak != null)
+        //             {
+        //                 buf = new AdvancedLeakAwareCompositeByteBuffer(buf, leak);
+        //             }
+        //             break;
+        //         case ResourceLeakDetector.DetectionLevel.Disabled:
+        //             break;
+        //         default:
+        //             throw new ArgumentOutOfRangeException();
+        //     }
+        //
+        //     return buf;
+        // }
 
         readonly bool directByDefault;
         readonly IByteBuffer emptyBuffer;
@@ -135,13 +135,11 @@ namespace DotNetty.Buffers
 
         public CompositeByteBuffer CompositeHeapBuffer() => this.CompositeHeapBuffer(DefaultMaxComponents);
 
-        public virtual CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents) => 
-            ToLeakAwareBuffer(new CompositeByteBuffer(this, false, maxNumComponents));
+        public virtual CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents) => new CompositeByteBuffer(this, false, maxNumComponents);
 
         public unsafe CompositeByteBuffer CompositeDirectBuffer() => this.CompositeDirectBuffer(DefaultMaxComponents);
 
-        public unsafe virtual CompositeByteBuffer CompositeDirectBuffer(int maxNumComponents) => 
-            ToLeakAwareBuffer(new CompositeByteBuffer(this, true, maxNumComponents));
+        public unsafe virtual CompositeByteBuffer CompositeDirectBuffer(int maxNumComponents) => new CompositeByteBuffer(this, true, maxNumComponents);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Validate(int initialCapacity, int maxCapacity)

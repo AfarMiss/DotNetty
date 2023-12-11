@@ -57,9 +57,10 @@ namespace DotNetty.Handlers.Streams
             try
             {
                 // transfer to buffer
-                int count = buffer.SetBytesAsync(buffer.WriterIndex, this.input, readChunkSize, CancellationToken.None).Result;
-                buffer.SetWriterIndex(buffer.WriterIndex + count);
-                this.TransferredBytes += count;
+                throw new NotImplementedException();
+                // int count = buffer.SetBytesAsync(buffer.WriterIndex, this.input, readChunkSize, CancellationToken.None).Result;
+                // buffer.SetWriterIndex(buffer.WriterIndex + count);
+                // this.TransferredBytes += count;
 
                 release = false;
             }

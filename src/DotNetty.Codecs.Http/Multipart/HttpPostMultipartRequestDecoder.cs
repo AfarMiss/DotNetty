@@ -470,7 +470,7 @@ namespace DotNetty.Codecs.Http.Multipart
         {
             for (; ;)
             {
-                char c = (char)undecodedChunk.ReadByte();
+                char c = (char)undecodedChunk.Read<byte>();
                 if (!CharUtil.IsISOControl(c) && !char.IsWhiteSpace(c))
                 {
                     undecodedChunk.SetReaderIndex(undecodedChunk.ReaderIndex - 1);
@@ -962,21 +962,21 @@ namespace DotNetty.Codecs.Http.Multipart
 
                 while (undecodedChunk.IsReadable())
                 {
-                    byte nextByte = undecodedChunk.ReadByte();
+                    byte nextByte = undecodedChunk.Read<byte>();
                     if (nextByte == HttpConstants.CarriageReturn)
                     {
                         // check but do not changed readerIndex
-                        nextByte = undecodedChunk.GetByte(undecodedChunk.ReaderIndex);
+                        nextByte = undecodedChunk.Get<byte>(undecodedChunk.ReaderIndex);
                         if (nextByte == HttpConstants.LineFeed)
                         {
                             // force read
-                            undecodedChunk.ReadByte();
+                            undecodedChunk.Read<byte>();
                             return new StringCharSequence(line.ToString(charset));
                         }
                         else
                         {
                             // Write CR (not followed by LF)
-                            line.WriteByte(HttpConstants.CarriageReturn);
+                            line.Write<byte>(HttpConstants.CarriageReturn);
                         }
                     }
                     else if (nextByte == HttpConstants.LineFeed)
@@ -985,7 +985,7 @@ namespace DotNetty.Codecs.Http.Multipart
                     }
                     else
                     {
-                        line.WriteByte(nextByte);
+                        line.Write<byte>(nextByte);
                     }
                 }
             }
@@ -1027,12 +1027,12 @@ namespace DotNetty.Codecs.Http.Multipart
                             {
                                 // Write CR (not followed by LF)
                                 sao.Pos--;
-                                line.WriteByte(HttpConstants.CarriageReturn);
+                                line.Write<byte>(HttpConstants.CarriageReturn);
                             }
                         }
                         else
                         {
-                            line.WriteByte(nextByte);
+                            line.Write<byte>(nextByte);
                         }
                     }
                     else if (nextByte == HttpConstants.LineFeed)
@@ -1042,7 +1042,7 @@ namespace DotNetty.Codecs.Http.Multipart
                     }
                     else
                     {
-                        line.WriteByte(nextByte);
+                        line.Write<byte>(nextByte);
                     }
                 }
             }
@@ -1065,7 +1065,7 @@ namespace DotNetty.Codecs.Http.Multipart
                 int len = delimiter.Count;
                 while (undecodedChunk.IsReadable() && delimiterPos < len)
                 {
-                    byte nextByte = undecodedChunk.ReadByte();
+                    byte nextByte = undecodedChunk.Read<byte>();
                     if (nextByte == delimiter[delimiterPos])
                     {
                         delimiterPos++;
@@ -1081,11 +1081,11 @@ namespace DotNetty.Codecs.Http.Multipart
                 // Now check if either opening delimiter or closing delimiter
                 if (undecodedChunk.IsReadable())
                 {
-                    byte nextByte = undecodedChunk.ReadByte();
+                    byte nextByte = undecodedChunk.Read<byte>();
                     // first check for opening delimiter
                     if (nextByte == HttpConstants.CarriageReturn)
                     {
-                        nextByte = undecodedChunk.ReadByte();
+                        nextByte = undecodedChunk.Read<byte>();
                         if (nextByte == HttpConstants.LineFeed)
                         {
                             return sb;
@@ -1106,17 +1106,17 @@ namespace DotNetty.Codecs.Http.Multipart
                     {
                         sb.Append('-');
                         // second check for closing delimiter
-                        nextByte = undecodedChunk.ReadByte();
+                        nextByte = undecodedChunk.Read<byte>();
                         if (nextByte == '-')
                         {
                             sb.Append('-');
                             // now try to find if CRLF or LF there
                             if (undecodedChunk.IsReadable())
                             {
-                                nextByte = undecodedChunk.ReadByte();
+                                nextByte = undecodedChunk.Read<byte>();
                                 if (nextByte == HttpConstants.CarriageReturn)
                                 {
-                                    nextByte = undecodedChunk.ReadByte();
+                                    nextByte = undecodedChunk.Read<byte>();
                                     if (nextByte == HttpConstants.LineFeed)
                                     {
                                         return sb;
@@ -1317,7 +1317,7 @@ namespace DotNetty.Codecs.Http.Multipart
             bool delimiterFound = false;
             while (undecodedChunk.IsReadable())
             {
-                byte nextByte = undecodedChunk.ReadByte();
+                byte nextByte = undecodedChunk.Read<byte>();
                 // Check the delimiter
                 if (prevByte == HttpConstants.LineFeed && nextByte == CharUtil.CodePointAt(delimiter, index))
                 {
@@ -1442,7 +1442,7 @@ namespace DotNetty.Codecs.Http.Multipart
             {
                 return false;
             }
-            byte nextByte = this.undecodedChunk.ReadByte();
+            byte nextByte = this.undecodedChunk.Read<byte>();
             if (nextByte == HttpConstants.CarriageReturn)
             {
                 if (!this.undecodedChunk.IsReadable())
@@ -1451,7 +1451,7 @@ namespace DotNetty.Codecs.Http.Multipart
                     return false;
                 }
 
-                nextByte = this.undecodedChunk.ReadByte();
+                nextByte = this.undecodedChunk.Read<byte>();
                 if (nextByte == HttpConstants.LineFeed)
                 {
                     return true;

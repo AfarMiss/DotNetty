@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
+
 namespace DotNetty.Codecs.Http.WebSockets
 {
     using System.Text;
@@ -37,10 +39,11 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
 
             IByteBuffer binaryData = Unpooled.Buffer(2 + reasonText.Count);
-            binaryData.WriteShort(statusCode);
+            binaryData.Write<short>(statusCode);
             if (reasonText.Count > 0)
             {
-                binaryData.WriteCharSequence(reasonText, Encoding.UTF8);
+                throw new NotImplementedException();
+                // binaryData.WriteCharSequence(reasonText, Encoding.UTF8);
             }
 
             binaryData.SetReaderIndex(0);
@@ -65,7 +68,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
 
             binaryData.SetReaderIndex(0);
-            int statusCode = binaryData.ReadShort();
+            int statusCode = binaryData.Read<short>();
             binaryData.SetReaderIndex(0);
 
             return statusCode;

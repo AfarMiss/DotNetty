@@ -19,7 +19,7 @@ namespace DotNetty.Microbench.Http
         [GlobalSetup]
         public void GlobalSetup()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
             this.uri = "http://localhost?eventType=CRITICAL&from=0&to=1497437160327&limit=10&offset=0";
             this. encoder = new HttpRequestEncoder();
         }

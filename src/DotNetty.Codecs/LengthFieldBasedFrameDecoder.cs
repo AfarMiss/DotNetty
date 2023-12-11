@@ -232,7 +232,7 @@ namespace DotNetty.Codecs
         ///     Defaults to <c>true</c> in other overloads.
         /// </param>
         public LengthFieldBasedFrameDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength, int lengthAdjustment, int initialBytesToStrip, bool failFast)
-            : this(ByteOrder.BigEndian, maxFrameLength, lengthFieldOffset, lengthFieldLength, lengthAdjustment, initialBytesToStrip, failFast)
+            : this(ByteBufferEx.DefaultByteOrder, maxFrameLength, lengthFieldOffset, lengthFieldLength, lengthAdjustment, initialBytesToStrip, failFast)
         {
         }
 
@@ -404,19 +404,20 @@ namespace DotNetty.Codecs
             switch (length)
             {
                 case 1:
-                    frameLength = buffer.GetByte(offset);
+                    frameLength = buffer.Get<byte>(offset);
                     break;
                 case 2:
-                    frameLength = order == ByteOrder.BigEndian ? buffer.GetUnsignedShort(offset) : buffer.GetUnsignedShortLE(offset);
+                    frameLength = order == ByteOrder.BigEndian ? buffer.Get<ushort>(offset) : buffer.Get<ushort>(offset);
                     break;
                 case 3:
-                    frameLength = order == ByteOrder.BigEndian ? buffer.GetUnsignedMedium(offset) : buffer.GetUnsignedMediumLE(offset);
+                    throw new NotImplementedException();
+                    // frameLength = order == ByteOrder.BigEndian ? buffer.GetUnsignedMedium(offset) : buffer.GetUnsignedMediumLE(offset);
                     break;
                 case 4:
-                    frameLength = order == ByteOrder.BigEndian ? buffer.GetInt(offset) : buffer.GetIntLE(offset);
+                    frameLength = order == ByteOrder.BigEndian ? buffer.Get<int>(offset) : buffer.Get<int>(offset);
                     break;
                 case 8:
-                    frameLength = order == ByteOrder.BigEndian ? buffer.GetLong(offset) : buffer.GetLongLE(offset);
+                    frameLength = order == ByteOrder.BigEndian ? buffer.Get<long>(offset) : buffer.Get<long>(offset);
                     break;
                 default:
                     throw new DecoderException("unsupported lengthFieldLength: " + this.lengthFieldLength + " (expected: 1, 2, 3, 4, or 8)");

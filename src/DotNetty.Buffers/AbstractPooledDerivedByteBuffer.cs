@@ -25,7 +25,8 @@ namespace DotNetty.Buffers
         // Called from within SimpleLeakAwareByteBuf and AdvancedLeakAwareByteBuffer.
         internal void Parent(IByteBuffer newParent)
         {
-            Debug.Assert(newParent is SimpleLeakAwareByteBuffer);
+            // Debug.Assert(newParent is SimpleLeakAwareByteBuffer);
+            throw new NotImplementedException();
             this.parent = newParent;
         }
 

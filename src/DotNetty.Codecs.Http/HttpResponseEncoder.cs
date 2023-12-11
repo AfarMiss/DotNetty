@@ -12,9 +12,9 @@ namespace DotNetty.Codecs.Http
         protected internal override void EncodeInitialLine(IByteBuffer buf, IHttpResponse response)
         {
             response.ProtocolVersion.Encode(buf);
-            buf.WriteByte(HttpConstants.HorizontalSpace);
+            buf.Write<byte>(HttpConstants.HorizontalSpace);
             response.Status.Encode(buf);
-            buf.WriteShort(HttpConstants.CrlfShort);
+            buf.Write<short>(HttpConstants.CrlfShort);
         }
 
         protected override void SanitizeHeadersBeforeEncode(IHttpResponse msg, bool isAlwaysEmpty)

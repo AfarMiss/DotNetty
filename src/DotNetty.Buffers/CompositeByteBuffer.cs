@@ -19,6 +19,8 @@ namespace DotNetty.Buffers
 
     public class CompositeByteBuffer : AbstractReferenceCountedByteBuffer, IEnumerable<IByteBuffer>
     {
+        #region IByteBuffer
+
         static readonly IList<IByteBuffer> EmptyList = new ReadOnlyCollection<IByteBuffer>(new IByteBuffer[0]);
 
         class ComponentEntry
@@ -810,410 +812,6 @@ namespace DotNetty.Buffers
             return this.components[cIndex].Offset;
         }
 
-        protected internal override byte _GetByte(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            return c.Buffer.GetByte(index - c.Offset);
-        }
-
-        protected internal override short _GetShort(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 2 <= c.EndOffset)
-            {
-                return c.Buffer.GetShort(index - c.Offset);
-            }
-
-            return (short)(this._GetByte(index) << 8 | this._GetByte(index + 1));
-        }
-
-        protected internal override short _GetShortLE(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 2 <= c.EndOffset)
-            {
-                return c.Buffer.GetShortLE(index - c.Offset);
-            }
-
-            return (short)(this._GetByte(index) << 8 | this._GetByte(index + 1));
-        }
-
-        protected internal override int _GetUnsignedMedium(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 3 <= c.EndOffset)
-            {
-                return c.Buffer.GetUnsignedMedium(index - c.Offset);
-            }
-
-            return (this._GetShort(index) & 0xffff) << 8 | this._GetByte(index + 2);
-        }
-
-        protected internal override int _GetUnsignedMediumLE(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 3 <= c.EndOffset)
-            {
-                return c.Buffer.GetUnsignedMediumLE(index - c.Offset);
-            }
-
-            return (this._GetShortLE(index) & 0xffff) << 8 | this._GetByte(index + 2);
-        }
-
-        protected internal override int _GetInt(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 4 <= c.EndOffset)
-            {
-                return c.Buffer.GetInt(index - c.Offset);
-            }
-
-            return this._GetShort(index) << 16 | (ushort)this._GetShort(index + 2);
-        }
-
-        protected internal override int _GetIntLE(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 4 <= c.EndOffset)
-            {
-                return c.Buffer.GetIntLE(index - c.Offset);
-            }
-
-            return (this._GetShortLE(index) << 16 | (ushort)this._GetShortLE(index + 2));
-        }
-
-        protected internal override long _GetLong(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 8 <= c.EndOffset)
-            {
-                return c.Buffer.GetLong(index - c.Offset);
-            }
-
-            return (long)this._GetInt(index) << 32 | (uint)this._GetInt(index + 4);
-        }
-
-        protected internal override long _GetLongLE(int index)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 8 <= c.EndOffset)
-            {
-                return c.Buffer.GetLongLE(index - c.Offset);
-            }
-
-            return (this._GetIntLE(index) << 32 | this._GetIntLE(index + 4));
-        }
-
-        public override IByteBuffer GetBytes(int index, byte[] dst, int dstIndex, int length)
-        {
-            this.CheckDstIndex(index, length, dstIndex, dst.Length);
-            if (length == 0)
-            {
-                return this;
-            }
-
-            int i = this.ToComponentIndex(index);
-            while (length > 0)
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                s.GetBytes(index - adjustment, dst, dstIndex, localLength);
-                index += localLength;
-                dstIndex += localLength;
-                length -= localLength;
-                i++;
-            }
-            return this;
-        }
-
-        public override IByteBuffer GetBytes(int index, Stream destination, int length)
-        {
-            this.CheckIndex(index, length);
-            if (length == 0)
-            {
-                return this;
-            }
-
-            int i = this.ToComponentIndex(index);
-            while (length > 0)
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                s.GetBytes(index - adjustment, destination, localLength);
-                index += localLength;
-                length -= localLength;
-                i++;
-            }
-            return this;
-        }
-
-        public override IByteBuffer GetBytes(int index, IByteBuffer dst, int dstIndex, int length)
-        {
-            this.CheckDstIndex(index, length, dstIndex, dst.Capacity);
-            if (length == 0)
-            {
-                return this;
-            }
-
-            int i = this.ToComponentIndex(index);
-            while (length > 0)
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                s.GetBytes(index - adjustment, dst, dstIndex, localLength);
-                index += localLength;
-                dstIndex += localLength;
-                length -= localLength;
-                i++;
-            }
-            return this;
-        }
-
-        protected internal override void _SetByte(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            c.Buffer.SetByte(index - c.Offset, value);
-        }
-
-        protected internal override void _SetShort(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 2 <= c.EndOffset)
-            {
-                c.Buffer.SetShort(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetByte(index, (byte)((uint)value >> 8));
-                this._SetByte(index + 1, (byte)value);
-            }
-        }
-
-        protected internal override void _SetShortLE(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 2 <= c.EndOffset)
-            {
-                c.Buffer.SetShortLE(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetByte(index, (byte)(value.RightUShift(8)));
-                this._SetByte(index + 1, (byte)value);
-            }
-        }
-
-        protected internal override void _SetMedium(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 3 <= c.EndOffset)
-            {
-                c.Buffer.SetMedium(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetShort(index, (short)(value >> 8));
-                this._SetByte(index + 2, (byte)value);
-            }
-        }
-
-        protected internal override void _SetMediumLE(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 3 <= c.EndOffset)
-            {
-                c.Buffer.SetMediumLE(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetShortLE(index, (short)(value >> 8));
-                this._SetByte(index + 2, (byte)value);
-            }
-        }
-
-        protected internal override void _SetInt(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 4 <= c.EndOffset)
-            {
-                c.Buffer.SetInt(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetShort(index, (short)((uint)value >> 16));
-                this._SetShort(index + 2, (short)value);
-            }
-        }
-
-        protected internal override void _SetIntLE(int index, int value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 4 <= c.EndOffset)
-            {
-                c.Buffer.SetIntLE(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetShortLE(index, (short)value.RightUShift(16));
-                this._SetShortLE(index + 2, (short)value);
-            }
-        }
-
-        protected internal override void _SetLong(int index, long value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 8 <= c.EndOffset)
-            {
-                c.Buffer.SetLong(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetInt(index, (int)((ulong)value >> 32));
-                this._SetInt(index + 4, (int)value);
-            }
-        }
-
-        protected internal override void _SetLongLE(int index, long value)
-        {
-            ComponentEntry c = this.FindComponent(index);
-            if (index + 8 <= c.EndOffset)
-            {
-                c.Buffer.SetLongLE(index - c.Offset, value);
-            }
-            else
-            {
-                this._SetIntLE(index, (int)value.RightUShift(32));
-                this._SetIntLE(index + 4, (int)value);
-            }
-        }
-
-        public override IByteBuffer SetBytes(int index, byte[] src, int srcIndex, int length)
-        {
-            this.CheckSrcIndex(index, length, srcIndex, src.Length);
-            if (length == 0)
-            {
-                return this;
-            }
-
-            int i = this.ToComponentIndex(index);
-            while (length > 0)
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                s.SetBytes(index - adjustment, src, srcIndex, localLength);
-                index += localLength;
-                srcIndex += localLength;
-                length -= localLength;
-                i++;
-            }
-            return this;
-        }
-
-        public override async Task<int> SetBytesAsync(int index, Stream src, int length, CancellationToken cancellationToken)
-        {
-            this.CheckIndex(index, length);
-            if (length == 0)
-            {
-                return 0;
-                //return src.Read(EmptyArrays.EMPTY_BYTES);
-            }
-
-            int i = this.ToComponentIndex(index);
-            int readBytes = 0;
-
-            do
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                int localReadBytes = await s.SetBytesAsync(index - adjustment, src, localLength, cancellationToken);
-                if (localReadBytes < 0)
-                {
-                    if (readBytes == 0)
-                    {
-                        return -1;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                if (localReadBytes == localLength)
-                {
-                    index += localLength;
-                    length -= localLength;
-                    readBytes += localLength;
-                    i++;
-                }
-                else
-                {
-                    index += localReadBytes;
-                    length -= localReadBytes;
-                    readBytes += localReadBytes;
-                }
-            }
-            while (length > 0);
-
-            return readBytes;
-        }
-
-        public override IByteBuffer SetBytes(int index, IByteBuffer src, int srcIndex, int length)
-        {
-            this.CheckSrcIndex(index, length, srcIndex, src.Capacity);
-            if (length == 0)
-            {
-                return this;
-            }
-
-            int i = this.ToComponentIndex(index);
-            while (length > 0)
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                s.SetBytes(index - adjustment, src, srcIndex, localLength);
-                index += localLength;
-                srcIndex += localLength;
-                length -= localLength;
-                i++;
-            }
-            return this;
-        }
-
-        public override IByteBuffer SetZero(int index, int length)
-        {
-            this.CheckIndex(index, length);
-            if (length == 0)
-            {
-                return this;
-            }
-
-            int i = this.ToComponentIndex(index);
-            while (length > 0)
-            {
-                ComponentEntry c = this.components[i];
-                IByteBuffer s = c.Buffer;
-                int adjustment = c.Offset;
-                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
-                s.SetZero(index - adjustment, localLength);
-                index += localLength;
-                length -= localLength;
-                i++;
-            }
-            return this;
-        }
-
         public override IByteBuffer Copy(int index, int length)
         {
             this.CheckIndex(index, length);
@@ -1495,5 +1093,107 @@ namespace DotNetty.Buffers
         }
 
         public override IByteBuffer Unwrap() => null;
+
+        #endregion
+        
+        protected internal override unsafe T _Get<T>(int index)
+        {
+            var c = this.FindComponent(index);
+            if (index + sizeof(T) <= c.EndOffset)
+            {
+                return c.Buffer.Get<T>(index - c.Offset);
+            }
+            throw new NotImplementedException();
+        }
+
+        protected internal override unsafe void _Set<T>(int index, T value)
+        {
+            ComponentEntry c = this.FindComponent(index);
+            if (index + sizeof(T) <= c.EndOffset)
+            {
+                c.Buffer.Set<T>(index - c.Offset, value);
+            }
+            throw new NotImplementedException();
+        }
+
+        public override void GetBytes(int index, IByteBuffer dst, int dstIndex, int length)
+        {
+            this.CheckDstIndex(index, length, dstIndex, dst.Capacity);
+            if (length == 0) return;
+
+            int i = this.ToComponentIndex(index);
+            while (length > 0)
+            {
+                ComponentEntry c = this.components[i];
+                IByteBuffer s = c.Buffer;
+                int adjustment = c.Offset;
+                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
+                s.GetBytes(index - adjustment, dst, dstIndex, localLength);
+                index += localLength;
+                dstIndex += localLength;
+                length -= localLength;
+                i++;
+            }
+        }
+
+        public override void GetBytes(int index, byte[] dst, int dstIndex, int length)
+        {
+            this.CheckDstIndex(index, length, dstIndex, dst.Length);
+            if (length == 0) return;
+
+            int i = this.ToComponentIndex(index);
+            while (length > 0)
+            {
+                ComponentEntry c = this.components[i];
+                IByteBuffer s = c.Buffer;
+                int adjustment = c.Offset;
+                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
+                s.GetBytes(index - adjustment, dst, dstIndex, localLength);
+                index += localLength;
+                dstIndex += localLength;
+                length -= localLength;
+                i++;
+            }
+        }
+
+        public override void SetBytes(int index, IByteBuffer src, int srcIndex, int length)
+        {
+            this.CheckSrcIndex(index, length, srcIndex, src.Capacity);
+            if (length == 0) return;
+
+            int i = this.ToComponentIndex(index);
+            while (length > 0)
+            {
+                ComponentEntry c = this.components[i];
+                IByteBuffer s = c.Buffer;
+                int adjustment = c.Offset;
+                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
+                s.SetBytes(index - adjustment, src, srcIndex, localLength);
+                index += localLength;
+                srcIndex += localLength;
+                length -= localLength;
+                i++;
+            }
+        }
+
+        public override void SetBytes(int index, byte[] src, int srcIndex, int length)
+        {
+            this.CheckSrcIndex(index, length, srcIndex, src.Length);
+            if (length == 0) return;
+
+            int i = this.ToComponentIndex(index);
+            while (length > 0)
+            {
+                ComponentEntry c = this.components[i];
+                IByteBuffer s = c.Buffer;
+                int adjustment = c.Offset;
+                int localLength = Math.Min(length, s.Capacity - (index - adjustment));
+                s.SetBytes(index - adjustment, src, srcIndex, localLength);
+                index += localLength;
+                srcIndex += localLength;
+                length -= localLength;
+                i++;
+            }
+        }
     }
 }

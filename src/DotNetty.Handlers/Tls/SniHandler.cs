@@ -59,7 +59,7 @@ namespace DotNetty.Handlers.Tls
                             return;
                         }
 
-                        int command = input.GetByte(readerIndex);
+                        int command = input.Get<byte>(readerIndex);
                         // tls, but not handshake command
                         switch (command)
                         {
@@ -90,12 +90,12 @@ namespace DotNetty.Handlers.Tls
                                 continue;
 
                             case TlsUtils.SSL_CONTENT_TYPE_HANDSHAKE:
-                                int majorVersion = input.GetByte(readerIndex + 1);
+                                int majorVersion = input.Get<byte>(readerIndex + 1);
 
                                 // SSLv3 or TLS
                                 if (majorVersion == 3)
                                 {
-                                    int packetLength = input.GetUnsignedShort(readerIndex + 3) + TlsUtils.SSL_RECORD_HEADER_LENGTH;
+                                    int packetLength = input.Get<ushort>(readerIndex + 3) + TlsUtils.SSL_RECORD_HEADER_LENGTH;
 
                                     if (readableBytes < packetLength)
                                     {
@@ -132,16 +132,16 @@ namespace DotNetty.Handlers.Tls
                                         break;
                                     }
 
-                                    int sessionIdLength = input.GetByte(offset);
+                                    int sessionIdLength = input.Get<byte>(offset);
                                     offset += sessionIdLength + 1;
 
-                                    int cipherSuitesLength = input.GetUnsignedShort(offset);
+                                    int cipherSuitesLength = input.Get<ushort>(offset);
                                     offset += cipherSuitesLength + 2;
 
-                                    int compressionMethodLength = input.GetByte(offset);
+                                    int compressionMethodLength = input.Get<byte>(offset);
                                     offset += compressionMethodLength + 1;
 
-                                    int extensionsLength = input.GetUnsignedShort(offset);
+                                    int extensionsLength = input.Get<ushort>(offset);
                                     offset += 2;
                                      int extensionsLimit = offset + extensionsLength;
 
@@ -160,10 +160,10 @@ namespace DotNetty.Handlers.Tls
                                             break;
                                         }
 
-                                        int extensionType = input.GetUnsignedShort(offset);
+                                        int extensionType = input.Get<ushort>(offset);
                                         offset += 2;
 
-                                        int extensionLength = input.GetUnsignedShort(offset);
+                                        int extensionLength = input.Get<ushort>(offset);
                                         offset += 2;
 
                                         if (extensionsLimit - offset < extensionLength)
@@ -183,12 +183,12 @@ namespace DotNetty.Handlers.Tls
                                                 break;
                                             }
 
-                                            int serverNameType = input.GetByte(offset);
+                                            int serverNameType = input.Get<byte>(offset);
                                             offset++;
 
                                             if (serverNameType == 0)
                                             {
-                                                int serverNameLength = input.GetUnsignedShort(offset);
+                                                int serverNameLength = input.Get<ushort>(offset);
                                                 offset += 2;
 
                                                 if (serverNameLength <= 0 || extensionsLimit - offset < serverNameLength)

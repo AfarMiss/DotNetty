@@ -100,7 +100,7 @@ namespace DotNetty.Codecs.Redis
                 RedisConstants.EndOfLineLength);
             type.WriteTo(buf);
             ByteBufferUtil.WriteUtf8(buf, content);
-            buf.WriteShort(RedisConstants.EndOfLineShort);
+            buf.Write<short>(RedisConstants.EndOfLineShort);
             output.Add(buf);
         }
 
@@ -110,7 +110,7 @@ namespace DotNetty.Codecs.Redis
                 RedisConstants.EndOfLineLength);
             RedisMessageType.Integer.WriteTo(buf);
             buf.WriteBytes(this.NumberToBytes(msg.Value));
-            buf.WriteShort(RedisConstants.EndOfLineShort);
+            buf.Write<short>(RedisConstants.EndOfLineShort);
             output.Add(buf);
         }
 
@@ -121,12 +121,12 @@ namespace DotNetty.Codecs.Redis
             RedisMessageType.BulkString.WriteTo(buf);
             if (msg.IsNull)
             {
-                buf.WriteShort(RedisConstants.NullShort);
+                buf.Write<short>(RedisConstants.NullShort);
             }
             else
             {
                 buf.WriteBytes(this.NumberToBytes(msg.BulkStringLength));
-                buf.WriteShort(RedisConstants.EndOfLineShort);
+                buf.Write<short>(RedisConstants.EndOfLineShort);
             }
             output.Add(buf);
         }
@@ -136,7 +136,9 @@ namespace DotNetty.Codecs.Redis
             output.Add(msg.Content.Retain());
             if (msg is ILastBulkStringRedisContent)
             {
-                output.Add(allocator.Buffer(RedisConstants.EndOfLineLength).WriteShort(RedisConstants.EndOfLineShort));
+                var byteBuffer = allocator.Buffer(RedisConstants.EndOfLineLength);
+                byteBuffer.Write<short>(RedisConstants.EndOfLineShort);
+                output.Add(byteBuffer);
             }
         }
 
@@ -147,8 +149,8 @@ namespace DotNetty.Codecs.Redis
                 IByteBuffer buf = allocator.Buffer(RedisConstants.TypeLength + RedisConstants.NullLength +
                     RedisConstants.EndOfLineLength);
                 RedisMessageType.BulkString.WriteTo(buf);
-                buf.WriteShort(RedisConstants.NullShort);
-                buf.WriteShort(RedisConstants.EndOfLineShort);
+                buf.Write<short>(RedisConstants.NullShort);
+                buf.Write<short>(RedisConstants.EndOfLineShort);
                 output.Add(buf);
             }
             else
@@ -157,10 +159,12 @@ namespace DotNetty.Codecs.Redis
                     RedisConstants.EndOfLineLength);
                 RedisMessageType.BulkString.WriteTo(headerBuf);
                 headerBuf.WriteBytes(this.NumberToBytes(msg.Content.ReadableBytes));
-                headerBuf.WriteShort(RedisConstants.EndOfLineShort);
+                headerBuf.Write<short>(RedisConstants.EndOfLineShort);
                 output.Add(headerBuf);
                 output.Add(msg.Content.Retain());
-                output.Add(allocator.Buffer(RedisConstants.EndOfLineLength).WriteShort(RedisConstants.EndOfLineShort));
+                var byteBuffer = allocator.Buffer(RedisConstants.EndOfLineLength);
+                byteBuffer.Write<short>(RedisConstants.EndOfLineShort);
+                output.Add(byteBuffer);
             }
         }
 
@@ -190,8 +194,8 @@ namespace DotNetty.Codecs.Redis
                 IByteBuffer buf = allocator.Buffer(RedisConstants.TypeLength + RedisConstants.NullLength +
                     RedisConstants.EndOfLineLength);
                 RedisMessageType.ArrayHeader.WriteTo(buf);
-                buf.WriteShort(RedisConstants.NullShort);
-                buf.WriteShort(RedisConstants.EndOfLineShort);
+                buf.Write<short>(RedisConstants.NullShort);
+                buf.Write<short>(RedisConstants.EndOfLineShort);
                     output.Add(buf);
             }
             else
@@ -200,7 +204,7 @@ namespace DotNetty.Codecs.Redis
                     RedisConstants.EndOfLineLength);
                 RedisMessageType.ArrayHeader.WriteTo(buf);
                 buf.WriteBytes(this.NumberToBytes(length));
-                buf.WriteShort(RedisConstants.EndOfLineShort);
+                buf.Write<short>(RedisConstants.EndOfLineShort);
                     output.Add(buf);
             }
         }

@@ -19,7 +19,7 @@ namespace DotNetty.Microbench.Http
         [GlobalSetup]
         public void GlobalSetup()
         {
-            ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
+            // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
         }
 
         [Benchmark]

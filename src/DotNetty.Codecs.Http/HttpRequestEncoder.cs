@@ -29,7 +29,8 @@ namespace DotNetty.Codecs.Http
             {
                 // Add / as absolute path if no is present.
                 // See http://tools.ietf.org/html/rfc2616#section-5.1.2
-                buf.WriteMedium(SpaceSlashAndSpaceMedium);
+                throw new NotImplementedException();
+                // buf.WriteMedium(SpaceSlashAndSpaceMedium);
             }
             else
             {
@@ -60,20 +61,21 @@ namespace DotNetty.Codecs.Http
                     }
                 }
 
-                buf.WriteByte(HorizontalSpace).WriteCharSequence(uriCharSequence, Encoding.UTF8);
+                throw new NotImplementedException();
+                // buf.Write<byte>(HorizontalSpace).WriteCharSequence(uriCharSequence, Encoding.UTF8);
                 if (needSlash)
                 {
                     // write "/ " after uri
-                    buf.WriteShort(SlashAndSpaceShort);
+                    buf.Write<short>(SlashAndSpaceShort);
                 }
                 else
                 {
-                    buf.WriteByte(HorizontalSpace);
+                    buf.Write<byte>(HorizontalSpace);
                 }
             }
 
             request.ProtocolVersion.Encode(buf);
-            buf.WriteShort(CrlfShort);
+            buf.Write<short>(CrlfShort);
         }
     }
 }

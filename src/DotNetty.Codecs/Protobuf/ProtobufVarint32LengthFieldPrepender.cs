@@ -42,11 +42,11 @@ namespace DotNetty.Codecs.Protobuf
             {
                 if ((value & ~0x7F) == 0)
                 {
-                    output.WriteByte(value);
+                    output.Write<byte>(value);
                     return;
                 }
 
-                output.WriteByte((value & 0x7F) | 0x80);
+                output.Write<byte>((value & 0x7F) | 0x80);
                 value >>= 7;
             }
         }

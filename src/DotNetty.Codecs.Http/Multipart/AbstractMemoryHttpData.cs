@@ -191,7 +191,8 @@ namespace DotNetty.Codecs.Http.Multipart
                 return true;
             }
 
-            this.byteBuf.GetBytes(this.byteBuf.ReaderIndex, destination, this.byteBuf.ReadableBytes);
+            throw new NotImplementedException();
+            // this.byteBuf.GetBytes(this.byteBuf.ReaderIndex, destination, this.byteBuf.ReadableBytes);
             destination.Flush();
             return true;
         }

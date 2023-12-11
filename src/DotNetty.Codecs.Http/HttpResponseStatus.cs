@@ -548,8 +548,9 @@ namespace DotNetty.Codecs.Http
             if (this.bytes == null)
             {
                 ByteBufferUtil.Copy(this.codeAsText, buf);
-                buf.WriteByte(HttpConstants.HorizontalSpace);
-                buf.WriteCharSequence(this.reasonPhrase, Encoding.ASCII);
+                buf.Write<byte>(HttpConstants.HorizontalSpace);
+                throw new NotImplementedException();
+                // buf.WriteCharSequence(this.reasonPhrase, Encoding.ASCII);
             }
             else
             {

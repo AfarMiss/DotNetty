@@ -36,8 +36,6 @@ namespace DotNetty.Transport.Channels
         readonly AbstractChannelHandlerContext head;
         readonly AbstractChannelHandlerContext tail;
 
-        readonly bool touch = ResourceLeakDetector.Enabled;
-
         private Dictionary<IEventExecutorGroup, IEventExecutor> childExecutors;
         private IMessageSizeEstimatorHandle estimatorHandle;
 
@@ -69,8 +67,6 @@ namespace DotNetty.Transport.Channels
         }
 
         internal IMessageSizeEstimatorHandle EstimatorHandle => this.estimatorHandle ?? (this.estimatorHandle = this.channel.Configuration.MessageSizeEstimator.NewHandle());
-
-        internal object Touch(object msg, AbstractChannelHandlerContext next) => this.touch ? ReferenceCountUtil.Touch(msg, next) : msg;
 
         public IChannel Channel => this.channel;
 

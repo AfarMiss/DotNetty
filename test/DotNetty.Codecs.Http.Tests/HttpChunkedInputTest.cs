@@ -83,7 +83,7 @@ namespace DotNetty.Codecs.Http.Tests
                 IByteBuffer buffer = httpContent.Content;
                 while (buffer.IsReadable())
                 {
-                    Assert.Equal(Bytes[i++], buffer.ReadByte());
+                    Assert.Equal(Bytes[i++], buffer.Read<byte>());
                     read++;
                     if (i == Bytes.Length)
                     {

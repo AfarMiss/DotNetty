@@ -11,15 +11,20 @@ namespace DotNetty.Codecs.Http.WebSockets
 
     public class WebSocket00FrameEncoder : MessageToMessageEncoder<WebSocketFrame>, IWebSocketFrameEncoder
     {
-        static readonly IByteBuffer _0X00 = Unpooled.UnreleasableBuffer(
-            Unpooled.DirectBuffer(1, 1).WriteByte(0x00));
-
-        static readonly IByteBuffer _0XFF = Unpooled.UnreleasableBuffer(
-            Unpooled.DirectBuffer(1, 1).WriteByte(0xFF));
-
-        static readonly IByteBuffer _0XFF_0X00 = Unpooled.UnreleasableBuffer(
-            Unpooled.DirectBuffer(2, 2).WriteByte(0xFF).WriteByte(0x00));
-
+        private static readonly IByteBuffer _0X00;
+        private static readonly IByteBuffer _0XFF;
+        private static readonly IByteBuffer _0XFF_0X00;
+        static WebSocket00FrameEncoder()
+        {
+            _0X00 = Unpooled.DirectBuffer(1, 1);
+            _0X00.Write<byte>(0x00);
+            _0XFF = Unpooled.DirectBuffer(1, 1);
+            _0XFF.Write<byte>(0xFF);
+            _0XFF_0X00 = Unpooled.DirectBuffer(2, 2);
+            _0XFF_0X00.Write<byte>(0xFF);
+            _0XFF_0X00.Write<byte>(0x00);
+        }
+        
         public override bool IsSharable => true;
 
         protected override void Encode(IChannelHandlerContext context, WebSocketFrame message, List<object> output)
@@ -50,7 +55,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 try
                 {
                     // Encode type.
-                    buf.WriteByte(0x80);
+                    buf.Write<byte>(0x80);
 
                     // Encode length.
                     int b1 = dataLen.RightUShift(28) & 0x7F;
@@ -63,27 +68,27 @@ namespace DotNetty.Codecs.Http.WebSockets
                         {
                             if (b3 == 0)
                             {
-                                buf.WriteByte(b4);
+                                buf.Write<byte>(b4);
                             }
                             else
                             {
-                                buf.WriteByte(b3 | 0x80);
-                                buf.WriteByte(b4);
+                                buf.Write<byte>(b3 | 0x80);
+                                buf.Write<byte>(b4);
                             }
                         }
                         else
                         {
-                            buf.WriteByte(b2 | 0x80);
-                            buf.WriteByte(b3 | 0x80);
-                            buf.WriteByte(b4);
+                            buf.Write<byte>(b2 | 0x80);
+                            buf.Write<byte>(b3 | 0x80);
+                            buf.Write<byte>(b4);
                         }
                     }
                     else
                     {
-                        buf.WriteByte(b1 | 0x80);
-                        buf.WriteByte(b2 | 0x80);
-                        buf.WriteByte(b3 | 0x80);
-                        buf.WriteByte(b4);
+                        buf.Write<byte>(b1 | 0x80);
+                        buf.Write<byte>(b2 | 0x80);
+                        buf.Write<byte>(b3 | 0x80);
+                        buf.Write<byte>(b4);
                     }
 
                     // Encode binary data.

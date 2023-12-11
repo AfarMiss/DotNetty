@@ -62,7 +62,10 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.WorkerGroup = new MultithreadEventLoopGroup();
 
             Encoding iso = Encoding.GetEncoding("ISO-8859-1");
-            IByteBuffer buf = Unpooled.Buffer().WriteInt(3).WriteBytes(iso.GetBytes("ABC"));
+            var byteBuffer = Unpooled.Buffer();
+            byteBuffer.Write<int>(3);
+            byteBuffer.WriteBytes(iso.GetBytes("ABC"));
+            IByteBuffer buf = byteBuffer;
             this.message = new byte[buf.ReadableBytes];
             buf.GetBytes(buf.ReaderIndex, this.message);
 

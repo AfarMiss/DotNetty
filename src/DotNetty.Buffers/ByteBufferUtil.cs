@@ -85,13 +85,13 @@ namespace DotNetty.Buffers
             int arrayIndex = buffer.ReaderIndex;
             for (int i = intCount; i > 0; i--)
             {
-                hashCode = 31 * hashCode + buffer.GetInt(arrayIndex);
+                hashCode = 31 * hashCode + buffer.Get<int>(arrayIndex);
                 arrayIndex += 4;
             }
 
             for (int i = byteCount; i > 0; i--)
             {
-                hashCode = 31 * hashCode + buffer.GetByte(arrayIndex++);
+                hashCode = 31 * hashCode + buffer.Get<byte>(arrayIndex++);
             }
 
             if (hashCode == 0)
@@ -144,7 +144,7 @@ namespace DotNetty.Buffers
 
             for (int i = longCount; i > 0; i--)
             {
-                if (a.GetLong(aStartIndex) != b.GetLong(bStartIndex))
+                if (a.Get<long>(aStartIndex) != b.Get<long>(bStartIndex))
                 {
                     return false;
                 }
@@ -154,7 +154,7 @@ namespace DotNetty.Buffers
 
             for (int i = byteCount; i > 0; i--)
             {
-                if (a.GetByte(aStartIndex) != b.GetByte(bStartIndex))
+                if (a.Get<byte>(aStartIndex) != b.Get<byte>(bStartIndex))
                 {
                     return false;
                 }
@@ -211,7 +211,7 @@ namespace DotNetty.Buffers
 
             for (int aEnd = aIndex + byteCount; aIndex < aEnd; ++aIndex, ++bIndex)
             {
-                int comp = bufferA.GetByte(aIndex) - bufferB.GetByte(bIndex);
+                int comp = bufferA.Get<byte>(aIndex) - bufferB.Get<byte>(bIndex);
                 if (comp != 0)
                 {
                     return comp;
@@ -225,8 +225,8 @@ namespace DotNetty.Buffers
         {
             for (int aEnd = aIndex + uintCountIncrement; aIndex < aEnd; aIndex += 4, bIndex += 4)
             {
-                long va = bufferA.GetUnsignedInt(aIndex);
-                long vb = bufferB.GetUnsignedInt(bIndex);
+                long va = bufferA.Get<uint>(aIndex);
+                long vb = bufferB.Get<uint>(bIndex);
                 if (va > vb)
                 {
                     return 1;
@@ -346,18 +346,18 @@ namespace DotNetty.Buffers
                 char c = value[i];
                 if (c < 0x80)
                 {
-                    buffer._SetByte(writerIndex++, (byte)c);
+                    buffer._Set<byte>(writerIndex++, (byte)c);
                 }
                 else if (c < 0x800)
                 {
-                    buffer._SetByte(writerIndex++, (byte)(0xc0 | (c >> 6)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | (c & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0xc0 | (c >> 6)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | (c & 0x3f)));
                 }
                 else if (char.IsSurrogate(c))
                 {
                     if (!char.IsHighSurrogate(c))
                     {
-                        buffer._SetByte(writerIndex++, WriteUtfUnknown);
+                        buffer._Set<byte>(writerIndex++, (byte)WriteUtfUnknown);
                         continue;
                     }
                     char c2;
@@ -370,27 +370,27 @@ namespace DotNetty.Buffers
                     }
                     catch (IndexOutOfRangeException)
                     {
-                        buffer._SetByte(writerIndex++, WriteUtfUnknown);
+                        buffer._Set<byte>(writerIndex++, (byte)WriteUtfUnknown);
                         break;
                     }
                     if (!char.IsLowSurrogate(c2))
                     {
-                        buffer._SetByte(writerIndex++, WriteUtfUnknown);
-                        buffer._SetByte(writerIndex++, char.IsHighSurrogate(c2) ? WriteUtfUnknown : c2);
+                        buffer._Set<byte>(writerIndex++, (byte)WriteUtfUnknown);
+                        buffer._Set<byte>(writerIndex++, char.IsHighSurrogate(c2) ? (byte)WriteUtfUnknown : (byte)c2);
                         continue;
                     }
                     int codePoint = CharUtil.ToCodePoint(c, c2);
                     // See http://www.unicode.org/versions/Unicode7.0.0/ch03.pdf#G2630.
-                    buffer._SetByte(writerIndex++, (byte)(0xf0 | (codePoint >> 18)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | ((codePoint >> 12) & 0x3f)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | ((codePoint >> 6) & 0x3f)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | (codePoint & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0xf0 | (codePoint >> 18)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | ((codePoint >> 12) & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | ((codePoint >> 6) & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | (codePoint & 0x3f)));
                 }
                 else
                 {
-                    buffer._SetByte(writerIndex++, (byte)(0xe0 | (c >> 12)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | ((c >> 6) & 0x3f)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | (c & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0xe0 | (c >> 12)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | ((c >> 6) & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | (c & 0x3f)));
                 }
             }
 
@@ -451,18 +451,18 @@ namespace DotNetty.Buffers
                 char c = value[i];
                 if (c < 0x80)
                 {
-                    buffer._SetByte(writerIndex++, (byte)c);
+                    buffer._Set<byte>(writerIndex++, (byte)c);
                 }
                 else if (c < 0x800)
                 {
-                    buffer._SetByte(writerIndex++, (byte)(0xc0 | (c >> 6)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | (c & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0xc0 | (c >> 6)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | (c & 0x3f)));
                 }
                 else if (char.IsSurrogate(c))
                 {
                     if (!char.IsHighSurrogate(c))
                     {
-                        buffer._SetByte(writerIndex++, WriteUtfUnknown);
+                        buffer._Set<byte>(writerIndex++, (byte)WriteUtfUnknown);
                         continue;
                     }
                     char c2;
@@ -475,27 +475,27 @@ namespace DotNetty.Buffers
                     }
                     catch (IndexOutOfRangeException)
                     {
-                        buffer._SetByte(writerIndex++, WriteUtfUnknown);
+                        buffer._Set<byte>(writerIndex++, (byte)WriteUtfUnknown);
                         break;
                     }
                     if (!char.IsLowSurrogate(c2))
                     {
-                        buffer._SetByte(writerIndex++, WriteUtfUnknown);
-                        buffer._SetByte(writerIndex++, char.IsHighSurrogate(c2) ? WriteUtfUnknown : c2);
+                        buffer._Set<byte>(writerIndex++, (byte)WriteUtfUnknown);
+                        buffer._Set<byte>(writerIndex++, char.IsHighSurrogate(c2) ? (byte)WriteUtfUnknown : (byte)c2);
                         continue;
                     }
                     int codePoint = CharUtil.ToCodePoint(c, c2);
                     // See http://www.unicode.org/versions/Unicode7.0.0/ch03.pdf#G2630.
-                    buffer._SetByte(writerIndex++, (byte)(0xf0 | (codePoint >> 18)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | ((codePoint >> 12) & 0x3f)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | ((codePoint >> 6) & 0x3f)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | (codePoint & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0xf0 | (codePoint >> 18)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | ((codePoint >> 12) & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | ((codePoint >> 6) & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | (codePoint & 0x3f)));
                 }
                 else
                 {
-                    buffer._SetByte(writerIndex++, (byte)(0xe0 | (c >> 12)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | ((c >> 6) & 0x3f)));
-                    buffer._SetByte(writerIndex++, (byte)(0x80 | (c & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0xe0 | (c >> 12)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | ((c >> 6) & 0x3f)));
+                    buffer._Set<byte>(writerIndex++, (byte)(0x80 | (c & 0x3f)));
                 }
             }
 
@@ -621,7 +621,7 @@ namespace DotNetty.Buffers
             // This is possible as we called ensureWritable(...) before.
             for (int i = 0; i < len; i++)
             {
-                buffer._SetByte(writerIndex++, AsciiString.CharToByte(seq[i]));
+                buffer._Set<byte>(writerIndex++, AsciiString.CharToByte(seq[i]));
             }
             return len;
         }
@@ -667,7 +667,7 @@ namespace DotNetty.Buffers
             // This is possible as we called ensureWritable(...) before.
             for (int i = 0; i < len; i++)
             {
-                buffer._SetByte(writerIndex++, (byte)value[i]);
+                buffer._Set<byte>(writerIndex++, (byte)value[i]);
             }
             return len;
         }
@@ -893,7 +893,7 @@ namespace DotNetty.Buffers
                 for (; srcIdx < endIndex; srcIdx++, dstIdx += 2)
                 {
                     Array.Copy(
-                        HexdumpTable, buffer.GetByte(srcIdx) << 1,
+                        HexdumpTable, buffer.Get<byte>(srcIdx) << 1,
                         buf, dstIdx, 2);
                 }
 
@@ -969,14 +969,14 @@ namespace DotNetty.Buffers
                     int rowEndIndex = rowStartIndex + 16;
                     for (int j = rowStartIndex; j < rowEndIndex; j++)
                     {
-                        dump.Append(Byte2Hex[buf.GetByte(j)]);
+                        dump.Append(Byte2Hex[buf.Get<byte>(j)]);
                     }
                     dump.Append(" |");
 
                     // ASCII dump
                     for (int j = rowStartIndex; j < rowEndIndex; j++)
                     {
-                        dump.Append(Byte2Char[buf.GetByte(j)]);
+                        dump.Append(Byte2Char[buf.Get<byte>(j)]);
                     }
                     dump.Append('|');
                 }
@@ -991,7 +991,7 @@ namespace DotNetty.Buffers
                     int rowEndIndex = rowStartIndex + remainder;
                     for (int j = rowStartIndex; j < rowEndIndex; j++)
                     {
-                        dump.Append(Byte2Hex[buf.GetByte(j)]);
+                        dump.Append(Byte2Hex[buf.Get<byte>(j)]);
                     }
                     dump.Append(HexPadding[remainder]);
                     dump.Append(" |");
@@ -999,7 +999,7 @@ namespace DotNetty.Buffers
                     // Ascii dump
                     for (int j = rowStartIndex; j < rowEndIndex; j++)
                     {
-                        dump.Append(Byte2Char[buf.GetByte(j)]);
+                        dump.Append(Byte2Char[buf.Get<byte>(j)]);
                     }
                     dump.Append(BytePadding[remainder]);
                     dump.Append('|');
@@ -1088,7 +1088,7 @@ namespace DotNetty.Buffers
             int endIndex = index + length;
             while (index < endIndex)
             {
-                byte b1 = buf.GetByte(index++);
+                byte b1 = buf.Get<byte>(index++);
                 byte b2, b3;
                 if ((b1 & 0x80) == 0)
                 {
@@ -1106,7 +1106,7 @@ namespace DotNetty.Buffers
                     { // no enough bytes
                         return false;
                     }
-                    b2 = buf.GetByte(index++);
+                    b2 = buf.Get<byte>(index++);
                     if ((b2 & 0xC0) != 0x80)
                     { // 2nd byte not starts with 10
                         return false;
@@ -1130,8 +1130,8 @@ namespace DotNetty.Buffers
                     { // no enough bytes
                         return false;
                     }
-                    b2 = buf.GetByte(index++);
-                    b3 = buf.GetByte(index++);
+                    b2 = buf.Get<byte>(index++);
+                    b3 = buf.Get<byte>(index++);
                     if ((b2 & 0xC0) != 0x80 || (b3 & 0xC0) != 0x80)
                     { // 2nd or 3rd bytes not start with 10
                         return false;
@@ -1158,9 +1158,9 @@ namespace DotNetty.Buffers
                     { // no enough bytes
                         return false;
                     }
-                    b2 = buf.GetByte(index++);
-                    b3 = buf.GetByte(index++);
-                    byte b4 = buf.GetByte(index++);
+                    b2 = buf.Get<byte>(index++);
+                    b3 = buf.Get<byte>(index++);
+                    byte b4 = buf.Get<byte>(index++);
                     if ((b2 & 0xC0) != 0x80 || (b3 & 0xC0) != 0x80 || (b4 & 0xC0) != 0x80)
                     {
                         // 2nd, 3rd or 4th bytes not start with 10

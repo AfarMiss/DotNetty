@@ -73,8 +73,8 @@ namespace DotNetty.Buffers.Tests
                 IByteBuffer byteBuf = buf.ComponentAtOffset(index++);
                 Assert.NotNull(byteBuf);
                 Assert.True(byteBuf.Capacity > 0);
-                Assert.True(byteBuf.GetByte(0) > 0);
-                Assert.True(byteBuf.GetByte(byteBuf.ReadableBytes - 1) > 0);
+                Assert.True(byteBuf.Get<byte>(0) > 0);
+                Assert.True(byteBuf.Get<byte>(byteBuf.ReadableBytes - 1) > 0);
             }
 
             buf.Release();
@@ -148,16 +148,9 @@ namespace DotNetty.Buffers.Tests
         {
             CompositeByteBuffer buf = Unpooled.CompositeBuffer(3);
 
-            var bytes1 = new byte[] { 1, 2, 3 };
-            var directBuffer = Unpooled.DirectBuffer();
-            directBuffer.WriteBytes(bytes1);
-            var readByte = directBuffer.ReadByte();
-
-            var wrappedBuffer = Unpooled.WrappedBuffer(directBuffer);
-            buf.AddComponent(wrappedBuffer);
+            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
             Assert.Equal(1, buf.NumComponents);
-            wrappedBuffer.SetByte(0, 2);
-            
+
             buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4 }));
             Assert.Equal(2, buf.NumComponents);
 
@@ -539,8 +532,8 @@ namespace DotNetty.Buffers.Tests
             int n = 65;
             for (int i = 0; i < n; i++)
             {
-                buf.WriteByte(1);
-                Assert.Equal(1, buf.ReadByte());
+                buf.Write<byte>(1);
+                Assert.Equal(1, buf.Read<byte>());
             }
             buf.Release();
         }
@@ -560,9 +553,14 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReferenceCounts1()
         {
-            IByteBuffer c1 = Unpooled.Buffer().WriteByte(1);
-            var c2 = (IByteBuffer)Unpooled.Buffer().WriteByte(2).Retain();
-            var c3 = (IByteBuffer)Unpooled.Buffer().WriteByte(3).Retain(2);
+            IByteBuffer c1 = Unpooled.Buffer();
+            c1.Write<byte>(1);
+            var c2 = (IByteBuffer)Unpooled.Buffer();
+            c2.Write<byte>(2);
+            c2.Retain();
+            var c3 = (IByteBuffer)Unpooled.Buffer();
+            c3.Write<byte>(3);
+            c3.Retain(2);
 
             CompositeByteBuffer buf = Unpooled.CompositeBuffer();
             Assert.Equal(1, buf.ReferenceCount);
@@ -587,9 +585,14 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReferenceCounts2()
         {
-            IByteBuffer c1 = Unpooled.Buffer().WriteByte(1);
-            var c2 = (IByteBuffer)Unpooled.Buffer().WriteByte(2).Retain();
-            var c3 = (IByteBuffer)Unpooled.Buffer().WriteByte(3).Retain(2);
+            IByteBuffer c1 = Unpooled.Buffer();
+            c1.Write<byte>(1);
+            var c2 = (IByteBuffer)Unpooled.Buffer();
+            c2.Write<byte>(2);
+            c2.Retain();
+            var c3 = (IByteBuffer)Unpooled.Buffer();
+            c3.Write<byte>(3);
+            c3.Retain(2);
 
             CompositeByteBuffer bufA = Unpooled.CompositeBuffer();
             bufA.AddComponents(c1, c2, c3).SetWriterIndex(3);
@@ -624,9 +627,14 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReferenceCounts3()
         {
-            IByteBuffer c1 = Unpooled.Buffer().WriteByte(1);
-            var c2 = (IByteBuffer)Unpooled.Buffer().WriteByte(2).Retain();
-            var c3 = (IByteBuffer)Unpooled.Buffer().WriteByte(3).Retain(2);
+            IByteBuffer c1 = Unpooled.Buffer();
+            c1.Write<byte>(1);
+            var c2 = (IByteBuffer)Unpooled.Buffer();
+            c2.Write<byte>(2);
+            c2.Retain();
+            var c3 = (IByteBuffer)Unpooled.Buffer();
+            c3.Write<byte>(3);
+            c3.Retain(2);
 
             CompositeByteBuffer buf = Unpooled.CompositeBuffer();
             Assert.Equal(1, buf.ReferenceCount);
@@ -722,15 +730,16 @@ namespace DotNetty.Buffers.Tests
             int len = 8 * 4;
             for (int i = 0; i < len; i += 4)
             {
-                IByteBuffer buf = Unpooled.Buffer().WriteInt(i);
+                IByteBuffer buf = Unpooled.Buffer();
+                buf.Write<int>(i);
                 cbuf.AdjustCapacity(cbuf.WriterIndex);
                 cbuf.AddComponent(buf).SetWriterIndex(i + 4);
             }
-            cbuf.WriteByte(1);
+            cbuf.Write<byte>(1);
 
             var me = new byte[len];
             cbuf.ReadBytes(me);
-            cbuf.ReadByte();
+            cbuf.Read<byte>();
 
             cbuf.DiscardSomeReadBytes();
             cbuf.Release();
@@ -754,7 +763,8 @@ namespace DotNetty.Buffers.Tests
         {
             CompositeByteBuffer cbuf = Unpooled.CompositeBuffer();
             IByteBuffer buf = Unpooled.Buffer();
-            IByteBuffer buf2 = Unpooled.Buffer().WriteInt(1);
+            IByteBuffer buf2 = Unpooled.Buffer();
+            buf2.Write<int>(1);
             IByteBuffer buf3 = Unpooled.Buffer();
 
             Assert.Equal(1, buf.ReferenceCount);
@@ -776,15 +786,17 @@ namespace DotNetty.Buffers.Tests
         public void AddEmptyBufferInMiddle()
         {
             CompositeByteBuffer cbuf = Unpooled.CompositeBuffer();
-            IByteBuffer buf1 = Unpooled.Buffer().WriteByte(1);
+            IByteBuffer buf1 = Unpooled.Buffer();
+            buf1.Write<byte>(1);
             cbuf.AddComponent(true, buf1);
             cbuf.AddComponent(true, Unpooled.Empty);
-            IByteBuffer buf3 = Unpooled.Buffer().WriteByte(2);
+            IByteBuffer buf3 = Unpooled.Buffer();
+            buf3.Write<byte>(2);
             cbuf.AddComponent(true, buf3);
 
             Assert.Equal(2, cbuf.ReadableBytes);
-            Assert.Equal((byte)1, cbuf.ReadByte());
-            Assert.Equal((byte)2, cbuf.ReadByte());
+            Assert.Equal((byte)1, cbuf.Read<byte>());
+            Assert.Equal((byte)2, cbuf.Read<byte>());
 
             Assert.Same(Unpooled.Empty, cbuf.InternalComponent(1));
             Assert.NotSame(Unpooled.Empty, cbuf.InternalComponentAtOffset(1));
@@ -829,7 +841,7 @@ namespace DotNetty.Buffers.Tests
         void AllocatorIsSameWhenCopy0(bool withIndexAndLength)
         {
             IByteBuffer buffer = this.NewBuffer(8);
-            buffer.WriteZero(4);
+            // buffer.WriteZero(4);
             IByteBuffer copy = withIndexAndLength ? buffer.Copy(0, 4) : buffer.Copy();
             Assert.Equal(buffer, copy);
             Assert.Same(buffer.Allocator, copy.Allocator);

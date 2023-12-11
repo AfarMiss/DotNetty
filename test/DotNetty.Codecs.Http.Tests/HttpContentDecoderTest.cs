@@ -500,7 +500,7 @@ namespace DotNetty.Codecs.Http.Tests
             var channel = new EmbeddedChannel(decoder, inboundHandler);
 
             Assert.True(channel.WriteInbound(new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/")));
-            var content = new DefaultHttpContent(Unpooled.Buffer().WriteZero(10));
+            var content = new DefaultHttpContent(Unpooled.Buffer(10));
             Assert.True(channel.WriteInbound(content));
             Assert.Equal(1, content.ReferenceCount);
 

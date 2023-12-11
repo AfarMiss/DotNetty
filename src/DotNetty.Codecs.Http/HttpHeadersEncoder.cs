@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
+
 namespace DotNetty.Codecs.Http
 {
     using System.Text;
@@ -22,11 +24,11 @@ namespace DotNetty.Codecs.Http
             int offset = buf.WriterIndex;
             WriteAscii(buf, offset, name);
             offset += nameLen;
-            buf.SetShort(offset, ColonAndSpaceShort);
+            buf.Set<short>(offset, ColonAndSpaceShort);
             offset += 2;
             WriteAscii(buf, offset, value);
             offset += valueLen;
-            buf.SetShort(offset, CrlfShort);
+            buf.Set<short>(offset, CrlfShort);
             offset += 2;
             buf.SetWriterIndex(offset);
         }
@@ -39,7 +41,8 @@ namespace DotNetty.Codecs.Http
             }
             else
             {
-                buf.SetCharSequence(offset, value, Encoding.ASCII);
+                throw new NotImplementedException();
+                // buf.SetCharSequence(offset, value, Encoding.ASCII);
             }
         }
     }

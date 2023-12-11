@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
+using System.IO;
+
 namespace DotNetty.Codecs.Tests.Frame
 {
     using System.Text;
@@ -17,9 +20,17 @@ namespace DotNetty.Codecs.Tests.Frame
             var ch = new EmbeddedChannel(new LengthFieldBasedFrameDecoder(5, 0, 4, 0, 4, false));
             for (int i = 0; i < 2; i++)
             {
-                Assert.False(ch.WriteInbound(Unpooled.WrappedBuffer(new byte[] { 0, 0, 0, 2 })));
-                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(Unpooled.WrappedBuffer(new byte[] { 0, 0 })));
-                ch.WriteInbound(Unpooled.WrappedBuffer(new byte[] { 0, 0, 0, 1, (byte)'A' }));
+                var bytes = BitConverter.GetBytes(2);
+                var bytes1 = BitConverter.GetBytes((short)0);
+
+                var bytes2 = new byte[5];
+                var memoryStream = new MemoryStream(bytes2);
+                var writer = new BinaryWriter(memoryStream);
+                writer.Write(1);
+                writer.Write((byte)'A');
+                Assert.False(ch.WriteInbound(Unpooled.WrappedBuffer(bytes)));
+                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(Unpooled.WrappedBuffer(bytes1)));
+                ch.WriteInbound(Unpooled.WrappedBuffer(bytes2));
                 var buf = ch.ReadInbound<IByteBuffer>();
                 Assert.Equal("A", buf.ToString(Encoding.UTF8));
                 buf.Release();
@@ -33,11 +44,19 @@ namespace DotNetty.Codecs.Tests.Frame
 
             for (int i = 0; i < 2; i++)
             {
-                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(Unpooled.WrappedBuffer(new byte[] { 0, 0, 0, 2 })));
+                var directBuffer = Unpooled.DirectBuffer(2);
+                directBuffer.Write(2);
+                var directBuffer1 = Unpooled.DirectBuffer(7);
+                directBuffer1.Write((short)0);
+                directBuffer1.Write(1);
+                directBuffer1.Write((byte)'A');
+                
+                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(Unpooled.WrappedBuffer(directBuffer)));
 
-                ch.WriteInbound(Unpooled.WrappedBuffer(new byte[] { 0, 0, 0, 0, 0, 1, (byte)'A' }));
+                ch.WriteInbound(Unpooled.WrappedBuffer(directBuffer1));
                 var buf = ch.ReadInbound<IByteBuffer>();
-                Assert.Equal("A", buf.ToString(Encoding.UTF8));
+                var s = buf.ToString(Encoding.UTF8);
+                Assert.Equal("A", s);
                 buf.Release();
             }
         }

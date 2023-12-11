@@ -79,7 +79,7 @@ namespace DotNetty.Codecs.Json
 
             for ( /* use current idx */; idx < wrtIdx; idx++)
             {
-                byte c = input.GetByte(idx);
+                byte c = input.Get<byte>(idx);
 
                 if (this.state == StDecodingNormal)
                 {
@@ -112,14 +112,14 @@ namespace DotNetty.Codecs.Json
                     {
                         // skip leading spaces. No range check is needed and the loop will terminate
                         // because the byte at position idx is not a whitespace.
-                        for (int i = input.ReaderIndex; char.IsWhiteSpace(Convert.ToChar(input.GetByte(i))); i++)
+                        for (int i = input.ReaderIndex; char.IsWhiteSpace(Convert.ToChar(input.Get<byte>(i))); i++)
                         {
                             input.SkipBytes(1);
                         }
 
                         // skip trailing spaces.
                         int idxNoSpaces = idx - 1;
-                        while (idxNoSpaces >= input.ReaderIndex && char.IsWhiteSpace(Convert.ToChar(input.GetByte(idxNoSpaces))))
+                        while (idxNoSpaces >= input.ReaderIndex && char.IsWhiteSpace(Convert.ToChar(input.Get<byte>(idxNoSpaces))))
                         {
                             idxNoSpaces--;
                         }
@@ -194,7 +194,7 @@ namespace DotNetty.Codecs.Json
                     this.insideString = true;
                     // If the double quote wasn't escaped then this is the end of a string.
                 }
-                else if (input.GetByte(idx - 1) != '\\')
+                else if (input.Get<byte>(idx - 1) != '\\')
                 {
                     this.insideString = false;
                 }

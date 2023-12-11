@@ -19,8 +19,8 @@ namespace Factorial
             //BigInteger.ToByteArray() return a Little-Endian bytes
             //IByteBuffer is Big-Endian by default
             byte[] data = message.ToByteArray();
-            buffer.WriteByte((byte)'F');
-            buffer.WriteInt(data.Length);
+            buffer.Write<byte>((byte)'F');
+            buffer.Write<int>(data.Length);
             buffer.WriteBytes(data);
             output.Add(buffer);
         }
