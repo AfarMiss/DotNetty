@@ -20,17 +20,17 @@ namespace DotNetty.Buffers
 
         public static IByteBuffer Buffer() => Allocator.HeapBuffer();
 
-        public static IByteBuffer DirectBuffer() => Allocator.DirectBuffer();
+        // public static IByteBuffer DirectBuffer() => Allocator.DirectBuffer();
 
         public static IByteBuffer Buffer(int initialCapacity) => Allocator.HeapBuffer(initialCapacity);
 
-        public static IByteBuffer DirectBuffer(int initialCapacity) => Allocator.DirectBuffer(initialCapacity);
+        // public static IByteBuffer DirectBuffer(int initialCapacity) => Allocator.DirectBuffer(initialCapacity);
 
         public static IByteBuffer Buffer(int initialCapacity, int maxCapacity) =>
             Allocator.HeapBuffer(initialCapacity, maxCapacity);
 
-        public static IByteBuffer DirectBuffer(int initialCapacity, int maxCapacity) =>
-            Allocator.DirectBuffer(initialCapacity, maxCapacity);
+        // public static IByteBuffer DirectBuffer(int initialCapacity, int maxCapacity) =>
+        //     Allocator.DirectBuffer(initialCapacity, maxCapacity);
 
         /// <summary>
         ///     Creates a new big-endian buffer which wraps the specified array.

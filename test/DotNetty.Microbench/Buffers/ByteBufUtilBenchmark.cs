@@ -33,8 +33,8 @@ namespace DotNetty.Microbench.Buffers
             PooledByteBufferAllocator allocator = PooledByteBufferAllocator.Default;
 
             // Use buffer sizes that will also allow to write UTF-8 without grow the buffer
-            this.buffer = allocator.DirectBuffer(512);
-            this.wrapped = Unpooled.UnreleasableBuffer(allocator.DirectBuffer(512));
+            this.buffer = allocator.Buffer(512);
+            this.wrapped = Unpooled.UnreleasableBuffer(allocator.Buffer(512));
             var asciiSequence = new StringBuilder(128);
             for (int i = 0; i < 128; i++)
             {
@@ -53,12 +53,12 @@ namespace DotNetty.Microbench.Buffers
 
             byte[] bytes = Encoding.ASCII.GetBytes(this.ascii);
             this.asciiLength = bytes.Length;
-            this.asciiBuffer = allocator.DirectBuffer(this.asciiLength);
+            this.asciiBuffer = allocator.Buffer(this.asciiLength);
             this.asciiBuffer.WriteBytes(bytes);
 
             bytes = Encoding.UTF8.GetBytes(this.utf8);
             this.utf8Length = bytes.Length;
-            this.utf8Buffer = allocator.DirectBuffer(bytes.Length);
+            this.utf8Buffer = allocator.Buffer(bytes.Length);
             this.utf8Buffer.WriteBytes(bytes);
         }
 

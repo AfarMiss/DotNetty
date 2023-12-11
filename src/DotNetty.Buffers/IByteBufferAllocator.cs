@@ -20,11 +20,11 @@ namespace DotNetty.Buffers
 
         IByteBuffer HeapBuffer(int initialCapacity, int maxCapacity);
 
-        IByteBuffer DirectBuffer();
-
-        IByteBuffer DirectBuffer(int initialCapacity);
-
-        IByteBuffer DirectBuffer(int initialCapacity, int maxCapacity);
+        // IByteBuffer DirectBuffer();
+        //
+        // IByteBuffer DirectBuffer(int initialCapacity);
+        //
+        // IByteBuffer DirectBuffer(int initialCapacity, int maxCapacity);
 
         CompositeByteBuffer CompositeBuffer();
 
@@ -34,11 +34,9 @@ namespace DotNetty.Buffers
 
         CompositeByteBuffer CompositeHeapBuffer(int maxComponents);
 
-        CompositeByteBuffer CompositeDirectBuffer();
-
-        CompositeByteBuffer CompositeDirectBuffer(int maxComponents);
-
-        bool IsDirectBufferPooled { get; }
+        // CompositeByteBuffer CompositeDirectBuffer();
+        //
+        // CompositeByteBuffer CompositeDirectBuffer(int maxComponents);
 
         int CalculateNewCapacity(int minNewCapacity, int maxCapacity);
     }

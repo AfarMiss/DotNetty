@@ -42,7 +42,6 @@ namespace DotNetty.Buffers
         static readonly ArraySegment<byte> EmptyNioBuffer = Unpooled.Empty.GetIoBuffer();
 
         readonly IByteBufferAllocator allocator;
-        readonly bool direct;
         readonly List<ComponentEntry> components;
         readonly int maxNumComponents;
 
@@ -55,7 +54,6 @@ namespace DotNetty.Buffers
             Contract.Requires(maxNumComponents >= 2);
 
             this.allocator = allocator;
-            this.direct = direct;
             this.maxNumComponents = maxNumComponents;
             this.components = NewList(maxNumComponents);
         }
@@ -72,7 +70,6 @@ namespace DotNetty.Buffers
             Contract.Requires(maxNumComponents >= 2);
 
             this.allocator = allocator;
-            this.direct = direct;
             this.maxNumComponents = maxNumComponents;
             this.components = NewList(maxNumComponents);
 
@@ -89,7 +86,6 @@ namespace DotNetty.Buffers
             Contract.Requires(maxNumComponents >= 2);
 
             this.allocator = allocator;
-            this.direct = direct;
             this.maxNumComponents = maxNumComponents;
             this.components = NewList(maxNumComponents);
 
@@ -105,7 +101,6 @@ namespace DotNetty.Buffers
         internal CompositeByteBuffer(IByteBufferAllocator allocator) : base(int.MaxValue)
         {
             this.allocator = allocator;
-            this.direct = false;
             this.maxNumComponents = 0;
             this.components = new List<ComponentEntry>(0);
         }
@@ -1059,8 +1054,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        IByteBuffer AllocateBuffer(int capacity) => 
-            this.direct ? this.Allocator.DirectBuffer(capacity) : this.Allocator.HeapBuffer(capacity);
+        IByteBuffer AllocateBuffer(int capacity) => this.Allocator.HeapBuffer(capacity);
 
         public override string ToString()
         {

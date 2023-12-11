@@ -563,7 +563,6 @@ namespace DotNetty.Buffers.Tests
 
         static void AssertSameAndRelease(IByteBuffer expected, IByteBuffer actual)
         {
-            ArrayPool<>
             Assert.Same(expected, actual);
             expected.Release();
             actual.Release();

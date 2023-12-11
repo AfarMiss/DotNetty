@@ -189,15 +189,16 @@ namespace DotNetty.Buffers
 
             if (nDirectArena > 0)
             {
-                this.directArenas = NewArenaArray<byte[]>(nDirectArena);
-                var metrics = new List<IPoolArenaMetric>(this.directArenas.Length);
-                for (int i = 0; i < this.directArenas.Length; i++)
-                {
-                    var arena = new DirectArena(this, pageSize, maxOrder, pageShifts, this.chunkSize);
-                    this.directArenas[i] = arena;
-                    metrics.Add(arena);
-                }
-                this.directArenaMetrics = metrics.AsReadOnly();
+                throw new NotImplementedException();
+                // this.directArenas = NewArenaArray<byte[]>(nDirectArena);
+                // var metrics = new List<IPoolArenaMetric>(this.directArenas.Length);
+                // for (int i = 0; i < this.directArenas.Length; i++)
+                // {
+                //     var arena = new DirectArena(this, pageSize, maxOrder, pageShifts, this.chunkSize);
+                //     this.directArenas[i] = arena;
+                //     metrics.Add(arena);
+                // }
+                // this.directArenaMetrics = metrics.AsReadOnly();
             }
             else
             {
@@ -254,27 +255,27 @@ namespace DotNetty.Buffers
             return buf;
         }
 
-        protected unsafe override IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity)
-        {
-            PoolThreadCache<byte[]> cache = this.threadCache.Value;
-            PoolArena<byte[]> directArena = cache.DirectArena;
+        // protected unsafe override IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity)
+        // {
+        //     PoolThreadCache<byte[]> cache = this.threadCache.Value;
+        //     PoolArena<byte[]> directArena = cache.DirectArena;
+        //
+        //     IByteBuffer buf;
+        //     if (directArena != null)
+        //     {
+        //         buf = directArena.Allocate(cache, initialCapacity, maxCapacity);
+        //     }
+        //     else
+        //     {
+        //         buf = UnsafeByteBufferUtil.NewUnsafeDirectByteBuffer(this, initialCapacity, maxCapacity);
+        //     }
+        //
+        //     return buf;
+        // }
 
-            IByteBuffer buf;
-            if (directArena != null)
-            {
-                buf = directArena.Allocate(cache, initialCapacity, maxCapacity);
-            }
-            else
-            {
-                buf = UnsafeByteBufferUtil.NewUnsafeDirectByteBuffer(this, initialCapacity, maxCapacity);
-            }
+        // public static bool DefaultPreferDirect => PlatformDependent.DirectBufferPreferred;
 
-            return buf;
-        }
-
-        public static bool DefaultPreferDirect => PlatformDependent.DirectBufferPreferred;
-
-        public override bool IsDirectBufferPooled => this.directArenas != null;
+        // public override bool IsDirectBufferPooled => this.directArenas != null;
 
         sealed class PoolThreadLocalCache : FastThreadLocal<PoolThreadCache<byte[]>>
         {

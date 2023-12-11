@@ -719,95 +719,95 @@ namespace DotNetty.Buffers
             PlatformDependent.CopyMemory(src, srcOffset, dst, dstOffset, length);
         }
     }
-
-    //TODO: Maybe use Memory or OwnedMemory as direct arena/byte buffer type parameter in NETStandard 2.0
-    sealed class DirectArena : PoolArena<byte[]>
-    {
-        readonly List<MemoryChunk> memoryChunks;
-
-        public DirectArena(PooledByteBufferAllocator parent, int pageSize, int maxOrder, int pageShifts, int chunkSize)
-            : base(parent, pageSize, maxOrder, pageShifts, chunkSize)
-        {
-            this.memoryChunks = new List<MemoryChunk>();
-        }
-
-        static MemoryChunk NewMemoryChunk(int size) => new MemoryChunk(size);
-
-        internal override bool IsDirect => true;
-
-        protected override PoolChunk<byte[]> NewChunk(int pageSize, int maxOrder, int pageShifts, int chunkSize)
-        {
-            MemoryChunk memoryChunk = NewMemoryChunk(chunkSize);
-            this.memoryChunks.Add(memoryChunk);
-            var chunk = new PoolChunk<byte[]>(this, memoryChunk.Bytes, pageSize, maxOrder, pageShifts, chunkSize, 0);
-            return chunk;
-        }
-
-        protected override PoolChunk<byte[]> NewUnpooledChunk(int capacity)
-        {
-            MemoryChunk memoryChunk = NewMemoryChunk(capacity);
-            this.memoryChunks.Add(memoryChunk);
-            var chunk = new PoolChunk<byte[]>(this, memoryChunk.Bytes, capacity, 0);
-            return chunk;
-        }
-
-        protected override PooledByteBuffer<byte[]> NewByteBuf(int maxCapacity) =>
-            PooledUnsafeDirectByteBuffer.NewInstance(maxCapacity);
-
-        protected override unsafe void MemoryCopy(byte[] src, int srcOffset, byte[] dst, int dstOffset, int length) =>
-                PlatformDependent.CopyMemory((byte*)Unsafe.AsPointer(ref src[srcOffset]), (byte*)Unsafe.AsPointer(ref dst[dstOffset]), length);
-
-        protected internal override void DestroyChunk(PoolChunk<byte[]> chunk)
-        {
-            for (int i = 0; i < this.memoryChunks.Count; i++)
-            {
-                MemoryChunk memoryChunk = this.memoryChunks[i];
-                if (ReferenceEquals(chunk.Memory, memoryChunk.Bytes))
-                {
-                    this.memoryChunks.Remove(memoryChunk);
-                    memoryChunk.Dispose();
-                    break;
-                }
-            }
-        }
-
-        sealed class MemoryChunk : IDisposable
-        {
-            internal byte[] Bytes;
-            GCHandle handle;
-
-            internal MemoryChunk(int size)
-            {
-                this.Bytes = new byte[size];
-                this.handle = GCHandle.Alloc(this.Bytes, GCHandleType.Pinned);
-            }
-
-            void Release()
-            {
-                if (this.handle.IsAllocated)
-                {
-                    try
-                    {
-                        this.handle.Free();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // Free is not thread safe
-                    }
-                }
-                this.Bytes = null;
-            }
-
-            public void Dispose()
-            {
-                this.Release();
-                GC.SuppressFinalize(this);
-            }
-
-            ~MemoryChunk()
-            {
-                this.Release();
-            }
-        }
-    }
+    //
+    // //TODO: Maybe use Memory or OwnedMemory as direct arena/byte buffer type parameter in NETStandard 2.0
+    // sealed class DirectArena : PoolArena<byte[]>
+    // {
+    //     readonly List<MemoryChunk> memoryChunks;
+    //
+    //     public DirectArena(PooledByteBufferAllocator parent, int pageSize, int maxOrder, int pageShifts, int chunkSize)
+    //         : base(parent, pageSize, maxOrder, pageShifts, chunkSize)
+    //     {
+    //         this.memoryChunks = new List<MemoryChunk>();
+    //     }
+    //
+    //     static MemoryChunk NewMemoryChunk(int size) => new MemoryChunk(size);
+    //
+    //     internal override bool IsDirect => true;
+    //
+    //     protected override PoolChunk<byte[]> NewChunk(int pageSize, int maxOrder, int pageShifts, int chunkSize)
+    //     {
+    //         MemoryChunk memoryChunk = NewMemoryChunk(chunkSize);
+    //         this.memoryChunks.Add(memoryChunk);
+    //         var chunk = new PoolChunk<byte[]>(this, memoryChunk.Bytes, pageSize, maxOrder, pageShifts, chunkSize, 0);
+    //         return chunk;
+    //     }
+    //
+    //     protected override PoolChunk<byte[]> NewUnpooledChunk(int capacity)
+    //     {
+    //         MemoryChunk memoryChunk = NewMemoryChunk(capacity);
+    //         this.memoryChunks.Add(memoryChunk);
+    //         var chunk = new PoolChunk<byte[]>(this, memoryChunk.Bytes, capacity, 0);
+    //         return chunk;
+    //     }
+    //
+    //     protected override PooledByteBuffer<byte[]> NewByteBuf(int maxCapacity) =>
+    //         PooledUnsafeDirectByteBuffer.NewInstance(maxCapacity);
+    //
+    //     protected override unsafe void MemoryCopy(byte[] src, int srcOffset, byte[] dst, int dstOffset, int length) =>
+    //             PlatformDependent.CopyMemory((byte*)Unsafe.AsPointer(ref src[srcOffset]), (byte*)Unsafe.AsPointer(ref dst[dstOffset]), length);
+    //
+    //     protected internal override void DestroyChunk(PoolChunk<byte[]> chunk)
+    //     {
+    //         for (int i = 0; i < this.memoryChunks.Count; i++)
+    //         {
+    //             MemoryChunk memoryChunk = this.memoryChunks[i];
+    //             if (ReferenceEquals(chunk.Memory, memoryChunk.Bytes))
+    //             {
+    //                 this.memoryChunks.Remove(memoryChunk);
+    //                 memoryChunk.Dispose();
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //
+    //     sealed class MemoryChunk : IDisposable
+    //     {
+    //         internal byte[] Bytes;
+    //         GCHandle handle;
+    //
+    //         internal MemoryChunk(int size)
+    //         {
+    //             this.Bytes = new byte[size];
+    //             this.handle = GCHandle.Alloc(this.Bytes, GCHandleType.Pinned);
+    //         }
+    //
+    //         void Release()
+    //         {
+    //             if (this.handle.IsAllocated)
+    //             {
+    //                 try
+    //                 {
+    //                     this.handle.Free();
+    //                 }
+    //                 catch (InvalidOperationException)
+    //                 {
+    //                     // Free is not thread safe
+    //                 }
+    //             }
+    //             this.Bytes = null;
+    //         }
+    //
+    //         public void Dispose()
+    //         {
+    //             this.Release();
+    //             GC.SuppressFinalize(this);
+    //         }
+    //
+    //         ~MemoryChunk()
+    //         {
+    //             this.Release();
+    //         }
+    //     }
+    // }
 }

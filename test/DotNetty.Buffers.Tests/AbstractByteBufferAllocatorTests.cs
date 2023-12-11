@@ -30,18 +30,18 @@ namespace DotNetty.Buffers.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => allocator.CalculateNewCapacity(-1, 8));
         }
 
-        [Fact]
-        public void UnsafeHeapBufferAndUnsafeDirectBuffer()
-        {
-            IByteBufferAllocator allocator = this.NewUnpooledAllocator();
-            IByteBuffer directBuffer = allocator.DirectBuffer();
-            AssertInstanceOf<UnpooledUnsafeDirectByteBuffer>(directBuffer);
-            directBuffer.Release();
-
-            IByteBuffer heapBuffer = allocator.HeapBuffer();
-            AssertInstanceOf<UnpooledHeapByteBuffer>(heapBuffer);
-            heapBuffer.Release();
-        }
+        // [Fact]
+        // public void UnsafeHeapBufferAndUnsafeDirectBuffer()
+        // {
+        //     IByteBufferAllocator allocator = this.NewUnpooledAllocator();
+        //     IByteBuffer directBuffer = allocator.DirectBuffer();
+        //     AssertInstanceOf<UnpooledUnsafeDirectByteBuffer>(directBuffer);
+        //     directBuffer.Release();
+        //
+        //     IByteBuffer heapBuffer = allocator.HeapBuffer();
+        //     AssertInstanceOf<UnpooledHeapByteBuffer>(heapBuffer);
+        //     heapBuffer.Release();
+        // }
 
         protected static void AssertInstanceOf<T>(IByteBuffer buffer) where T : IByteBuffer
         {

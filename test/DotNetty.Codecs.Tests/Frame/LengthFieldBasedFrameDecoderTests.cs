@@ -44,9 +44,9 @@ namespace DotNetty.Codecs.Tests.Frame
 
             for (int i = 0; i < 2; i++)
             {
-                var directBuffer = Unpooled.DirectBuffer(2);
+                var directBuffer = Unpooled.Buffer(2);
                 directBuffer.Write(2);
-                var directBuffer1 = Unpooled.DirectBuffer(7);
+                var directBuffer1 = Unpooled.Buffer(7);
                 directBuffer1.Write((short)0);
                 directBuffer1.Write(1);
                 directBuffer1.Write((byte)'A');

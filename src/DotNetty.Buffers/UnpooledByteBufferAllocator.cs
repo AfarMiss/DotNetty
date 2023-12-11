@@ -28,11 +28,11 @@ namespace DotNetty.Buffers
         protected override IByteBuffer NewHeapBuffer(int initialCapacity, int maxCapacity) =>
             new InstrumentedUnpooledHeapByteBuffer(this, initialCapacity, maxCapacity);
 
-        protected unsafe override IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity)
-        {
-            IByteBuffer buf = new InstrumentedUnpooledUnsafeDirectByteBuffer(this, initialCapacity, maxCapacity);
-            return buf;
-        }
+        // protected unsafe override IByteBuffer NewDirectBuffer(int initialCapacity, int maxCapacity)
+        // {
+        //     IByteBuffer buf = new InstrumentedUnpooledUnsafeDirectByteBuffer(this, initialCapacity, maxCapacity);
+        //     return buf;
+        // }
 
         public override CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents)
         {
@@ -40,13 +40,11 @@ namespace DotNetty.Buffers
             return buf;
         }
 
-        public unsafe override CompositeByteBuffer CompositeDirectBuffer(int maxNumComponents)
-        {
-            var buf = new CompositeByteBuffer(this, true, maxNumComponents);
-            return buf;
-        }
-
-        public override bool IsDirectBufferPooled => false;
+        // public unsafe override CompositeByteBuffer CompositeDirectBuffer(int maxNumComponents)
+        // {
+        //     var buf = new CompositeByteBuffer(this, true, maxNumComponents);
+        //     return buf;
+        // }
 
         public IByteBufferAllocatorMetric Metric => this.metric;
 
@@ -82,29 +80,29 @@ namespace DotNetty.Buffers
             }
         }
 
-        sealed class InstrumentedUnpooledUnsafeDirectByteBuffer : UnpooledUnsafeDirectByteBuffer
-        {
-            internal InstrumentedUnpooledUnsafeDirectByteBuffer(
-                UnpooledByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
-                : base(alloc, initialCapacity, maxCapacity)
-            {
-                ((UnpooledByteBufferAllocator)this.Allocator).IncrementDirect(initialCapacity);
-            }
-
-            protected override byte[] AllocateDirect(int initialCapacity)
-            {
-                byte[] bytes = base.AllocateDirect(initialCapacity);
-                ((UnpooledByteBufferAllocator)this.Allocator).IncrementDirect(bytes.Length);
-                return bytes;
-            }
-
-            protected override void FreeDirect(byte[] array)
-            {
-                int capacity = array.Length;
-                base.FreeDirect(array);
-                ((UnpooledByteBufferAllocator)this.Allocator).DecrementDirect(capacity);
-            }
-        }
+        // sealed class InstrumentedUnpooledUnsafeDirectByteBuffer : UnpooledUnsafeDirectByteBuffer
+        // {
+        //     internal InstrumentedUnpooledUnsafeDirectByteBuffer(
+        //         UnpooledByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
+        //         : base(alloc, initialCapacity, maxCapacity)
+        //     {
+        //         ((UnpooledByteBufferAllocator)this.Allocator).IncrementDirect(initialCapacity);
+        //     }
+        //
+        //     protected override byte[] AllocateDirect(int initialCapacity)
+        //     {
+        //         byte[] bytes = base.AllocateDirect(initialCapacity);
+        //         ((UnpooledByteBufferAllocator)this.Allocator).IncrementDirect(bytes.Length);
+        //         return bytes;
+        //     }
+        //
+        //     protected override void FreeDirect(byte[] array)
+        //     {
+        //         int capacity = array.Length;
+        //         base.FreeDirect(array);
+        //         ((UnpooledByteBufferAllocator)this.Allocator).DecrementDirect(capacity);
+        //     }
+        // }
 
         sealed class UnpooledByteBufferAllocatorMetric : IByteBufferAllocatorMetric
         {

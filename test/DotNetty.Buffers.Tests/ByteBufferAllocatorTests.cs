@@ -85,39 +85,39 @@ namespace DotNetty.Buffers.Tests
             }
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void DirectBuffer(bool preferDirect)
-        {
-            IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
-            IByteBuffer buffer = allocator.DirectBuffer(1);
-            try
-            {
-                AssertBuffer(buffer, true, 1, this.DefaultMaxCapacity);
-            }
-            finally
-            {
-                buffer.Release();
-            }
-        }
-
-        [Theory]
-        [InlineData(true, 8)]
-        [InlineData(false, 8)]
-        public void DirectBufferWithCapacity(bool preferDirect, int maxCapacity)
-        {
-            IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
-            IByteBuffer buffer = allocator.DirectBuffer(1, maxCapacity);
-            try
-            {
-                AssertBuffer(buffer, true, 1, maxCapacity);
-            }
-            finally
-            {
-                buffer.Release();
-            }
-        }
+        // [Theory]
+        // [InlineData(true)]
+        // [InlineData(false)]
+        // public void DirectBuffer(bool preferDirect)
+        // {
+        //     IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
+        //     IByteBuffer buffer = allocator.DirectBuffer(1);
+        //     try
+        //     {
+        //         AssertBuffer(buffer, true, 1, this.DefaultMaxCapacity);
+        //     }
+        //     finally
+        //     {
+        //         buffer.Release();
+        //     }
+        // }
+        //
+        // [Theory]
+        // [InlineData(true, 8)]
+        // [InlineData(false, 8)]
+        // public void DirectBufferWithCapacity(bool preferDirect, int maxCapacity)
+        // {
+        //     IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
+        //     IByteBuffer buffer = allocator.DirectBuffer(1, maxCapacity);
+        //     try
+        //     {
+        //         AssertBuffer(buffer, true, 1, maxCapacity);
+        //     }
+        //     finally
+        //     {
+        //         buffer.Release();
+        //     }
+        // }
 
         [Theory]
         [InlineData(true)]
@@ -177,39 +177,39 @@ namespace DotNetty.Buffers.Tests
             }
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void CompositeDirectBuffer(bool preferDirect)
-        {
-            IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
-            CompositeByteBuffer buffer = allocator.CompositeDirectBuffer();
-            try
-            {
-                this.AssertCompositeByteBuffer(buffer, this.DefaultMaxComponents);
-            }
-            finally
-            {
-                buffer.Release();
-            }
-        }
-
-        [Theory]
-        [InlineData(true, 8)]
-        [InlineData(false, 8)]
-        public void CompositeDirectBufferWithCapacity(bool preferDirect, int maxNumComponents)
-        {
-            IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
-            CompositeByteBuffer buffer = allocator.CompositeDirectBuffer(maxNumComponents);
-            try
-            {
-                this.AssertCompositeByteBuffer(buffer, maxNumComponents);
-            }
-            finally
-            {
-                buffer.Release();
-            }
-        }
+        // [Theory]
+        // [InlineData(true)]
+        // [InlineData(false)]
+        // public void CompositeDirectBuffer(bool preferDirect)
+        // {
+        //     IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
+        //     CompositeByteBuffer buffer = allocator.CompositeDirectBuffer();
+        //     try
+        //     {
+        //         this.AssertCompositeByteBuffer(buffer, this.DefaultMaxComponents);
+        //     }
+        //     finally
+        //     {
+        //         buffer.Release();
+        //     }
+        // }
+        //
+        // [Theory]
+        // [InlineData(true, 8)]
+        // [InlineData(false, 8)]
+        // public void CompositeDirectBufferWithCapacity(bool preferDirect, int maxNumComponents)
+        // {
+        //     IByteBufferAllocator allocator = this.NewAllocator(preferDirect);
+        //     CompositeByteBuffer buffer = allocator.CompositeDirectBuffer(maxNumComponents);
+        //     try
+        //     {
+        //         this.AssertCompositeByteBuffer(buffer, maxNumComponents);
+        //     }
+        //     finally
+        //     {
+        //         buffer.Release();
+        //     }
+        // }
 
         static void AssertBuffer(IByteBuffer buffer, bool expectedDirect, int expectedCapacity, int expectedMaxCapacity)
         {

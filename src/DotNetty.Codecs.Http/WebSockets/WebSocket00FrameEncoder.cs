@@ -16,11 +16,11 @@ namespace DotNetty.Codecs.Http.WebSockets
         private static readonly IByteBuffer _0XFF_0X00;
         static WebSocket00FrameEncoder()
         {
-            _0X00 = Unpooled.DirectBuffer(1, 1);
+            _0X00 = Unpooled.Buffer(1, 1);
             _0X00.Write<byte>(0x00);
-            _0XFF = Unpooled.DirectBuffer(1, 1);
+            _0XFF = Unpooled.Buffer(1, 1);
             _0XFF.Write<byte>(0xFF);
-            _0XFF_0X00 = Unpooled.DirectBuffer(2, 2);
+            _0XFF_0X00 = Unpooled.Buffer(2, 2);
             _0XFF_0X00.Write<byte>(0xFF);
             _0XFF_0X00.Write<byte>(0x00);
         }

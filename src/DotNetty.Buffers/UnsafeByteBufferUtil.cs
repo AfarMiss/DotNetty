@@ -177,43 +177,43 @@ namespace DotNetty.Buffers
             }
         }
 
-        internal static void SetZero(byte[] array, int index, int length)
-        {
-            if (length == 0)
-            {
-                return;
-            }
-            PlatformDependent.SetMemory(array, index, length, Zero);
-        }
+        // internal static void SetZero(byte[] array, int index, int length)
+        // {
+        //     if (length == 0)
+        //     {
+        //         return;
+        //     }
+        //     PlatformDependent.SetMemory(array, index, length, Zero);
+        // }
 
-        internal static IByteBuffer Copy(AbstractByteBuffer buf, byte* addr, int index, int length)
-        {
-            IByteBuffer copy = buf.Allocator.DirectBuffer(length, buf.MaxCapacity);
-            if (length != 0)
-            {
-                if (copy.HasMemoryAddress)
-                {
-                    IntPtr ptr = copy.AddressOfPinnedMemory();
-                    if (ptr != IntPtr.Zero)
-                    {
-                        PlatformDependent.CopyMemory(addr, (byte*)ptr, length);
-                    }
-                    else
-                    {
-                        fixed (byte* dst = &copy.GetPinnableMemoryAddress())
-                        {
-                            PlatformDependent.CopyMemory(addr, dst, length);
-                        }
-                    }
-                    copy.SetIndex(0, length);
-                }
-                else
-                {
-                    copy.WriteBytes(buf, index, length);
-                }
-            }
-            return copy;
-        }
+        // internal static IByteBuffer Copy(AbstractByteBuffer buf, byte* addr, int index, int length)
+        // {
+        //     IByteBuffer copy = buf.Allocator.DirectBuffer(length, buf.MaxCapacity);
+        //     if (length != 0)
+        //     {
+        //         if (copy.HasMemoryAddress)
+        //         {
+        //             IntPtr ptr = copy.AddressOfPinnedMemory();
+        //             if (ptr != IntPtr.Zero)
+        //             {
+        //                 PlatformDependent.CopyMemory(addr, (byte*)ptr, length);
+        //             }
+        //             else
+        //             {
+        //                 fixed (byte* dst = &copy.GetPinnableMemoryAddress())
+        //                 {
+        //                     PlatformDependent.CopyMemory(addr, dst, length);
+        //                 }
+        //             }
+        //             copy.SetIndex(0, length);
+        //         }
+        //         else
+        //         {
+        //             copy.WriteBytes(buf, index, length);
+        //         }
+        //     }
+        //     return copy;
+        // }
 
         internal static int SetBytes(AbstractByteBuffer buf, byte* addr, int index, Stream input, int length)
         {
@@ -397,7 +397,7 @@ namespace DotNetty.Buffers
 #endif
         }
 
-        internal static UnpooledUnsafeDirectByteBuffer NewUnsafeDirectByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity) =>  
-            new UnpooledUnsafeDirectByteBuffer(alloc, initialCapacity, maxCapacity);
+        // internal static UnpooledUnsafeDirectByteBuffer NewUnsafeDirectByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity) =>  
+        //     new UnpooledUnsafeDirectByteBuffer(alloc, initialCapacity, maxCapacity);
     }
 }

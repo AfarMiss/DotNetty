@@ -45,7 +45,7 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions.Compression
                 this.decoder.WriteInbound(Unpooled.WrappedBuffer(FrameTail));
             }
 
-            CompositeByteBuffer compositeUncompressedContent = ctx.Allocator.CompositeDirectBuffer();
+            CompositeByteBuffer compositeUncompressedContent = ctx.Allocator.CompositeBuffer();
             for (;;)
             {
                 var partUncompressedContent = this.decoder.ReadInbound<IByteBuffer>();

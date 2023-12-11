@@ -27,18 +27,18 @@ namespace DotNetty.Buffers.Tests
             return ((PooledByteBufferAllocator)allocator).Metric.ChunkSize;
         }
 
-        [Fact]
-        public void PooledUnsafeHeapBufferAndUnsafeDirectBuffer()
-        {
-            var allocator = (PooledByteBufferAllocator)this.NewAllocator(true);
-            IByteBuffer directBuffer = allocator.DirectBuffer();
-            AssertInstanceOf<PooledUnsafeDirectByteBuffer>(directBuffer);
-            directBuffer.Release();
-
-            IByteBuffer heapBuffer = allocator.HeapBuffer();
-            AssertInstanceOf<PooledHeapByteBuffer>(heapBuffer);
-            heapBuffer.Release();
-        }
+        // [Fact]
+        // public void PooledUnsafeHeapBufferAndUnsafeDirectBuffer()
+        // {
+        //     var allocator = (PooledByteBufferAllocator)this.NewAllocator(true);
+        //     IByteBuffer directBuffer = allocator.DirectBuffer();
+        //     AssertInstanceOf<PooledUnsafeDirectByteBuffer>(directBuffer);
+        //     directBuffer.Release();
+        //
+        //     IByteBuffer heapBuffer = allocator.HeapBuffer();
+        //     AssertInstanceOf<PooledHeapByteBuffer>(heapBuffer);
+        //     heapBuffer.Release();
+        // }
 
         [Fact]
         public void ArenaMetricsNoCache() => ArenaMetrics0(new PooledByteBufferAllocator(true, 2, 2, 8192, 11, 0, 0, 0), 100, 0, 100, 100);

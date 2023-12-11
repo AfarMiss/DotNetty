@@ -32,7 +32,7 @@ namespace DotNetty.Microbench.Buffers
         [GlobalSetup]
         public void GlobalSetup()
         {
-            this.unsafeBuffer = (AbstractByteBuffer)PooledByteBufferAllocator.Default.DirectBuffer(8);
+            this.unsafeBuffer = (AbstractByteBuffer)PooledByteBufferAllocator.Default.Buffer(8);
             this.buffer = (AbstractByteBuffer)PooledByteBufferAllocator.Default.HeapBuffer(8);
             this.buffer.Write<long>(1L);
         }
