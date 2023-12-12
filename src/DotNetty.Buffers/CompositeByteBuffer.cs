@@ -1,27 +1,22 @@
 ﻿using System.Runtime.InteropServices;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.Contracts;
-    using System.IO;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Utilities;
-
     public class CompositeByteBuffer : AbstractRefByteBuffer, IEnumerable<IByteBuffer>
     {
         #region IByteBuffer
 
         static readonly IList<IByteBuffer> EmptyList = new ReadOnlyCollection<IByteBuffer>(System.Array.Empty<IByteBuffer>());
 
-        class ComponentEntry
+        private class ComponentEntry
         {
             public readonly IByteBuffer Buffer;
             public readonly int Length;

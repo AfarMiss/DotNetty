@@ -19,6 +19,41 @@ namespace DotNetty.Buffers
         
         IByteBufferAllocator Allocator { get; }
         
+        
+        /// <summary>
+        ///     Returns the maximum <see cref="ArraySegment{T}" /> of <see cref="Byte" /> that this buffer holds. Note that
+        ///     <see cref="GetIoBuffers()" />
+        ///     or <see cref="GetIoBuffers(int,int)" /> might return a less number of <see cref="ArraySegment{T}" />s of
+        ///     <see cref="Byte" />.
+        /// </summary>
+        /// <returns>
+        ///     <c>-1</c> if this buffer cannot represent its content as <see cref="ArraySegment{T}" /> of <see cref="Byte" />.
+        ///     the number of the underlying <see cref="IByteBuffer"/>s if this buffer has at least one underlying segment.
+        ///     Note that this method does not return <c>0</c> to avoid confusion.
+        /// </returns>
+        /// <seealso cref="GetIoBuffer()" />
+        /// <seealso cref="GetIoBuffer(int,int)" />
+        /// <seealso cref="GetIoBuffers()" />
+        /// <seealso cref="GetIoBuffers(int,int)" />
+        int IoBufferCount { get; }
+
+        /// <summary>
+        ///     Flag that indicates if this <see cref="IByteBuffer" /> is backed by a byte array or not
+        /// </summary>
+        bool HasArray { get; }
+
+        /// <summary>
+        ///     Grabs the underlying byte array for this buffer
+        /// </summary>
+        byte[] Array { get; }
+
+        /// <summary>
+        /// Returns {@code true} if and only if this buffer has a reference to the low-level memory address that points
+        /// to the backing data.
+        /// </summary>
+        bool HasMemoryAddress { get; }
+        int ArrayOffset { get; }
+        
         IByteBuffer AdjustCapacity(int newCapacity);
 
         void SetWriterIndex(int writerIndex);
@@ -120,23 +155,6 @@ namespace DotNetty.Buffers
         int EnsureWritable(int minWritableBytes, bool force);
 
         /// <summary>
-        ///     Returns the maximum <see cref="ArraySegment{T}" /> of <see cref="Byte" /> that this buffer holds. Note that
-        ///     <see cref="GetIoBuffers()" />
-        ///     or <see cref="GetIoBuffers(int,int)" /> might return a less number of <see cref="ArraySegment{T}" />s of
-        ///     <see cref="Byte" />.
-        /// </summary>
-        /// <returns>
-        ///     <c>-1</c> if this buffer cannot represent its content as <see cref="ArraySegment{T}" /> of <see cref="Byte" />.
-        ///     the number of the underlying <see cref="IByteBuffer"/>s if this buffer has at least one underlying segment.
-        ///     Note that this method does not return <c>0</c> to avoid confusion.
-        /// </returns>
-        /// <seealso cref="GetIoBuffer()" />
-        /// <seealso cref="GetIoBuffer(int,int)" />
-        /// <seealso cref="GetIoBuffers()" />
-        /// <seealso cref="GetIoBuffers(int,int)" />
-        int IoBufferCount { get; }
-
-        /// <summary>
         ///     Exposes this buffer's readable bytes as an <see cref="ArraySegment{T}" /> of <see cref="Byte" />. Returned segment
         ///     shares the content with this buffer. This method is identical
         ///     to <c>buf.GetIoBuffer(buf.ReaderIndex, buf.ReadableBytes)</c>. This method does not
@@ -204,27 +222,10 @@ namespace DotNetty.Buffers
         ArraySegment<byte>[] GetIoBuffers(int index, int length);
 
         /// <summary>
-        ///     Flag that indicates if this <see cref="IByteBuffer" /> is backed by a byte array or not
-        /// </summary>
-        bool HasArray { get; }
-
-        /// <summary>
-        ///     Grabs the underlying byte array for this buffer
-        /// </summary>
-        byte[] Array { get; }
-
-        /// <summary>
-        /// Returns {@code true} if and only if this buffer has a reference to the low-level memory address that points
-        /// to the backing data.
-        /// </summary>
-        bool HasMemoryAddress { get; }
-
-        /// <summary>
         ///  Returns the low-level memory address that point to the first byte of ths backing data.
         /// </summary>
         /// <returns>The low-level memory address</returns>
         ref byte GetPinnableMemoryAddress();
-
         /// <summary>
         /// Returns the pointer address of the buffer if the memory is pinned.
         /// </summary>
@@ -235,7 +236,6 @@ namespace DotNetty.Buffers
         ///     Creates a deep clone of the existing byte array and returns it
         /// </summary>
         IByteBuffer Duplicate();
-
         IByteBuffer RetainedDuplicate();
 
         /// <summary>
@@ -256,9 +256,7 @@ namespace DotNetty.Buffers
         IByteBuffer RetainedSlice();
         IByteBuffer Slice(int index, int length);
         IByteBuffer RetainedSlice(int index, int length);
-
-        int ArrayOffset { get; }
-
+        
         IByteBuffer ReadSlice(int length);
         IByteBuffer ReadRetainedSlice(int length);
 
