@@ -566,6 +566,6 @@ namespace DotNetty.Buffers
         /// <summary>
         ///     Return a unreleasable view on the given {@link ByteBuf} which will just ignore release and retain calls.
         /// </summary>
-        public static IByteBuffer UnreleasableBuffer(IByteBuffer buffer) => new UnreleasableByteBuffer(buffer);
+        public static IByteBuffer UnreleasableBuffer(IByteBuffer buffer) => new KeepByteBuffer(buffer);
     }
 }

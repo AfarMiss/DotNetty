@@ -7,10 +7,11 @@ namespace DotNetty.Buffers
     {
         public T Get<T>(int index) where T : unmanaged;
         public void Set<T>(int index, T value) where T : unmanaged;
-        public void Set<T>(int index, int value) where T : unmanaged;
         public T Read<T>() where T : unmanaged;
         public void Write<T>(T value) where T : unmanaged;
-        void Write<T>(int value) where T : unmanaged;
+        
+        public void Set<T>(int index, int value) where T : unmanaged;
+        public void Write<T>(int value) where T : unmanaged;
         
         public void GetBytes(int index, IByteBuffer dst, int? length = null);
         public void GetBytes(int index, IByteBuffer dst, int dstIndex, int length);
