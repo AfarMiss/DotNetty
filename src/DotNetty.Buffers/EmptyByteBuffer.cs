@@ -123,22 +123,6 @@ namespace DotNetty.Buffers
             return -1;
         }
 
-        public int ForEachByte(IByteProcessor processor) => -1;
-
-        public int ForEachByte(int index, int length, IByteProcessor processor)
-        {
-            this.CheckIndex(index, length);
-            return -1;
-        }
-
-        public int ForEachByteDesc(IByteProcessor processor) => -1;
-
-        public int ForEachByteDesc(int index, int length, IByteProcessor processor)
-        {
-            this.CheckIndex(index, length);
-            return -1;
-        }
-
         public IByteBuffer Copy() => this;
 
         public IByteBuffer Copy(int index, int length)
@@ -236,7 +220,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        IByteBuffer CheckIndex(int index, int length)
+        internal IByteBuffer CheckIndex(int index, int length)
         {
             if (length < 0)
             {

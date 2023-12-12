@@ -11,6 +11,7 @@ namespace DotNetty.Buffers
 
         readonly IByteBuffer buffer;
         readonly int adjustment;
+        internal int Adjustment => this.adjustment;
         public override int Capacity => this.MaxCapacity;
 
         public SlicedByteBuffer(IByteBuffer buffer, int index, int length) : base(length)
@@ -96,36 +97,8 @@ namespace DotNetty.Buffers
             return this.Unwrap().GetIoBuffers(index + this.adjustment, length);
         }
 
-        public override int ForEachByte(int index, int length, IByteProcessor processor)
-        {
-            this.CheckIndex0(index, length);
-            int ret = this.Unwrap().ForEachByte(this.Idx(index), length, processor);
-            if (ret >= this.adjustment)
-            {
-                return ret - this.adjustment;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        public override int ForEachByteDesc(int index, int length, IByteProcessor processor)
-        {
-            this.CheckIndex0(index, length);
-            int ret = this.Unwrap().ForEachByteDesc(this.Idx(index), length, processor);
-            if (ret >= this.adjustment)
-            {
-                return ret - this.adjustment;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
         // Returns the index with the needed adjustment.
-        protected int Idx(int index) => index + this.adjustment;
+        protected internal int Idx(int index) => index + this.adjustment;
         
         internal static void CheckSliceOutOfBounds(int index, int length, IByteBuffer buffer)
         {

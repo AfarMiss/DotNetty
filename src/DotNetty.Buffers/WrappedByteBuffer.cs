@@ -17,7 +17,7 @@ namespace DotNetty.Buffers
     /// It's important that the {@link #readerIndex()} and {@link #writerIndex()} will not do any adjustments on the
     /// indices on the fly because of internal optimizations made by {@link ByteBufUtil#writeAscii(ByteBuf, CharSequence)}
     /// and {@link ByteBufUtil#writeUtf8(ByteBuf, CharSequence)}.
-    class WrappedByteBuffer : IByteBuffer
+    public class WrappedByteBuffer : IByteBuffer
     {
         #region IByteBuffer
 
@@ -103,14 +103,6 @@ namespace DotNetty.Buffers
         public virtual int BytesBefore(int length, byte value) => this.Buf.BytesBefore(length, value);
 
         public virtual int BytesBefore(int index, int length, byte value) => this.Buf.BytesBefore(index, length, value);
-
-        public virtual int ForEachByte(IByteProcessor processor) => this.Buf.ForEachByte(processor);
-
-        public virtual int ForEachByte(int index, int length, IByteProcessor processor) => this.Buf.ForEachByte(index, length, processor);
-
-        public virtual int ForEachByteDesc(IByteProcessor processor) => this.Buf.ForEachByteDesc(processor);
-
-        public virtual int ForEachByteDesc(int index, int length, IByteProcessor processor) => this.Buf.ForEachByteDesc(index, length, processor);
 
         public virtual IByteBuffer Copy() => this.Buf.Copy();
 

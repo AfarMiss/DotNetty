@@ -2008,7 +2008,7 @@ namespace DotNetty.Buffers.Tests
             this.buffer.SetIndex(Capacity / 4, Capacity * 3 / 4);
             int i1 = Capacity / 4;
             Assert.Equal(-1,
-                this.buffer.ForEachByte(new ByteProcessor(
+                ByteBufferEx.ForEachByte(this.buffer, new ByteProcessor(
                     value =>
                     {
                         Assert.Equal(value, (byte)(i1 + 1));
@@ -2031,7 +2031,7 @@ namespace DotNetty.Buffers.Tests
 
             int stop = Capacity / 2;
             int i1 = Capacity / 3;
-            Assert.Equal(stop, this.buffer.ForEachByte(Capacity / 3, Capacity / 3, new ByteProcessor(value =>
+            Assert.Equal(stop, ByteBufferEx.ForEachByte(this.buffer, Capacity / 3, Capacity / 3, new ByteProcessor(value =>
             {
                 Assert.Equal((byte)(i1 + 1), value);
                 if (i1 == stop)
@@ -2055,7 +2055,7 @@ namespace DotNetty.Buffers.Tests
 
             int lastIndex = 0;
             int i1 = Capacity * 3 / 4 - 1;
-            Assert.Equal(-1, this.buffer.ForEachByteDesc(Capacity / 4, Capacity * 2 / 4, new ByteProcessor(value =>
+            Assert.Equal(-1, ByteBufferEx.ForEachByteDesc(this.buffer, Capacity / 4, Capacity * 2 / 4, new ByteProcessor(value =>
             {
                 Assert.Equal((byte)(i1 + 1), value);
                 Volatile.Write(ref lastIndex, i1);
@@ -2468,16 +2468,16 @@ namespace DotNetty.Buffers.Tests
         void WriteStringAfterRelease0(Encoding encoding) => this.ReleasedBuffer().WriteString("x", encoding);
 
         [Fact]
-        public void ForEachByteAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ForEachByte(new TestByteProcessor()));
+        public void ForEachByteAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByte(this.ReleasedBuffer(), new TestByteProcessor()));
 
         [Fact]
-        public void ForEachByteAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ForEachByte(0, 1, new TestByteProcessor()));
+        public void ForEachByteAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByte(this.ReleasedBuffer(), 0, 1, new TestByteProcessor()));
 
         [Fact]
-        public void ForEachByteDescAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ForEachByteDesc(new TestByteProcessor()));
+        public void ForEachByteDescAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByteDesc(this.ReleasedBuffer(), new TestByteProcessor()));
 
         [Fact]
-        public void ForEachByteDescAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ForEachByteDesc(0, 1, new TestByteProcessor()));
+        public void ForEachByteDescAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByteDesc(this.ReleasedBuffer(), 0, 1, new TestByteProcessor()));
 
         [Fact]
         public void CopyAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().Copy());
@@ -3343,7 +3343,7 @@ namespace DotNetty.Buffers.Tests
             {
                 buf.WriteBytes(expected);
                 var processor = new ForEachByteDesc2Processor(expected.Length);
-                int i = buf.ForEachByteDesc(processor);
+                int i = ByteBufferEx.ForEachByteDesc(buf, processor);
                 Assert.Equal(-1, i);
                 Assert.True(expected.SequenceEqual(processor.Bytes));
             }
@@ -3382,7 +3382,7 @@ namespace DotNetty.Buffers.Tests
             {
                 buf.WriteBytes(expected);
                 var processor = new ForEachByte2Processor(expected.Length);
-                int i = buf.ForEachByte(processor);
+                int i = ByteBufferEx.ForEachByte(buf, processor);
                 Assert.Equal(-1, i);
                 Assert.True(expected.SequenceEqual(processor.Bytes));
             }

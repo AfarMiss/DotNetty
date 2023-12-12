@@ -817,7 +817,7 @@ namespace DotNetty.Codecs.Http
             {
                 int oldSize = this.size;
                 this.seq.Reset();
-                int i = buffer.ForEachByte(this);
+                int i = ByteBufferEx.ForEachByte(buffer, this);
                 if (i == -1)
                 {
                     this.size = oldSize;

@@ -295,56 +295,6 @@ namespace DotNetty.Buffers
             return endIndex - index;
         }
 
-        public virtual int ForEachByte(IByteProcessor processor)
-        {
-            this.EnsureAccessible();
-            return this.ForEachByteAsc0(this.readerIndex, this.writerIndex, processor);
-        }
-
-        public virtual int ForEachByte(int index, int length, IByteProcessor processor)
-        {
-            this.CheckIndex(index, length);
-            return this.ForEachByteAsc0(index, index + length, processor);
-        }
-
-        int ForEachByteAsc0(int start, int end, IByteProcessor processor)
-        {
-            for (; start < end; ++start)
-            {
-                if (!processor.Process(this._Get<byte>(start)))
-                {
-                    return start;
-                }
-            }
-
-            return -1;
-        }
-
-        public virtual int ForEachByteDesc(IByteProcessor processor)
-        {
-            this.EnsureAccessible();
-            return this.ForEachByteDesc0(this.writerIndex - 1, this.readerIndex, processor);
-        }
-
-        public virtual int ForEachByteDesc(int index, int length, IByteProcessor processor)
-        {
-            this.CheckIndex(index, length);
-            return this.ForEachByteDesc0(index + length - 1, index, processor);
-        }
-        
-        int ForEachByteDesc0(int rStart, int rEnd, IByteProcessor processor)
-        {
-            for (; rStart >= rEnd; --rStart)
-            {
-                if (!processor.Process(this._Get<byte>(rStart)))
-                {
-                    return rStart;
-                }
-            }
-
-            return -1;
-        }
-
         public override int GetHashCode() => ByteBufferUtil.HashCode(this);
 
         public sealed override bool Equals(object o) => this.Equals(o as IByteBuffer);
@@ -389,7 +339,7 @@ namespace DotNetty.Buffers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void CheckIndex0(int index, int fieldLength)
+        protected internal void CheckIndex0(int index, int fieldLength)
         {
             if (MathUtil.IsOutOfBounds(index, fieldLength, this.Capacity))
             {

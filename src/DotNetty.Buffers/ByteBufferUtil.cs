@@ -260,7 +260,7 @@ namespace DotNetty.Buffers
                 return -1;
             }
 
-            return buffer.ForEachByte(fromIndex, toIndex - fromIndex, new IndexOfProcessor(value));
+            return ByteBufferEx.ForEachByte(buffer, fromIndex, toIndex - fromIndex, new IndexOfProcessor(value));
         }
 
         static int LastIndexOf(IByteBuffer buffer, int fromIndex, int toIndex, byte value)
@@ -271,7 +271,7 @@ namespace DotNetty.Buffers
                 return -1;
             }
 
-            return buffer.ForEachByteDesc(toIndex, fromIndex - toIndex, new IndexOfProcessor(value));
+            return ByteBufferEx.ForEachByteDesc(buffer, toIndex, fromIndex - toIndex, new IndexOfProcessor(value));
         }
 
         public static IByteBuffer WriteUtf8(IByteBufferAllocator alloc, ICharSequence seq)
@@ -1056,7 +1056,7 @@ namespace DotNetty.Buffers
             public bool Process(byte value) => value < 0x80;
         }
 
-        static bool IsAscii(IByteBuffer buf, int index, int length) => buf.ForEachByte(index, length, AsciiByteProcessor) == -1;
+        static bool IsAscii(IByteBuffer buf, int index, int length) => ByteBufferEx.ForEachByte(buf, index, length, AsciiByteProcessor) == -1;
 
         static bool IsUtf8(IByteBuffer buf, int index, int length)
         {

@@ -280,51 +280,5 @@ namespace DotNetty.Buffers
         string ToString(Encoding encoding);
 
         string ToString(int index, int length, Encoding encoding);
-
-        /// <summary>
-        ///     Iterates over the readable bytes of this buffer with the specified <c>processor</c> in ascending order.
-        /// </summary>
-        /// <returns>
-        ///     <c>-1</c> if the processor iterated to or beyond the end of the readable bytes.
-        ///     The last-visited index If the <see cref="IByteProcessor.Process(byte)" /> returned <c>false</c>.
-        /// </returns>
-        /// <param name="processor">Processor.</param>
-        int ForEachByte(IByteProcessor processor);
-
-        /// <summary>
-        ///     Iterates over the specified area of this buffer with the specified <paramref name="processor"/> in ascending order.
-        ///     (i.e. <paramref name="index"/>, <c>(index + 1)</c>,  .. <c>(index + length - 1)</c>)
-        /// </summary>
-        /// <returns>
-        ///     <c>-1</c> if the processor iterated to or beyond the end of the specified area.
-        ///     The last-visited index If the <see cref="IByteProcessor.Process(byte)"/> returned <c>false</c>.
-        /// </returns>
-        /// <param name="index">Index.</param>
-        /// <param name="length">Length.</param>
-        /// <param name="processor">Processor.</param>
-        int ForEachByte(int index, int length, IByteProcessor processor);
-
-        /// <summary>
-        ///     Iterates over the readable bytes of this buffer with the specified <paramref name="processor"/> in descending order.
-        /// </summary>
-        /// <returns>
-        ///     <c>-1</c> if the processor iterated to or beyond the beginning of the readable bytes.
-        ///     The last-visited index If the <see cref="IByteProcessor.Process(byte)"/> returned <c>false</c>.
-        /// </returns>
-        /// <param name="processor">Processor.</param>
-        int ForEachByteDesc(IByteProcessor processor);
-
-        /// <summary>
-        ///     Iterates over the specified area of this buffer with the specified <paramref name="processor"/> in descending order.
-        ///     (i.e. <c>(index + length - 1)</c>, <c>(index + length - 2)</c>, ... <paramref name="index"/>)
-        /// </summary>
-        /// <returns>
-        ///     <c>-1</c> if the processor iterated to or beyond the beginning of the specified area.
-        ///     The last-visited index If the <see cref="IByteProcessor.Process(byte)"/> returned <c>false</c>.
-        /// </returns>
-        /// <param name="index">Index.</param>
-        /// <param name="length">Length.</param>
-        /// <param name="processor">Processor.</param>
-        int ForEachByteDesc(int index, int length, IByteProcessor processor);
     }
 }

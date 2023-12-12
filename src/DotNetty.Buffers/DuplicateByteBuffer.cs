@@ -55,10 +55,6 @@ namespace DotNetty.Buffers
 
         public override IntPtr AddressOfPinnedMemory() => this.Unwrap().AddressOfPinnedMemory();
 
-        public override int ForEachByte(int index, int length, IByteProcessor processor) => this.Unwrap().ForEachByte(index, length, processor);
-
-        public override int ForEachByteDesc(int index, int length, IByteProcessor processor) => this.Unwrap().ForEachByteDesc(index, length, processor);
-
         #endregion
 
         #region IByteBufferProvider
