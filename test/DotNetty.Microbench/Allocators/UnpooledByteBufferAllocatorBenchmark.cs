@@ -7,7 +7,7 @@ namespace DotNetty.Microbench.Allocators
 
     public class UnpooledHeapByteBufferAllocatorBenchmark : AbstractByteBufferAllocatorBenchmark
     {
-        public UnpooledHeapByteBufferAllocatorBenchmark() : base(new UnpooledByteBufferAllocator())
+        public UnpooledHeapByteBufferAllocatorBenchmark() : base(new ByteBufferAllocator())
         {
         }
     }

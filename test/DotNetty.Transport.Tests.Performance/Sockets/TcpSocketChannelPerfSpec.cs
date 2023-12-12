@@ -82,8 +82,8 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.signal = new ManualResetEventSlimReadFinishedSignal(this.ResetEvent);
 
             // reserve up to 10mb of 16kb buffers on both client and server; we're only sending about 700k worth of messages
-            this.serverBufferAllocator = new UnpooledByteBufferAllocator();
-            this.clientBufferAllocator = new UnpooledByteBufferAllocator();
+            this.serverBufferAllocator = new ByteBufferAllocator();
+            this.clientBufferAllocator = new ByteBufferAllocator();
 
             Assembly assembly = typeof(TcpChannelPerfSpecs).Assembly;
             var tlsCertificate = TestResourceHelper.GetTestCertificate();

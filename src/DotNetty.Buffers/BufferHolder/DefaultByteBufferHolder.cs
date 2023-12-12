@@ -1,15 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Diagnostics.Contracts;
+using DotNetty.Common;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    using System.Diagnostics.Contracts;
-    using DotNetty.Common;
-    using DotNetty.Common.Utilities;
-
     public class DefaultByteBufferHolder : IByteBufferHolder
     {
-        readonly IByteBuffer data;
+        private readonly IByteBuffer data;
 
         public DefaultByteBufferHolder(IByteBuffer data)
         {

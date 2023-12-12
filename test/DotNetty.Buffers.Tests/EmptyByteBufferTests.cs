@@ -11,7 +11,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void IsWritable()
         {
-            var empty = new EmptyByteBuffer(UnpooledByteBufferAllocator.Default);
+            var empty = new EmptyByteBuffer(ByteBufferAllocator.Default);
             Assert.False(empty.IsWritable());
             Assert.False(empty.IsWritable(1));
         }
@@ -19,9 +19,9 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void WriteEmptyByteBuf()
         {
-            var empty = new EmptyByteBuffer(UnpooledByteBufferAllocator.Default);
+            var empty = new EmptyByteBuffer(ByteBufferAllocator.Default);
             empty.WriteBytes(Unpooled.Empty); // Ok
-            IByteBuffer nonEmpty = UnpooledByteBufferAllocator.Default.Buffer();
+            IByteBuffer nonEmpty = ByteBufferAllocator.Default.Buffer();
             nonEmpty.Write<bool>(false);
             Assert.Throws<IndexOutOfRangeException>(() => empty.WriteBytes(nonEmpty));
             nonEmpty.Release();
@@ -30,7 +30,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void IsReadable()
         {
-            var empty = new EmptyByteBuffer(UnpooledByteBufferAllocator.Default);
+            var empty = new EmptyByteBuffer(ByteBufferAllocator.Default);
             Assert.False(empty.IsReadable());
             Assert.False(empty.IsReadable(1));
         }
@@ -38,7 +38,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void Array()
         {
-            var empty = new EmptyByteBuffer(UnpooledByteBufferAllocator.Default);
+            var empty = new EmptyByteBuffer(ByteBufferAllocator.Default);
             Assert.True(empty.HasArray);
             Assert.Empty(empty.Array);
             Assert.Equal(0, empty.ArrayOffset);
@@ -47,7 +47,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void MemoryAddress()
         {
-            var empty = new EmptyByteBuffer(UnpooledByteBufferAllocator.Default);
+            var empty = new EmptyByteBuffer(ByteBufferAllocator.Default);
             Assert.False(empty.HasMemoryAddress);
             Assert.Throws<NotSupportedException>(() => empty.GetPinnableMemoryAddress());
         }

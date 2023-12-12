@@ -1,7 +1,7 @@
+using DotNetty.Common;
+
 namespace DotNetty.Buffers
 {
-    using DotNetty.Common;
-
     public interface IByteBufferHolder : IReferenceCounted
     {
         /// <summary>

@@ -1,8 +1,10 @@
-﻿
+﻿using DotNetty.Common;
+
 namespace DotNetty.Buffers
 {
-    using DotNetty.Common;
-
+    /// <summary>
+    /// 阻止释放 手动处理
+    /// </summary>
     internal sealed class KeepByteBuffer : WrappedByteBuffer
     {
         internal KeepByteBuffer(IByteBuffer buf) : base(buf) { }

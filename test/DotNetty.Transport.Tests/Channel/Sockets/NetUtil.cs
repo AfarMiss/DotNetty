@@ -21,7 +21,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
         internal static readonly IByteBufferAllocator[] Allocators =
         {
-            UnpooledByteBufferAllocator.Default
+            ByteBufferAllocator.Default
         };
 
         public static IPAddress GetLoopbackAddress(AddressFamily addressFamily)

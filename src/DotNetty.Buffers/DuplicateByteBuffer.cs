@@ -13,18 +13,10 @@ namespace DotNetty.Buffers
         {
         }
 
-        internal DuplicateByteBuffer(AbstractByteBuffer buffer, int readerIndex, int writerIndex)
+        private DuplicateByteBuffer(AbstractByteBuffer buffer, int readerIndex, int writerIndex)
             : base(buffer.MaxCapacity)
         {
-            if (buffer is DuplicateByteBuffer duplicated)
-            {
-                this.buffer = duplicated.buffer;
-            }
-            else
-            {
-                this.buffer = buffer;
-            }
-
+            this.buffer = buffer is DuplicateByteBuffer duplicated ? duplicated.buffer : buffer;
             this.SetIndex0(readerIndex, writerIndex);
             this.MarkIndex(); // Mark read and writer index
         }
@@ -33,7 +25,7 @@ namespace DotNetty.Buffers
 
         public override IByteBuffer Copy(int index, int length) => this.Unwrap().Copy(index, length);
 
-        protected AbstractByteBuffer UnwrapCore() => this.buffer;
+        private AbstractByteBuffer UnwrapCore() => this.buffer;
 
         public override IByteBufferAllocator Allocator => this.Unwrap().Allocator;
 

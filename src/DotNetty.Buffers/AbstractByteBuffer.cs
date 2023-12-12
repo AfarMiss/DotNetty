@@ -577,7 +577,9 @@ namespace DotNetty.Buffers
                 else 
                 {
                     fixed (byte* p = &this.GetPinnableMemoryAddress())
+                    {
                         return UnsafeByteBufferUtil.GetString(p + index, length, encoding);
+                    }
                 }
             }
             if (this.HasArray)

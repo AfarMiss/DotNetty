@@ -224,7 +224,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
             byte[] aBytes = Encoding.UTF8.GetBytes(Body);
             const int Split = 125;
 
-            UnpooledByteBufferAllocator aAlloc = UnpooledByteBufferAllocator.Default;
+            ByteBufferAllocator aAlloc = ByteBufferAllocator.Default;
             IByteBuffer aSmallBuf = aAlloc.Buffer(Split, Split);
             IByteBuffer aLargeBuf = aAlloc.Buffer(aBytes.Length - Split, aBytes.Length - Split);
 

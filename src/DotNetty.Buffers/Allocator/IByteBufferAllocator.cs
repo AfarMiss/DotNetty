@@ -1,7 +1,7 @@
 ﻿namespace DotNetty.Buffers
 {
     /// <summary>
-    ///     Thread-safe interface for allocating <see cref="IByteBuffer" />/.
+    /// 线程安全分配<see cref="IByteBuffer"/>
     /// </summary>
     public interface IByteBufferAllocator
     {

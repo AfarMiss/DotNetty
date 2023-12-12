@@ -5,6 +5,6 @@ namespace DotNetty.Buffers.Tests
 {
     public sealed class PooledHeapByteBufferTests : AbstractPooledByteBufferTests
     {
-        protected override IByteBuffer Alloc(int length, int maxCapacity) => UnpooledByteBufferAllocator.Default.Buffer(length, maxCapacity);
+        protected override IByteBuffer Alloc(int length, int maxCapacity) => ByteBufferAllocator.Default.Buffer(length, maxCapacity);
     }
 }

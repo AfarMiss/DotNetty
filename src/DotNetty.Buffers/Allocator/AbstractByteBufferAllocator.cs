@@ -1,14 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Runtime.CompilerServices;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Runtime.CompilerServices;
-
-    /// <inheritdoc />
     /// <summary>
-    ///     Abstract base class for <see cref="T:DotNetty.Buffers.IByteBufferAllocator" /> instances
+    /// <see cref="IByteBufferAllocator"/>基础实现
     /// </summary>
     public abstract class AbstractByteBufferAllocator : IByteBufferAllocator
     {

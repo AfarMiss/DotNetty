@@ -13,7 +13,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
 
     public class MqttCodecTests
     {
-        static readonly IByteBufferAllocator Allocator = new UnpooledByteBufferAllocator();
+        static readonly IByteBufferAllocator Allocator = new ByteBufferAllocator();
 
         readonly MqttDecoder serverDecoder;
         readonly MqttDecoder clientDecoder;
@@ -25,7 +25,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
             this.clientDecoder = new MqttDecoder(false, 256 * 1024);
             this.contextMock = new Mock<IChannelHandlerContext>(MockBehavior.Strict);
             this.contextMock.Setup(x => x.Removed).Returns(false);
-            this.contextMock.Setup(x => x.Allocator).Returns(UnpooledByteBufferAllocator.Default);
+            this.contextMock.Setup(x => x.Allocator).Returns(ByteBufferAllocator.Default);
         }
 
         [Theory]

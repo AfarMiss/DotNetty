@@ -1,21 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Text;
+using DotNetty.Common;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Utilities;
-
-    /// <inheritdoc />
-    /// <summary>
-    ///     Represents an empty byte buffer
-    /// </summary>
     public sealed class EmptyByteBuffer : IByteBuffer
     {
         #region IByteBuffer

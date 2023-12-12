@@ -30,7 +30,7 @@ namespace DotNetty.Microbench.Buffers
         [GlobalSetup]
         public void GlobalSetup()
         {
-            UnpooledByteBufferAllocator allocator = UnpooledByteBufferAllocator.Default;
+            ByteBufferAllocator allocator = ByteBufferAllocator.Default;
 
             // Use buffer sizes that will also allow to write UTF-8 without grow the buffer
             this.buffer = allocator.Buffer(512);

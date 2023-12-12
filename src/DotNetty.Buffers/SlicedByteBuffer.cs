@@ -9,8 +9,8 @@ namespace DotNetty.Buffers
     {
         #region IByteBuffer
 
-        readonly IByteBuffer buffer;
-        readonly int adjustment;
+        private readonly IByteBuffer buffer;
+        private readonly int adjustment;
         internal int Adjustment => this.adjustment;
         public override int Capacity => this.MaxCapacity;
 

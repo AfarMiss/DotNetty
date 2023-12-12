@@ -24,7 +24,7 @@
 //             // This is the case as allocations will start in qInit and chunks in qInit will never be released until
 //             // these are moved to q000.
 //             // See https://www.bsdcan.org/2006/papers/jemalloc.pdf
-//             return ((UnpooledByteBufferAllocator)allocator).Metric.ChunkSize;
+//             return ((ByteBufferAllocator)allocator).Metric.ChunkSize;
 //         }
 //
 //         // [Fact]

@@ -7,11 +7,11 @@ namespace DotNetty.Buffers
     using System.Diagnostics.Contracts;
     using DotNetty.Common.Internal;
 
-    public class HeapByteBuffer : AbstractRefByteBuffer
+    public sealed class HeapByteBuffer : AbstractRefByteBuffer
     {
         #region IByteBuffer
 
-        readonly IByteBufferAllocator allocator;
+        private readonly IByteBufferAllocator allocator;
         private byte[] array;
         private bool isPool;
         private readonly int capacity;
@@ -42,7 +42,7 @@ namespace DotNetty.Buffers
         public override bool HasMemoryAddress => true;
         public override int IoBufferCount => 1;
 
-        protected internal HeapByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
+        internal HeapByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
             : base(maxCapacity)
         {
             Contract.Requires(alloc != null);
@@ -54,7 +54,7 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, 0);
         }
 
-        protected internal HeapByteBuffer(IByteBufferAllocator alloc, byte[] initialArray, int maxCapacity)
+        internal HeapByteBuffer(IByteBufferAllocator alloc, byte[] initialArray, int maxCapacity)
             : base(maxCapacity)
         {
             Contract.Requires(alloc != null);
@@ -71,15 +71,15 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, initialArray.Length);
         }
 
-        protected virtual byte[] AllocateArray(int initialCapacity) => this.NewArray(initialCapacity);
+        private byte[] AllocateArray(int initialCapacity) => this.NewArray(initialCapacity);
 
-        protected byte[] NewArray(int initialCapacity)
+        private byte[] NewArray(int initialCapacity)
         {
             isPool = true;
             return ArrayPool<byte>.Shared.Rent(initialCapacity);
         }
 
-        protected virtual void FreeArray(byte[] bytes)
+        private void FreeArray(byte[] bytes)
         {
             if (isPool)
             {
@@ -87,7 +87,7 @@ namespace DotNetty.Buffers
             }
         }
 
-        protected void SetArray(byte[] initialArray) => this.array = initialArray;
+        private void SetArray(byte[] initialArray) => this.array = initialArray;
 
         public override IByteBuffer AdjustCapacity(int newCapacity)
         {

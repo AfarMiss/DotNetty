@@ -15,6 +15,6 @@
 //         }
 //
 //         protected IByteBuffer NewDirectBuffer(int length, int maxCapacity) =>
-//             new UnpooledUnsafeDirectByteBuffer(UnpooledByteBufferAllocator.Default, length, maxCapacity);
+//             new UnpooledUnsafeDirectByteBuffer(ByteBufferAllocator.Default, length, maxCapacity);
 //     }
 // }

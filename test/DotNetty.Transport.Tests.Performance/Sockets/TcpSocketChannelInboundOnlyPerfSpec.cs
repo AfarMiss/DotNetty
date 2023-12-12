@@ -74,7 +74,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.signal = new ManualResetEventSlimReadFinishedSignal(this.ResetEvent);
 
             // using default settings
-            this.serverBufferAllocator = new UnpooledByteBufferAllocator();
+            this.serverBufferAllocator = new ByteBufferAllocator();
 
             ServerBootstrap sb = new ServerBootstrap()
                 .Group(this.ServerGroup, this.WorkerGroup)

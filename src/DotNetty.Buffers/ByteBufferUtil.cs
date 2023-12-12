@@ -18,7 +18,7 @@ namespace DotNetty.Buffers
 
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(ByteBufferUtil));
 
-        public static readonly IByteBufferAllocator DefaultAllocator = UnpooledByteBufferAllocator.Default;
+        public static readonly IByteBufferAllocator DefaultAllocator = ByteBufferAllocator.Default;
 
         /// <summary>
         ///     Returns a <a href="http://en.wikipedia.org/wiki/Hex_dump">hex dump</a>

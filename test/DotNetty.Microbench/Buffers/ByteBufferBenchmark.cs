@@ -35,9 +35,9 @@ namespace DotNetty.Microbench.Buffers
 
         public ByteBufferBenchmark()
         {
-            var unpooled = new UnpooledByteBufferAllocator();
+            var unpooled = new ByteBufferAllocator();
             this.unpooledBuffer = unpooled.Buffer(8);
-            this.pooledBuffer = UnpooledByteBufferAllocator.Default.Buffer(8);
+            this.pooledBuffer = ByteBufferAllocator.Default.Buffer(8);
         }
 
         [Benchmark]
