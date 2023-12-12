@@ -267,18 +267,12 @@ namespace DotNetty.Buffers
 
         IByteBuffer ReadRetainedSlice(int length);
 
-        int IndexOf(int fromIndex, int toIndex, byte value);
-
         int BytesBefore(byte value);
-
         int BytesBefore(int length, byte value);
-
         int BytesBefore(int index, int length, byte value);
 
         string ToString();
-
         string ToString(Encoding encoding);
-
         string ToString(int index, int length, Encoding encoding);
     }
 }

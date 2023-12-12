@@ -102,13 +102,6 @@ namespace DotNetty.Buffers
             return 1;
         }
 
-        public int IndexOf(int fromIndex, int toIndex, byte value)
-        {
-            this.CheckIndex(fromIndex);
-            this.CheckIndex(toIndex);
-            return -1;
-        }
-
         public int BytesBefore(byte value) => -1;
 
         public int BytesBefore(int length, byte value)
@@ -211,7 +204,7 @@ namespace DotNetty.Buffers
         public IByteBuffer ReadRetainedSlice(int length) => this.CheckLength(length);
 
         // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
-        IByteBuffer CheckIndex(int index)
+        internal IByteBuffer CheckIndex(int index)
         {
             if (index != 0)
             {

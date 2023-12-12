@@ -96,8 +96,6 @@ namespace DotNetty.Buffers
 
         public virtual int EnsureWritable(int minWritableBytes, bool force) => this.Buf.EnsureWritable(minWritableBytes, force);
 
-        public virtual int IndexOf(int fromIndex, int toIndex, byte value) => this.Buf.IndexOf(fromIndex, toIndex, value);
-
         public virtual int BytesBefore(byte value) => this.Buf.BytesBefore(value);
 
         public virtual int BytesBefore(int length, byte value) => this.Buf.BytesBefore(length, value);

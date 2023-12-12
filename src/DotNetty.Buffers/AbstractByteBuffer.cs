@@ -274,8 +274,6 @@ namespace DotNetty.Buffers
             return slice;
         }
 
-        public virtual int IndexOf(int fromIndex, int toIndex, byte value) => ByteBufferUtil.IndexOf(this, fromIndex, toIndex, value);
-
         public int BytesBefore(byte value) => this.BytesBefore(this.ReaderIndex, this.ReadableBytes, value);
 
         public int BytesBefore(int length, byte value)
@@ -286,7 +284,7 @@ namespace DotNetty.Buffers
 
         public virtual int BytesBefore(int index, int length, byte value)
         {
-            int endIndex = this.IndexOf(index, index + length, value);
+            int endIndex = ByteBufferEx.IndexOf(this, index, index + length, value);
             if (endIndex < 0)
             {
                 return -1;

@@ -95,7 +95,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         {
             int ridx = buffer.ReaderIndex;
             int rbytes = this.ActualReadableBytes;
-            int delimPos = buffer.IndexOf(ridx, ridx + rbytes, 0xFF);
+            int delimPos = ByteBufferEx.IndexOf(buffer, ridx, ridx + rbytes, 0xFF);
             if (delimPos == -1)
             {
                 // Frame delimiter (0xFF) not found
@@ -120,7 +120,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             IByteBuffer binaryData = ReadBytes(ctx.Allocator, buffer, frameSize);
             buffer.SkipBytes(1);
 
-            int ffDelimPos = binaryData.IndexOf(binaryData.ReaderIndex, binaryData.WriterIndex, 0xFF);
+            int ffDelimPos = ByteBufferEx.IndexOf(binaryData, binaryData.ReaderIndex, binaryData.WriterIndex, 0xFF);
             if (ffDelimPos >= 0)
             {
                 binaryData.Release();

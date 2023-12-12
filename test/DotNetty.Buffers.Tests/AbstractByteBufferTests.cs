@@ -1888,10 +1888,10 @@ namespace DotNetty.Buffers.Tests
             this.buffer.Write<byte>(2);
             this.buffer.Write<byte>(1);
 
-            Assert.Equal(-1, this.buffer.IndexOf(1, 4, 1));
-            Assert.Equal(-1, this.buffer.IndexOf(4, 1, 1));
-            Assert.Equal(1, this.buffer.IndexOf(1, 4, 2));
-            Assert.Equal(3, this.buffer.IndexOf(4, 1, 2));
+            Assert.Equal(-1, ByteBufferEx.IndexOf(this.buffer, 1, 4, 1));
+            Assert.Equal(-1, ByteBufferEx.IndexOf(this.buffer, 4, 1, 1));
+            Assert.Equal(1, ByteBufferEx.IndexOf(this.buffer, 1, 4, 2));
+            Assert.Equal(3, ByteBufferEx.IndexOf(this.buffer, 4, 1, 2));
         }
 
         [Fact]

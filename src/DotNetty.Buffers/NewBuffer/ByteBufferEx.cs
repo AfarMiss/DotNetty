@@ -158,7 +158,6 @@ namespace DotNetty.Buffers
             }
         }
 
-
         private static int ForEachByteDesc0(AbstractByteBuffer buffer, int rStart, int rEnd, IByteProcessor processor)
         {
             for (; rStart >= rEnd; --rStart)
@@ -170,6 +169,30 @@ namespace DotNetty.Buffers
             }
 
             return -1;
+        }
+
+        public static int IndexOf(IByteBuffer buffer, int fromIndex, int toIndex, byte value)
+        {
+            while (true)
+            {
+                switch (buffer)
+                {
+                    case WrappedByteBuffer wrappedByteBuffer:
+                        buffer = wrappedByteBuffer.Unwrap();
+                        continue;
+                    case WrappedCompositeByteBuffer wrappedCompositeByteBuffer:
+                        buffer = wrappedCompositeByteBuffer.Unwrap();
+                        continue;
+                    case EmptyByteBuffer emptyByteBuffer:
+                        emptyByteBuffer.CheckIndex(fromIndex);
+                        emptyByteBuffer.CheckIndex(toIndex);
+                        return -1;
+                    case AbstractByteBuffer _:
+                        return ByteBufferUtil.IndexOf(buffer, fromIndex, toIndex, value);
+                }
+
+                throw new InvalidOperationException();
+            }
         }
     }
 }
