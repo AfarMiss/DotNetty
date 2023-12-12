@@ -673,7 +673,7 @@ namespace DotNetty.Buffers
             int length = encoding.GetMaxByteCount(src.Length) + extraCapacity;
             bool release = true;
 
-            IByteBuffer dst = enforceHeap ? alloc.HeapBuffer(length) : alloc.Buffer(length);
+            IByteBuffer dst = enforceHeap ? alloc.Buffer(length) : alloc.Buffer(length);
             Contract.Assert(dst.HasArray, "Operation expects allocator to operate array-based buffers.");
 
             try
@@ -708,7 +708,7 @@ namespace DotNetty.Buffers
             else
             {
                 int maxLength = encoding.GetMaxCharCount(len);
-                IByteBuffer buffer = src.Allocator.HeapBuffer(maxLength);
+                IByteBuffer buffer = src.Allocator.Buffer(maxLength);
                 try
                 {
                     buffer.WriteBytes(src, readerIndex, len);
@@ -1028,7 +1028,7 @@ namespace DotNetty.Buffers
                     }
                     else
                     {
-                        IByteBuffer heapBuffer = buf.Allocator.HeapBuffer(length);
+                        IByteBuffer heapBuffer = buf.Allocator.Buffer(length);
                         try
                         {
                             heapBuffer.WriteBytes(buf, index, length);

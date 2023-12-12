@@ -23,7 +23,7 @@ namespace DotNetty.Buffers
         public void SetBytes(int index, Span<byte> src, int? length = null);
         public void SetBytes(int index, Span<byte> src, int srcIndex, int length);
         
-        void SkipBytes(int length);
+        public void SkipBytes(int length);
         public void ReadBytes(IByteBuffer dst, int? length = null);
         public void ReadBytes(IByteBuffer dst, int dstIndex, int length);
         public void ReadBytes(Span<byte> dst, int? length = null);
@@ -33,9 +33,9 @@ namespace DotNetty.Buffers
         public void WriteBytes(Span<byte> src, int? length = null);
         public void WriteBytes(Span<byte> src, int srcIndex, int length);
         
-        string GetString(int index, int length, Encoding encoding);
-        void SetString(int index, string value, Encoding encoding);
-        string ReadString(int length, Encoding encoding);
-        void WriteString(string value, Encoding encoding);
+        public string GetString(int index, int length, Encoding encoding);
+        public void SetString(int index, string value, Encoding encoding);
+        public string ReadString(int length, Encoding encoding);
+        public void WriteString(string value, Encoding encoding);
     }
 }

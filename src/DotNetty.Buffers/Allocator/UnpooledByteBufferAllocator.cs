@@ -4,13 +4,12 @@
     {
         public static readonly UnpooledByteBufferAllocator Default = new UnpooledByteBufferAllocator();
 
-        protected override IByteBuffer NewHeapBuffer(int initialCapacity, int maxCapacity) =>
+        protected override IByteBuffer NewBuffer(int initialCapacity, int maxCapacity) =>
             new HeapByteBuffer(this, initialCapacity, maxCapacity);
 
         public override CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents)
         {
-            var buf = new CompositeByteBuffer(this, false, maxNumComponents);
-            return buf;
+            return new CompositeByteBuffer(this, maxNumComponents);
         }
     }
 }

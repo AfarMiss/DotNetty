@@ -222,7 +222,7 @@ namespace DotNetty.Buffers
                 return 0;
             }
 
-            IByteBuffer tmpBuf = buf.Allocator.HeapBuffer(length);
+            IByteBuffer tmpBuf = buf.Allocator.Buffer(length);
             try
             {
                 byte[] tmp = tmpBuf.Array;
@@ -361,7 +361,7 @@ namespace DotNetty.Buffers
         {
             if (length != 0)
             {
-                IByteBuffer tmpBuf = buf.Allocator.HeapBuffer(length);
+                IByteBuffer tmpBuf = buf.Allocator.Buffer(length);
                 try
                 {
                     byte[] tmp = tmpBuf.Array;

@@ -150,7 +150,7 @@ namespace DotNetty.Buffers
                     case AbstractByteBuffer abstractByteBuffer:
                     {
                         abstractByteBuffer.CheckIndex(index, length);
-                        return ForEachByteDesc0(abstractByteBuffer, index, index + length, processor);
+                        return ForEachByteDesc0(abstractByteBuffer, index + length - 1, index, processor);
                     }
                 }
 

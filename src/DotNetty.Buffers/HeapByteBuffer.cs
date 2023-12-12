@@ -12,8 +12,35 @@ namespace DotNetty.Buffers
         #region IByteBuffer
 
         readonly IByteBufferAllocator allocator;
-        byte[] array;
+        private byte[] array;
         private bool isPool;
+        private readonly int capacity;
+        public override IByteBufferAllocator Allocator => this.allocator;
+
+        public override int Capacity
+        {
+            get
+            {
+                this.EnsureAccessible();
+                return this.capacity;
+            }
+        }
+        
+        public override bool HasArray => true;
+
+        public override byte[] Array
+        {
+            get
+            {
+                this.EnsureAccessible();
+                return this.array;
+            }
+        }
+
+        public override int ArrayOffset => 0;
+
+        public override bool HasMemoryAddress => true;
+        public override int IoBufferCount => 1;
 
         protected internal HeapByteBuffer(IByteBufferAllocator alloc, int initialCapacity, int maxCapacity)
             : base(maxCapacity)
@@ -22,6 +49,7 @@ namespace DotNetty.Buffers
             Contract.Requires(initialCapacity <= maxCapacity);
 
             this.allocator = alloc;
+            this.capacity = initialCapacity;
             this.SetArray(this.NewArray(initialCapacity));
             this.SetIndex0(0, 0);
         }
@@ -38,6 +66,7 @@ namespace DotNetty.Buffers
             }
 
             this.allocator = alloc;
+            this.capacity = initialArray.Length;
             this.SetArray(initialArray);
             this.SetIndex0(0, initialArray.Length);
         }
@@ -59,17 +88,6 @@ namespace DotNetty.Buffers
         }
 
         protected void SetArray(byte[] initialArray) => this.array = initialArray;
-
-        public override IByteBufferAllocator Allocator => this.allocator;
-
-        public override int Capacity
-        {
-            get
-            {
-                this.EnsureAccessible();
-                return this.array.Length;
-            }
-        }
 
         public override IByteBuffer AdjustCapacity(int newCapacity)
         {
@@ -110,21 +128,6 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public override bool HasArray => true;
-
-        public override byte[] Array
-        {
-            get
-            {
-                this.EnsureAccessible();
-                return this.array;
-            }
-        }
-
-        public override int ArrayOffset => 0;
-
-        public override bool HasMemoryAddress => true;
-
         public override ref byte GetPinnableMemoryAddress()
         {
             this.EnsureAccessible();
@@ -132,11 +135,7 @@ namespace DotNetty.Buffers
         }
 
         public override IntPtr AddressOfPinnedMemory() => IntPtr.Zero;
-
         
-
-        public override int IoBufferCount => 1;
-
         public override ArraySegment<byte> GetIoBuffer(int index, int length)
         {
             this.EnsureAccessible();

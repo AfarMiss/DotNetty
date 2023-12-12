@@ -1,23 +1,37 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using DotNetty.Common;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Utilities;
-
     public class WrappedCompositeByteBuffer : CompositeByteBuffer
     {
         #region IByteBuffer
 
-        readonly CompositeByteBuffer wrapped;
+        private readonly CompositeByteBuffer wrapped;
+        public sealed override int ReaderIndex => this.wrapped.ReaderIndex;
+        public sealed override int WriterIndex => this.wrapped.WriterIndex;
+        public sealed override int ReadableBytes => this.wrapped.ReadableBytes;
+        public sealed override int WritableBytes => this.wrapped.WritableBytes;
+        public sealed override int MaxWritableBytes => this.wrapped.MaxWritableBytes;
+        public sealed override int ReferenceCount => this.wrapped.ReferenceCount;
 
+        public sealed override bool HasArray => this.wrapped.HasArray;
+
+        public sealed override byte[] Array => this.wrapped.Array;
+
+        public sealed override int ArrayOffset => this.wrapped.ArrayOffset;
+
+        public sealed override int Capacity => this.wrapped.Capacity;
+        
+        public sealed override int NumComponents => this.wrapped.NumComponents;
+
+        public sealed override int MaxNumComponents => this.wrapped.MaxNumComponents;
+        public override int IoBufferCount => this.wrapped.IoBufferCount;
+        public sealed override bool HasMemoryAddress => this.wrapped.HasMemoryAddress;
+        public sealed override int MaxCapacity => this.wrapped.MaxCapacity;
+        
         internal WrappedCompositeByteBuffer(CompositeByteBuffer wrapped) : base(wrapped.Allocator)
         {
             this.wrapped = wrapped;
@@ -26,21 +40,9 @@ namespace DotNetty.Buffers
 
         public override bool Release(int decrement = 1) => this.wrapped.Release(decrement);
 
-        public sealed override int ReaderIndex => this.wrapped.ReaderIndex;
-
-        public sealed override int WriterIndex => this.wrapped.WriterIndex;
-
         public sealed override bool IsReadable() => this.wrapped.IsReadable();
-
         public sealed override bool IsReadable(int numBytes) => this.wrapped.IsReadable(numBytes);
-
         public sealed override bool IsWritable() => this.wrapped.IsWritable();
-
-        public sealed override int ReadableBytes => this.wrapped.ReadableBytes;
-
-        public sealed override int WritableBytes => this.wrapped.WritableBytes;
-
-        public sealed override int MaxWritableBytes => this.wrapped.MaxWritableBytes;
 
         public override int EnsureWritable(int minWritableBytes, bool force) => this.wrapped.EnsureWritable(minWritableBytes, force);
 
@@ -57,8 +59,6 @@ namespace DotNetty.Buffers
         public sealed override bool Equals(IByteBuffer buf) => this.wrapped.Equals(buf);
 
         public sealed override int CompareTo(IByteBuffer that) => this.wrapped.CompareTo(that);
-
-        public sealed override int ReferenceCount => this.wrapped.ReferenceCount;
 
         public override IByteBuffer Duplicate() => this.wrapped.Duplicate();
 
@@ -140,25 +140,11 @@ namespace DotNetty.Buffers
 
         public override IList<IByteBuffer> Decompose(int offset, int length) => this.wrapped.Decompose(offset, length);
 
-        public sealed override bool HasArray => this.wrapped.HasArray;
-
-        public sealed override byte[] Array => this.wrapped.Array;
-
-        public sealed override int ArrayOffset => this.wrapped.ArrayOffset;
-
-        public sealed override int Capacity => this.wrapped.Capacity;
-
         public override IByteBuffer AdjustCapacity(int newCapacity)
         {
             this.wrapped.AdjustCapacity(newCapacity);
             return this;
         }
-
-        public sealed override IByteBufferAllocator Allocator => this.wrapped.Allocator;
-
-        public sealed override int NumComponents => this.wrapped.NumComponents;
-
-        public sealed override int MaxNumComponents => this.wrapped.MaxNumComponents;
 
         public sealed override int ToComponentIndex(int offset) => this.wrapped.ToComponentIndex(offset);
 
@@ -177,8 +163,6 @@ namespace DotNetty.Buffers
         public sealed override IByteBuffer InternalComponent(int cIndex) => this.wrapped.InternalComponent(cIndex);
 
         public sealed override IByteBuffer InternalComponentAtOffset(int offset) => this.wrapped.InternalComponentAtOffset(offset);
-
-        public override int IoBufferCount => this.wrapped.IoBufferCount;
 
         public override ArraySegment<byte> GetIoBuffer(int index, int length) => this.wrapped.GetIoBuffer(index, length);
 
@@ -250,11 +234,9 @@ namespace DotNetty.Buffers
 
         public sealed override ref byte GetPinnableMemoryAddress() => ref this.wrapped.GetPinnableMemoryAddress();
 
-        public sealed override bool HasMemoryAddress => this.wrapped.HasMemoryAddress;
+        public sealed override IByteBufferAllocator Allocator => this.wrapped.Allocator;
 
         public sealed override bool IsWritable(int size) => this.wrapped.IsWritable(size);
-
-        public sealed override int MaxCapacity => this.wrapped.MaxCapacity;
 
         public override IByteBuffer ReadRetainedSlice(int length) => this.wrapped.ReadRetainedSlice(length);
 
@@ -265,5 +247,38 @@ namespace DotNetty.Buffers
         public override IByteBuffer RetainedSlice(int index, int length) => this.wrapped.RetainedSlice(index, length);
 
         #endregion
+
+        public override T Get<T>(int index) => this.wrapped.Get<T>(index);
+        public override void Set<T>(int index, T value) => this.wrapped.Set(index, value);
+        public override T Read<T>() => this.wrapped.Read<T>();
+        public override void Write<T>(T value) => this.wrapped.Write(value);
+
+        public override void Set<T>(int index, int value) => this.wrapped.Set<T>(index, value);
+        public override void Write<T>(int value) => this.wrapped.Write<T>(value);
+
+        public override void GetBytes(int index, IByteBuffer dst, int? length = null) => this.wrapped.GetBytes(index, dst, length);
+        public override void GetBytes(int index, IByteBuffer dst, int dstIndex, int length) => this.wrapped.GetBytes(index, dst, dstIndex, length);
+        public override void GetBytes(int index, Span<byte> dst, int? length = null) => this.wrapped.GetBytes(index, dst, length);
+        public override void GetBytes(int index, Span<byte> dst, int dstIndex, int length) => this.wrapped.GetBytes(index, dst, dstIndex, length);
+
+        public override void SetBytes(int index, IByteBuffer src, int? length = null) => this.wrapped.SetBytes(index, src, length);
+        public override void SetBytes(int index, IByteBuffer src, int srcIndex, int length) => this.wrapped.SetBytes(index, src, srcIndex, length);
+        public override void SetBytes(int index, Span<byte> src, int? length = null) => this.wrapped.SetBytes(index, src, length);
+        public override void SetBytes(int index, Span<byte> src, int srcIndex, int length) => this.wrapped.SetBytes(index, src, srcIndex, length);
+        
+        public override void SkipBytes(int length) => this.wrapped.SkipBytes(length);
+        public override void ReadBytes(IByteBuffer dst, int? length = null) => this.wrapped.ReadBytes(dst, length);
+        public override void ReadBytes(IByteBuffer dst, int dstIndex, int length) => this.wrapped.ReadBytes(dst, dstIndex, length);
+        public override void ReadBytes(Span<byte> dst, int? length = null) => this.wrapped.ReadBytes(dst, length);
+        public override void ReadBytes(Span<byte> dst, int dstIndex, int length) => this.wrapped.ReadBytes(dst, dstIndex, length);
+        public override void WriteBytes(IByteBuffer src, int? length = null) => this.wrapped.WriteBytes(src, length);
+        public override void WriteBytes(IByteBuffer src, int srcIndex, int length) => this.wrapped.WriteBytes(src, srcIndex, length);
+        public override void WriteBytes(Span<byte> src, int? length = null) => this.wrapped.WriteBytes(src, length);
+        public override void WriteBytes(Span<byte> src, int srcIndex, int length) => this.wrapped.WriteBytes(src, srcIndex, length);
+        
+        public override string GetString(int index, int length, Encoding encoding) => this.wrapped.GetString(index, length, encoding);
+        public override void SetString(int index, string value, Encoding encoding) => this.wrapped.SetString(index, value, encoding);
+        public override string ReadString(int length, Encoding encoding) => this.wrapped.ReadString(length, encoding);
+        public override void WriteString(string value, Encoding encoding) => this.wrapped.WriteString(value, encoding);
     }
 }

@@ -40,7 +40,7 @@ namespace DotNetty.Buffers
 
         bool freed;
 
-        public CompositeByteBuffer(IByteBufferAllocator allocator, bool direct, int maxNumComponents)
+        public CompositeByteBuffer(IByteBufferAllocator allocator, int maxNumComponents)
             : base(AbstractByteBufferAllocator.DefaultMaxCapacity)
         {
             Contract.Requires(allocator != null);
@@ -51,12 +51,12 @@ namespace DotNetty.Buffers
             this.components = NewList(maxNumComponents);
         }
 
-        public CompositeByteBuffer(IByteBufferAllocator allocator, bool direct, int maxNumComponents, params IByteBuffer[] buffers)
-            : this(allocator, direct, maxNumComponents, buffers, 0, buffers.Length)
+        public CompositeByteBuffer(IByteBufferAllocator allocator, int maxNumComponents, params IByteBuffer[] buffers)
+            : this(allocator, maxNumComponents, buffers, 0, buffers.Length)
         {
         }
 
-        internal CompositeByteBuffer(IByteBufferAllocator allocator, bool direct, int maxNumComponents, IByteBuffer[] buffers, int offset, int length)
+        internal CompositeByteBuffer(IByteBufferAllocator allocator, int maxNumComponents, IByteBuffer[] buffers, int offset, int length)
             : base(AbstractByteBufferAllocator.DefaultMaxCapacity)
         {
             Contract.Requires(allocator != null);
@@ -71,7 +71,7 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, GetCapacity(this.components));
         }
 
-        public CompositeByteBuffer(IByteBufferAllocator allocator, bool direct, int maxNumComponents, IEnumerable<IByteBuffer> buffers)
+        public CompositeByteBuffer(IByteBufferAllocator allocator, int maxNumComponents, IEnumerable<IByteBuffer> buffers)
             : base(AbstractByteBufferAllocator.DefaultMaxCapacity)
         {
             Contract.Requires(allocator != null);
@@ -86,7 +86,7 @@ namespace DotNetty.Buffers
             this.SetIndex0(0, GetCapacity(this.components));
         }
 
-        static List<ComponentEntry> NewList(int maxNumComponents) => new List<ComponentEntry>(Math.Min(AbstractByteBufferAllocator.DefaultMaxComponents, maxNumComponents));
+        private static List<ComponentEntry> NewList(int maxNumComponents) => new List<ComponentEntry>(Math.Min(AbstractByteBufferAllocator.DefaultMaxComponents, maxNumComponents));
 
         // Special constructor used by WrappedCompositeByteBuf
         internal CompositeByteBuffer(IByteBufferAllocator allocator) : base(int.MaxValue)
@@ -1024,7 +1024,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        IByteBuffer AllocateBuffer(int capacity) => this.Allocator.HeapBuffer(capacity);
+        IByteBuffer AllocateBuffer(int capacity) => this.Allocator.Buffer(capacity);
 
         public override string ToString()
         {

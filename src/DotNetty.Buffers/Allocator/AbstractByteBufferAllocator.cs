@@ -5,7 +5,6 @@ namespace DotNetty.Buffers
 {
     using System;
     using System.Runtime.CompilerServices;
-    using DotNetty.Common;
 
     /// <inheritdoc />
     /// <summary>
@@ -16,26 +15,19 @@ namespace DotNetty.Buffers
         public const int DefaultInitialCapacity = 256;
         public const int DefaultMaxComponents = 16;
         public const int DefaultMaxCapacity = int.MaxValue;
-        const int CalculateThreshold = 1048576 * 4; // 4 MiB page
+        private const int CalculateThreshold = 1048576 * 4; // 4 MiB page
 
-        readonly IByteBuffer emptyBuffer;
+        private readonly IByteBuffer emptyBuffer;
 
-        protected AbstractByteBufferAllocator()
-        {
-            this.emptyBuffer = new EmptyByteBuffer(this);
-        }
+        protected AbstractByteBufferAllocator() => this.emptyBuffer = new EmptyByteBuffer(this);
 
-        public IByteBuffer Buffer() => this.HeapBuffer();
+        protected abstract IByteBuffer NewBuffer(int initialCapacity, int maxCapacity);
 
-        public IByteBuffer Buffer(int initialCapacity) => this.HeapBuffer(initialCapacity);
+        public IByteBuffer Buffer() => this.Buffer(DefaultInitialCapacity, DefaultMaxCapacity);
 
-        public IByteBuffer Buffer(int initialCapacity, int maxCapacity) => this.HeapBuffer(initialCapacity, maxCapacity);
+        public IByteBuffer Buffer(int initialCapacity) => this.Buffer(initialCapacity, DefaultMaxCapacity);
 
-        public IByteBuffer HeapBuffer() => this.HeapBuffer(DefaultInitialCapacity, DefaultMaxCapacity);
-
-        public IByteBuffer HeapBuffer(int initialCapacity) => this.HeapBuffer(initialCapacity, DefaultMaxCapacity);
-        
-        public IByteBuffer HeapBuffer(int initialCapacity, int maxCapacity)
+        public IByteBuffer Buffer(int initialCapacity, int maxCapacity)
         {
             if (initialCapacity == 0 && maxCapacity == 0)
             {
@@ -43,19 +35,16 @@ namespace DotNetty.Buffers
             }
 
             Validate(initialCapacity, maxCapacity);
-            return this.NewHeapBuffer(initialCapacity, maxCapacity);
+            return this.NewBuffer(initialCapacity, maxCapacity);
         }
 
         public CompositeByteBuffer CompositeBuffer() => this.CompositeHeapBuffer();
-
         public CompositeByteBuffer CompositeBuffer(int maxComponents) => this.CompositeHeapBuffer(maxComponents);
-
         public CompositeByteBuffer CompositeHeapBuffer() => this.CompositeHeapBuffer(DefaultMaxComponents);
-
-        public virtual CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents) => new CompositeByteBuffer(this, false, maxNumComponents);
+        public virtual CompositeByteBuffer CompositeHeapBuffer(int maxNumComponents) => new CompositeByteBuffer(this, maxNumComponents);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void Validate(int initialCapacity, int maxCapacity)
+        private static void Validate(int initialCapacity, int maxCapacity)
         {
             if (initialCapacity < 0)
             {
@@ -67,9 +56,7 @@ namespace DotNetty.Buffers
                 ThrowHelper.ThrowArgumentOutOfRangeException_InitialCapacity(initialCapacity, maxCapacity);
             }
         }
-
-        protected abstract IByteBuffer NewHeapBuffer(int initialCapacity, int maxCapacity);
-
+        
         public int CalculateNewCapacity(int minNewCapacity, int maxCapacity)
         {
             if (minNewCapacity < 0)

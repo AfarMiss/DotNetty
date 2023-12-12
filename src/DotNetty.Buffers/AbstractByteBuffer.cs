@@ -437,7 +437,7 @@ namespace DotNetty.Buffers
             this._Set(index, value);
         }
 
-        public void Set<T>(int index, int value) where T : unmanaged => this.Set<T>(index, Unsafe.As<int, T>(ref value));
+        public virtual void Set<T>(int index, int value) where T : unmanaged => this.Set<T>(index, Unsafe.As<int, T>(ref value));
 
         protected internal abstract void _Set<T>(int index, T value) where T : unmanaged;
 
@@ -457,7 +457,7 @@ namespace DotNetty.Buffers
             this._Set(this.writerIndex, value);
             this.writerIndex += size;
         }
-        public void Write<T>(int value) where T : unmanaged => this.Write<T>(Unsafe.As<int, T>(ref value));
+        public virtual void Write<T>(int value) where T : unmanaged => this.Write<T>(Unsafe.As<int, T>(ref value));
 
         public virtual void GetBytes(int index, IByteBuffer dst, int? length = null)
         {
@@ -474,7 +474,7 @@ namespace DotNetty.Buffers
         }
         public abstract void GetBytes(int index, Span<byte> dst, int dstIndex, int length);
 
-        public void SetBytes(int index, IByteBuffer src, int? length = null)
+        public virtual void SetBytes(int index, IByteBuffer src, int? length = null)
         {
             var readLength = length.GetValueOrDefault(src.ReadableBytes);
             this.CheckIndex(index, readLength);
@@ -487,7 +487,7 @@ namespace DotNetty.Buffers
         }
         public abstract void SetBytes(int index, IByteBuffer src, int srcIndex, int length);
 
-        public void SetBytes(int index, Span<byte> src, int? length = null)
+        public virtual void SetBytes(int index, Span<byte> src, int? length = null)
         {
             var readLength = length.GetValueOrDefault(src.Length);
             this.SetBytes(index, src, 0, readLength);
@@ -531,7 +531,7 @@ namespace DotNetty.Buffers
             this.readerIndex += length;
         }
 
-        public void WriteBytes(IByteBuffer src, int? length = null)
+        public virtual void WriteBytes(IByteBuffer src, int? length = null)
         {
             var writeLength = length.GetValueOrDefault(src.ReadableBytes);
             if (length > src.ReadableBytes)
@@ -549,7 +549,7 @@ namespace DotNetty.Buffers
             this.writerIndex += length;
         }
 
-        public void WriteBytes(Span<byte> src, int? length = null)
+        public virtual void WriteBytes(Span<byte> src, int? length = null)
         {
             var writeLength = length.GetValueOrDefault(src.Length);
             this.WriteBytes(src, 0, writeLength);
@@ -600,7 +600,7 @@ namespace DotNetty.Buffers
             return value;
         }
 
-        public void WriteString(string value, Encoding encoding)
+        public virtual void WriteString(string value, Encoding encoding)
         {
             var length = this.SetString0(this.writerIndex, value, encoding, true);
             this.writerIndex += length;
