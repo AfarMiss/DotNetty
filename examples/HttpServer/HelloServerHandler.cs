@@ -26,7 +26,7 @@ namespace HttpServer
 
         static readonly byte[] StaticPlaintext = Encoding.UTF8.GetBytes("Hello, World!");
         static readonly int StaticPlaintextLen = StaticPlaintext.Length;
-        static readonly IByteBuffer PlaintextContentBuffer = Unpooled.UnreleasableBuffer(Unpooled.DirectBuffer().WriteBytes(StaticPlaintext));
+        static readonly IByteBuffer PlaintextContentBuffer;
         static readonly AsciiString PlaintextClheaderValue = AsciiString.Cached($"{StaticPlaintextLen}");
         static readonly AsciiString JsonClheaderValue = AsciiString.Cached($"{JsonLen()}");
 
@@ -39,6 +39,13 @@ namespace HttpServer
         static readonly AsciiString ServerEntity = HttpHeaderNames.Server;
 
         volatile ICharSequence date = Cache.Value;
+
+        static HelloServerHandler()
+        {
+            var byteBuffer = Unpooled.Buffer();
+            byteBuffer.WriteBytes(StaticPlaintext);
+            PlaintextContentBuffer = Unpooled.UnreleasableBuffer(byteBuffer);
+        }
 
         static int JsonLen() => Encoding.UTF8.GetBytes(NewMessage().ToJsonFormat()).Length;
 
