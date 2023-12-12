@@ -274,25 +274,6 @@ namespace DotNetty.Buffers
             return slice;
         }
 
-        public int BytesBefore(byte value) => this.BytesBefore(this.ReaderIndex, this.ReadableBytes, value);
-
-        public int BytesBefore(int length, byte value)
-        {
-            this.CheckReadableBytes(length);
-            return this.BytesBefore(this.ReaderIndex, length, value);
-        }
-
-        public virtual int BytesBefore(int index, int length, byte value)
-        {
-            int endIndex = ByteBufferEx.IndexOf(this, index, index + length, value);
-            if (endIndex < 0)
-            {
-                return -1;
-            }
-
-            return endIndex - index;
-        }
-
         public override int GetHashCode() => ByteBufferUtil.HashCode(this);
 
         public sealed override bool Equals(object o) => this.Equals(o as IByteBuffer);
@@ -365,7 +346,7 @@ namespace DotNetty.Buffers
             }
         }
 
-        protected void CheckReadableBytes(int minimumReadableBytes)
+        protected internal void CheckReadableBytes(int minimumReadableBytes)
         {
             if (minimumReadableBytes < 0)
             {

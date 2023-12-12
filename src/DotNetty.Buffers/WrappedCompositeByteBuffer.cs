@@ -52,8 +52,6 @@ namespace DotNetty.Buffers
 
         public override string ToString(int index, int length, Encoding encoding) => this.wrapped.ToString(index, length, encoding);
 
-        public override int BytesBefore(int index, int length, byte value) => this.wrapped.BytesBefore(index, length, value);
-
         public sealed override int GetHashCode() => this.wrapped.GetHashCode();
 
         public sealed override bool Equals(IByteBuffer buf) => this.wrapped.Equals(buf);

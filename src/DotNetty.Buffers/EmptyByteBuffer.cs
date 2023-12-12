@@ -102,20 +102,6 @@ namespace DotNetty.Buffers
             return 1;
         }
 
-        public int BytesBefore(byte value) => -1;
-
-        public int BytesBefore(int length, byte value)
-        {
-            this.CheckLength(length);
-            return -1;
-        }
-
-        public int BytesBefore(int index, int length, byte value)
-        {
-            this.CheckIndex(index, length);
-            return -1;
-        }
-
         public IByteBuffer Copy() => this;
 
         public IByteBuffer Copy(int index, int length)
@@ -228,7 +214,7 @@ namespace DotNetty.Buffers
         }
         // ReSharper restore ParameterOnlyUsedForPreconditionCheck.Local
 
-        IByteBuffer CheckLength(int length)
+        internal IByteBuffer CheckLength(int length)
         {
             if (length < 0)
             {

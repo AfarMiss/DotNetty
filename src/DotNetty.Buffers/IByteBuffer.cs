@@ -250,26 +250,17 @@ namespace DotNetty.Buffers
         ///     This method does not modify {@code readerIndex} or {@code writerIndex} of this buffer.
         ///</summary>
         IByteBuffer Copy();
-
         IByteBuffer Copy(int index, int length);
 
         IByteBuffer Slice();
-
         IByteBuffer RetainedSlice();
-
         IByteBuffer Slice(int index, int length);
-
         IByteBuffer RetainedSlice(int index, int length);
 
         int ArrayOffset { get; }
 
         IByteBuffer ReadSlice(int length);
-
         IByteBuffer ReadRetainedSlice(int length);
-
-        int BytesBefore(byte value);
-        int BytesBefore(int length, byte value);
-        int BytesBefore(int index, int length, byte value);
 
         string ToString();
         string ToString(Encoding encoding);

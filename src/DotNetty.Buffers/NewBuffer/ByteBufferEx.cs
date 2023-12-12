@@ -194,5 +194,69 @@ namespace DotNetty.Buffers
                 throw new InvalidOperationException();
             }
         }
+
+        public static int BytesBefore(IByteBuffer buffer, byte value)
+        {
+            while (true)
+            {
+                switch (buffer)
+                {
+                    case WrappedByteBuffer wrappedByteBuffer:
+                        buffer = wrappedByteBuffer.Unwrap();
+                        continue;
+                    case EmptyByteBuffer _:
+                        return -1;
+                    case AbstractByteBuffer abstractByteBuffer:
+                        return BytesBefore(abstractByteBuffer, buffer.ReaderIndex, buffer.ReadableBytes, value);
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
+        }
+
+        public static int BytesBefore(IByteBuffer buffer, int length, byte value)
+        {
+            switch (buffer)
+            {
+                case EmptyByteBuffer emptyByteBuffer:
+                    emptyByteBuffer.CheckLength(length);
+                    return -1;
+                case AbstractByteBuffer abstractByteBuffer:
+                    abstractByteBuffer.CheckReadableBytes(length);
+                    return BytesBefore(abstractByteBuffer, buffer.ReaderIndex, length, value);
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        public static int BytesBefore(IByteBuffer buffer, int index, int length, byte value)
+        {
+            while (true)
+            {
+                switch (buffer)
+                {
+                    case EmptyByteBuffer emptyByteBuffer:
+                        emptyByteBuffer.CheckIndex(index, length);
+                        return -1;
+                    case WrappedCompositeByteBuffer wrappedCompositeByteBuffer:
+                        var index1 = index;
+                        buffer = wrappedCompositeByteBuffer.Unwrap();
+                        length = index1 + length;
+                        continue;
+                    case AbstractByteBuffer _:
+                    {
+                        int endIndex = IndexOf(buffer, index, index + length, value);
+                        if (endIndex < 0)
+                        {
+                            return -1;
+                        }
+
+                        return endIndex - index;
+                    }
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
+        }
     }
 }
