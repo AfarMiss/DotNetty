@@ -6,24 +6,30 @@ namespace DotNetty.Common
     {
         private readonly FastThreadLocalPool threadLocal;
         private readonly Func<T> valueFactory;
-
-        public ThreadLocalPool(Func<T> valueFactory = null, int capacity = 0)
+        private readonly int interval;
+        private int intervalCounter;
+        
+        public ThreadLocalPool(Func<T> valueFactory = null, int maxCapacity = 1024, int interval = 8, int chunkSize = 32)
         {
-            if (valueFactory == null)
-            {
-                valueFactory = () => new T();
-            }
+            valueFactory ??= () => new T();
             this.valueFactory = valueFactory;
-            this.threadLocal = new FastThreadLocalPool(capacity);
+            this.threadLocal = new FastThreadLocalPool(maxCapacity, chunkSize);
+            this.interval = interval;
+            this.intervalCounter = interval;
         }
 
         private sealed class FastThreadLocalPool : FastThreadLocal<ThreadLocalQueue<T>>
         {
             private readonly int chunkSize;
-            
-            public FastThreadLocalPool(int capacity) => this.chunkSize = capacity;
-            
-            protected override ThreadLocalQueue<T> GetInitialValue() => new ThreadLocalQueue<T>(this.chunkSize);
+            private readonly int maxCapacity;
+
+            public FastThreadLocalPool(int maxCapacity, int chunkSize)
+            {
+                this.maxCapacity = maxCapacity;
+                this.chunkSize = chunkSize;
+            }
+
+            protected override ThreadLocalQueue<T> GetInitialValue() => new ThreadLocalQueue<T>(this.chunkSize, this.maxCapacity);
 
             protected override void OnRemove(ThreadLocalQueue<T> value)
             {
@@ -36,21 +42,25 @@ namespace DotNetty.Common
         
         public T Acquire(out IRecycleHandle<T> handle)
         {
-            T obj;
-            var localPool = threadLocal.Value;
+            var localPool = this.threadLocal.Value;
             handle = localPool.Dequeue();
             if (handle == null)
             {
-                handle = new RecycleHandle<T>(localPool);
-                obj = this.valueFactory();
-                ((RecycleHandle<T>)handle).SetValue(obj);
-            }
-            else
-            {
-                obj = ((RecycleHandle<T>)handle).GetValue();
+                if (++this.intervalCounter >= this.interval)
+                {
+                    this.intervalCounter = 0;
+                    handle = new RecycleHandle<T>(localPool);
+                }
+                else
+                {
+                    handle = new NormalHandle<T>();
+                }
+                var obj = this.valueFactory();
+                handle.SetValue(obj);
+                return obj;
             }
 
-            return obj;
+            return ((RecycleHandle<T>)handle).GetValue();
         }
         
         public void Recycle(IRecycleHandle<T> handle) => handle.Recycle();

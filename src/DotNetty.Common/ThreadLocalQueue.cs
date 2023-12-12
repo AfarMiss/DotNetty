@@ -10,24 +10,31 @@
         protected internal void Recycle();
     }
 
-    public interface IRecycleHandle<T> where T : IRecycle
+    public interface IRecycleHandle<in T> where T : IRecycle
     {
+        protected internal void SetValue(T value);
         protected internal void Recycle();
     }
 
-    internal sealed class RecycleHandle<T> : IRecycleHandle<T> where T : IRecycle
+    internal class NormalHandle<T> : IRecycleHandle<T> where T : IRecycle
+    {
+        protected IRecycle Value;
+
+        void IRecycleHandle<T>.SetValue(T value) => this.Value = value;
+        void IRecycleHandle<T>.Recycle() => this.Value = null;
+    }
+    
+    internal sealed class RecycleHandle<T> : NormalHandle<T>, IRecycleHandle<T> where T : IRecycle
     {
         private const int STATE_CLAIMED = 0;
         private const int STATE_AVAILABLE = 1;
         private int STATE_UPDATER = STATE_CLAIMED;
 
         private readonly ThreadLocalQueue<T> queue;
-        private IRecycle value;
 
         public RecycleHandle(ThreadLocalQueue<T> queue) => this.queue = queue;
 
-        public void SetValue(T value) => this.value = value;
-        public T GetValue() => (T)this.value;
+        public T GetValue() => (T)this.Value;
 
         public void ToClaimed()
         {
@@ -44,7 +51,7 @@
 
         void IRecycleHandle<T>.Recycle()
         {
-            this.value.Recycle();
+            this.Value.Recycle();
             this.queue.Enqueue(this);
         }
     }
@@ -56,10 +63,10 @@
         private readonly Queue<RecycleHandle<T>> batch;
         internal volatile ConcurrentQueue<RecycleHandle<T>> PooledHandles;
 
-        internal ThreadLocalQueue(int chunkSize) 
+        internal ThreadLocalQueue(int chunkSize, int maxCapacity) 
         {
             this.chunkSize = chunkSize;
-            this.batch = new Queue<RecycleHandle<T>>(chunkSize);
+            this.batch = new Queue<RecycleHandle<T>>(maxCapacity);
             this.Owner = Thread.CurrentThread;
             this.PooledHandles = new ConcurrentQueue<RecycleHandle<T>>();
         }

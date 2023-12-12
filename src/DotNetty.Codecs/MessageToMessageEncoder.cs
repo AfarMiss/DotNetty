@@ -21,7 +21,7 @@ namespace DotNetty.Codecs
         public override Task WriteAsync(IChannelHandlerContext ctx, object msg)
         {
             Task result;
-            RecycleList output = null;
+            PoolList output = null;
             try
             {
                 if (this.AcceptOutboundMessage(msg))

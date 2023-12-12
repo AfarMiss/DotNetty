@@ -55,7 +55,7 @@ namespace DotNetty.Common
 
         private void GrowTable(int index)
         {
-            object[] oldArray = this.slotArray;
+            var oldArray = this.slotArray;
             int oldCapacity = oldArray.Length;
             int newCapacity = index;
             newCapacity |= newCapacity >> 1;
@@ -73,18 +73,18 @@ namespace DotNetty.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public object GetSlot(int index)
+        public object GetValue(int index)
         {
             var lookup = this.slotArray;
             return index < lookup.Length ? lookup[index] : UNSET;
         }
 
-        public bool SetSlot(int index, object value)
+        public bool SetValue(int index, object value)
         {
-            object[] lookup = this.slotArray;
+            var lookup = this.slotArray;
             if (index < lookup.Length)
             {
-                object oldValue = lookup[index];
+                var oldValue = lookup[index];
                 lookup[index] = value;
                 return oldValue == UNSET;
             }
@@ -96,12 +96,12 @@ namespace DotNetty.Common
 
         public object Remove(int index)
         {
-            object[] lookup = this.slotArray;
+            var lookup = this.slotArray;
             if (index < lookup.Length)
             {
-                object v = lookup[index];
+                var oldValue = lookup[index];
                 lookup[index] = UNSET;
-                return v;
+                return oldValue;
             }
 
             return UNSET;
@@ -109,12 +109,11 @@ namespace DotNetty.Common
 
         public bool Contains(int index)
         {
-            object[] lookup = this.slotArray;
+            var lookup = this.slotArray;
             return index < lookup.Length && lookup[index] != UNSET;
         }
         
         public static void Remove() => threadLocalMap = null;
-
         public static void Destroy() => threadLocalMap = null;
     }
 }

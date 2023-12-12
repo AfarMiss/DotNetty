@@ -8,22 +8,22 @@ namespace DotNetty.Common
         /// <summary>
         /// 全局管理 映射<see cref="FastThreadLocal"/>
         /// </summary>
-        public static readonly int RemoveIndex = ThreadLocalMap.NextIndex();
+        private static readonly int RemoveIndex = ThreadLocalMap.NextIndex();
 
         /// <summary>
         /// 当前线程移除所有
         /// </summary>
         public static void RemoveAll()
         {
-            ThreadLocalMap threadLocalMap = ThreadLocalMap.GetIfSet();
+            var threadLocalMap = ThreadLocalMap.GetIfSet();
             if (threadLocalMap == null) return;
 
             try
             {
-                var v = threadLocalMap.GetSlot(RemoveIndex);
-                if (v != null && v != ThreadLocalMap.UNSET)
+                var value = threadLocalMap.GetValue(RemoveIndex);
+                if (value != null && value != ThreadLocalMap.UNSET)
                 {
-                    var variablesToRemove = (HashSet<FastThreadLocal>)v;
+                    var variablesToRemove = (HashSet<FastThreadLocal>)value;
                     foreach (var tlv in variablesToRemove)
                     {
                         tlv.Remove(threadLocalMap);
@@ -46,31 +46,27 @@ namespace DotNetty.Common
 
         protected static void Add(ThreadLocalMap threadLocalMap, FastThreadLocal variable)
         {
-            object v = threadLocalMap.GetSlot(RemoveIndex);
-            HashSet<FastThreadLocal> variablesToRemove;
-            if (v == ThreadLocalMap.UNSET || v == null)
+            var value = threadLocalMap.GetValue(RemoveIndex);
+            HashSet<FastThreadLocal> removeSet;
+            if (value == ThreadLocalMap.UNSET || value == null)
             {
-                variablesToRemove = new HashSet<FastThreadLocal>(); // Collections.newSetFromMap(new IdentityHashMap<FastThreadLocal<?>, Boolean>());
-                threadLocalMap.SetSlot(RemoveIndex, variablesToRemove);
+                removeSet = new HashSet<FastThreadLocal>(); // Collections.newSetFromMap(new IdentityHashMap<FastThreadLocal<?>, Boolean>());
+                threadLocalMap.SetValue(RemoveIndex, removeSet);
             }
             else
             {
-                variablesToRemove = (HashSet<FastThreadLocal>)v;
+                removeSet = (HashSet<FastThreadLocal>)value;
             }
 
-            variablesToRemove.Add(variable);
+            removeSet.Add(variable);
         }
 
         protected static void Remove(ThreadLocalMap threadLocalMap, FastThreadLocal variable)
         {
-            object v = threadLocalMap.GetSlot(RemoveIndex);
+            var value = threadLocalMap.GetValue(RemoveIndex);
+            if (value == ThreadLocalMap.UNSET || value == null) return;
 
-            if (v == ThreadLocalMap.UNSET || v == null)
-            {
-                return;
-            }
-
-            var variablesToRemove = (HashSet<FastThreadLocal>)v;
+            var variablesToRemove = (HashSet<FastThreadLocal>)value;
             variablesToRemove.Remove(variable);
         }
 
@@ -95,10 +91,10 @@ namespace DotNetty.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T Get(ThreadLocalMap threadLocalMap)
         {
-            object v = threadLocalMap.GetSlot(this.index);
-            if (v != ThreadLocalMap.UNSET)
+            var value = threadLocalMap.GetValue(this.index);
+            if (value != ThreadLocalMap.UNSET)
             {
-                return (T)v;
+                return (T)value;
             }
 
             return this.Initialize(threadLocalMap);
@@ -107,17 +103,16 @@ namespace DotNetty.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T Initialize(ThreadLocalMap threadLocalMap)
         {
-            T v = this.GetInitialValue();
-
-            threadLocalMap.SetSlot(this.index, v);
+            var value = this.GetInitialValue();
+            threadLocalMap.SetValue(this.index, value);
             Add(threadLocalMap, this);
-            return v;
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Set(ThreadLocalMap threadLocalMap, T value)
         {
-            if (threadLocalMap.SetSlot(this.index, value))
+            if (threadLocalMap.SetValue(this.index, value))
             {
                 Add(threadLocalMap, this);
             }
@@ -155,12 +150,12 @@ namespace DotNetty.Common
         {
             if (threadLocalMap == null) return;
 
-            object v = threadLocalMap.Remove(this.index);
+            var remove = threadLocalMap.Remove(this.index);
             Remove(threadLocalMap, this);
 
-            if (v != ThreadLocalMap.UNSET)
+            if (remove != ThreadLocalMap.UNSET)
             {
-                this.OnRemove((T)v);
+                this.OnRemove((T)remove);
             }
         }
 
