@@ -13,7 +13,7 @@ namespace DotNetty.Tests.Common
         protected TestBase(ITestOutputHelper output)
         {
             this.Output = output;
-            InternalLoggerFactory.DefaultFactory.AddProvider(new XUnitOutputLoggerProvider(output));
+            // InternalLoggerFactory.DefaultFactory.AddProvider(new XUnitOutputLoggerProvider(output));
         }
     }
 }

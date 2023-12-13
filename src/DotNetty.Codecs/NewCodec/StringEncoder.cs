@@ -14,12 +14,8 @@ namespace DotNetty.Codecs.NewCodec
     {
         private readonly Encoding encoding;
 
-        public StringEncoder(Encoding encoding = null)
-        {
-            if (encoding == null) this.encoding = Encoding.GetEncoding(0);
-            this.encoding = encoding ?? throw new NullReferenceException("encoding");
-        }
-        
+        public StringEncoder(Encoding encoding = null) => this.encoding = encoding ?? Encoding.GetEncoding(0);
+
         public override void Encode(object context, string input, List<object> output)
         {
             if (input.Length == 0) return;

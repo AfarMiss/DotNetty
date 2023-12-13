@@ -13,11 +13,7 @@ namespace DotNetty.Codecs.NewCodec
     {
         private readonly Encoding encoding;
 
-        public StringDecoder(Encoding encoding = null)
-        {
-            if (encoding == null) this.encoding = Encoding.GetEncoding(0);
-            this.encoding = encoding ?? throw new NullReferenceException("encoding");
-        }
+        public StringDecoder(Encoding encoding = null) => this.encoding = encoding ?? Encoding.GetEncoding(0);
         
         public override void Decode(object context, IByteBuffer input, List<object> output)
         {

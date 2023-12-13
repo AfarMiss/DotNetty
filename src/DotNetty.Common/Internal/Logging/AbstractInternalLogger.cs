@@ -1,32 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
 
 namespace DotNetty.Common.Internal.Logging
 {
-    using System;
-    using System.Diagnostics.Contracts;
-
-    /// <summary>
-    /// A skeletal implementation of <see cref="IInternalLogger"/>. This class implements
-    /// all methods that have a <see cref="InternalLogLevel"/> parameter by default to call
-    /// specific logger methods such as <see cref="Info(string)"/> or <see cref="InfoEnabled"/>.
-    /// </summary>
     public abstract class AbstractInternalLogger : IInternalLogger
     {
         static readonly string EXCEPTION_MESSAGE = "Unexpected exception:";
-
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="name">A friendly name for the new logger instance.</param>
-        protected AbstractInternalLogger(string name)
-        {
-            Contract.Requires(name != null);
-
-            this.Name = name;
-        }
-
         public string Name { get; }
+        
+        public abstract bool TraceEnabled { get; }
+        public abstract bool DebugEnabled { get; }
+        public abstract bool InfoEnabled { get; }
+        public abstract bool WarnEnabled { get; }
+        public abstract bool ErrorEnabled { get; }
+        protected AbstractInternalLogger(string name) => this.Name = name;
 
         public bool IsEnabled(InternalLogLevel level)
         {
@@ -47,8 +33,6 @@ namespace DotNetty.Common.Internal.Logging
             }
         }
 
-        public abstract bool TraceEnabled { get; }
-
         public abstract void Trace(string msg);
 
         public abstract void Trace(string format, object arg);
@@ -60,9 +44,7 @@ namespace DotNetty.Common.Internal.Logging
         public abstract void Trace(string msg, Exception t);
 
         public void Trace(Exception t) => this.Trace(EXCEPTION_MESSAGE, t);
-
-        public abstract bool DebugEnabled { get; }
-
+        
         public abstract void Debug(string msg);
 
         public abstract void Debug(string format, object arg);
@@ -74,8 +56,6 @@ namespace DotNetty.Common.Internal.Logging
         public abstract void Debug(string msg, Exception t);
 
         public void Debug(Exception t) => this.Debug(EXCEPTION_MESSAGE, t);
-
-        public abstract bool InfoEnabled { get; }
 
         public abstract void Info(string msg);
 
@@ -89,8 +69,6 @@ namespace DotNetty.Common.Internal.Logging
 
         public void Info(Exception t) => this.Info(EXCEPTION_MESSAGE, t);
 
-        public abstract bool WarnEnabled { get; }
-
         public abstract void Warn(string msg);
 
         public abstract void Warn(string format, object arg);
@@ -102,8 +80,6 @@ namespace DotNetty.Common.Internal.Logging
         public abstract void Warn(string msg, Exception t);
 
         public void Warn(Exception t) => this.Warn(EXCEPTION_MESSAGE, t);
-
-        public abstract bool ErrorEnabled { get; }
 
         public abstract void Error(string msg);
 

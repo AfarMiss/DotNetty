@@ -28,11 +28,11 @@ namespace SecureChat.Server
             var STRING_DECODER = new StringDecoder();
             var SERVER_HANDLER = new SecureChatServerHandler();
 
-            X509Certificate2 tlsCertificate = null;
-            if (ServerSettings.IsSsl)
-            {
-                tlsCertificate = new X509Certificate2(Path.Combine(ExampleHelper.ProcessDirectory, "dotnetty.com.pfx"), "password");
-            }
+            // X509Certificate2 tlsCertificate = null;
+            // if (ServerSettings.IsSsl)
+            // {
+            //     tlsCertificate = new X509Certificate2(Path.Combine(ExampleHelper.ProcessDirectory, "dotnetty.com.pfx"), "password");
+            // }
             try
             {
                 var bootstrap = new ServerBootstrap();
@@ -44,10 +44,10 @@ namespace SecureChat.Server
                     .ChildHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
-                        if (tlsCertificate != null)
-                        {
-                            pipeline.AddLast(TlsHandler.Server(tlsCertificate));
-                        }
+                        // if (tlsCertificate != null)
+                        // {
+                        //     pipeline.AddLast(TlsHandler.Server(tlsCertificate));
+                        // }
 
                         pipeline.AddLast(new DelimiterBasedFrameDecoder(8192, Delimiters.LineDelimiter()));
                         pipeline.AddLast(STRING_ENCODER, STRING_DECODER, SERVER_HANDLER);
