@@ -1,13 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Concurrent;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Transport.Bootstrapping;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Concurrent;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Transport.Bootstrapping;
-
     /// <summary>
     /// A special <see cref="IChannelHandler"/> which offers an easy way to initialize a <see cref="IChannel"/> once it was
     /// registered to its <see cref="IEventLoop"/>.
@@ -31,12 +28,10 @@ namespace DotNetty.Transport.Channels
     /// </code>
     /// </example>
     /// <typeparam name="T">A sub-type of <see cref="IChannel"/>.</typeparam>
-    public abstract class ChannelInitializer<T> : ChannelHandlerAdapter
-        where T : IChannel
+    public abstract class ChannelInitializer<T> : ChannelHandlerAdapter where T : IChannel
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChannelInitializer<T>>();
-
-        readonly ConcurrentDictionary<IChannelHandlerContext, bool> initMap = new ConcurrentDictionary<IChannelHandlerContext, bool>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChannelInitializer<T>>();
+        private readonly ConcurrentDictionary<IChannelHandlerContext, bool> initMap = new ConcurrentDictionary<IChannelHandlerContext, bool>();
 
         /// <summary>
         /// This method will be called once the <see cref="IChannel"/> was registered. After the method returns this instance

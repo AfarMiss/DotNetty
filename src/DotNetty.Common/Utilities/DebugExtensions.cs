@@ -1,11 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace DotNetty.Common.Utilities
 {
-    using System.Collections.Generic;
-    using System.Text;
-
     public static class DebugExtensions
     {
         public static string ToDebugString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)

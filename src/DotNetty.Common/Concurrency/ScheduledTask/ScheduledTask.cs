@@ -1,22 +1,19 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Runtime.CompilerServices;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    abstract class ScheduledTask : IScheduledRunnable
+    internal abstract class ScheduledTask : IScheduledRunnable
     {
-        const int CancellationProhibited = 1;
-        const int CancellationRequested = 1 << 1;
+        private const int CancellationProhibited = 1;
+        private const int CancellationRequested = 1 << 1;
 
         protected readonly TaskCompletionSource Promise;
         protected readonly AbstractScheduledEventExecutor Executor;
-        int volatileCancellationState;
+        private int volatileCancellationState;
 
         protected ScheduledTask(AbstractScheduledEventExecutor executor, PreciseTimeSpan deadline, TaskCompletionSource promise)
         {

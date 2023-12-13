@@ -1,11 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Threading.Tasks;
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    using System;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Allows the acquisition and release of <see cref="IChannel"/> instances, and so act as a pool of these.
     /// </summary>

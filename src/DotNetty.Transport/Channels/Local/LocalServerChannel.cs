@@ -1,25 +1,23 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Net;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
+
 
 namespace DotNetty.Transport.Channels.Local
 {
-    using System;
-    using System.Net;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-
     /// <summary>
     /// A <see cref="IServerChannel"/> for the local transport which allows in VM communication.
     /// </summary>
     public class LocalServerChannel : AbstractServerChannel
     {
-        readonly IQueue<object> inboundBuffer = PlatformDependent.NewMpscQueue<object>();
+        private readonly IQueue<object> inboundBuffer = PlatformDependent.NewMpscQueue<object>();
 
-        volatile int state; // 0 - open, 1 - active, 2 - closed
-        volatile LocalAddress localAddress;
-        volatile bool acceptInProgress;
+        private volatile int state; // 0 - open, 1 - active, 2 - closed
+        private volatile LocalAddress localAddress;
+        private volatile bool acceptInProgress;
 
-        readonly Action shutdownHook;
+        private readonly Action shutdownHook;
 
         public LocalServerChannel()
         {

@@ -1,11 +1,8 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Diagnostics.Contracts;
+using DotNetty.Buffers;
 
 namespace DotNetty.Transport.Channels
 {
-    using System.Diagnostics.Contracts;
-    using DotNetty.Buffers;
-
     /// <summary>
     ///     Default implementation of <see cref="IMaxMessagesRecvByteBufAllocator" /> which respects
     ///     <see cref="IChannelConfiguration.AutoRead" />
@@ -13,7 +10,7 @@ namespace DotNetty.Transport.Channels
     /// </summary>
     public abstract class DefaultMaxMessagesRecvByteBufAllocator : IMaxMessagesRecvByteBufAllocator
     {
-        volatile int maxMessagesPerRead;
+        private volatile int maxMessagesPerRead;
 
         protected DefaultMaxMessagesRecvByteBufAllocator()
             : this(1)
@@ -38,15 +35,14 @@ namespace DotNetty.Transport.Channels
         public abstract IRecvByteBufAllocatorHandle NewHandle();
 
         /// <summary>Focuses on enforcing the maximum messages per read condition for <see cref="ContinueReading" />.</summary>
-        protected abstract class MaxMessageHandle<T> : IRecvByteBufAllocatorHandle
-            where T : IMaxMessagesRecvByteBufAllocator
+        protected abstract class MaxMessageHandle<T> : IRecvByteBufAllocatorHandle where T : IMaxMessagesRecvByteBufAllocator
         {
             protected readonly T Owner;
-            IChannelConfiguration config;
-            int maxMessagePerRead;
-            int totalMessages;
-            int totalBytesRead;
-            int lastBytesRead;
+            private IChannelConfiguration config;
+            private int maxMessagePerRead;
+            private int totalMessages;
+            private int totalBytesRead;
+            private int lastBytesRead;
 
             protected MaxMessageHandle(T owner)
             {

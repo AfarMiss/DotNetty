@@ -1,10 +1,10 @@
-﻿namespace DotNetty.Common
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Threading;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 
+namespace DotNetty.Common
+{
     public interface IRecycle
     {
         protected internal void Recycle();

@@ -1,50 +1,46 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels.Embedded
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Runtime.ExceptionServices;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
     public class EmbeddedChannel : AbstractChannel, IEmbeddedChannel
     {
-        static readonly EndPoint LOCAL_ADDRESS = new EmbeddedSocketAddress();
-        static readonly EndPoint REMOTE_ADDRESS = new EmbeddedSocketAddress();
+        private static readonly EndPoint LOCAL_ADDRESS = new EmbeddedSocketAddress();
+        private static readonly EndPoint REMOTE_ADDRESS = new EmbeddedSocketAddress();
 
-        enum State
+        private enum State
         {
             Open,
             Active,
             Closed
         };
 
-        static readonly IChannelHandler[] EMPTY_HANDLERS = new IChannelHandler[0];
+        private static readonly IChannelHandler[] EMPTY_HANDLERS = Array.Empty<IChannelHandler>();
 
-        static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance<EmbeddedChannel>();
+        private static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance<EmbeddedChannel>();
 
-        static readonly ChannelMetadata METADATA_NO_DISCONNECT = new ChannelMetadata(false);
-        static readonly ChannelMetadata METADATA_DISCONNECT = new ChannelMetadata(true);
+        private static readonly ChannelMetadata METADATA_NO_DISCONNECT = new ChannelMetadata(false);
+        private static readonly ChannelMetadata METADATA_DISCONNECT = new ChannelMetadata(true);
 
-        readonly EmbeddedEventLoop loop = new EmbeddedEventLoop();
+        private readonly EmbeddedEventLoop loop = new EmbeddedEventLoop();
 
-        Queue<object> inboundMessages;
-        Queue<object> outboundMessages;
-        Exception lastException;
-        State state;
+        private Queue<object> inboundMessages;
+        private Queue<object> outboundMessages;
+        private Exception lastException;
+        private State state;
 
         /// <summary>
         ///     Create a new instance with an empty pipeline.
         /// </summary>
-        public EmbeddedChannel()
-            : this(EmbeddedChannelId.Instance, EMPTY_HANDLERS)
+        public EmbeddedChannel() : this(EmbeddedChannelId.Instance, EMPTY_HANDLERS)
         {
         }
 
@@ -52,8 +48,7 @@ namespace DotNetty.Transport.Channels.Embedded
         ///     Create a new instance with an empty pipeline with the specified <see cref="IChannelId" />.
         /// </summary>
         /// <param name="channelId">The <see cref="IChannelId" /> of this channel. </param>
-        public EmbeddedChannel(IChannelId channelId)
-            : this(channelId, EMPTY_HANDLERS)
+        public EmbeddedChannel(IChannelId channelId) : this(channelId, EMPTY_HANDLERS)
         {
         }
 
@@ -63,13 +58,11 @@ namespace DotNetty.Transport.Channels.Embedded
         /// <param name="handlers">
         ///     The <see cref="IChannelHandler" />s that will be added to the <see cref="IChannelPipeline" />
         /// </param>
-        public EmbeddedChannel(params IChannelHandler[] handlers)
-            : this(EmbeddedChannelId.Instance, handlers)
+        public EmbeddedChannel(params IChannelHandler[] handlers) : this(EmbeddedChannelId.Instance, handlers)
         {
         }
 
-        public EmbeddedChannel(IChannelId id, params IChannelHandler[] handlers)
-            : this(id, false, handlers)
+        public EmbeddedChannel(IChannelId id, params IChannelHandler[] handlers) : this(id, false, handlers)
         {
         }
 
@@ -105,9 +98,9 @@ namespace DotNetty.Transport.Channels.Embedded
             this.Setup(true, handlers);
         }
 
-        static ChannelMetadata GetMetadata(bool hasDisconnect) => hasDisconnect ? METADATA_DISCONNECT : METADATA_NO_DISCONNECT;
+        private static ChannelMetadata GetMetadata(bool hasDisconnect) => hasDisconnect ? METADATA_DISCONNECT : METADATA_NO_DISCONNECT;
 
-        void Setup(bool register, params IChannelHandler[] handlers)
+        private void Setup(bool register, params IChannelHandler[] handlers)
         {
             Contract.Requires(handlers != null);
 

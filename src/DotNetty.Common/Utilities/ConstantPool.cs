@@ -1,20 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-
     /// <summary>
     ///     A pool of <see cref="IConstant" />s.
     /// </summary>
     public abstract class ConstantPool
     {
-        readonly Dictionary<string, IConstant> constants = new Dictionary<string, IConstant>();
-
-        int nextId = 1;
+        private readonly Dictionary<string, IConstant> constants = new Dictionary<string, IConstant>();
+        private int nextId = 1;
 
         /// <summary>Shortcut of <c>this.ValueOf(firstNameComponent.Name + "#" + secondNameComponent)</c>.</summary>
         public IConstant ValueOf<T>(Type firstNameComponent, string secondNameComponent)

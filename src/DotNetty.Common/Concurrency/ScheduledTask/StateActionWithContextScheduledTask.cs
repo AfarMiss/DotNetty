@@ -1,14 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System;
-
-    sealed class StateActionWithContextScheduledTask : ScheduledTask
+    internal sealed class StateActionWithContextScheduledTask : ScheduledTask
     {
-        readonly Action<object, object> action;
-        readonly object context;
+        private readonly Action<object, object> action;
+        private readonly object context;
 
         public StateActionWithContextScheduledTask(AbstractScheduledEventExecutor executor, Action<object, object> action, object context, object state,
             PreciseTimeSpan deadline)

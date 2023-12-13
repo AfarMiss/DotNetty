@@ -1,18 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels.Embedded
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-
-    sealed class EmbeddedEventLoop : AbstractScheduledEventExecutor, IEventLoop
+    internal sealed class EmbeddedEventLoop : AbstractScheduledEventExecutor, IEventLoop
     {
-        readonly Queue<IRunnable> tasks = new Queue<IRunnable>(2);
+        private readonly Queue<IRunnable> tasks = new Queue<IRunnable>(2);
 
         public new IEventLoop GetNext() => this;
 

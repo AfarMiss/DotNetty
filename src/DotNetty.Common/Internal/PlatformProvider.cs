@@ -1,15 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Diagnostics.Contracts;
+using System.Threading;
 
 namespace DotNetty.Common.Internal
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-
     public static class PlatformProvider
     {
-        static IPlatform defaultPlatform;
+        private static IPlatform defaultPlatform;
 
         public static IPlatform Platform
         {

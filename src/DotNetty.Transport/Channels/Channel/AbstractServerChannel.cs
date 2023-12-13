@@ -1,13 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Utilities;
-
     /// <summary>
     /// A skeletal server-side <see cref="IChannel"/> implementation. A server-side <see cref="IChannel"/> does not
     /// allow the following operations: <see cref="IChannel.ConnectAsync(EndPoint)"/>,
@@ -18,16 +15,11 @@ namespace DotNetty.Transport.Channels
     {
         static readonly ChannelMetadata METADATA = new ChannelMetadata(false, 16);
 
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        protected AbstractServerChannel()
-            : base(null)
+        protected AbstractServerChannel() : base(null)
         {
         }
 
         public override ChannelMetadata Metadata => METADATA;
-
         protected override EndPoint RemoteAddressInternal => null;
 
         protected override void DoDisconnect() => throw new NotSupportedException();
@@ -38,15 +30,11 @@ namespace DotNetty.Transport.Channels
 
         protected override object FilterOutboundMessage(object msg) => throw new NotSupportedException();
 
-        class DefaultServerUnsafe : AbstractUnsafe
+        private sealed class DefaultServerUnsafe : AbstractUnsafe
         {
-            readonly Task err;
+            private readonly Task err = TaskEx.FromException(new NotSupportedException());
 
-            public DefaultServerUnsafe(AbstractChannel channel)
-                : base(channel)
-            {
-                this.err = TaskEx.FromException(new NotSupportedException());
-            }
+            public DefaultServerUnsafe(AbstractChannel channel) : base(channel) { }
 
             public override Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress) => this.err;
         }

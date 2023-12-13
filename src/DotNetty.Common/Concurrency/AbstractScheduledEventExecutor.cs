@@ -1,15 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Utilities;
-
     /// <summary>
     ///     Abstract base class for <see cref="IEventExecutor" />s that need to support scheduling.
     /// </summary>
@@ -28,8 +25,7 @@ namespace DotNetty.Common.Concurrency
 
         protected static PreciseTimeSpan GetNanos() => PreciseTimeSpan.FromStart;
 
-        protected static bool IsNullOrEmpty<T>(PriorityQueue<T> taskQueue)
-            where T : class
+        protected static bool IsNullOrEmpty<T>(PriorityQueue<T> taskQueue) where T : class
         {
             return taskQueue == null || taskQueue.Count == 0;
         }

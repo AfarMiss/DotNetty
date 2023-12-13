@@ -1,14 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Common.Internal
 {
-    using System;
-    using System.Diagnostics.Contracts;
-
-    class DefaultPlatform : IPlatform
+    internal class DefaultPlatform : IPlatform
     {
-        int processId;
+        private readonly int processId;
 
         public DefaultPlatform()
         {

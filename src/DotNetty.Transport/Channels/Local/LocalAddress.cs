@@ -1,19 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Net;
+using System.Text;
+
 namespace DotNetty.Transport.Channels.Local
 {
-    using System;
-    using System.Net;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
-
     public class LocalAddress : EndPoint, IComparable<LocalAddress>
     {
-        public static readonly LocalAddress Any = new LocalAddress("ANY"); 
+        public static readonly LocalAddress Any = new LocalAddress("ANY");
 
-        readonly string id;
-        readonly string strVal;
+        private readonly string id;
+        private readonly string strVal;
 
         internal LocalAddress(IChannel channel)
         {

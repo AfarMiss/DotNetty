@@ -1,31 +1,27 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Threading;
+using DotNetty.Buffers;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-    using DotNetty.Buffers;
-    using DotNetty.Transport.Channels.Sockets;
-
     /// <summary>
     ///     Shared configuration for SocketAsyncChannel. Provides access to pre-configured resources like ByteBuf allocator and
     ///     IO buffer pools
     /// </summary>
     public class DefaultChannelConfiguration : IChannelConfiguration
     {
-        static readonly TimeSpan DefaultConnectTimeout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan DefaultConnectTimeout = TimeSpan.FromSeconds(30);
 
-        volatile IByteBufferAllocator allocator = ByteBufferUtil.DefaultAllocator;
-        volatile IRecvByteBufAllocator recvByteBufAllocator = FixedRecvByteBufAllocator.Default;
-        volatile IMessageSizeEstimator messageSizeEstimator = DefaultMessageSizeEstimator.Default;
+        private volatile IByteBufferAllocator allocator = ByteBufferUtil.DefaultAllocator;
+        private volatile IRecvByteBufAllocator recvByteBufAllocator = FixedRecvByteBufAllocator.Default;
+        private volatile IMessageSizeEstimator messageSizeEstimator = DefaultMessageSizeEstimator.Default;
 
-        volatile int autoRead = 1;
-        volatile int writeSpinCount = 16;
-        volatile int writeBufferHighWaterMark = 64 * 1024;
-        volatile int writeBufferLowWaterMark = 32 * 1024;
-        long connectTimeout = DefaultConnectTimeout.Ticks;
+        private volatile int autoRead = 1;
+        private volatile int writeSpinCount = 16;
+        private volatile int writeBufferHighWaterMark = 64 * 1024;
+        private volatile int writeBufferLowWaterMark = 32 * 1024;
+        private long connectTimeout = DefaultConnectTimeout.Ticks;
 
         protected readonly IChannel Channel;
 

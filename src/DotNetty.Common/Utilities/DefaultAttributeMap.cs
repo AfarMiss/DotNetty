@@ -1,11 +1,8 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Diagnostics.Contracts;
+using System.Threading;
 
 namespace DotNetty.Common.Utilities
 {
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-
     /// <summary>
     ///     Default <see cref="IAttributeMap" /> implementation which use simple synchronization per bucket to keep the memory
     ///     overhead
@@ -13,18 +10,17 @@ namespace DotNetty.Common.Utilities
     /// </summary>
     public class DefaultAttributeMap : IAttributeMap
     {
-        const int BucketSize = 4;
-        const int Mask = BucketSize - 1;
+        private const int BucketSize = 4;
+        private const int Mask = BucketSize - 1;
 
         // Initialize lazily to reduce memory consumption; updated by AtomicReferenceFieldUpdater above.
-        volatile DefaultAttribute[] attributes;
+        private volatile DefaultAttribute[] attributes;
 
-        public IAttribute<T> GetAttribute<T>(AttributeKey<T> key)
-            where T : class
+        public IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class
         {
             Contract.Requires(key != null);
 
-            DefaultAttribute[] attrs = this.attributes;
+            var attrs = this.attributes;
             if (attrs == null)
             {
                 attrs = new DefaultAttribute[BucketSize];
@@ -33,7 +29,7 @@ namespace DotNetty.Common.Utilities
             }
 
             int i = Index(key);
-            DefaultAttribute head = Volatile.Read(ref attrs[i]);
+            var head = Volatile.Read(ref attrs[i]);
             if (head == null)
             {
                 // No head exists yet which means we may be able to add the attribute without synchronization and just
@@ -51,7 +47,7 @@ namespace DotNetty.Common.Utilities
 
             lock (head)
             {
-                DefaultAttribute curr = head;
+                var curr = head;
                 while (true)
                 {
                     if (!curr.Removed && curr.GetKey() == key)
@@ -59,7 +55,7 @@ namespace DotNetty.Common.Utilities
                         return (IAttribute<T>)curr;
                     }
 
-                    DefaultAttribute next = curr.Next;
+                    var next = curr.Next;
                     if (next == null)
                     {
                         var attr = new DefaultAttribute<T>(head, key);
@@ -75,8 +71,7 @@ namespace DotNetty.Common.Utilities
             }
         }
 
-        public bool HasAttribute<T>(AttributeKey<T> key)
-            where T : class
+        public bool HasAttribute<T>(AttributeKey<T> key) where T : class
         {
             Contract.Requires(key != null);
 

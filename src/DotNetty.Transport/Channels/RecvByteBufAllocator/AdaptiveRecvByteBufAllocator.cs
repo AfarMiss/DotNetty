@@ -1,13 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using DotNetty.Common.Utilities;
-
     /// <summary>
     ///     The <see cref="IRecvByteBufAllocator" /> that automatically increases and
     ///     decreases the predicted buffer size on feed back.
@@ -20,14 +17,14 @@ namespace DotNetty.Transport.Channels
     /// </summary>
     public class AdaptiveRecvByteBufAllocator : DefaultMaxMessagesRecvByteBufAllocator
     {
-        const int DefaultMinimum = 64;
-        const int DefaultInitial = 1024;
-        const int DefaultMaximum = 65536;
+        private const int DefaultMinimum = 64;
+        private const int DefaultInitial = 1024;
+        private const int DefaultMaximum = 65536;
 
-        const int IndexIncrement = 4;
-        const int IndexDecrement = 1;
+        private const int IndexIncrement = 4;
+        private const int IndexDecrement = 1;
 
-        static readonly int[] SizeTable;
+        private static readonly int[] SizeTable;
 
         static AdaptiveRecvByteBufAllocator()
         {
@@ -45,7 +42,7 @@ namespace DotNetty.Transport.Channels
             SizeTable = sizeTable.ToArray();
         }
 
-        static int GetSizeTableIndex(int size)
+        private static int GetSizeTableIndex(int size)
         {
             for (int low = 0, high = SizeTable.Length - 1;;)
             {
@@ -80,13 +77,13 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        sealed class HandleImpl : MaxMessageHandle<AdaptiveRecvByteBufAllocator>
+        private sealed class HandleImpl : MaxMessageHandle<AdaptiveRecvByteBufAllocator>
         {
-            readonly int minIndex;
-            readonly int maxIndex;
-            int index;
-            int nextReceiveBufferSize;
-            bool decreaseNow;
+            private readonly int minIndex;
+            private readonly int maxIndex;
+            private int index;
+            private int nextReceiveBufferSize;
+            private bool decreaseNow;
 
             public HandleImpl(AdaptiveRecvByteBufAllocator owner, int minIndex, int maxIndex, int initial)
                 : base(owner)
@@ -100,7 +97,7 @@ namespace DotNetty.Transport.Channels
 
             public override int Guess() => this.nextReceiveBufferSize;
 
-            void Record(int actualReadBytes)
+            private void Record(int actualReadBytes)
             {
                 if (actualReadBytes <= SizeTable[Math.Max(0, this.index - IndexDecrement - 1)])
                 {
@@ -126,9 +123,9 @@ namespace DotNetty.Transport.Channels
             public override void ReadComplete() => this.Record(this.TotalBytesRead());
         }
 
-        readonly int minIndex;
-        readonly int maxIndex;
-        readonly int initial;
+        private readonly int minIndex;
+        private readonly int maxIndex;
+        private readonly int initial;
 
         /// <summary>
         ///     Creates a new predictor with the default parameters.  With the default

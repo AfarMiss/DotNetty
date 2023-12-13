@@ -1,15 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Threading;
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    using System.Threading;
-
     public sealed class CountingChannelPoolHandler : IChannelPoolHandler
     {
-        int channelCount;
-        int acquiredCount;
-        int releasedCount;
+        private int channelCount;
+        private int acquiredCount;
+        private int releasedCount;
         
         public int ChannelCount => this.channelCount;
 

@@ -1,44 +1,38 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels.Embedded
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Runtime.ExceptionServices;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
     public class SingleThreadedEmbeddedChannel : AbstractChannel, IEmbeddedChannel
     {
-        static readonly EndPoint LOCAL_ADDRESS = new EmbeddedSocketAddress();
-        static readonly EndPoint REMOTE_ADDRESS = new EmbeddedSocketAddress();
+        private static readonly EndPoint LOCAL_ADDRESS = new EmbeddedSocketAddress();
+        private static readonly EndPoint REMOTE_ADDRESS = new EmbeddedSocketAddress();
 
-        enum State
+        private enum State
         {
             Open,
             Active,
             Closed
         };
 
-        static readonly IChannelHandler[] EMPTY_HANDLERS = new IChannelHandler[0];
+        private static readonly IChannelHandler[] EMPTY_HANDLERS = Array.Empty<IChannelHandler>();
+        private static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance<EmbeddedChannel>();
+        private static readonly ChannelMetadata METADATA_NO_DISCONNECT = new ChannelMetadata(false);
+        private static readonly ChannelMetadata METADATA_DISCONNECT = new ChannelMetadata(true);
+        private readonly IEventLoop loop = new SingleThreadEventLoop();
 
-        static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance<EmbeddedChannel>();
-
-        static readonly ChannelMetadata METADATA_NO_DISCONNECT = new ChannelMetadata(false);
-        static readonly ChannelMetadata METADATA_DISCONNECT = new ChannelMetadata(true);
-
-        readonly IEventLoop loop = new SingleThreadEventLoop();
-
-        Queue<object> inboundMessages;
-        Queue<object> outboundMessages;
-        Exception lastException;
-        State state;
+        private Queue<object> inboundMessages;
+        private Queue<object> outboundMessages;
+        private Exception lastException;
+        private State state;
 
         /// <summary>
         ///     Create a new instance with an empty pipeline.

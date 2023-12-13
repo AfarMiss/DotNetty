@@ -1,19 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace DotNetty.Transport.Channels.Groups
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
-
     public class DefaultChannelGroupCompletionSource : TaskCompletionSource<int>, IChannelGroupTaskCompletionSource
     {
-        readonly Dictionary<IChannel, Task> futures;
-        int failureCount;
-        int successCount;
+        private readonly Dictionary<IChannel, Task> futures;
+        private int failureCount;
+        private int successCount;
 
         public DefaultChannelGroupCompletionSource(IChannelGroup group, Dictionary<IChannel, Task> futures /*, IEventExecutor executor*/)
             : this(group, futures /*,executor*/, null)
@@ -28,10 +25,10 @@ namespace DotNetty.Transport.Channels.Groups
 
             this.Group = group;
             this.futures = new Dictionary<IChannel, Task>();
-            foreach (KeyValuePair<IChannel, Task> pair in futures)
+            foreach (var (channel, task) in futures)
             {
-                this.futures.Add(pair.Key, pair.Value);
-                pair.Value.ContinueWith(x =>
+                this.futures.Add(channel, task);
+                task.ContinueWith(x =>
                 {
                     bool success = x.Status == TaskStatus.RanToCompletion;
                     bool callSetDone;

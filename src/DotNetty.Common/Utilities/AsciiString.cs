@@ -1,19 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using DotNetty.Common.Internal;
 
-// ReSharper disable ConvertToAutoPropertyWhenPossible
-// ReSharper disable UseStringInterpolation
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using DotNetty.Common.Internal;
-
     public sealed class AsciiString : ICharSequence, IEquatable<AsciiString>, IComparable<AsciiString>, IComparable
     {
         public static readonly AsciiString Empty = Cached(string.Empty);

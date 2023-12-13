@@ -1,20 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Channels;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Bootstrapping
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Text;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Channels;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     /// <summary>
     /// A <see cref="Bootstrap"/> that makes it easy to bootstrap an <see cref="IChannel"/> to use for clients.
     /// 
@@ -24,19 +20,16 @@ namespace DotNetty.Transport.Bootstrapping
     /// </summary>
     public class Bootstrap : AbstractBootstrap<Bootstrap, IChannel>
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<Bootstrap>();
-
-        static readonly INameResolver DefaultResolver = new DefaultNameResolver();
-
-        volatile INameResolver resolver = DefaultResolver;
-        volatile EndPoint remoteAddress;
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<Bootstrap>();
+        private static readonly INameResolver DefaultResolver = new DefaultNameResolver();
+        private volatile INameResolver resolver = DefaultResolver;
+        private volatile EndPoint remoteAddress;
 
         public Bootstrap()
         {
         }
 
-        Bootstrap(Bootstrap bootstrap)
-            : base(bootstrap)
+        Bootstrap(Bootstrap bootstrap) : base(bootstrap)
         {
             this.resolver = bootstrap.resolver;
             this.remoteAddress = bootstrap.remoteAddress;

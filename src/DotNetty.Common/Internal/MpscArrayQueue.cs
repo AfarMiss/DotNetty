@@ -1,11 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Diagnostics.Contracts;
+using System.Threading;
 
 namespace DotNetty.Common.Internal
 {
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-
     /// <summary>
     /// Forked from <a href="https://github.com/JCTools/JCTools">JCTools</a>.
     /// A Multi-Producer-Single-Consumer queue based on a <see cref="ConcurrentCircularArrayQueue{T}"/>. This implies
@@ -21,8 +18,7 @@ namespace DotNetty.Common.Internal
     /// </para>
     /// </summary>
     /// <typeparam name="T">The type of each item in the queue.</typeparam>
-    sealed class MpscArrayQueue<T> : MpscArrayQueueConsumerField<T>
-        where T : class
+    sealed class MpscArrayQueue<T> : MpscArrayQueueConsumerField<T> where T : class
     {
 #pragma warning disable 169 // padded reference
         long p40, p41, p42, p43, p44, p45, p46;

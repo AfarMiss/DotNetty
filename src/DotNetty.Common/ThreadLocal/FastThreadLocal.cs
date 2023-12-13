@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
 namespace DotNetty.Common
 {
-    using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-
     public abstract class FastThreadLocal
     {
         /// <summary>

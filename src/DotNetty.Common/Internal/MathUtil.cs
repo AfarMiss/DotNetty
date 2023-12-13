@@ -1,11 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DotNetty.Common.Internal
 {
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
-
     public static class MathUtil
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,21 +1,17 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics;
 
 namespace DotNetty.Common
 {
-    using System;
-    using System.Diagnostics;
-
-    public struct PreciseTimeSpan : IComparable<PreciseTimeSpan>, IEquatable<PreciseTimeSpan>
+    public readonly struct PreciseTimeSpan : IComparable<PreciseTimeSpan>, IEquatable<PreciseTimeSpan>
     {
-        static readonly long StartTime = Stopwatch.GetTimestamp();
-        static readonly double PrecisionRatio = (double)Stopwatch.Frequency / TimeSpan.TicksPerSecond;
-        static readonly double ReversePrecisionRatio = (double)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
+        private static readonly long StartTime = Stopwatch.GetTimestamp();
+        private static readonly double PrecisionRatio = (double)Stopwatch.Frequency / TimeSpan.TicksPerSecond;
+        private static readonly double ReversePrecisionRatio = (double)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
 
-        readonly long ticks;
+        private readonly long ticks;
 
-        PreciseTimeSpan(long ticks)
-            : this()
+        private PreciseTimeSpan(long ticks) : this()
         {
             this.ticks = ticks;
         }

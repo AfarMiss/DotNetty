@@ -1,10 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
 
 namespace DotNetty.Transport.Channels.Embedded
 {
-    using System;
-
     /// <summary>
     ///     A dummy <see cref="IChannelId" /> implementation
     /// </summary>
@@ -12,7 +9,7 @@ namespace DotNetty.Transport.Channels.Embedded
     {
         public static readonly EmbeddedChannelId Instance = new EmbeddedChannelId();
 
-        EmbeddedChannelId()
+        private EmbeddedChannelId()
         {
         }
 

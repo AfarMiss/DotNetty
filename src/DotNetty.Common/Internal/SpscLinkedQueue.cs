@@ -1,13 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Diagnostics.Contracts;
+using System.Threading;
 
 namespace DotNetty.Common.Internal
 {
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-
-    sealed class SpscLinkedQueue<T> : BaseLinkedQueue<T>, ILinkedQueue<T>
-        where T : class
+    sealed class SpscLinkedQueue<T> : BaseLinkedQueue<T>, ILinkedQueue<T> where T : class
     {
         public SpscLinkedQueue()
         {

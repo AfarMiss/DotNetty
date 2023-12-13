@@ -1,19 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-
     /// <summary>
     /// Time utility class.
     /// </summary>
     public static class TimeUtil
     {
-        static TimeUtil()
-        {
-        }
-
         /// <summary>
         /// Compare two timespan objects
         /// </summary>

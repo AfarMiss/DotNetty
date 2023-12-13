@@ -1,42 +1,38 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using DotNetty.Buffers;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common;
-
-    sealed class DefaultChannelId : IChannelId
+    internal sealed class DefaultChannelId : IChannelId
     {
-        const int MachineIdLen = 8;
-        const int ProcessIdLen = 4;
+        private const int MachineIdLen = 8;
+        private const int ProcessIdLen = 4;
         // Maximal value for 64bit systems is 2^22.  See man 5 proc.
         // See https://github.com/netty/netty/issues/2706
-        const int MaxProcessId = 4194304;
-        const int SequenceLen = 4;
-        const int TimestampLen = 8;
-        const int RandomLen = 4;
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<DefaultChannelId>();
-        static readonly Regex MachineIdPattern = new Regex("^(?:[0-9a-fA-F][:-]?){6,8}$");
-        static readonly byte[] MachineId;
-        static readonly int ProcessId;
-        static int nextSequence;
-        static int seed = (int)(Stopwatch.GetTimestamp() & 0xFFFFFFFF); //used to safly cast long to int, because the timestamp returned is long and it doesn't fit into an int
-        static readonly ThreadLocal<Random> ThreadLocalRandom = new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed))); //used to simulate java ThreadLocalRandom
-        readonly byte[] data = new byte[MachineIdLen + ProcessIdLen + SequenceLen + TimestampLen + RandomLen];
-        int hashCode;
+        private const int MaxProcessId = 4194304;
+        private const int SequenceLen = 4;
+        private const int TimestampLen = 8;
+        private const int RandomLen = 4;
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<DefaultChannelId>();
+        private static readonly Regex MachineIdPattern = new Regex("^(?:[0-9a-fA-F][:-]?){6,8}$");
+        private static readonly byte[] MachineId;
+        private static readonly int ProcessId;
+        private static int nextSequence;
+        private static int seed = (int)(Stopwatch.GetTimestamp() & 0xFFFFFFFF); //used to safly cast long to int, because the timestamp returned is long and it doesn't fit into an int
+        private static readonly ThreadLocal<Random> ThreadLocalRandom = new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed))); //used to simulate java ThreadLocalRandom
+        private readonly byte[] data = new byte[MachineIdLen + ProcessIdLen + SequenceLen + TimestampLen + RandomLen];
+        private int hashCode;
 
-        string longValue;
-
-        string shortValue;
+        private string longValue;
+        private string shortValue;
 
         static DefaultChannelId()
         {

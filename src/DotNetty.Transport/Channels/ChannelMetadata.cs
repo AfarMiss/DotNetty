@@ -1,10 +1,7 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Transport.Channels
 {
-    using System.Diagnostics.Contracts;
-
     /// <summary>Represents the properties of a <see cref="IChannel" /> implementation.</summary>
     public sealed class ChannelMetadata
     {

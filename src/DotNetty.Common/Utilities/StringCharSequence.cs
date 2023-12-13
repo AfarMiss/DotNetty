@@ -1,15 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
-// ReSharper disable ConvertToAutoProperty
-// ReSharper disable ConvertToAutoPropertyWhenPossible
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-
     public sealed class StringCharSequence : ICharSequence, IEquatable<StringCharSequence>
     {
         public static readonly StringCharSequence Empty = new StringCharSequence(string.Empty);

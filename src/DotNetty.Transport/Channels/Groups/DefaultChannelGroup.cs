@@ -1,25 +1,22 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels.Groups
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Utilities;
-
     public class DefaultChannelGroup : IChannelGroup
     {
-        static int nextId;
-        readonly IEventExecutor executor;
-        readonly ConcurrentDictionary<IChannelId, IChannel> nonServerChannels = new ConcurrentDictionary<IChannelId, IChannel>();
-        readonly ConcurrentDictionary<IChannelId, IChannel> serverChannels = new ConcurrentDictionary<IChannelId, IChannel>();
+        private static int nextId;
+        private readonly IEventExecutor executor;
+        private readonly ConcurrentDictionary<IChannelId, IChannel> nonServerChannels = new ConcurrentDictionary<IChannelId, IChannel>();
+        private readonly ConcurrentDictionary<IChannelId, IChannel> serverChannels = new ConcurrentDictionary<IChannelId, IChannel>();
 
         public DefaultChannelGroup(IEventExecutor executor)
             : this($"group-{Interlocked.Increment(ref nextId):X2}", executor)
@@ -28,11 +25,7 @@ namespace DotNetty.Transport.Channels.Groups
 
         public DefaultChannelGroup(string name, IEventExecutor executor)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            this.Name = name;
+            this.Name = name ?? throw new ArgumentNullException(nameof(name));
             this.executor = executor;
         }
 
@@ -42,8 +35,7 @@ namespace DotNetty.Transport.Channels.Groups
 
         public IChannel Find(IChannelId id)
         {
-            IChannel channel;
-            if (this.nonServerChannels.TryGetValue(id, out channel))
+            if (this.nonServerChannels.TryGetValue(id, out var channel))
             {
                 return channel;
             }

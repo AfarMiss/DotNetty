@@ -1,16 +1,13 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+
+using DotNetty.Buffers;
+using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Threading.Tasks;
-
-    using DotNetty.Buffers;
-    using DotNetty.Common.Concurrency;
-
     /// <summary>
     /// A list of <see cref="IChannelHandler"/>s which handles or intercepts inbound events and outbound operations of
     /// a <see cref="IChannel"/>. <see cref="IChannelPipeline"/> implements an advanced form of the

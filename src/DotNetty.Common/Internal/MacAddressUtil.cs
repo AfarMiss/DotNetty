@@ -1,26 +1,23 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Text;
+using System.Collections.Generic;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Common.Internal
 {
-    using System;
-    using System.Linq;
-    using System.Net;
-    using System.Net.NetworkInformation;
-    using System.Net.Sockets;
-    using System.Text;
-    using System.Collections.Generic;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
     public static class MacAddressUtil
     {
         /// Length of a valid MAC address.
         public const int MacAddressLength = 8;
 
-        static readonly byte[] NotFound = { byte.MaxValue };
+        private static readonly byte[] NotFound = { byte.MaxValue };
 
-        static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance(typeof(MacAddressUtil));
+        private static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance(typeof(MacAddressUtil));
 
         /// Obtains the best MAC address found on local network interfaces.
         /// Generally speaking, an active network interface used on public

@@ -1,26 +1,22 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels.Local
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     /// <summary>
     /// A <see cref="IChannel"/> for the local transport.
     /// </summary>
     public class LocalChannel : AbstractChannel
     {
-        enum State
+        private enum State
         {
             Open,
             Bound,
@@ -28,33 +24,31 @@ namespace DotNetty.Transport.Channels.Local
             Closed
         }
 
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<LocalChannel>();
-        static readonly ChannelMetadata METADATA = new ChannelMetadata(false);
-        static readonly int MAX_READER_STACK_DEPTH = 8;
-        static readonly ClosedChannelException DoWriteClosedChannelException = new ClosedChannelException();
-        static readonly ClosedChannelException DoCloseClosedChannelException = new ClosedChannelException();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<LocalChannel>();
+        private static readonly ChannelMetadata METADATA = new ChannelMetadata(false);
+        private static readonly int MAX_READER_STACK_DEPTH = 8;
+        private static readonly ClosedChannelException DoWriteClosedChannelException = new ClosedChannelException();
+        private static readonly ClosedChannelException DoCloseClosedChannelException = new ClosedChannelException();
 
-        readonly IQueue<object> inboundBuffer = PlatformDependent.NewMpscQueue<object>();
+        private readonly IQueue<object> inboundBuffer = PlatformDependent.NewMpscQueue<object>();
 
-        volatile State state;
-        volatile LocalChannel peer;
-        volatile LocalAddress localAddress;
-        volatile LocalAddress remoteAddress;
-        volatile TaskCompletionSource connectPromise;
-        volatile bool readInProgress;
-        volatile bool registerInProgress;
-        volatile bool writeInProgress;
-        volatile Task finishReadFuture;
+        private volatile State state;
+        private volatile LocalChannel peer;
+        private volatile LocalAddress localAddress;
+        private volatile LocalAddress remoteAddress;
+        private volatile TaskCompletionSource connectPromise;
+        private volatile bool readInProgress;
+        private volatile bool registerInProgress;
+        private volatile bool writeInProgress;
+        private volatile Task finishReadFuture;
 
-        readonly Action shutdownHook;
+        private readonly Action shutdownHook;
 
-        public LocalChannel()
-            : this(null, null)
+        public LocalChannel() : this(null, null)
         {
         }
 
-        internal LocalChannel(LocalServerChannel parent, LocalChannel peer)
-            : base(parent)
+        internal LocalChannel(LocalServerChannel parent, LocalChannel peer) : base(parent)
         {
             //this.Configuration.Allocator(new PreferHeapByteBufAllocator(config.getAllocator()));
             this.peer = peer;

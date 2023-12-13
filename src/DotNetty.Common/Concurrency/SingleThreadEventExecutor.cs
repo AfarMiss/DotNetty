@@ -1,50 +1,42 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-
     /// <summary>
     /// <see cref="IEventExecutor"/> backed by a single thread.
     /// </summary>
     public class SingleThreadEventExecutor : AbstractScheduledEventExecutor
     {
-#pragma warning disable 420 // referencing volatile fields is fine in Interlocked methods
+        private const int ST_NOT_STARTED = 1;
+        private const int ST_STARTED = 2;
+        private const int ST_SHUTTING_DOWN = 3;
+        private const int ST_SHUTDOWN = 4;
+        private const int ST_TERMINATED = 5;
+        private const string DefaultWorkerThreadName = "SingleThreadEventExecutor worker";
 
-        const int ST_NOT_STARTED = 1;
-        const int ST_STARTED = 2;
-        const int ST_SHUTTING_DOWN = 3;
-        const int ST_SHUTDOWN = 4;
-        const int ST_TERMINATED = 5;
-        const string DefaultWorkerThreadName = "SingleThreadEventExecutor worker";
+        private static readonly IRunnable WAKEUP_TASK = new NoOpRunnable();
+        private static readonly IInternalLogger Logger =InternalLoggerFactory.GetInstance<SingleThreadEventExecutor>();
 
-        static readonly IRunnable WAKEUP_TASK = new NoOpRunnable();
-
-        static readonly IInternalLogger Logger =
-            InternalLoggerFactory.GetInstance<SingleThreadEventExecutor>();
-
-        readonly IQueue<IRunnable> taskQueue;
-        readonly Thread thread;
-        volatile int executionState = ST_NOT_STARTED;
-        readonly PreciseTimeSpan preciseBreakoutInterval;
-        PreciseTimeSpan lastExecutionTime;
-        readonly ManualResetEventSlim emptyEvent = new ManualResetEventSlim(false, 1);
-        readonly TaskScheduler scheduler;
-        readonly TaskCompletionSource terminationCompletionSource;
-        PreciseTimeSpan gracefulShutdownStartTime;
-        PreciseTimeSpan gracefulShutdownQuietPeriod;
-        PreciseTimeSpan gracefulShutdownTimeout;
-        readonly ISet<Action> shutdownHooks = new HashSet<Action>();
-        long progress;
+        private readonly IQueue<IRunnable> taskQueue;
+        private readonly Thread thread;
+        private volatile int executionState = ST_NOT_STARTED;
+        private readonly PreciseTimeSpan preciseBreakoutInterval;
+        private PreciseTimeSpan lastExecutionTime;
+        private readonly ManualResetEventSlim emptyEvent = new ManualResetEventSlim(false, 1);
+        private readonly TaskScheduler scheduler;
+        private readonly TaskCompletionSource terminationCompletionSource;
+        private PreciseTimeSpan gracefulShutdownStartTime;
+        private PreciseTimeSpan gracefulShutdownQuietPeriod;
+        private PreciseTimeSpan gracefulShutdownTimeout;
+        private readonly ISet<Action> shutdownHooks = new HashSet<Action>();
+        private long progress;
 
         /// <summary>Creates a new instance of <see cref="SingleThreadEventExecutor"/>.</summary>
         public SingleThreadEventExecutor(string threadName, TimeSpan breakoutInterval)

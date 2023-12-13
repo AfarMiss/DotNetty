@@ -1,30 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-
     /// <summary>
     /// <see cref="IEventLoop"/> implementation based on <see cref="SingleThreadEventExecutor"/>.
     /// </summary>
     public class SingleThreadEventLoop : SingleThreadEventExecutor, IEventLoop
     {
-        static readonly TimeSpan DefaultBreakoutInterval = TimeSpan.FromMilliseconds(100);
+        private static readonly TimeSpan DefaultBreakoutInterval = TimeSpan.FromMilliseconds(100);
 
         /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
-        public SingleThreadEventLoop()
-            : this(null, DefaultBreakoutInterval)
+        public SingleThreadEventLoop() : this(null, DefaultBreakoutInterval)
         {
         }
 
         /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
-        public SingleThreadEventLoop(string threadName)
-            : this(threadName, DefaultBreakoutInterval)
+        public SingleThreadEventLoop(string threadName) : this(threadName, DefaultBreakoutInterval)
         {
         }
 

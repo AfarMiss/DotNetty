@@ -1,16 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
 
 namespace DotNetty.Transport.Channels.Groups
 {
-    using System;
-    using System.Reflection;
-
     public static class ChannelMatchers
     {
-        static readonly IChannelMatcher AllMatcher = new AllChannelMatcher();
-        static readonly IChannelMatcher ServerChannelMatcher = IsInstanceOf(typeof(IServerChannel));
-        static readonly IChannelMatcher NonServerChannelMatcher = IsNotInstanceOf(typeof(IServerChannel));
+        private static readonly IChannelMatcher AllMatcher = new AllChannelMatcher();
+        private static readonly IChannelMatcher ServerChannelMatcher = IsInstanceOf(typeof(IServerChannel));
+        private static readonly IChannelMatcher NonServerChannelMatcher = IsNotInstanceOf(typeof(IServerChannel));
 
         public static IChannelMatcher IsServerChannel() => ServerChannelMatcher;
 

@@ -1,18 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-
-    struct CharSequenceEnumerator : IEnumerator<char>
+    internal struct CharSequenceEnumerator : IEnumerator<char>
     {
-        ICharSequence charSequence;
-        int index;
-        char currentElement;
+        private ICharSequence charSequence;
+        private int index;
+        private char currentElement;
 
         internal CharSequenceEnumerator(ICharSequence charSequence)
         {

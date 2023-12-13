@@ -1,29 +1,26 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Channels;
 
 namespace DotNetty.Transport.Bootstrapping
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Diagnostics.Contracts;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Channels;
-
     /// <summary>
     /// A <see cref="Bootstrap"/> sub-class which allows easy bootstrapping of <see cref="IServerChannel"/>.
     /// </summary>
     public class ServerBootstrap : AbstractBootstrap<ServerBootstrap, IServerChannel>
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
 
-        readonly ConcurrentDictionary<ChannelOption, ChannelOptionValue> childOptions;
-        readonly ConcurrentDictionary<IConstant, AttributeValue> childAttrs;
-        volatile IEventLoopGroup childGroup;
-        volatile IChannelHandler childHandler;
+        private readonly ConcurrentDictionary<ChannelOption, ChannelOptionValue> childOptions;
+        private readonly ConcurrentDictionary<IConstant, AttributeValue> childAttrs;
+        private volatile IEventLoopGroup childGroup;
+        private volatile IChannelHandler childHandler;
 
         public ServerBootstrap()
         {

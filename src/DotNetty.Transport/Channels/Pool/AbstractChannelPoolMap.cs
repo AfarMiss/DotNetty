@@ -1,17 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Collections.Concurrent;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    using System.Collections.Concurrent;
-    using System.Diagnostics.Contracts;
-
-    public abstract class AbstractChannelPoolMap<TKey, TPool> : IChannelPoolMap<TKey, TPool>
-        //, Iterable<Entry<K, P>> 
-        where TPool : IChannelPool
-
+    public abstract class AbstractChannelPoolMap<TKey, TPool> : IChannelPoolMap<TKey, TPool> where TPool : IChannelPool
     {
-        readonly ConcurrentDictionary<TKey, TPool> map = new ConcurrentDictionary<TKey, TPool>();
+        private readonly ConcurrentDictionary<TKey, TPool> map = new ConcurrentDictionary<TKey, TPool>();
 
         public TPool Get(TKey key)
         {

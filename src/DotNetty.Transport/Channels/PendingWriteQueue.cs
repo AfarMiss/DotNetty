@@ -1,18 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     /// <summary>
     /// A queue of write operations which are pending for later execution. It also updates the writability of the
     /// associated <see cref="IChannel"/> (<see cref="IChannel.IsWritable"/>), so that the pending write operations are
@@ -20,16 +16,16 @@ namespace DotNetty.Transport.Channels
     /// </summary>
     public sealed class PendingWriteQueue
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<PendingWriteQueue>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<PendingWriteQueue>();
 
-        readonly IChannelHandlerContext ctx;
-        readonly ChannelOutboundBuffer buffer;
-        readonly IMessageSizeEstimatorHandle estimatorHandle;
+        private readonly IChannelHandlerContext ctx;
+        private readonly ChannelOutboundBuffer buffer;
+        private readonly IMessageSizeEstimatorHandle estimatorHandle;
 
         // head and tail pointers for the linked-list structure. If empty head and tail are null.
-        PendingWrite head;
-        PendingWrite tail;
-        int size;
+        private PendingWrite head;
+        private PendingWrite tail;
+        private int size;
 
         public PendingWriteQueue(IChannelHandlerContext ctx)
         {

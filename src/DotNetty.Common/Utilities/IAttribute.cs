@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 namespace DotNetty.Common.Utilities
 {
     /// <summary>An attribute which allows to store a value reference. It may be updated atomically and so is thread-safe.</summary>

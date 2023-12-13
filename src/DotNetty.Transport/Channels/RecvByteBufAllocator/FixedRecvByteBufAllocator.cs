@@ -1,10 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Diagnostics.Contracts;
 
 namespace DotNetty.Transport.Channels
 {
-    using System.Diagnostics.Contracts;
-
     /// <summary>
     ///     The <see cref="IRecvByteBufAllocator" /> that always yields the same buffer
     ///     size prediction. This predictor ignores the feedback from the I/O thread.
@@ -13,7 +10,7 @@ namespace DotNetty.Transport.Channels
     {
         public static readonly FixedRecvByteBufAllocator Default = new FixedRecvByteBufAllocator(4 * 1024);
 
-        sealed class HandleImpl : MaxMessageHandle<FixedRecvByteBufAllocator>
+        private sealed class HandleImpl : MaxMessageHandle<FixedRecvByteBufAllocator>
         {
             readonly int bufferSize;
 

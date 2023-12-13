@@ -1,20 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Text;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     public abstract class AbstractChannel : DefaultAttributeMap, IChannel
     {
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractChannel>();

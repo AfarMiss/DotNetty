@@ -1,16 +1,19 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Diagnostics.Contracts;
+using DotNetty.Buffers;
 
 namespace DotNetty.Transport.Channels
 {
-    using System.Diagnostics.Contracts;
-    using DotNetty.Buffers;
-
     public sealed class DefaultMessageSizeEstimator : IMessageSizeEstimator
     {
-        sealed class HandleImpl : IMessageSizeEstimatorHandle
+        /// <summary>
+        /// Returns the default implementation, which returns <c>0</c> for unknown messages.
+        /// </summary>
+        public static readonly IMessageSizeEstimator Default = new DefaultMessageSizeEstimator(0);
+        private readonly IMessageSizeEstimatorHandle handle;
+
+        private sealed class HandleImpl : IMessageSizeEstimatorHandle
         {
-            readonly int unknownSize;
+            private readonly int unknownSize;
 
             public HandleImpl(int unknownSize)
             {
@@ -19,28 +22,17 @@ namespace DotNetty.Transport.Channels
 
             public int Size(object msg)
             {
-                if (msg is IByteBuffer)
+                switch (msg)
                 {
-                    return ((IByteBuffer)msg).ReadableBytes;
+                    case IByteBuffer buffer:
+                        return buffer.ReadableBytes;
+                    case IByteBufferHolder holder:
+                        return holder.Content.ReadableBytes;
+                    default:
+                        return this.unknownSize;
                 }
-                if (msg is IByteBufferHolder)
-                {
-                    return ((IByteBufferHolder)msg).Content.ReadableBytes;
-                }
-                // todo: FileRegion support
-                //if (msg instanceof FileRegion) {
-                //    return 0;
-                //}
-                return this.unknownSize;
             }
         }
-
-        /// <summary>
-        /// Returns the default implementation, which returns <c>0</c> for unknown messages.
-        /// </summary>
-        public static readonly IMessageSizeEstimator Default = new DefaultMessageSizeEstimator(0);
-
-        readonly IMessageSizeEstimatorHandle handle;
 
         /// <summary>
         /// Creates a new instance.

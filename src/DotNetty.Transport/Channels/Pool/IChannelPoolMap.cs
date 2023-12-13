@@ -1,15 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-namespace DotNetty.Transport.Channels.Pool
+﻿namespace DotNetty.Transport.Channels.Pool
 {
     /// <summary>
     /// Allows the mapping of <see cref="IChannelPool"/> implementations to a specific key.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TPool">The type of the <see cref="IChannelPool"/>.</typeparam>
-    public interface IChannelPoolMap<TKey, TPool>
-        where TPool : IChannelPool
+    public interface IChannelPoolMap<TKey, TPool> where TPool : IChannelPool
     {
         /// <summary>
         /// Returns the <see cref="IChannelPool"/> for the <paramref name="key"/>. This will never return <c>null</c>,

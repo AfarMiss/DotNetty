@@ -1,16 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Runtime.CompilerServices;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Common.Internal
 {
-    using System.Runtime.CompilerServices;
-    using DotNetty.Common.Utilities;
-
-    static class PlatformDependent0
+    internal static class PlatformDependent0
     {
-        internal static readonly int HashCodeAsciiSeed = unchecked((int)0xc2b2ae35);
-        internal static readonly int HashCodeC1 = unchecked((int)0xcc9e2d51);
-        internal static readonly int HashCodeC2 = 0x1b873593;
+        internal const int HashCodeAsciiSeed = unchecked((int)0xc2b2ae35);
+        internal const int HashCodeC1 = unchecked((int)0xcc9e2d51);
+        internal const int HashCodeC2 = 0x1b873593;
 
         internal static unsafe bool ByteArrayEquals(byte* bytes1, byte* bytes2, int length)
         {

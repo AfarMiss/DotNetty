@@ -1,21 +1,17 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Channels;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Bootstrapping
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Text;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Channels;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     /// <summary>
     /// This is a helper class that makes it easy to bootstrap an <see cref="IChannel"/>. It supports method-
     /// chaining to provide an easy way to configure the <see cref="AbstractBootstrap{TBootstrap,TChannel}"/>.
@@ -23,18 +19,16 @@ namespace DotNetty.Transport.Bootstrapping
     /// When not used in a <see cref="ServerBootstrap"/> context, the <see cref="BindAsync(EndPoint)"/> methods
     /// are useful for connectionless transports such as datagram (UDP).
     /// </summary>
-    public abstract class AbstractBootstrap<TBootstrap, TChannel>
-        where TBootstrap : AbstractBootstrap<TBootstrap, TChannel>
-        where TChannel : IChannel
+    public abstract class AbstractBootstrap<TBootstrap, TChannel> where TBootstrap : AbstractBootstrap<TBootstrap, TChannel> where TChannel : IChannel
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractBootstrap<TBootstrap, TChannel>>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractBootstrap<TBootstrap, TChannel>>();
 
-        volatile IEventLoopGroup group;
-        volatile Func<TChannel> channelFactory;
-        volatile EndPoint localAddress;
-        readonly ConcurrentDictionary<ChannelOption, ChannelOptionValue> options;
-        readonly ConcurrentDictionary<IConstant, AttributeValue> attrs;
-        volatile IChannelHandler handler;
+        private volatile IEventLoopGroup group;
+        private volatile Func<TChannel> channelFactory;
+        private volatile EndPoint localAddress;
+        private readonly ConcurrentDictionary<ChannelOption, ChannelOptionValue> options;
+        private readonly ConcurrentDictionary<IConstant, AttributeValue> attrs;
+        private volatile IChannelHandler handler;
 
         protected internal AbstractBootstrap()
         {

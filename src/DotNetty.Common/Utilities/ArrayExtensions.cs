@@ -1,17 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Diagnostics.Contracts;
-
     /// <summary>
     ///     Extension methods used for slicing byte arrays
     /// </summary>
     public static class ArrayExtensions
     {
-        public static readonly byte[] ZeroBytes = new byte[0];
+        public static readonly byte[] ZeroBytes = Array.Empty<byte>();
 
         public static T[] Slice<T>(this T[] array, int length)
         {

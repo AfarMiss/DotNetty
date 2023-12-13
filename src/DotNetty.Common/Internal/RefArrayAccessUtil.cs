@@ -1,9 +1,9 @@
-﻿namespace DotNetty.Common.Internal
-{
-    using System;
-    using System.Threading;
+﻿using System;
+using System.Threading;
 
-    static class RefArrayAccessUtil
+namespace DotNetty.Common.Internal
+{
+    internal static class RefArrayAccessUtil
     {
         public static readonly int RefBufferPad = 64 * 2 / IntPtr.Size;
 

@@ -1,12 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-namespace DotNetty.Common.Internal
+﻿namespace DotNetty.Common.Internal
 {
     public interface IPlatform
     {
         int GetCurrentProcessId();
-
         byte[] GetDefaultDeviceId();
     }
 }

@@ -1,33 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
+using DotNetty.Transport.Bootstrapping;
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    using System;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Globalization;
-    using System.Reflection;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-    using DotNetty.Transport.Bootstrapping;
-
     /// <summary>
     /// An <see cref="IChannelPool"/> implementation that takes another <see cref="IChannelPool"/> implementation and
     /// enforces a maximum number of concurrent connections.
     /// </summary>
     public class FixedChannelPool : SimpleChannelPool
     {
-        static readonly InvalidOperationException FullException = new InvalidOperationException("Too many outstanding acquire operations");
-
-        static readonly TimeoutException TimeoutException = new TimeoutException("Acquire operation took longer then configured maximum time");
-
+        private static readonly InvalidOperationException FullException = new InvalidOperationException("Too many outstanding acquire operations");
+        private static readonly TimeoutException TimeoutException = new TimeoutException("Acquire operation took longer then configured maximum time");
         internal static readonly InvalidOperationException PoolClosedOnReleaseException = new InvalidOperationException("FixedChannelPooled was closed");
-
-        static readonly InvalidOperationException PoolClosedOnAcquireException = new InvalidOperationException("FixedChannelPooled was closed");
+        private static readonly InvalidOperationException PoolClosedOnAcquireException = new InvalidOperationException("FixedChannelPooled was closed");
 
         public enum AcquireTimeoutAction
         {
@@ -44,19 +36,19 @@ namespace DotNetty.Transport.Channels.Pool
             Fail
         }
 
-        readonly IEventExecutor executor;
-        readonly TimeSpan acquireTimeout;
-        readonly IRunnable timeoutTask;
+        private readonly IEventExecutor executor;
+        private readonly TimeSpan acquireTimeout;
+        private readonly IRunnable timeoutTask;
 
         // There is no need to worry about synchronization as everything that modified the queue or counts is done
         // by the above EventExecutor.
-        readonly IQueue<AcquireTask> pendingAcquireQueue = PlatformDependent.NewMpscQueue<AcquireTask>();
+        private readonly IQueue<AcquireTask> pendingAcquireQueue = PlatformDependent.NewMpscQueue<AcquireTask>();
 
-        readonly int maxConnections;
-        readonly int maxPendingAcquires;
-        int acquiredChannelCount;
-        int pendingAcquireCount;
-        bool closed;
+        private readonly int maxConnections;
+        private readonly int maxPendingAcquires;
+        private int acquiredChannelCount;
+        private int pendingAcquireCount;
+        private bool closed;
 
         /// <summary>
         /// Creates a new <see cref="FixedChannelPool"/> instance using the <see cref="ChannelActiveHealthChecker"/>.

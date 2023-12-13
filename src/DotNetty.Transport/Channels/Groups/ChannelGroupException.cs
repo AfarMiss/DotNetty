@@ -1,16 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace DotNetty.Transport.Channels.Groups
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-
     public class ChannelGroupException : ChannelException, IEnumerable<KeyValuePair<IChannel, Exception>>
     {
-        readonly IReadOnlyCollection<KeyValuePair<IChannel, Exception>> failed;
+        private readonly IReadOnlyCollection<KeyValuePair<IChannel, Exception>> failed;
 
         public ChannelGroupException(IList<KeyValuePair<IChannel, Exception>> exceptions)
         {

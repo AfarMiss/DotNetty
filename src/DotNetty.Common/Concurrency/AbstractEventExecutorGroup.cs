@@ -1,17 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public abstract class AbstractEventExecutorGroup : IEventExecutorGroup
     {
-        static readonly TimeSpan DefaultShutdownQuietPeriod = TimeSpan.FromSeconds(2);
-        static readonly TimeSpan DefaultShutdownTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan DefaultShutdownQuietPeriod = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan DefaultShutdownTimeout = TimeSpan.FromSeconds(15);
 
         public abstract bool IsShutdown { get; }
 

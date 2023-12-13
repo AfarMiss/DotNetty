@@ -1,17 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Threading;
 
 namespace DotNetty.Common.Utilities
 {
-    using System.Threading;
-
     /// <summary>
     ///     Implementation of the java.concurrent.util AtomicReference type.
     /// </summary>
-    public sealed class AtomicReference<T>
-        where T : class
+    public sealed class AtomicReference<T> where T : class
     {
-        T atomicValue;
+        private T atomicValue;
 
         /// <summary>
         ///     Sets the initial value of this <see cref="AtomicReference{T}" /> to <see cref="originalValue" />.

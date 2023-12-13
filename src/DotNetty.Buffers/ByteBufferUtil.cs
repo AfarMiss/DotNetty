@@ -1,16 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using System.Text;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
     public static class ByteBufferUtil
     {
         const char WriteUtfUnknown = '?';

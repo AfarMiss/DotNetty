@@ -1,14 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Threading;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System;
-    using System.Threading;
-
-    sealed class StateActionScheduledAsyncTask : ScheduledAsyncTask
+    internal sealed class StateActionScheduledAsyncTask : ScheduledAsyncTask
     {
-        readonly Action<object> action;
+        private readonly Action<object> action;
 
         public StateActionScheduledAsyncTask(AbstractScheduledEventExecutor executor, Action<object> action, object state, PreciseTimeSpan deadline,
             CancellationToken cancellationToken)

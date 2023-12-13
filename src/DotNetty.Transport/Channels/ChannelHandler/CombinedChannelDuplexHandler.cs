@@ -1,27 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
-    public class CombinedChannelDuplexHandler<TIn, TOut> : ChannelDuplexHandler
-        where TIn : IChannelHandler
-        where TOut : IChannelHandler
+    public class CombinedChannelDuplexHandler<TIn, TOut> : ChannelDuplexHandler where TIn : IChannelHandler where TOut : IChannelHandler
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<CombinedChannelDuplexHandler<TIn, TOut>>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<CombinedChannelDuplexHandler<TIn, TOut>>();
 
-        DelegatingChannelHandlerContext inboundCtx;
-        DelegatingChannelHandlerContext outboundCtx;
-        volatile bool handlerAdded;
+        private DelegatingChannelHandlerContext inboundCtx;
+        private DelegatingChannelHandlerContext outboundCtx;
+        private volatile bool handlerAdded;
 
+        protected TIn InboundHandler { get; private set; }
+        protected TOut OutboundHandler { get; private set; }
+        
         protected CombinedChannelDuplexHandler()
         {
             this.EnsureNotSharable();
@@ -44,11 +42,7 @@ namespace DotNetty.Transport.Channels
             this.OutboundHandler = outbound;
         }
 
-        protected TIn InboundHandler { get; private set; }
-
-        protected TOut OutboundHandler { get; private set; }
-
-        void Validate(TIn inbound, TOut outbound)
+        private void Validate(TIn inbound, TOut outbound)
         {
             if (this.InboundHandler != null)
             {
@@ -66,7 +60,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void CheckAdded()
+        private void CheckAdded()
         {
             if (!this.handlerAdded)
             {
@@ -507,18 +501,18 @@ namespace DotNetty.Transport.Channels
 
             internal void Remove()
             {
-                IEventExecutor executor = this.Executor;
+                var executor = this.Executor;
                 if (executor.InEventLoop)
                 {
                     this.Remove0();
                 }
                 else
                 {
-                    executor.Execute(() => this.Remove0());
+                    executor.Execute(this.Remove0);
                 }
             }
 
-            void Remove0()
+            private void Remove0()
             {
                 if (this.removed)
                 {

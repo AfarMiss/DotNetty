@@ -1,12 +1,11 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using System;
+using System.Diagnostics.Contracts;
+using DotNetty.Common.Internal;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using DotNetty.Common.Internal;
-
     public sealed class HeapByteBuffer : AbstractRefByteBuffer
     {
         #region IByteBuffer

@@ -1,11 +1,8 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 namespace DotNetty.Common.Concurrency
 {
-    sealed class RunnableScheduledTask : ScheduledTask
+    internal sealed class RunnableScheduledTask : ScheduledTask
     {
-        readonly IRunnable action;
+        private readonly IRunnable action;
 
         public RunnableScheduledTask(AbstractScheduledEventExecutor executor, IRunnable action, PreciseTimeSpan deadline)
             : base(executor, deadline, new TaskCompletionSource())

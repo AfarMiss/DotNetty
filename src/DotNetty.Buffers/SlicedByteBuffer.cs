@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using DotNetty.Common.Internal;
-using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {

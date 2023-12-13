@@ -1,19 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Common.Internal
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using DotNetty.Common.Internal.Logging;
-
     /// <summary>
     ///     A collection of utility methods to retrieve and parse the values of the system properties (Environment variables).
     /// </summary>
     public static class SystemPropertyUtil
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(SystemPropertyUtil));
-        static bool loggedException;
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(SystemPropertyUtil));
+        private static bool loggedException;
 
         /// <summary>
         ///     Returns <c>true</c> if and only if the system property with the specified <c>key</c>

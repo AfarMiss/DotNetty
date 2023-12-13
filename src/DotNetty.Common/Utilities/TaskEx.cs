@@ -1,13 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Threading.Tasks;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     public static class TaskEx
     {
         public static readonly Task<int> Zero = Task.FromResult(0);

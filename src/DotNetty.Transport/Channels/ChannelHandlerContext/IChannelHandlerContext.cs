@@ -1,21 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Utilities;
-
     public interface IChannelHandlerContext : IAttributeMap
     {
         IChannel Channel { get; }
-
         IByteBufferAllocator Allocator { get; }
-
         /// <summary>
         /// Returns the <see cref="IEventExecutor"/> which is used to execute an arbitrary task.
         /// </summary>

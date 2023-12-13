@@ -1,10 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Collections.Generic;
 
 namespace DotNetty.Common.Utilities
 {
-    using System.Collections.Generic;
-
     public interface ICharSequence : IReadOnlyList<char>
     {
         /// Start is the inclusive start index to begin the subsequence.

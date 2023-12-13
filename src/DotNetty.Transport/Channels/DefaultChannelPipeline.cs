@@ -1,41 +1,34 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using ReferenceEqualityComparer = DotNetty.Common.Utilities.ReferenceEqualityComparer;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using ReferenceEqualityComparer = DotNetty.Common.Utilities.ReferenceEqualityComparer;
-
     public class DefaultChannelPipeline : IChannelPipeline
     {
         internal static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<DefaultChannelPipeline>();
+        private static readonly Action<object, object> CallHandlerAddedAction = (self, ctx) => ((DefaultChannelPipeline)self).CallHandlerAdded0((AbstractChannelHandlerContext)ctx);
+        private static readonly NameCachesLocal NameCaches = new NameCachesLocal();
 
-        static readonly Action<object, object> CallHandlerAddedAction = (self, ctx) => ((DefaultChannelPipeline)self).CallHandlerAdded0((AbstractChannelHandlerContext)ctx);
-
-        static readonly NameCachesLocal NameCaches = new NameCachesLocal();
-
-        class NameCachesLocal : FastThreadLocal<ConditionalWeakTable<Type, string>>
+        private class NameCachesLocal : FastThreadLocal<ConditionalWeakTable<Type, string>>
         {
             protected override ConditionalWeakTable<Type, string> GetInitialValue() => new ConditionalWeakTable<Type, string>();
         }
 
-        readonly IChannel channel;
-
-        readonly AbstractChannelHandlerContext head;
-        readonly AbstractChannelHandlerContext tail;
-
+        private readonly IChannel channel;
+        private readonly AbstractChannelHandlerContext head;
+        private readonly AbstractChannelHandlerContext tail;
         private Dictionary<IEventExecutorGroup, IEventExecutor> childExecutors;
         private IMessageSizeEstimatorHandle estimatorHandle;
 
@@ -45,13 +38,13 @@ namespace DotNetty.Transport.Channels
         /// the list is used infrequently and its size is small. Thus full iterations to do insertions is assumed to be
         /// a good compromised to saving memory and tail management complexity.
         /// </summary>
-        PendingHandlerCallback pendingHandlerCallbackHead;
+        private PendingHandlerCallback pendingHandlerCallbackHead;
 
         /// <summary>
         /// Set to <c>true</c> once the <see cref="AbstractChannel" /> is registered. Once set to <c>true</c>, the
         /// value will never change.
         /// </summary>
-        bool registered;
+        private bool registered;
 
         public DefaultChannelPipeline(IChannel channel)
         {

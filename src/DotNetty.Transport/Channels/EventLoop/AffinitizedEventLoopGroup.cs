@@ -1,19 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-
     /// <summary>
     /// <see cref="IEventLoopGroup"/> that works as a wrapper for another <see cref="IEventLoopGroup"/> providing affinity on <see cref="GetNext"/> call.
     /// </summary>
     public class AffinitizedEventLoopGroup : AbstractEventExecutorGroup, IEventLoopGroup
     {
-        readonly IEventLoopGroup innerGroup;
+        private readonly IEventLoopGroup innerGroup;
 
         public override bool IsShutdown => this.innerGroup.IsShutdown;
 

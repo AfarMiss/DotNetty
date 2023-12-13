@@ -1,25 +1,22 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-
     /// <summary>
     /// <see cref="IEventLoopGroup"/> backed by a set of <see cref="SingleThreadEventLoop"/> instances.
     /// </summary>
     public sealed class MultithreadEventLoopGroup : AbstractEventExecutorGroup, IEventLoopGroup
     {
-        static readonly int DefaultEventLoopThreadCount = Environment.ProcessorCount * 2;
-        static readonly Func<IEventLoopGroup, IEventLoop> DefaultEventLoopFactory = group => new SingleThreadEventLoop(group);
+        private static readonly int DefaultEventLoopThreadCount = Environment.ProcessorCount * 2;
+        private static readonly Func<IEventLoopGroup, IEventLoop> DefaultEventLoopFactory = group => new SingleThreadEventLoop(group);
 
-        readonly IEventLoop[] eventLoops;
-        int requestId;
+        private readonly IEventLoop[] eventLoops;
+        private int requestId;
 
         public override bool IsShutdown => eventLoops.All(eventLoop => eventLoop.IsShutdown);
 

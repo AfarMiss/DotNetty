@@ -1,14 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Text;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Text;
-
     public sealed class StringBuilderCharSequence : ICharSequence, IEquatable<StringBuilderCharSequence>
     {
         readonly StringBuilder builder;

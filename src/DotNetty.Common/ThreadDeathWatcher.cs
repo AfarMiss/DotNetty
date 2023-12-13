@@ -1,24 +1,21 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Threading;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-
     public static class ThreadDeathWatcher
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(ThreadDeathWatcher));
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(ThreadDeathWatcher));
 
-        static readonly IQueue<Entry> PendingEntries = PlatformDependent.NewMpscQueue<Entry>();
-        static readonly Watcher watcher = new Watcher();
-        static int started;
-        static volatile Thread watcherThread;
+        private static readonly IQueue<Entry> PendingEntries = PlatformDependent.NewMpscQueue<Entry>();
+        private static readonly Watcher watcher = new Watcher();
+        private static int started;
+        private static volatile Thread watcherThread;
 
         static ThreadDeathWatcher()
         {

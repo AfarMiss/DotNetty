@@ -1,23 +1,20 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.NetworkInformation;
+using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.NetworkInformation;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Utilities;
-
     public abstract class ChannelOption : AbstractConstant<ChannelOption>
     {
-        class ChannelOptionPool : ConstantPool
+        private static readonly ChannelOptionPool Pool = new ChannelOptionPool();
+
+        private class ChannelOptionPool : ConstantPool
         {
             protected override IConstant NewConstant<T>(int id, string name) => new ChannelOption<T>(id, name);
         }
-
-        static readonly ChannelOptionPool Pool = new ChannelOptionPool();
 
         /// <summary>
         /// Returns the <see cref="ChannelOption"/> of the specified name.

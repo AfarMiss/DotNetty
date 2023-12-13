@@ -1,15 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Threading;
+using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Threading;
-    using DotNetty.Common.Internal.Logging;
-
     public static class ReferenceCountUtil
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(ReferenceCountUtil));
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(ReferenceCountUtil));
 
         /// <summary>
         /// Tries to call <see cref="IReferenceCounted.Retain()"/> if the specified message implements
@@ -18,8 +15,7 @@ namespace DotNetty.Common.Utilities
         /// </summary>
         public static T Retain<T>(T msg)
         {
-            var counted = msg as IReferenceCounted;
-            if (counted != null)
+            if (msg is IReferenceCounted counted)
             {
                 return (T)counted.Retain();
             }
@@ -33,8 +29,7 @@ namespace DotNetty.Common.Utilities
         /// </summary>
         public static T Retain<T>(T msg, int increment)
         {
-            var counted = msg as IReferenceCounted;
-            if (counted != null)
+            if (msg is IReferenceCounted counted)
             {
                 return (T)counted.Retain(increment);
             }
@@ -48,8 +43,7 @@ namespace DotNetty.Common.Utilities
         /// </summary>
         public static bool Release(object msg)
         {
-            var counted = msg as IReferenceCounted;
-            if (counted != null)
+            if (msg is IReferenceCounted counted)
             {
                 return counted.Release();
             }
@@ -63,8 +57,7 @@ namespace DotNetty.Common.Utilities
         /// </summary>
         public static bool Release(object msg, int decrement)
         {
-            var counted = msg as IReferenceCounted;
-            if (counted != null)
+            if (msg is IReferenceCounted counted)
             {
                 return counted.Release(decrement);
             }
@@ -152,8 +145,7 @@ namespace DotNetty.Common.Utilities
         /// </summary>
         public static T ReleaseLater<T>(T msg, int decrement)
         {
-            var referenceCounted = msg as IReferenceCounted;
-            if (referenceCounted != null)
+            if (msg is IReferenceCounted referenceCounted)
             {
                 ThreadDeathWatcher.Watch(Thread.CurrentThread, () =>
                 {
@@ -177,7 +169,7 @@ namespace DotNetty.Common.Utilities
             return msg;
         }
 
-        static string FormatReleaseString(IReferenceCounted referenceCounted, int decrement)
+        private static string FormatReleaseString(IReferenceCounted referenceCounted, int decrement)
             => $"{referenceCounted.GetType().Name}.Release({decrement.ToString()}) refCnt: {referenceCounted.ReferenceCount.ToString()}";
     }
 }

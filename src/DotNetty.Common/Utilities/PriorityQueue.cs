@@ -1,20 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-
-    public class PriorityQueue<T> : IEnumerable<T>
-        where T : class
+    public class PriorityQueue<T> : IEnumerable<T> where T : class
     {
-        readonly IComparer<T> comparer;
-        int count;
-        int capacity;
-        T[] items;
+        private readonly IComparer<T> comparer;
+        private int count;
+        private int capacity;
+        private T[] items;
 
         public PriorityQueue(IComparer<T> comparer)
         {

@@ -1,51 +1,38 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Threading;
+using DotNetty.Buffers;
+using DotNetty.Common;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Channels.Sockets;
 
-// ReSharper disable ConvertToAutoProperty
-// ReSharper disable ConvertToAutoPropertyWithPrivateSetter
-// ReSharper disable ConvertToAutoPropertyWhenPossible
-
-#pragma warning disable 420 // all volatile fields are used with referenced in Interlocked methods only
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-    using DotNetty.Buffers;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Channels.Sockets;
-
     public sealed class ChannelOutboundBuffer
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChannelOutboundBuffer>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChannelOutboundBuffer>();
+        private static readonly ThreadLocalByteBufferList NioBuffers = new ThreadLocalByteBufferList();
 
-        static readonly ThreadLocalByteBufferList NioBuffers = new ThreadLocalByteBufferList();
-
-        readonly IChannel channel;
+        private readonly IChannel channel;
 
         // Entry(flushedEntry) --> ... Entry(unflushedEntry) --> ... Entry(tailEntry)
         //
         // The Entry that is the first in the linked-list structure that was flushed
-        Entry flushedEntry;
+        private Entry flushedEntry;
         // The Entry which is the first unflushed in the linked-list structure
-        Entry unflushedEntry;
+        private Entry unflushedEntry;
         // The Entry which represents the tail of the buffer
-        Entry tailEntry;
+        private Entry tailEntry;
         // The number of flushed entries that are not written yet
-        int flushed;
-
-        long nioBufferSize;
-
-        bool inFail;
-
-        long totalPendingSize;
-
-        volatile int unwritable;
+        private int flushed;
+        private long nioBufferSize;
+        private bool inFail;
+        private long totalPendingSize;
+        private volatile int unwritable;
 
         internal ChannelOutboundBuffer(IChannel channel)
         {

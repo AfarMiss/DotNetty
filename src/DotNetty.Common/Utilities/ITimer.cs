@@ -1,13 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-
     /// <summary>
     /// Schedules <see cref="ITimerTask"/>s for one-time future execution in a background
     /// thread.

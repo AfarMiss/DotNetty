@@ -1,10 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using DotNetty.Common.Utilities;
 
 namespace DotNetty.Common.Internal
 {
-    using DotNetty.Common.Utilities;
-
     /// Forked from
     /// <a href="https://github.com/JCTools/JCTools">JCTools</a>
     /// .
@@ -20,8 +17,7 @@ namespace DotNetty.Common.Internal
     /// parameter are provided to allow the prevention of field reload after a
     /// LoadLoad barrier.
     /// <p />
-    abstract class ConcurrentCircularArrayQueue<T> : ConcurrentCircularArrayQueueL0Pad<T>
-        where T : class
+    internal abstract class ConcurrentCircularArrayQueue<T> : ConcurrentCircularArrayQueueL0Pad<T> where T : class
     {
         protected long Mask;
         protected readonly T[] Buffer;

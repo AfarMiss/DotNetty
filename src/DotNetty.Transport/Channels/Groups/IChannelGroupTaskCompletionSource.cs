@@ -1,11 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DotNetty.Transport.Channels.Groups
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
     public interface IChannelGroupTaskCompletionSource : IEnumerator<Task>
     {
         IChannelGroup Group { get; }

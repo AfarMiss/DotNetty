@@ -1,12 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Threading;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Threading;
-
     public static class ThreadExtensions
     {
         public static bool Join(this Thread thread, TimeSpan timeout)

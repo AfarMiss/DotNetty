@@ -1,7 +1,7 @@
-﻿namespace DotNetty.Common
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace DotNetty.Common
+{
     public class PoolList : List<object>, IRecycle
     {
         internal IRecycleHandle<PoolList> Handle;

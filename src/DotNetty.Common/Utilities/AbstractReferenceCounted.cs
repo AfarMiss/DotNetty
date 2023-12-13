@@ -1,13 +1,12 @@
-﻿
+﻿using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using System.Threading;
+
 namespace DotNetty.Common.Utilities
 {
-    using System.Diagnostics.Contracts;
-    using System.Runtime.CompilerServices;
-    using System.Threading;
-
     public abstract class AbstractReferenceCounted : IReferenceCounted
     {
-        int referenceCount = 1;
+        private int referenceCount = 1;
 
         public int ReferenceCount => this.referenceCount;
 

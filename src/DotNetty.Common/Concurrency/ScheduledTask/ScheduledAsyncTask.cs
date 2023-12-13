@@ -1,14 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Threading;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System.Threading;
 
     abstract class ScheduledAsyncTask : ScheduledTask
     {
-        readonly CancellationToken cancellationToken;
-        CancellationTokenRegistration cancellationTokenRegistration;
+        private readonly CancellationToken cancellationToken;
+        private readonly CancellationTokenRegistration cancellationTokenRegistration;
 
         protected ScheduledAsyncTask(AbstractScheduledEventExecutor executor, PreciseTimeSpan deadline, TaskCompletionSource promise, CancellationToken cancellationToken)
             : base(executor, deadline, promise)

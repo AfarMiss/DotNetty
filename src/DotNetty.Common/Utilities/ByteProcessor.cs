@@ -1,13 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using static DotNetty.Common.Utilities.ByteProcessorUtils;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Diagnostics.Contracts;
-
-    using static ByteProcessorUtils;
-
     /// <summary>
     ///     Provides a mechanism to iterate over a collection of bytes.
     /// </summary>
@@ -18,7 +14,7 @@ namespace DotNetty.Common.Utilities
 
     public sealed class IndexOfProcessor : IByteProcessor
     {
-        readonly byte byteToFind;
+        private readonly byte byteToFind;
 
         public IndexOfProcessor(byte byteToFind)
         {
@@ -30,7 +26,7 @@ namespace DotNetty.Common.Utilities
 
     public sealed class IndexNotOfProcessor : IByteProcessor
     {
-        readonly byte byteToNotFind;
+        private readonly byte byteToNotFind;
 
         public IndexNotOfProcessor(byte byteToNotFind)
         {
@@ -42,7 +38,7 @@ namespace DotNetty.Common.Utilities
 
     public sealed class ByteProcessor : IByteProcessor
     {
-        readonly Func<byte, bool> customHandler;
+        private readonly Func<byte, bool> customHandler;
 
         public ByteProcessor(Func<byte, bool> customHandler)
         {

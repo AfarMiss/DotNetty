@@ -1,50 +1,42 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-
-#pragma warning disable 420
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Internal.Logging;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Internal.Logging;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     public sealed class HashedWheelTimer : ITimer
     {
-        static readonly IInternalLogger Logger =
-            InternalLoggerFactory.GetInstance<HashedWheelTimer>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<HashedWheelTimer>();
+        private static int instanceCounter;
+        private static int warnedTooManyInstances;
 
-        static int instanceCounter;
-        static int warnedTooManyInstances;
+        private const int InstanceCountLimit = 64;
 
-        const int InstanceCountLimit = 64;
+        private readonly Worker worker;
+        private readonly Thread workerThread;
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        readonly Worker worker;
-        readonly Thread workerThread;
-        readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private const int WorkerStateInit = 0;
+        private const int WorkerStateStarted = 1;
+        private const int WorkerStateShutdown = 2;
+        private int workerStateVolatile = WorkerStateInit; // 0 - init, 1 - started, 2 - shut down
 
-        const int WorkerStateInit = 0;
-        const int WorkerStateStarted = 1;
-        const int WorkerStateShutdown = 2;
-        int workerStateVolatile = WorkerStateInit; // 0 - init, 1 - started, 2 - shut down
-
-        readonly long tickDuration;
-        readonly HashedWheelBucket[] wheel;
-        readonly int mask;
-        readonly CountdownEvent startTimeInitialized = new CountdownEvent(1);
-        readonly IQueue<HashedWheelTimeout> timeouts = PlatformDependent.NewMpscQueue<HashedWheelTimeout>();
-        readonly IQueue<HashedWheelTimeout> cancelledTimeouts = PlatformDependent.NewMpscQueue<HashedWheelTimeout>();
+        private readonly long tickDuration;
+        private readonly HashedWheelBucket[] wheel;
+        private readonly int mask;
+        private readonly CountdownEvent startTimeInitialized = new CountdownEvent(1);
+        private readonly IQueue<HashedWheelTimeout> timeouts = PlatformDependent.NewMpscQueue<HashedWheelTimeout>();
+        private readonly IQueue<HashedWheelTimeout> cancelledTimeouts = PlatformDependent.NewMpscQueue<HashedWheelTimeout>(); 
         internal long PendingTimeouts;
-        readonly long maxPendingTimeouts;
-        long startTimeVolatile;
+        private readonly long maxPendingTimeouts;
+        private long startTimeVolatile;
 
         public HashedWheelTimer()
             : this(TimeSpan.FromMilliseconds(100), 512, -1)

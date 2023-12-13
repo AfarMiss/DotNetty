@@ -1,20 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
 
 namespace DotNetty.Common.Utilities
 {
-    using System;
-
     internal static class AttributeKey
     {
         // Keep the instance of AttributeConstantPool out of generic classes, to make it an really singleton for different generic types.
         // see https://github.com/Azure/DotNetty/issues/498
         public static readonly ConstantPool Pool = new AttributeConstantPool();
 
-        sealed class AttributeConstantPool : ConstantPool
+        private sealed class AttributeConstantPool : ConstantPool
         {
             protected override IConstant NewConstant<TValue>(int id, string name) => new AttributeKey<TValue>(id, name);
-        };
+        }
     }
 
     /// <summary>

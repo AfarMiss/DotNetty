@@ -1,18 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     /// <summary>
     ///     A queue of write operations which are pending for later execution. It also updates the
     ///     <see cref="IChannel.IsWritable">writability</see> of the associated <see cref="IChannel" />, so that
@@ -20,17 +16,17 @@ namespace DotNetty.Transport.Channels
     /// </summary>
     public sealed class BatchingPendingWriteQueue
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<PendingWriteQueue>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<PendingWriteQueue>();
 
-        readonly IChannelHandlerContext ctx;
-        readonly int maxSize;
-        readonly ChannelOutboundBuffer buffer;
-        readonly IMessageSizeEstimatorHandle estimatorHandle;
+        private readonly IChannelHandlerContext ctx;
+        private readonly int maxSize;
+        private readonly ChannelOutboundBuffer buffer;
+        private readonly IMessageSizeEstimatorHandle estimatorHandle;
 
         // head and tail pointers for the linked-list structure. If empty head and tail are null.
-        PendingWrite head;
-        PendingWrite tail;
-        int size;
+        private PendingWrite head;
+        private PendingWrite tail;
+        private int size;
 
         public BatchingPendingWriteQueue(IChannelHandlerContext ctx, int maxSize)
         {

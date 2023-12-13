@@ -1,29 +1,26 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
-    abstract class AbstractChannelHandlerContext : IChannelHandlerContext, IResourceLeakHint
+    internal abstract class AbstractChannelHandlerContext : IChannelHandlerContext, IResourceLeakHint
     {
-        static readonly Action<object> InvokeChannelReadCompleteAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelReadComplete();
-        static readonly Action<object> InvokeReadAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeRead();
-        static readonly Action<object> InvokeChannelWritabilityChangedAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelWritabilityChanged();
-        static readonly Action<object> InvokeFlushAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeFlush();
-        static readonly Action<object, object> InvokeUserEventTriggeredAction = (ctx, evt) => ((AbstractChannelHandlerContext)ctx).InvokeUserEventTriggered(evt);
-        static readonly Action<object, object> InvokeChannelReadAction = (ctx, msg) => ((AbstractChannelHandlerContext)ctx).InvokeChannelRead(msg);
+        private static readonly Action<object> InvokeChannelReadCompleteAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelReadComplete();
+        private static readonly Action<object> InvokeReadAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeRead();
+        private static readonly Action<object> InvokeChannelWritabilityChangedAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelWritabilityChanged();
+        private static readonly Action<object> InvokeFlushAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeFlush();
+        private static readonly Action<object, object> InvokeUserEventTriggeredAction = (ctx, evt) => ((AbstractChannelHandlerContext)ctx).InvokeUserEventTriggered(evt);
+        private static readonly Action<object, object> InvokeChannelReadAction = (ctx, msg) => ((AbstractChannelHandlerContext)ctx).InvokeChannelRead(msg);
 
         [Flags]
         protected internal enum SkipFlags
@@ -72,8 +69,7 @@ namespace DotNetty.Transport.Channels
 
         protected static SkipFlags GetSkipPropagationFlags(IChannelHandler handler)
         {
-            Tuple<SkipFlags> skipDirection = SkipTable.GetValue(
-                handler.GetType(),
+            var skipDirection = SkipTable.GetValue(handler.GetType(),
                 handlerType => Tuple.Create(CalculateSkipPropagationFlags(handlerType)));
 
             return skipDirection?.Item1 ?? 0;

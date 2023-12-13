@@ -1,13 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Collections.Concurrent;
+using System.Net;
+
 namespace DotNetty.Transport.Channels.Local
 {
-    using System.Collections.Concurrent;
-    using System.Net;
-
     public static class LocalChannelRegistry
     {
-        static readonly ConcurrentDictionary<LocalAddress, IChannel> BoundChannels = new ConcurrentDictionary<LocalAddress, IChannel>();
+        private static readonly ConcurrentDictionary<LocalAddress, IChannel> BoundChannels = new ConcurrentDictionary<LocalAddress, IChannel>();
 
         internal static LocalAddress Register(IChannel channel, LocalAddress oldLocalAddress, EndPoint localAddress) 
         {

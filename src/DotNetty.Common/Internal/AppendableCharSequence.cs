@@ -1,17 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using System.Text;
+using DotNetty.Common.Utilities;
 
-// ReSharper disable ConvertToAutoPropertyWithPrivateSetter
 namespace DotNetty.Common.Internal
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using DotNetty.Common.Utilities;
-
     //
     // This is used exclusively for http headers as a buffer
     //
@@ -30,8 +26,8 @@ namespace DotNetty.Common.Internal
     // 
     public sealed class AppendableCharSequence : ICharSequence, IAppendable, IEquatable<AppendableCharSequence>
     {
-        byte[] chars;
-        int pos;
+        private byte[] chars;
+        private int pos;
 
         public AppendableCharSequence(int length)
         {

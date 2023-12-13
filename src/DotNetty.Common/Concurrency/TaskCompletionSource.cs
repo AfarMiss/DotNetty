@@ -1,16 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Threading.Tasks;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System.Threading.Tasks;
-
     public sealed class TaskCompletionSource : TaskCompletionSource<int>
     {
         public static readonly TaskCompletionSource Void = CreateVoidTcs();
 
-        public TaskCompletionSource(object state)
-            : base(state)
+        public TaskCompletionSource(object state) : base(state)
         {
         }
 

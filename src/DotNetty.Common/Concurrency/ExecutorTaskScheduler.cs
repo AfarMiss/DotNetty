@@ -1,20 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DotNetty.Common.Concurrency
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
     public sealed class ExecutorTaskScheduler : TaskScheduler
     {
-        readonly IEventExecutor executor;
-        bool started;
+        private readonly IEventExecutor executor;
+        private bool started;
 
-        public ExecutorTaskScheduler(IEventExecutor executor)
-        {
-            this.executor = executor;
-        }
+        public ExecutorTaskScheduler(IEventExecutor executor) => this.executor = executor;
 
         protected override void QueueTask(Task task)
         {

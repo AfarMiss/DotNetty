@@ -1,13 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Utilities;
-
     public class ChannelHandlerAdapter : IChannelHandler
     {
         internal bool Added;

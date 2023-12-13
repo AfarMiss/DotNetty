@@ -1,25 +1,19 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using static DotNetty.Common.Internal.PlatformDependent0;
 
-// ReSharper disable ConvertToAutoPropertyWhenPossible
 namespace DotNetty.Common.Internal
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
-    using System.Threading;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-
-    using static PlatformDependent0;
-
     public static class PlatformDependent
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(PlatformDependent));
-
-        static readonly bool UseDirectBuffer;
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance(typeof(PlatformDependent));
+        private static readonly bool UseDirectBuffer;
 
         static PlatformDependent()
         {
@@ -32,9 +26,9 @@ namespace DotNetty.Common.Internal
 
         public static bool DirectBufferPreferred => UseDirectBuffer;
 
-        static int seed = (int)(Stopwatch.GetTimestamp() & 0xFFFFFFFF); //used to safly cast long to int, because the timestamp returned is long and it doesn't fit into an int
-        static readonly ThreadLocal<Random> ThreadLocalRandom = new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed))); //used to simulate java ThreadLocalRandom
-        static readonly bool IsLittleEndian = BitConverter.IsLittleEndian;
+        private static int seed = (int)(Stopwatch.GetTimestamp() & 0xFFFFFFFF); //used to safly cast long to int, because the timestamp returned is long and it doesn't fit into an int
+        private static readonly ThreadLocal<Random> ThreadLocalRandom = new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed))); //used to simulate java ThreadLocalRandom
+        private static readonly bool IsLittleEndian = BitConverter.IsLittleEndian;
 
         public static IQueue<T> NewFixedMpscQueue<T>(int capacity) where T : class => new MpscArrayQueue<T>(capacity);
 

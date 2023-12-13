@@ -1,13 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    using DotNetty.Common.Utilities;
-
     public abstract class SimpleChannelInboundHandler<I> : ChannelHandlerAdapter
     {
-        readonly bool autoRelease;
+        private readonly bool autoRelease;
 
         protected SimpleChannelInboundHandler() : this(true)
         {

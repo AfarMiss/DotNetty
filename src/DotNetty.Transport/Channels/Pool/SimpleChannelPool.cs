@@ -1,17 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using DotNetty.Common.Internal;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Bootstrapping;
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Bootstrapping;
-
     /// <summary>
     /// Simple <see cref="IChannelPool"/> implementation which will create new <see cref="IChannel"/>s if someone tries to acquire
     /// a <see cref="IChannel"/> but none is in the pool atm. No limit on the maximal concurrent <see cref="IChannel"/>s is enforced.
@@ -21,9 +17,9 @@ namespace DotNetty.Transport.Channels.Pool
     {
         public static readonly AttributeKey<SimpleChannelPool> PoolKey = AttributeKey<SimpleChannelPool>.NewInstance("channelPool");
 
-        static readonly InvalidOperationException FullException = new InvalidOperationException("ChannelPool full");
+        private static readonly InvalidOperationException FullException = new InvalidOperationException("ChannelPool full");
 
-        readonly IQueue<IChannel> store;
+        private readonly IQueue<IChannel> store;
 
         /// <summary>
         /// Creates a new <see cref="SimpleChannelPool"/> instance using the <see cref="ChannelActiveHealthChecker"/>.

@@ -1,10 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Threading.Tasks;
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Called before an <see cref="IChannel"/> will be returned via <see cref="IChannelPool.AcquireAsync"/>.
     /// </summary>

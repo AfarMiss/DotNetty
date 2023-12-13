@@ -1,17 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace DotNetty.Transport.Channels.Groups
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-
     public sealed class CombinedEnumerator<T> : IEnumerator<T>
     {
-        readonly IEnumerator<T> e1;
-        readonly IEnumerator<T> e2;
-        IEnumerator<T> currentEnumerator;
+        private readonly IEnumerator<T> e1;
+        private readonly IEnumerator<T> e2;
+        private IEnumerator<T> currentEnumerator;
 
         public CombinedEnumerator(IEnumerator<T> e1, IEnumerator<T> e2)
         {
