@@ -10,6 +10,9 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Buffers
 {
+    /// <summary>
+    /// 复合实现 复杂索引处理,如确定型的不用采用此类
+    /// </summary>
     public class CompositeByteBuffer : AbstractRefByteBuffer, IEnumerable<IByteBuffer>
     {
         #region IByteBuffer

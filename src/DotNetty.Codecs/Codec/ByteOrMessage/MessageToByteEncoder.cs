@@ -1,15 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Channels;
 
 namespace DotNetty.Codecs
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Channels;
-
     public abstract class MessageToByteEncoder<T> : ChannelHandlerAdapter
     {
         public virtual bool AcceptOutboundMessage(object message) => message is T;
@@ -25,14 +22,13 @@ namespace DotNetty.Codecs
                 if (this.AcceptOutboundMessage(message))
                 {
                     buffer = this.AllocateBuffer(context);
-                    var input = (T)message;
                     try
                     {
-                        this.Encode(context, input, buffer);
+                        this.Encode(context, (T)message, buffer);
                     }
                     finally
                     {
-                        ReferenceCountUtil.Release(input);
+                        ReferenceCountUtil.Release((T)message);
                     }
 
                     if (buffer.IsReadable())

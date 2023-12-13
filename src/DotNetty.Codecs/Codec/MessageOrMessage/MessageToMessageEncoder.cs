@@ -1,21 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DotNetty.Common;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Channels;
 
 namespace DotNetty.Codecs
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using DotNetty.Common;
-    using DotNetty.Common.Utilities;
-    using DotNetty.Transport.Channels;
-
     public abstract class MessageToMessageEncoder<T> : ChannelHandlerAdapter
     {
-        /// <summary>
-        ///     Returns {@code true} if the given message should be handled. If {@code false} it will be passed to the next
-        ///     {@link ChannelHandler} in the {@link ChannelPipeline}.
-        /// </summary>
         public virtual bool AcceptOutboundMessage(object msg) => msg is T;
 
         public override Task WriteAsync(IChannelHandlerContext ctx, object msg)
@@ -27,14 +20,13 @@ namespace DotNetty.Codecs
                 if (this.AcceptOutboundMessage(msg))
                 {
                     output = ThreadLocalListPool.Acquire();
-                    var cast = (T)msg;
                     try
                     {
-                        this.Encode(ctx, cast, output);
+                        this.Encode(ctx, (T)msg, output);
                     }
                     finally
                     {
-                        ReferenceCountUtil.Release(cast);
+                        ReferenceCountUtil.Release((T)msg);
                     }
 
                     if (output.Count == 0)
@@ -56,7 +48,8 @@ namespace DotNetty.Codecs
             }
             catch (Exception ex)
             {
-                return TaskEx.FromException(new EncoderException(ex)); // todo: we don't have a stack on EncoderException but it's present on inner exception.
+                // TODO: 在EncoderException上没有堆栈，但它存在于内部异常上
+                return TaskEx.FromException(new EncoderException(ex)); 
             }
             finally
             {
@@ -72,7 +65,8 @@ namespace DotNetty.Codecs
                         for (int i = 0; i < lastItemIndex; i++)
                         {
                             // we don't care about output from these messages as failure while sending one of these messages will fail all messages up to the last message - which will be observed by the caller in Task result.
-                            ctx.WriteAsync(output[i]); // todo: optimize: once IChannelHandlerContext allows, pass "not interested in task" flag
+                            // todo: optimize: once IChannelHandlerContext allows, pass "not interested in task" flag
+                            ctx.WriteAsync(output[i]);
                         }
                         result = ctx.WriteAsync(output[lastItemIndex]);
                     }
@@ -92,15 +86,6 @@ namespace DotNetty.Codecs
             return result;
         }
 
-        /// <summary>
-        ///     Encode from one message to an other. This method will be called for each written message that can be handled
-        ///     by this encoder.
-        ///     @param context           the {@link ChannelHandlerContext} which this {@link MessageToMessageEncoder} belongs to
-        ///     @param message           the message to encode to an other one
-        ///     @param output           the {@link List} into which the encoded message should be added
-        ///     needs to do some kind of aggragation
-        ///     @throws Exception    is thrown if an error accour
-        /// </summary>
         protected internal abstract void Encode(IChannelHandlerContext context, T message, List<object> output);
     }
 }

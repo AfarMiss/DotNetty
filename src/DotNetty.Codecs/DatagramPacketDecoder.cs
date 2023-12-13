@@ -1,31 +1,21 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using DotNetty.Buffers;
+using DotNetty.Transport.Channels;
+using DotNetty.Transport.Channels.Sockets;
 
 namespace DotNetty.Codecs
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using DotNetty.Buffers;
-    using DotNetty.Transport.Channels;
-    using DotNetty.Transport.Channels.Sockets;
-
     public class DatagramPacketDecoder : MessageToMessageDecoder<DatagramPacket>
     {
-        readonly MessageToMessageDecoder<IByteBuffer> decoder;
+        private readonly MessageToMessageDecoder<IByteBuffer> decoder;
 
-        public DatagramPacketDecoder(MessageToMessageDecoder<IByteBuffer> decoder)
-        {
-            Contract.Requires(decoder != null);
-
-            this.decoder = decoder;
-        }
+        public DatagramPacketDecoder(MessageToMessageDecoder<IByteBuffer> decoder) => this.decoder = decoder;
 
         public override bool AcceptInboundMessage(object msg)
         {
             var envelope = msg as DatagramPacket;
-            return envelope != null 
-                && this.decoder.AcceptInboundMessage(envelope.Content);
+            return envelope != null && this.decoder.AcceptInboundMessage(envelope.Content);
         }
 
         protected internal override void Decode(IChannelHandlerContext context, DatagramPacket message, List<object> output) => 
