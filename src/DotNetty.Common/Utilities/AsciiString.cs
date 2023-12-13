@@ -392,7 +392,7 @@ namespace DotNetty.Common.Utilities
             int count = end - start;
             if (count == 0)
             {
-                return  EmptyArrays.EmptyChars;
+                return System.Array.Empty<char>();
             }
 
             if (MathUtil.IsOutOfBounds(start, count, this.length))

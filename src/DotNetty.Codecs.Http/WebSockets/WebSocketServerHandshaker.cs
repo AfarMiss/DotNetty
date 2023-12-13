@@ -50,7 +50,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
             else
             {
-                this.subprotocols = EmptyArrays.EmptyStrings;
+                this.subprotocols = Array.Empty<string>();
             }
             this.maxFramePayloadLength = maxFramePayloadLength;
         }

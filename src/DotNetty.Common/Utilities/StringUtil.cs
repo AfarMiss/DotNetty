@@ -231,7 +231,7 @@ namespace DotNetty.Common.Utilities
             }
             if (length == 0)
             {
-                return EmptyArrays.EmptyBytes;
+                return Array.Empty<byte>();
             }
             var bytes = new byte[length.RightUShift(1)];
             for (int i = 0; i < length; i += 2)
