@@ -1,12 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Diagnostics.Contracts;
+using System.Net.Sockets;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System.Diagnostics.Contracts;
-    using System.Net.Sockets;
-    using DotNetty.Common.Utilities;
-
     public class SocketChannelAsyncOperation : SocketAsyncEventArgs
     {
         public SocketChannelAsyncOperation(AbstractSocketChannel channel)

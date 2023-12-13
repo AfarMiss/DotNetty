@@ -1,22 +1,19 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     public abstract class AbstractSocketChannel : AbstractChannel
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractSocketChannel>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractSocketChannel>();
 
         [Flags]
         protected enum StateFlags
@@ -29,19 +26,19 @@ namespace DotNetty.Transport.Channels.Sockets
         }
 
         internal static readonly EventHandler<SocketAsyncEventArgs> IoCompletedCallback = OnIoCompleted;
-        static readonly Action<object, object> ConnectCallbackAction = (u, e) => ((ISocketChannelUnsafe)u).FinishConnect((SocketChannelAsyncOperation)e);
-        static readonly Action<object, object> ReadCallbackAction = (u, e) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)e);
-        static readonly Action<object, object> WriteCallbackAction = (u, e) => ((ISocketChannelUnsafe)u).FinishWrite((SocketChannelAsyncOperation)e);
+        private static readonly Action<object, object> ConnectCallbackAction = (u, e) => ((ISocketChannelUnsafe)u).FinishConnect((SocketChannelAsyncOperation)e);
+        private static readonly Action<object, object> ReadCallbackAction = (u, e) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)e);
+        private static readonly Action<object, object> WriteCallbackAction = (u, e) => ((ISocketChannelUnsafe)u).FinishWrite((SocketChannelAsyncOperation)e);
 
-        protected readonly Socket Socket;
-        SocketChannelAsyncOperation readOperation;
-        SocketChannelAsyncOperation writeOperation;
-        volatile bool inputShutdown;
+        private protected readonly Socket Socket;
+        private SocketChannelAsyncOperation readOperation;
+        private SocketChannelAsyncOperation writeOperation;
+        private volatile bool inputShutdown; 
         internal bool ReadPending;
-        volatile StateFlags state;
+        private volatile StateFlags state;
 
-        TaskCompletionSource connectPromise;
-        IScheduledTask connectCancellationTask;
+        private TaskCompletionSource connectPromise;
+        private IScheduledTask connectCancellationTask;
 
         protected AbstractSocketChannel(IChannel parent, Socket socket)
             : base(parent)
@@ -101,7 +98,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        void ClearReadPending0() => this.ReadPending = false;
+        private void ClearReadPending0() => this.ReadPending = false;
 
         protected bool InputShutdown => this.inputShutdown;
 
@@ -133,27 +130,27 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected bool IsInState(StateFlags stateToCheck) => (this.state & stateToCheck) == stateToCheck;
 
-        protected SocketChannelAsyncOperation ReadOperation => this.readOperation ?? (this.readOperation = new SocketChannelAsyncOperation(this, true));
+        protected SocketChannelAsyncOperation ReadOperation => this.readOperation ??= new SocketChannelAsyncOperation(this, true);
 
-        SocketChannelAsyncOperation WriteOperation => this.writeOperation ?? (this.writeOperation = new SocketChannelAsyncOperation(this, false));
+        private SocketChannelAsyncOperation WriteOperation => this.writeOperation ??= new SocketChannelAsyncOperation(this, false);
 
         protected SocketChannelAsyncOperation PrepareWriteOperation(ArraySegment<byte> buffer)
         {
-            SocketChannelAsyncOperation operation = this.WriteOperation;
+            var operation = this.WriteOperation;
             operation.SetBuffer(buffer.Array, buffer.Offset, buffer.Count);
             return operation;
         }
 
         protected SocketChannelAsyncOperation PrepareWriteOperation(IList<ArraySegment<byte>> buffers)
         {
-            SocketChannelAsyncOperation operation = this.WriteOperation;
+            var operation = this.WriteOperation;
             operation.BufferList = buffers;
             return operation;
         }
 
         protected void ResetWriteOperation()
         {
-            SocketChannelAsyncOperation operation = this.writeOperation;
+            var operation = this.writeOperation;
 
             Contract.Assert(operation != null);
 
@@ -168,12 +165,12 @@ namespace DotNetty.Transport.Channels.Sockets
         }
 
         /// <remarks>PORT NOTE: matches behavior of NioEventLoop.processSelectedKey</remarks>
-        static void OnIoCompleted(object sender, SocketAsyncEventArgs args)
+        private static void OnIoCompleted(object sender, SocketAsyncEventArgs args)
         {
             var operation = (SocketChannelAsyncOperation)args;
-            AbstractSocketChannel channel = operation.Channel;
+            var channel = operation.Channel;
             var @unsafe = (ISocketChannelUnsafe)channel.Unsafe;
-            IEventLoop eventLoop = channel.EventLoop;
+            var eventLoop = channel.EventLoop;
             switch (args.LastOperation)
             {
                 case SocketAsyncOperation.Accept:
@@ -251,7 +248,7 @@ namespace DotNetty.Transport.Channels.Sockets
             public sealed override Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
             {
                 // todo: handle cancellation
-                AbstractSocketChannel ch = this.Channel;
+                var ch = this.Channel;
                 if (!ch.Open)
                 {
                     return this.CreateClosedChannelExceptionTask();
@@ -284,7 +281,7 @@ namespace DotNetty.Transport.Channels.Sockets
                                     // todo: make static / cache delegate?..
                                     var self = (AbstractSocketChannel)c;
                                     // todo: call Socket.CancelConnectAsync(...)
-                                    TaskCompletionSource promise = self.connectPromise;
+                                    var promise = self.connectPromise;
                                     var cause = new ConnectTimeoutException("connection timed out: " + a.ToString());
                                     if (promise != null && promise.TrySetException(cause))
                                     {
@@ -317,7 +314,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            void FulfillConnectPromise(bool wasActive)
+            private void FulfillConnectPromise(bool wasActive)
             {
                 // Regardless if the connection attempt was cancelled, channelActive() event should be triggered,
                 // because what happened is what happened.
@@ -326,7 +323,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     this.channel.Pipeline.FireChannelActive();
                 }
 
-                TaskCompletionSource promise = this.Channel.connectPromise;
+                var promise = this.Channel.connectPromise;
                 // If promise is null, then it the channel was Closed via cancellation and the promise has been notified already.
                 if (promise != null)
                 {
@@ -342,9 +339,9 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            void FulfillConnectPromise(Exception cause)
+            private void FulfillConnectPromise(Exception cause)
             {
-                TaskCompletionSource promise = this.Channel.connectPromise;
+                var promise = this.Channel.connectPromise;
                 if (promise == null)
                 {
                     // Closed via cancellation and the promise has been notified already.
@@ -360,16 +357,16 @@ namespace DotNetty.Transport.Channels.Sockets
             {
                 Contract.Assert(this.channel.EventLoop.InEventLoop);
 
-                AbstractSocketChannel ch = this.Channel;
+                var socketChannel = this.Channel;
                 try
                 {
-                    bool wasActive = ch.Active;
-                    ch.DoFinishConnect(operation);
+                    bool wasActive = socketChannel.Active;
+                    socketChannel.DoFinishConnect(operation);
                     this.FulfillConnectPromise(wasActive);
                 }
                 catch (Exception ex)
                 {
-                    TaskCompletionSource promise = ch.connectPromise;
+                    var promise = socketChannel.connectPromise;
                     var remoteAddress = (EndPoint)promise?.Task.AsyncState;
                     this.FulfillConnectPromise(this.AnnotateConnectException(ex, remoteAddress));
                 }
@@ -377,8 +374,8 @@ namespace DotNetty.Transport.Channels.Sockets
                 {
                     // Check for null as the connectTimeoutFuture is only created if a connectTimeoutMillis > 0 is used
                     // See https://github.com/netty/netty/issues/1770
-                    ch.connectCancellationTask?.Cancel();
-                    ch.connectPromise = null;
+                    socketChannel.connectCancellationTask?.Cancel();
+                    socketChannel.connectPromise = null;
                 }
             }
 
@@ -402,7 +399,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                 Contract.Assert(resetWritePending);
 
-                ChannelOutboundBuffer input = this.OutboundBuffer;
+                var input = this.OutboundBuffer;
                 try
                 {
                     operation.Validate();
@@ -423,7 +420,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 this.Flush0(); // todo: does it make sense now that we've actually written out everything that was flushed previously? concurrent flush handling?
             }
 
-            bool IsFlushPending() => this.Channel.IsInState(StateFlags.WriteScheduled);
+            private bool IsFlushPending() => this.Channel.IsInState(StateFlags.WriteScheduled);
         }
 
         protected override bool IsCompatible(IEventLoop eventLoop) => true;
@@ -463,7 +460,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override void DoClose()
         {
-            TaskCompletionSource promise = this.connectPromise;
+            var promise = this.connectPromise;
             if (promise != null)
             {
                 // Use TrySetException() instead of SetException() to avoid the race against cancellation due to timeout.
@@ -471,21 +468,21 @@ namespace DotNetty.Transport.Channels.Sockets
                 this.connectPromise = null;
             }
 
-            IScheduledTask cancellationTask = this.connectCancellationTask;
+            var cancellationTask = this.connectCancellationTask;
             if (cancellationTask != null)
             {
                 cancellationTask.Cancel();
                 this.connectCancellationTask = null;
             }
 
-            SocketChannelAsyncOperation readOp = this.readOperation;
+            var readOp = this.readOperation;
             if (readOp != null)
             {
                 readOp.Dispose();
                 this.readOperation = null;
             }
 
-            SocketChannelAsyncOperation writeOp = this.writeOperation;
+            var writeOp = this.writeOperation;
             if (writeOp != null)
             {
                 writeOp.Dispose();

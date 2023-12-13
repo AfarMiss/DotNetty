@@ -1,27 +1,20 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Net.Sockets;
+using System.Threading;
+using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Net.Sockets;
-    using System.Threading;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Utilities;
-
     /// <summary>
     /// <see cref="AbstractSocketChannel"/> base class for <see cref="IChannel"/>s that operate on bytes.
     /// </summary>
     public abstract class AbstractSocketByteChannel : AbstractSocketChannel
     {
-        static readonly string ExpectedTypes =
-            $" (expected: {StringUtil.SimpleClassName<IByteBuffer>()})"; //+ ", " +
+        private static readonly string ExpectedTypes = $" (expected: {StringUtil.SimpleClassName<IByteBuffer>()})"; //+ ", " +
 
-        // todo: FileRegion support        
-        //typeof(FileRegion).Name + ')';
-
-        static readonly Action<object> FlushAction = _ => ((AbstractSocketByteChannel)_).Flush();
-        static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
+        private static readonly Action<object> FlushAction = o => ((AbstractSocketByteChannel)o).Flush();
+        private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
 
         /// <summary>Create a new instance</summary>
         /// <param name="parent">the parent <see cref="IChannel"/> by which this instance was created. May be <c>null</c></param>
@@ -42,7 +35,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
             new AbstractSocketByteChannel Channel => (AbstractSocketByteChannel)this.channel;
 
-            void CloseOnRead()
+            private void CloseOnRead()
             {
                 this.Channel.ShutdownInput();
                 if (this.channel.Open)
@@ -57,7 +50,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            void HandleReadException(IChannelPipeline pipeline, IByteBuffer byteBuf, Exception cause, bool close,
+            private void HandleReadException(IChannelPipeline pipeline, IByteBuffer byteBuf, Exception cause, bool close,
                 IRecvByteBufAllocatorHandle allocHandle)
             {
                 if (byteBuf != null)
@@ -83,7 +76,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
             public override void FinishRead(SocketChannelAsyncOperation operation)
             {
-                AbstractSocketByteChannel ch = this.Channel;
+                var ch = this.Channel;
                 if ((ch.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
                 {
                     return; // read was signaled as a result of channel closure
@@ -152,7 +145,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override void ScheduleSocketRead()
         {
-            SocketChannelAsyncOperation operation = this.ReadOperation;
+            var operation = this.ReadOperation;
             bool pending;
 #if NETSTANDARD2_0 || NETCOREAPP3_1_OR_GREATER || NET5_0_OR_GREATER
             pending = this.Socket.ReceiveAsync(operation);
@@ -176,7 +169,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        static void OnReadCompletedSync(object u, object e) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)e);
+        private static void OnReadCompletedSync(object u, object e) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)e);
 
         protected override void DoWrite(ChannelOutboundBuffer input)
         {
@@ -191,9 +184,8 @@ namespace DotNetty.Transport.Channels.Sockets
                     break;
                 }
 
-                if (msg is IByteBuffer)
+                if (msg is IByteBuffer buf)
                 {
-                    var buf = (IByteBuffer)msg;
                     int readableBytes = buf.ReadableBytes;
                     if (readableBytes == 0)
                     {
@@ -235,41 +227,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     {
                         break;
                     }
-                } /*else if (msg is FileRegion) { todo: FileRegion support
-                FileRegion region = (FileRegion) msg;
-                bool done = region.transfered() >= region.count();
-                bool scheduleAsync = false;
-
-                if (!done) {
-                    long flushedAmount = 0;
-                    if (writeSpinCount == -1) {
-                        writeSpinCount = config().getWriteSpinCount();
-                    }
-
-                    for (int i = writeSpinCount - 1; i >= 0; i--) {
-                        long localFlushedAmount = doWriteFileRegion(region);
-                        if (localFlushedAmount == 0) {
-                            scheduleAsync = true;
-                            break;
-                        }
-
-                        flushedAmount += localFlushedAmount;
-                        if (region.transfered() >= region.count()) {
-                            done = true;
-                            break;
-                        }
-                    }
-
-                    input.progress(flushedAmount);
                 }
-
-                if (done) {
-                    input.remove();
-                } else {
-                    incompleteWrite(scheduleAsync);
-                    break;
-                }
-            }*/
                 else
                 {
                     // Should not reach here.
@@ -291,13 +249,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 //return newDirectBuffer(buf);
             }
 
-            // todo: FileRegion support
-            //if (msg is FileRegion) {
-            //    return msg;
-            //}
-
-            throw new NotSupportedException(
-                "unsupported message type: " + msg.GetType().Name + ExpectedTypes);
+            throw new NotSupportedException("unsupported message type: " + msg.GetType().Name + ExpectedTypes);
         }
 
         protected bool IncompleteWrite(bool scheduleAsync, SocketChannelAsyncOperation operation)
@@ -339,15 +291,6 @@ namespace DotNetty.Transport.Channels.Sockets
                 return true;
             }
         }
-
-        // todo: support FileRegion
-        ///// <summary>
-        // /// Write a {@link FileRegion}
-        // *
-        // /// @param region        the {@link FileRegion} from which the bytes should be written
-        // /// @return amount       the amount of written bytes
-        // /// </summary>
-        //protected abstract long doWriteFileRegion(FileRegion region);
 
         /// <summary>
         /// Reads bytes into the given <see cref="IByteBuffer"/> and returns the number of bytes that were read.

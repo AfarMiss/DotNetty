@@ -37,12 +37,12 @@ namespace DotNetty.Transport.Channels.Groups
             return new CompositeMatcher(matchers);
         }
 
-        sealed class AllChannelMatcher : IChannelMatcher
+        private sealed class AllChannelMatcher : IChannelMatcher
         {
             public bool Matches(IChannel channel) => true;
         }
 
-        sealed class CompositeMatcher : IChannelMatcher
+        private sealed class CompositeMatcher : IChannelMatcher
         {
             readonly IChannelMatcher[] matchers;
 
@@ -64,9 +64,9 @@ namespace DotNetty.Transport.Channels.Groups
             }
         }
 
-        sealed class InvertMatcher : IChannelMatcher
+        private sealed class InvertMatcher : IChannelMatcher
         {
-            readonly IChannelMatcher matcher;
+            private readonly IChannelMatcher matcher;
 
             public InvertMatcher(IChannelMatcher matcher)
             {
@@ -76,9 +76,9 @@ namespace DotNetty.Transport.Channels.Groups
             public bool Matches(IChannel channel) => !this.matcher.Matches(channel);
         }
 
-        sealed class InstanceMatcher : IChannelMatcher
+        private sealed class InstanceMatcher : IChannelMatcher
         {
-            readonly IChannel channel;
+            private readonly IChannel channel;
 
             public InstanceMatcher(IChannel channel)
             {
@@ -88,9 +88,9 @@ namespace DotNetty.Transport.Channels.Groups
             public bool Matches(IChannel ch) => this.channel == ch;
         }
 
-        sealed class TypeMatcher : IChannelMatcher
+        private sealed class TypeMatcher : IChannelMatcher
         {
-            readonly Type type;
+            private readonly Type type;
 
             public TypeMatcher(Type clazz)
             {

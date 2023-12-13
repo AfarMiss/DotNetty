@@ -52,15 +52,13 @@ namespace DotNetty.Transport.Channels.Groups
                         if (this.failureCount > 0)
                         {
                             var failed = new List<KeyValuePair<IChannel, Exception>>();
-                            foreach (KeyValuePair<IChannel, Task> ft in this.futures)
+                            foreach (var (channel1, task1) in this.futures)
                             {
-                                IChannel c = ft.Key;
-                                Task f = ft.Value;
-                                if (f.IsFaulted || f.IsCanceled)
+                                if (task1.IsFaulted || task1.IsCanceled)
                                 {
-                                    if (f.Exception != null)
+                                    if (task1.Exception != null)
                                     {
-                                        failed.Add(new KeyValuePair<IChannel, Exception>(c, f.Exception.InnerException));
+                                        failed.Add(new KeyValuePair<IChannel, Exception>(channel1, task1.Exception.InnerException));
                                     }
                                 }
                             }
@@ -85,7 +83,7 @@ namespace DotNetty.Transport.Channels.Groups
 
         public Task Find(IChannel channel) => this.futures[channel];
 
-        public bool IsPartialSucess()
+        public bool IsPartialSuccess()
         {
             lock (this)
             {
@@ -93,7 +91,7 @@ namespace DotNetty.Transport.Channels.Groups
             }
         }
 
-        public bool IsSucess() => this.Task.IsCompleted && !this.Task.IsFaulted && !this.Task.IsCanceled;
+        public bool IsSuccess() => this.Task.IsCompleted && !this.Task.IsFaulted && !this.Task.IsCanceled;
 
         public bool IsPartialFailure()
         {

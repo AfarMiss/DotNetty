@@ -52,22 +52,17 @@ namespace DotNetty.Transport.Channels.Embedded
             for (; ; )
             {
                 // have to perform an additional check since Queue<T> throws upon empty dequeue in .NET
-                if (this.tasks.Count == 0)
-                {
-                    break;
-                }
-                IRunnable task = this.tasks.Dequeue();
-                if (task == null)
-                {
-                    break;
-                }
+                if (this.tasks.Count == 0) break;
+
+                var task = this.tasks.Dequeue();
+                if (task == null) break;
                 task.Run();
             }
         }
 
         internal PreciseTimeSpan RunScheduledTasks()
         {
-            PreciseTimeSpan time = GetNanos();
+            var time = GetNanos();
             for (; ; )
             {
                 IRunnable task = this.PollScheduledTask(time);

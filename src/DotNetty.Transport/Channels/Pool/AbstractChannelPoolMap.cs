@@ -11,10 +11,10 @@ namespace DotNetty.Transport.Channels.Pool
         {
             Contract.Requires(key != null);
 
-            if (!this.map.TryGetValue(key, out TPool pool))
+            if (!this.map.TryGetValue(key, out var pool))
             {
                 pool = this.NewPool(key);
-                TPool old = this.map.GetOrAdd(key, pool);
+                var old = this.map.GetOrAdd(key, pool);
                 if (!ReferenceEquals(old, pool))
                 {
                     // We need to destroy the newly created pool as we not use it.
@@ -34,7 +34,7 @@ namespace DotNetty.Transport.Channels.Pool
         public bool Remove(TKey key)
         {
             Contract.Requires(key != null);
-            if (this.map.TryRemove(key, out TPool pool))
+            if (this.map.TryRemove(key, out var pool))
             {
                 pool.Dispose();
                 return true;
@@ -71,7 +71,7 @@ namespace DotNetty.Transport.Channels.Pool
 
         public void Dispose()
         {
-            foreach (TKey key in this.map.Keys)
+            foreach (var key in this.map.Keys)
                 this.Remove(key);
         }
     }

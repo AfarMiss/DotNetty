@@ -84,7 +84,7 @@ namespace DotNetty.Transport.Channels
             }
 
             var promise = new TaskCompletionSource();
-            PendingWrite write = PendingWrite.Acquire(msg, messageSize, promise);
+            var write = PendingWrite.Acquire(msg, messageSize, promise);
             if (currentTail == null)
             {
                 this.tail = this.head = write;
@@ -263,7 +263,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        bool CanBatch(object message, int size, long currentBatchSize)
+        private bool CanBatch(object message, int size, long currentBatchSize)
         {
             if (size < 0)
             {
@@ -278,7 +278,7 @@ namespace DotNetty.Transport.Channels
             return true;
         }
 
-        void Recycle(PendingWrite write, bool update)
+        private void Recycle(PendingWrite write, bool update)
         {
             PendingWrite next = write.Next;
             long writeSize = write.Size;
@@ -306,9 +306,9 @@ namespace DotNetty.Transport.Channels
             this.buffer?.DecrementPendingOutboundBytes(writeSize);
         }
 
-        static void ReleaseMessages(List<object> messages)
+        private static void ReleaseMessages(List<object> messages)
         {
-            foreach (object msg in messages)
+            foreach (var msg in messages)
             {
                 ReferenceCountUtil.SafeRelease(msg);
             }

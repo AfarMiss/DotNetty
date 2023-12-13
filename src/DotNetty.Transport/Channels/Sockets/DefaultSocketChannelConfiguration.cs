@@ -1,19 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Net.Sockets;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net.Sockets;
-
     /// <summary>
     /// The default <see cref="ISocketChannelConfiguration"/> implementation.
     /// </summary>
     public class DefaultSocketChannelConfiguration : DefaultChannelConfiguration, ISocketChannelConfiguration
     {
         protected readonly Socket Socket;
-        volatile bool allowHalfClosure;
+        private volatile bool allowHalfClosure;
 
         public DefaultSocketChannelConfiguration(ISocketChannel channel, Socket socket)
             : base(channel)

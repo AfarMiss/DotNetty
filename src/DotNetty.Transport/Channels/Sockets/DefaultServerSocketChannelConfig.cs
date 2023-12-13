@@ -1,19 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Net.Sockets;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net.Sockets;
-
     /// <summary>
     /// The default <see cref="IServerSocketChannelConfiguration"/> implementation.
     /// </summary>
     public class DefaultServerSocketChannelConfig : DefaultChannelConfiguration, IServerSocketChannelConfiguration
     {
         protected readonly Socket Socket;
-        volatile int backlog = 200; //todo: NetUtil.SOMAXCONN;
+        private volatile int backlog = 200; //todo: NetUtil.SOMAXCONN;
 
         /// <summary>
         ///     Creates a new instance.

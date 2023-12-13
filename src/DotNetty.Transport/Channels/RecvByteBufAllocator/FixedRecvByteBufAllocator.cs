@@ -9,6 +9,7 @@ namespace DotNetty.Transport.Channels
     public sealed class FixedRecvByteBufAllocator : DefaultMaxMessagesRecvByteBufAllocator
     {
         public static readonly FixedRecvByteBufAllocator Default = new FixedRecvByteBufAllocator(4 * 1024);
+        private readonly IRecvByteBufAllocatorHandle handle;
 
         private sealed class HandleImpl : MaxMessageHandle<FixedRecvByteBufAllocator>
         {
@@ -22,8 +23,6 @@ namespace DotNetty.Transport.Channels
 
             public override int Guess() => this.bufferSize;
         }
-
-        readonly IRecvByteBufAllocatorHandle handle;
 
         /// <summary>
         ///     Creates a new predictor that always returns the same prediction of

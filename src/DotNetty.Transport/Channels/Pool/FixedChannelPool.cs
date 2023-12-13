@@ -193,10 +193,10 @@ namespace DotNetty.Transport.Channels.Pool
                 switch (action)
                 {
                     case AcquireTimeoutAction.Fail:
-                        this.timeoutTask = new TimeoutTask(this, this.OnTimeoutFail);
+                        this.timeoutTask = new TimeoutTask(this, OnTimeoutFail);
                         break;
                     case AcquireTimeoutAction.New:
-                        this.timeoutTask = new TimeoutTask(this, this.OnTimeoutNew);
+                        this.timeoutTask = new TimeoutTask(this, OnTimeoutNew);
                         break;
                     default:
                         throw new ArgumentException("action");
@@ -220,7 +220,7 @@ namespace DotNetty.Transport.Channels.Pool
             return new ValueTask<IChannel>(promise.Task);
         }
 
-        async void Acquire0(object state)
+        private async void Acquire0(object state)
         {
             var promise = (TaskCompletionSource<IChannel>)state;
             try
@@ -234,7 +234,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        ValueTask<IChannel> DoAcquireAsync(TaskCompletionSource<IChannel> promise)
+        private ValueTask<IChannel> DoAcquireAsync(TaskCompletionSource<IChannel> promise)
         {
             Contract.Assert(this.executor.InEventLoop);
 
@@ -277,7 +277,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        ValueTask<IChannel> DoAcquireAsync() => base.AcquireAsync();
+        private ValueTask<IChannel> DoAcquireAsync() => base.AcquireAsync();
         
         public override async ValueTask<bool> ReleaseAsync(IChannel channel)
         {
@@ -295,7 +295,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        async void Release0(object channel, object promise)
+        private async void Release0(object channel, object promise)
         {
             var tsc = promise as TaskCompletionSource<bool>;
             try
@@ -309,7 +309,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        async ValueTask<bool> DoReleaseAsync(IChannel channel)
+        private async ValueTask<bool> DoReleaseAsync(IChannel channel)
         {
             Contract.Assert(this.executor.InEventLoop);
             
@@ -341,9 +341,9 @@ namespace DotNetty.Transport.Channels.Pool
                 }
             }
         }
-        
 
-        void DecrementAndRunTaskQueue()
+
+        private void DecrementAndRunTaskQueue()
         {
             --this.acquiredChannelCount;
 
@@ -357,7 +357,7 @@ namespace DotNetty.Transport.Channels.Pool
             this.RunTaskQueue();
         }
 
-        void RunTaskQueue()
+        private void RunTaskQueue()
         {
             while (this.acquiredChannelCount < this.maxConnections)
             {
@@ -381,7 +381,7 @@ namespace DotNetty.Transport.Channels.Pool
 
         public override void Dispose() => this.executor.Execute(this.Close);
 
-        void Close()
+        private void Close()
         {
             if (this.closed)
             {
@@ -401,14 +401,14 @@ namespace DotNetty.Transport.Channels.Pool
             base.Dispose();
         }
 
-        void OnTimeoutNew(AcquireTask task) => task.AcquireAsync();
+        private static void OnTimeoutNew(AcquireTask task) => task.AcquireAsync();
 
-        void OnTimeoutFail(AcquireTask task) => task.Promise.TrySetException(TimeoutException);
+        private static void OnTimeoutFail(AcquireTask task) => task.Promise.TrySetException(TimeoutException);
 
-        class TimeoutTask : IRunnable
+        private class TimeoutTask : IRunnable
         {
-            readonly FixedChannelPool pool;
-            readonly Action<AcquireTask> onTimeout;
+            private readonly FixedChannelPool pool;
+            private readonly Action<AcquireTask> onTimeout;
 
             public TimeoutTask(FixedChannelPool pool, Action<AcquireTask> onTimeout)
             {
@@ -434,15 +434,15 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        class AcquireTask
+        private class AcquireTask
         {
-            readonly FixedChannelPool pool;
+            private readonly FixedChannelPool pool;
             
             public readonly TaskCompletionSource<IChannel> Promise;
             public readonly PreciseTimeSpan ExpireTime;
             public IScheduledTask TimeoutTask;
-            
-            bool acquired;
+
+            private bool acquired;
 
             public AcquireTask(FixedChannelPool pool, TaskCompletionSource<IChannel> promise)
             {
@@ -549,8 +549,8 @@ namespace DotNetty.Transport.Channels.Pool
                     }
                 }
             }
-            
-            void Acquired()
+
+            private void Acquired()
             {
                 if (this.acquired)
                 {

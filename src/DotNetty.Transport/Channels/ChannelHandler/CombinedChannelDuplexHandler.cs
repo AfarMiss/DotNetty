@@ -405,25 +405,13 @@ namespace DotNetty.Transport.Channels
 
             public bool Removed => this.removed || this.ctx.Removed;
 
-            public void FireChannelRegistered()
-            {
-                this.ctx.FireChannelRegistered();
-            }
+            public void FireChannelRegistered() => this.ctx.FireChannelRegistered();
 
-            public void FireChannelUnregistered()
-            {
-                this.ctx.FireChannelUnregistered();
-            }
+            public void FireChannelUnregistered() => this.ctx.FireChannelUnregistered();
 
-            public void FireChannelActive()
-            {
-                this.ctx.FireChannelActive();
-            }
+            public void FireChannelActive() => this.ctx.FireChannelActive();
 
-            public void FireChannelInactive()
-            {
-                this.ctx.FireChannelInactive();
-            }
+            public void FireChannelInactive() => this.ctx.FireChannelInactive();
 
             public void FireExceptionCaught(Exception ex)
             {
@@ -437,25 +425,13 @@ namespace DotNetty.Transport.Channels
                 }
             }
 
-            public void FireUserEventTriggered(object evt)
-            {
-                this.ctx.FireUserEventTriggered(evt);
-            }
+            public void FireUserEventTriggered(object evt) => this.ctx.FireUserEventTriggered(evt);
 
-            public void FireChannelRead(object message)
-            {
-                this.ctx.FireChannelRead(message);
-            }
+            public void FireChannelRead(object message) => this.ctx.FireChannelRead(message);
 
-            public void FireChannelReadComplete()
-            {
-                this.ctx.FireChannelReadComplete();
-            }
+            public void FireChannelReadComplete() => this.ctx.FireChannelReadComplete();
 
-            public void FireChannelWritabilityChanged()
-            {
-                this.ctx.FireChannelWritabilityChanged();
-            }
+            public void FireChannelWritabilityChanged() => this.ctx.FireChannelWritabilityChanged();
 
             public Task BindAsync(EndPoint localAddress) => this.ctx.BindAsync(localAddress);
 
@@ -469,17 +445,11 @@ namespace DotNetty.Transport.Channels
 
             public Task DeregisterAsync() => this.ctx.DeregisterAsync();
 
-            public void Read()
-            {
-                this.ctx.Read();
-            }
+            public void Read() => this.ctx.Read();
 
             public Task WriteAsync(object message) => this.ctx.WriteAsync(message);
 
-            public void Flush()
-            {
-                this.ctx.Flush();
-            }
+            public void Flush() => this.ctx.Flush();
 
             public Task WriteAndFlushAsync(object message) => this.ctx.WriteAndFlushAsync(message);
 
@@ -514,8 +484,7 @@ namespace DotNetty.Transport.Channels
                 }
                 catch (Exception cause)
                 {
-                    this.FireExceptionCaught(
-                        new ChannelPipelineException($"{StringUtil.SimpleClassName(this.handler)}.handlerRemoved() has thrown an exception.", cause));
+                    this.FireExceptionCaught(new ChannelPipelineException($"{StringUtil.SimpleClassName(this.handler)}.handlerRemoved() has thrown an exception.", cause));
                 }
             }
         }

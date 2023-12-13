@@ -142,8 +142,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// Allows specification of an initial attribute of the newly created <see cref="IChannel" />. If the <c>value</c> is
         /// <c>null</c>, the attribute of the specified <c>key</c> is removed.
         /// </summary>
-        public TBootstrap Attribute<T>(AttributeKey<T> key, T value)
-            where T : class
+        public TBootstrap Attribute<T>(AttributeKey<T> key, T value) where T : class
         {
             Contract.Requires(key != null);
 
@@ -245,7 +244,7 @@ namespace DotNetty.Transport.Bootstrapping
             return this.DoBindAsync(localAddress);
         }
 
-        async Task<IChannel> DoBindAsync(EndPoint localAddress)
+        private async Task<IChannel> DoBindAsync(EndPoint localAddress)
         {
             IChannel channel = await this.InitAndRegisterAsync();
             await DoBind0Async(channel, localAddress);
@@ -303,7 +302,7 @@ namespace DotNetty.Transport.Bootstrapping
             return channel;
         }
 
-        static Task DoBind0Async(IChannel channel, EndPoint localAddress)
+        private static Task DoBind0Async(IChannel channel, EndPoint localAddress)
         {
             // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
             // the pipeline in its channelRegistered() implementation.
@@ -472,7 +471,7 @@ namespace DotNetty.Transport.Bootstrapping
         protected sealed class ChannelOptionValue<T> : ChannelOptionValue
         {
             public override ChannelOption Option { get; }
-            readonly T value;
+            private readonly T value;
 
             public ChannelOptionValue(ChannelOption<T> option, T value)
             {
@@ -490,11 +489,10 @@ namespace DotNetty.Transport.Bootstrapping
             public abstract void Set(IAttributeMap map);
         }
 
-        protected sealed class AttributeValue<T> : AttributeValue
-            where T : class
+        protected sealed class AttributeValue<T> : AttributeValue where T : class
         {
-            readonly AttributeKey<T> key;
-            readonly T value;
+            private readonly AttributeKey<T> key;
+            private readonly T value;
 
             public AttributeValue(AttributeKey<T> key, T value)
             {

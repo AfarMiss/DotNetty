@@ -187,7 +187,7 @@ namespace DotNetty.Transport.Channels
             return Task.WhenAll(tasks);
         }
 
-        void AssertEmpty() => Contract.Assert(this.tail == null && this.head == null && this.size == 0);
+        private void AssertEmpty() => Contract.Assert(this.tail == null && this.head == null && this.size == 0);
 
         /// <summary>
         /// Removes a pending write operation and performs it via <see cref="IChannelHandlerContext.WriteAsync"/>.
@@ -244,7 +244,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void Recycle(PendingWrite write, bool update)
+        private void Recycle(PendingWrite write, bool update)
         {
             PendingWrite next = write.Next;
             long writeSize = write.Size;
@@ -276,7 +276,7 @@ namespace DotNetty.Transport.Channels
         /// <summary>
         /// Holds all meta-data and constructs the linked-list structure.
         /// </summary>
-        sealed class PendingWrite : IRecycle
+        private sealed class PendingWrite : IRecycle
         {
             private static readonly ThreadLocalPool<PendingWrite> Pool = new ThreadLocalPool<PendingWrite>();
 

@@ -112,7 +112,7 @@ namespace DotNetty.Transport.Channels
 
         public int CompareTo(IChannelId other) => 0;
 
-        static byte[] ParseMachineId(string value)
+        private static byte[] ParseMachineId(string value)
         {
             // Strip separators.
             value = value.Replace("[:-]", "");
@@ -124,7 +124,7 @@ namespace DotNetty.Transport.Channels
             return machineId;
         }
 
-        static int DefaultProcessId()
+        private static int DefaultProcessId()
         {
             int pId = Platform.GetCurrentProcessId();
 
@@ -142,7 +142,7 @@ namespace DotNetty.Transport.Channels
             return id;
         }
 
-        static byte[] DefaultMachineId()
+        private static byte[] DefaultMachineId()
         {
             byte[] bestMacAddr = Platform.GetDefaultDeviceId();
             if (bestMacAddr == null) {
@@ -156,7 +156,7 @@ namespace DotNetty.Transport.Channels
         }
 
 
-        string NewLongValue()
+        private string NewLongValue()
         {
             var buf = new StringBuilder(2 * this.data.Length + 5);
             int i = 0;
@@ -169,7 +169,7 @@ namespace DotNetty.Transport.Channels
             return buf.ToString().Substring(0, buf.Length - 1);
         }
 
-        int AppendHexDumpField(StringBuilder buf, int i, int length)
+        private int AppendHexDumpField(StringBuilder buf, int i, int length)
         {
             buf.Append(ByteBufferUtil.HexDump(this.data, i, length));
             buf.Append('-');
@@ -177,7 +177,7 @@ namespace DotNetty.Transport.Channels
             return i;
         }
 
-        void Init()
+        private void Init()
         {
             int i = 0;
             // machineId
@@ -204,7 +204,7 @@ namespace DotNetty.Transport.Channels
             Debug.Assert(i == this.data.Length);
         }
 
-        int WriteInt(int i, int value)
+        private int WriteInt(int i, int value)
         {
             uint val = (uint)value;
             this.data[i++] = (byte)(val >> 24);
@@ -214,7 +214,7 @@ namespace DotNetty.Transport.Channels
             return i;
         }
 
-        int WriteLong(int i, long value)
+        private int WriteLong(int i, long value)
         {
             ulong val = (ulong)value;
             this.data[i++] = (byte)(val >> 56);
@@ -237,12 +237,12 @@ namespace DotNetty.Transport.Channels
                 return true;
             }
 
-            if (!(obj is DefaultChannelId))
+            if (!(obj is DefaultChannelId channelId))
             {
                 return false;
             }
 
-            return Equals(this.data, ((DefaultChannelId)obj).data);
+            return Equals(this.data, channelId.data);
         }
 
         public override string ToString() => this.AsShortText();

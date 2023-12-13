@@ -27,7 +27,7 @@ namespace DotNetty.Transport.Channels
 
         internal readonly SkipFlags SkipPropagationFlags;
 
-        enum HandlerState
+        private enum HandlerState
         {
             /// <summary>Neither <see cref="IChannelHandler.HandlerAdded"/> nor <see cref="IChannelHandler.HandlerRemoved"/> was called.</summary>
             Init = 0,
@@ -42,10 +42,9 @@ namespace DotNetty.Transport.Channels
         // Will be set to null if no child executor should be used, otherwise it will be set to the
         // child executor.
         internal readonly IEventExecutor executor;
-        HandlerState handlerState = HandlerState.Init;
+        private HandlerState handlerState = HandlerState.Init;
 
-        protected AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, IEventExecutor executor,
-            string name, SkipFlags skipPropagationDirections)
+        protected AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, IEventExecutor executor, string name, SkipFlags skipPropagationDirections)
         {
             Contract.Requires(pipeline != null);
             Contract.Requires(name != null);
@@ -84,21 +83,11 @@ namespace DotNetty.Transport.Channels
 
         public string Name { get; }
 
-        public IAttribute<T> GetAttribute<T>(AttributeKey<T> key)
-            where T : class
-        {
-            return this.Channel.GetAttribute(key);
-        }
+        public IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class => this.Channel.GetAttribute(key);
 
-        public bool HasAttribute<T>(AttributeKey<T> key)
-            where T : class
-        {
-            return this.Channel.HasAttribute(key);
-        }
-        public void FireChannelRegistered()
-        {
-            InvokeChannelRegistered(this.FindContextInbound());
-        }
+        public bool HasAttribute<T>(AttributeKey<T> key) where T : class => this.Channel.HasAttribute(key);
+
+        public void FireChannelRegistered() => InvokeChannelRegistered(this.FindContextInbound());
 
         internal static void InvokeChannelRegistered(AbstractChannelHandlerContext next)
         {
@@ -113,7 +102,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelRegistered()
+        private void InvokeChannelRegistered()
         {
             if (this.Added)
             {
@@ -132,10 +121,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireChannelUnregistered()
-        {
-            InvokeChannelUnregistered(this.FindContextInbound());
-        }
+        public void FireChannelUnregistered() => InvokeChannelUnregistered(this.FindContextInbound());
 
         internal static void InvokeChannelUnregistered(AbstractChannelHandlerContext next)
         {
@@ -150,7 +136,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelUnregistered()
+        private void InvokeChannelUnregistered()
         {
             if (this.Added)
             {
@@ -169,10 +155,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireChannelActive()
-        {
-            InvokeChannelActive(this.FindContextInbound());
-        }
+        public void FireChannelActive() => InvokeChannelActive(this.FindContextInbound());
 
         internal static void InvokeChannelActive(AbstractChannelHandlerContext next)
         {
@@ -187,7 +170,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelActive()
+        private void InvokeChannelActive()
         {
             if (this.Added)
             {
@@ -206,10 +189,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireChannelInactive()
-        {
-            InvokeChannelInactive(this.FindContextInbound());
-        }
+        public void FireChannelInactive() => InvokeChannelInactive(this.FindContextInbound());
 
         internal static void InvokeChannelInactive(AbstractChannelHandlerContext next)
         {
@@ -224,7 +204,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelInactive()
+        private void InvokeChannelInactive()
         {
             if (this.Added)
             {
@@ -243,10 +223,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public virtual void FireExceptionCaught(Exception cause)
-        {
-            InvokeExceptionCaught(this.FindContextInbound(), cause);
-        }
+        public virtual void FireExceptionCaught(Exception cause) => InvokeExceptionCaught(this.FindContextInbound(), cause);
 
         internal static void InvokeExceptionCaught(AbstractChannelHandlerContext next, Exception cause)
         {
@@ -274,7 +251,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeExceptionCaught(Exception cause)
+        private void InvokeExceptionCaught(Exception cause)
         {
             if (this.Added)
             {
@@ -299,10 +276,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireUserEventTriggered(object evt)
-        {
-            InvokeUserEventTriggered(this.FindContextInbound(), evt);
-        }
+        public void FireUserEventTriggered(object evt) => InvokeUserEventTriggered(this.FindContextInbound(), evt);
 
         internal static void InvokeUserEventTriggered(AbstractChannelHandlerContext next, object evt)
         {
@@ -318,7 +292,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeUserEventTriggered(object evt)
+        private void InvokeUserEventTriggered(object evt)
         {
             if (this.Added)
             {
@@ -337,10 +311,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireChannelRead(object msg)
-        {
-            InvokeChannelRead(this.FindContextInbound(), msg);
-        }
+        public void FireChannelRead(object msg) => InvokeChannelRead(this.FindContextInbound(), msg);
 
         internal static void InvokeChannelRead(AbstractChannelHandlerContext next, object msg)
         {
@@ -357,7 +328,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelRead(object msg)
+        private void InvokeChannelRead(object msg)
         {
             if (this.Added)
             {
@@ -376,10 +347,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireChannelReadComplete()
-        {
-            InvokeChannelReadComplete(this.FindContextInbound());
-        }
+        public void FireChannelReadComplete() => InvokeChannelReadComplete(this.FindContextInbound());
 
         internal static void InvokeChannelReadComplete(AbstractChannelHandlerContext next) 
         {
@@ -395,7 +363,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelReadComplete()
+        private void InvokeChannelReadComplete()
         {
             if (this.Added)
             {
@@ -414,10 +382,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public void FireChannelWritabilityChanged()
-        {
-            InvokeChannelWritabilityChanged(this.FindContextInbound());
-        }
+        public void FireChannelWritabilityChanged() => InvokeChannelWritabilityChanged(this.FindContextInbound());
 
         internal static void InvokeChannelWritabilityChanged(AbstractChannelHandlerContext next)
         {
@@ -433,7 +398,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeChannelWritabilityChanged()
+        private void InvokeChannelWritabilityChanged()
         {
             if (this.Added)
             {
@@ -468,7 +433,7 @@ namespace DotNetty.Transport.Channels
                 : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeBindAsync(localAddress));
         }
 
-        Task InvokeBindAsync(EndPoint localAddress)
+        private Task InvokeBindAsync(EndPoint localAddress)
         {
             if (this.Added)
             {
@@ -499,7 +464,7 @@ namespace DotNetty.Transport.Channels
                 : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeConnectAsync(remoteAddress, localAddress));
         }
 
-        Task InvokeConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
+        private Task InvokeConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
             if (this.Added)
             {
@@ -531,7 +496,7 @@ namespace DotNetty.Transport.Channels
                 : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDisconnectAsync());
         }
 
-        Task InvokeDisconnectAsync()
+        private Task InvokeDisconnectAsync()
         {
             if (this.Added)
             {
@@ -557,7 +522,7 @@ namespace DotNetty.Transport.Channels
                 : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeCloseAsync());
         }
 
-        Task InvokeCloseAsync()
+        private Task InvokeCloseAsync()
         {
             if (this.Added)
             {
@@ -583,7 +548,7 @@ namespace DotNetty.Transport.Channels
                 : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDeregisterAsync());
         }
 
-        Task InvokeDeregisterAsync()
+        private Task InvokeDeregisterAsync()
         {
             if (this.Added)
             {
@@ -640,9 +605,9 @@ namespace DotNetty.Transport.Channels
             return this.WriteAsync(msg, false);
         }
 
-        Task InvokeWriteAsync(object msg) => this.Added ? this.InvokeWriteAsync0(msg) : this.WriteAsync(msg);
+        private Task InvokeWriteAsync(object msg) => this.Added ? this.InvokeWriteAsync0(msg) : this.WriteAsync(msg);
 
-        Task InvokeWriteAsync0(object msg)
+        private Task InvokeWriteAsync0(object msg)
         {
             try
             {
@@ -680,7 +645,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void InvokeFlush0()
+        private void InvokeFlush0()
         {
             try
             {
@@ -700,7 +665,7 @@ namespace DotNetty.Transport.Channels
             return this.WriteAsync(message, true);
         }
 
-        Task InvokeWriteAndFlushAsync(object msg)
+        private Task InvokeWriteAndFlushAsync(object msg)
         {
             if (this.Added)
             {
@@ -726,7 +691,7 @@ namespace DotNetty.Transport.Channels
             return promise.Task;
         }
 
-        void NotifyHandlerException(Exception cause)
+        private void NotifyHandlerException(Exception cause)
         {
             if (InExceptionCaught(cause))
             {
@@ -742,15 +707,15 @@ namespace DotNetty.Transport.Channels
             this.InvokeExceptionCaught(cause);
         }
 
-        static Task ComposeExceptionTask(Exception cause) => TaskEx.FromException(cause);
+        private static Task ComposeExceptionTask(Exception cause) => TaskEx.FromException(cause);
 
-        const string ExceptionCaughtMethodName = nameof(IChannelHandler.ExceptionCaught);
+        private const string ExceptionCaughtMethodName = nameof(IChannelHandler.ExceptionCaught);
 
-        static bool InExceptionCaught(Exception cause) => cause.StackTrace.IndexOf("." + ExceptionCaughtMethodName + "(", StringComparison.Ordinal) >= 0;
+        private static bool InExceptionCaught(Exception cause) => cause.StackTrace.IndexOf("." + ExceptionCaughtMethodName + "(", StringComparison.Ordinal) >= 0;
 
-        AbstractChannelHandlerContext FindContextInbound()
+        private AbstractChannelHandlerContext FindContextInbound()
         {
-            AbstractChannelHandlerContext ctx = this;
+            var ctx = this;
             do
             {
                 ctx = ctx.Next;
@@ -759,9 +724,9 @@ namespace DotNetty.Transport.Channels
             return ctx;
         }
 
-        AbstractChannelHandlerContext FindContextOutbound()
+        private AbstractChannelHandlerContext FindContextOutbound()
         {
-            AbstractChannelHandlerContext ctx = this;
+            var ctx = this;
             do
             {
                 ctx = ctx.Prev;
@@ -770,7 +735,7 @@ namespace DotNetty.Transport.Channels
             return ctx;
         }
 
-        static Task SafeExecuteOutboundAsync(IEventExecutor executor, Func<Task> function)
+        private static Task SafeExecuteOutboundAsync(IEventExecutor executor, Func<Task> function)
         {
             var promise = new TaskCompletionSource();
             try
@@ -784,7 +749,7 @@ namespace DotNetty.Transport.Channels
             return promise.Task;
         }
 
-        static void SafeExecuteOutbound(IEventExecutor executor, IRunnable task, TaskCompletionSource promise, object msg)
+        private static void SafeExecuteOutbound(IEventExecutor executor, IRunnable task, TaskCompletionSource promise, object msg)
         {
             try
             {
@@ -827,7 +792,7 @@ namespace DotNetty.Transport.Channels
             {
                 this.ctx = null;
                 this.msg = null;
-                promise = null;
+                this.promise = null;
             }
 
             public static T Create(AbstractChannelHandlerContext ctx, object msg, TaskCompletionSource promise)
@@ -864,7 +829,7 @@ namespace DotNetty.Transport.Channels
             {
                 try
                 {
-                    ChannelOutboundBuffer buffer = this.ctx.Channel.Unsafe.OutboundBuffer;
+                    var buffer = this.ctx.Channel.Unsafe.OutboundBuffer;
                     // Check for null as it may be set to null if the channel is closed already
                     if (EstimateTaskSizeOnSubmit)
                     {

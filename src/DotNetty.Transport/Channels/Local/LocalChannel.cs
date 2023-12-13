@@ -87,7 +87,7 @@ namespace DotNetty.Transport.Channels.Local
 
         protected override EndPoint RemoteAddressInternal => this.remoteAddress;
 
-        void InternalRead()
+        private void InternalRead()
         {
             IChannelPipeline pipeline = this.Pipeline;
             for (;;)
@@ -241,7 +241,7 @@ namespace DotNetty.Transport.Channels.Local
             }
         }
 
-        void TryClose(bool isActive)
+        private void TryClose(bool isActive)
         {
             if (isActive)
             {
@@ -369,7 +369,7 @@ namespace DotNetty.Transport.Channels.Local
             this.FinishPeerRead(peer);
         }
 
-        void FinishPeerRead(LocalChannel peer)
+        private void FinishPeerRead(LocalChannel peer)
         {
             // If the peer is also writing, then we must schedule the event on the event loop to preserve read order.
             if (peer.EventLoop == this.EventLoop && !peer.writeInProgress)
@@ -382,7 +382,7 @@ namespace DotNetty.Transport.Channels.Local
             }
         }
 
-        void RunFinishPeerReadTask(LocalChannel peer)
+        private void RunFinishPeerReadTask(LocalChannel peer)
         {
             // If the peer is writing, we must wait until after reads are completed for that peer before we can read. So
             // we keep track of the task, and coordinate later that our read can't happen until the peer is done.
@@ -411,7 +411,7 @@ namespace DotNetty.Transport.Channels.Local
             }
         }
 
-        void ReleaseInboundBuffers()
+        private void ReleaseInboundBuffers()
         {
             Contract.Assert(this.EventLoop == null || this.EventLoop.InEventLoop);
             this.readInProgress = false;
@@ -422,7 +422,7 @@ namespace DotNetty.Transport.Channels.Local
             }
         }
 
-        void FinishPeerRead0(LocalChannel peer)
+        private void FinishPeerRead0(LocalChannel peer)
         {
             Task peerFinishReadFuture = peer.finishReadFuture;
             if (peerFinishReadFuture != null)
@@ -451,9 +451,9 @@ namespace DotNetty.Transport.Channels.Local
             }
         }
 
-        class LocalUnsafe : AbstractUnsafe
+        private class LocalUnsafe : AbstractUnsafe
         {
-            readonly LocalChannel localChannel;
+            private readonly LocalChannel localChannel;
 
             public LocalUnsafe(LocalChannel channel)
                 : base(channel)

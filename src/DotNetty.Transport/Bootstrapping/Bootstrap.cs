@@ -147,7 +147,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// <param name="remoteAddress">The remote <see cref="EndPoint"/> to connect to.</param>
         /// <param name="localAddress">The local <see cref="EndPoint"/> to connect the remote to.</param>
         /// <returns>The <see cref="IChannel"/>.</returns>
-        async Task<IChannel> DoResolveAndConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
+        private async Task<IChannel> DoResolveAndConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
             IChannel channel = await this.InitAndRegisterAsync();
 
@@ -181,8 +181,7 @@ namespace DotNetty.Transport.Bootstrapping
             return channel;
         }
 
-        static Task DoConnectAsync(IChannel channel,
-            EndPoint remoteAddress, EndPoint localAddress)
+        private static Task DoConnectAsync(IChannel channel, EndPoint remoteAddress, EndPoint localAddress)
         {
             // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
             // the pipeline in its channelRegistered() implementation.

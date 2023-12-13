@@ -21,7 +21,7 @@ namespace DotNetty.Transport.Channels.Embedded
             Open,
             Active,
             Closed
-        };
+        }
 
         private static readonly IChannelHandler[] EMPTY_HANDLERS = Array.Empty<IChannelHandler>();
 

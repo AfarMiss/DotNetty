@@ -113,7 +113,7 @@ namespace DotNetty.Transport.Channels
         /// <param name="size">The number of bytes to increment the count by.</param>
         internal void IncrementPendingOutboundBytes(long size) => this.IncrementPendingOutboundBytes(size, true);
 
-        void IncrementPendingOutboundBytes(long size, bool invokeLater)
+        private void IncrementPendingOutboundBytes(long size, bool invokeLater)
         {
             if (size == 0)
             {
@@ -134,7 +134,7 @@ namespace DotNetty.Transport.Channels
         /// <param name="size">The number of bytes to decrement the count by.</param>
         internal void DecrementPendingOutboundBytes(long size) => this.DecrementPendingOutboundBytes(size, true, true);
 
-        void DecrementPendingOutboundBytes(long size, bool invokeLater, bool notifyWritability)
+        private void DecrementPendingOutboundBytes(long size, bool invokeLater, bool notifyWritability)
         {
             if (size == 0)
             {
@@ -216,7 +216,7 @@ namespace DotNetty.Transport.Channels
         /// <returns><c>true</c> if a message existed and was removed, otherwise <c>false</c>.</returns>
         public bool Remove(Exception cause) => this.Remove0(cause, true);
 
-        bool Remove0(Exception cause, bool notifyWritability)
+        private bool Remove0(Exception cause, bool notifyWritability)
         {
             Entry e = this.flushedEntry;
             if (e == null)
@@ -245,7 +245,7 @@ namespace DotNetty.Transport.Channels
             return true;
         }
 
-        void RemoveEntry(Entry e)
+        private void RemoveEntry(Entry e)
         {
             if (--this.flushed == 0)
             {
@@ -313,7 +313,7 @@ namespace DotNetty.Transport.Channels
         /// Clears all ByteBuffer from the array so these can be GC'ed.
         /// See https://github.com/netty/netty/issues/3837
         /// </summary>
-        void ClearNioBuffers() => NioBuffers.Value.Clear();
+        private void ClearNioBuffers() => NioBuffers.Value.Clear();
 
         /// <summary>
         /// Returns a list of direct ArraySegment&lt;byte&gt;, if the currently pending messages are made of
@@ -348,16 +348,14 @@ namespace DotNetty.Transport.Channels
 
             long ioBufferSize = 0;
             int nioBufferCount = 0;
-            ThreadLocalMap threadLocalMap = ThreadLocalMap.Get();
-            List<ArraySegment<byte>> nioBuffers = NioBuffers.Value;
+            var nioBuffers = NioBuffers.Value;
             Entry entry = this.flushedEntry;
-            while (this.IsFlushedEntry(entry) && entry.Message is IByteBuffer)
+            while (this.IsFlushedEntry(entry) && entry.Message is IByteBuffer buffer)
             {
                 if (!entry.Cancelled)
                 {
-                    var buf = (IByteBuffer)entry.Message;
-                    int readerIndex = buf.ReaderIndex;
-                    int readableBytes = buf.WriterIndex - readerIndex;
+                    int readerIndex = buffer.ReaderIndex;
+                    int readableBytes = buffer.WriterIndex - readerIndex;
 
                     if (readableBytes > 0)
                     {
@@ -379,7 +377,7 @@ namespace DotNetty.Transport.Channels
                         int count = entry.Count;
                         if (count == -1)
                         {
-                            entry.Count = count = buf.IoBufferCount;
+                            entry.Count = count = buffer.IoBufferCount;
                         }
                         if (count == 1)
                         {
@@ -388,7 +386,7 @@ namespace DotNetty.Transport.Channels
                             {
                                 // cache ByteBuffer as it may need to create a new ByteBuffer instance if its a
                                 // derived buffer
-                                entry.Buffer = nioBuf = buf.GetIoBuffer(readerIndex, readableBytes);
+                                entry.Buffer = nioBuf = buffer.GetIoBuffer(readerIndex, readableBytes);
                             }
                             nioBuffers.Add(nioBuf);
                             nioBufferCount++;
@@ -400,7 +398,7 @@ namespace DotNetty.Transport.Channels
                             {
                                 // cached ByteBuffers as they may be expensive to create in terms
                                 // of Object allocation
-                                entry.Buffers = nioBufs = buf.GetIoBuffers();
+                                entry.Buffers = nioBufs = buffer.GetIoBuffers();
                             }
                             for (int i = 0; i < nioBufs.Length && nioBufferCount < maxCount; i++)
                             {
@@ -471,7 +469,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void SetUserDefinedWritability(int index)
+        private void SetUserDefinedWritability(int index)
         {
             int mask = ~WritabilityMask(index);
             while (true)
@@ -489,7 +487,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void ClearUserDefinedWritability(int index)
+        private void ClearUserDefinedWritability(int index)
         {
             int mask = WritabilityMask(index);
             while (true)
@@ -507,7 +505,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        static int WritabilityMask(int index)
+        private static int WritabilityMask(int index)
         {
             if (index < 1 || index > 31)
             {
@@ -516,7 +514,7 @@ namespace DotNetty.Transport.Channels
             return 1 << index;
         }
 
-        void SetWritable(bool invokeLater)
+        private void SetWritable(bool invokeLater)
         {
             while (true)
             {
@@ -533,7 +531,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void SetUnwritable(bool invokeLater)
+        private void SetUnwritable(bool invokeLater)
         {
             while (true)
             {
@@ -550,7 +548,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        void FireChannelWritabilityChanged(bool invokeLater)
+        private void FireChannelWritabilityChanged(bool invokeLater)
         {
             IChannelPipeline pipeline = this.channel.Pipeline;
             if (invokeLater)
@@ -603,7 +601,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        sealed class CloseChannelTask : IRunnable
+        private sealed class CloseChannelTask : IRunnable
         {
             readonly ChannelOutboundBuffer buf;
             readonly Exception cause;
@@ -666,7 +664,7 @@ namespace DotNetty.Transport.Channels
 
         internal void Close(ClosedChannelException cause) => this.Close(cause, false);
 
-        static void SafeSuccess(TaskCompletionSource promise)
+        private static void SafeSuccess(TaskCompletionSource promise)
         {
             // TODO:ChannelPromise
             // Only log if the given promise is not of type VoidChannelPromise as trySuccess(...) is expected to return
@@ -674,7 +672,7 @@ namespace DotNetty.Transport.Channels
             Util.SafeSetSuccess(promise, Logger);
         }
 
-        static void SafeFail(TaskCompletionSource promise, Exception cause)
+        private static void SafeFail(TaskCompletionSource promise, Exception cause)
         {
             // TODO:ChannelPromise
             // Only log if the given promise is not of type VoidChannelPromise as tryFailure(...) is expected to return
@@ -758,7 +756,7 @@ namespace DotNetty.Transport.Channels
             while (this.IsFlushedEntry(entry));
         }
 
-        bool IsFlushedEntry(Entry e) => e != null && e != this.unflushedEntry;
+        private bool IsFlushedEntry(Entry e) => e != null && e != this.unflushedEntry;
 
         public interface IMessageProcessor
         {
@@ -837,7 +835,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        sealed class ThreadLocalByteBufferList : FastThreadLocal<List<ArraySegment<byte>>>
+        private sealed class ThreadLocalByteBufferList : FastThreadLocal<List<ArraySegment<byte>>>
         {
             protected override List<ArraySegment<byte>> GetInitialValue() => new List<ArraySegment<byte>>(1024);
         }

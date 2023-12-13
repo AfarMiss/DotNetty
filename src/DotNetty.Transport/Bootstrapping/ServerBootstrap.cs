@@ -85,8 +85,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// Sets the specific <see cref="AttributeKey{T}"/> with the given value on every child <see cref="IChannel"/>.
         /// If the value is <c>null</c>, the <see cref="AttributeKey{T}"/> is removed.
         /// </summary>
-        public ServerBootstrap ChildAttribute<T>(AttributeKey<T> childKey, T value)
-            where T : class
+        public ServerBootstrap ChildAttribute<T>(AttributeKey<T> childKey, T value) where T : class
         {
             Contract.Requires(childKey != null);
 
@@ -164,14 +163,12 @@ namespace DotNetty.Transport.Bootstrapping
 
         class ServerBootstrapAcceptor : ChannelHandlerAdapter
         {
-            readonly IEventLoopGroup childGroup;
-            readonly IChannelHandler childHandler;
-            readonly ChannelOptionValue[] childOptions;
-            readonly AttributeValue[] childAttrs;
+            private readonly IEventLoopGroup childGroup;
+            private readonly IChannelHandler childHandler;
+            private readonly ChannelOptionValue[] childOptions;
+            private readonly AttributeValue[] childAttrs;
 
-            public ServerBootstrapAcceptor(
-                IEventLoopGroup childGroup, IChannelHandler childHandler,
-                ChannelOptionValue[] childOptions, AttributeValue[] childAttrs)
+            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler,ChannelOptionValue[] childOptions, AttributeValue[] childAttrs)
             {
                 this.childGroup = childGroup;
                 this.childHandler = childHandler;
@@ -206,7 +203,7 @@ namespace DotNetty.Transport.Bootstrapping
                 }
             }
 
-            static void ForceClose(IChannel child, Exception ex)
+            private static void ForceClose(IChannel child, Exception ex)
             {
                 child.Unsafe.CloseForcibly();
                 Logger.Warn("Failed to register an accepted channel: " + child, ex);

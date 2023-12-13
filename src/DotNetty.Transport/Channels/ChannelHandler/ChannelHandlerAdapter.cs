@@ -8,6 +8,7 @@ namespace DotNetty.Transport.Channels
     public class ChannelHandlerAdapter : IChannelHandler
     {
         internal bool Added;
+        public virtual bool IsSharable => false;
 
         [Skip]
         public virtual void ChannelRegistered(IChannelHandlerContext context) => context.FireChannelRegistered();
@@ -69,9 +70,7 @@ namespace DotNetty.Transport.Channels
 
         [Skip]
         public virtual void Read(IChannelHandlerContext context) => context.Read();
-
-        public virtual bool IsSharable => false;
-
+        
         protected void EnsureNotSharable()
         {
             if (this.IsSharable)

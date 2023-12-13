@@ -53,11 +53,11 @@ namespace DotNetty.Transport.Channels.Groups
             Contract.Requires(message != null);
             Contract.Requires(matcher != null);
             var futures = new Dictionary<IChannel, Task>();
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.WriteAsync(SafeDuplicate(message)));
+                    futures.Add(channel, channel.WriteAsync(SafeDuplicate(message)));
                 }
             }
 
@@ -67,11 +67,11 @@ namespace DotNetty.Transport.Channels.Groups
 
         public IChannelGroup Flush(IChannelMatcher matcher)
         {
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    c.Flush();
+                    channel.Flush();
                 }
             }
             return this;
@@ -119,14 +119,13 @@ namespace DotNetty.Transport.Channels.Groups
 
         public bool Remove(IChannel channel)
         {
-            IChannel ch;
             if (channel is IServerChannel)
             {
-                return this.serverChannels.TryRemove(channel.Id, out ch);
+                return this.serverChannels.TryRemove(channel.Id, out _);
             }
             else
             {
-                return this.nonServerChannels.TryRemove(channel.Id, out ch);
+                return this.nonServerChannels.TryRemove(channel.Id, out _);
             }
         }
 
@@ -143,11 +142,11 @@ namespace DotNetty.Transport.Channels.Groups
             Contract.Requires(message != null);
             Contract.Requires(matcher != null);
             var futures = new Dictionary<IChannel, Task>();
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.WriteAndFlushAsync(SafeDuplicate(message)));
+                    futures.Add(channel, channel.WriteAndFlushAsync(SafeDuplicate(message)));
                 }
             }
 
@@ -161,18 +160,18 @@ namespace DotNetty.Transport.Channels.Groups
         {
             Contract.Requires(matcher != null);
             var futures = new Dictionary<IChannel, Task>();
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.DisconnectAsync());
+                    futures.Add(channel, channel.DisconnectAsync());
                 }
             }
-            foreach (IChannel c in this.serverChannels.Values)
+            foreach (var channel in this.serverChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.DisconnectAsync());
+                    futures.Add(channel, channel.DisconnectAsync());
                 }
             }
 
@@ -185,18 +184,18 @@ namespace DotNetty.Transport.Channels.Groups
         {
             Contract.Requires(matcher != null);
             var futures = new Dictionary<IChannel, Task>();
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.CloseAsync());
+                    futures.Add(channel, channel.CloseAsync());
                 }
             }
-            foreach (IChannel c in this.serverChannels.Values)
+            foreach (var channel in this.serverChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.CloseAsync());
+                    futures.Add(channel, channel.CloseAsync());
                 }
             }
 
@@ -209,18 +208,18 @@ namespace DotNetty.Transport.Channels.Groups
         {
             Contract.Requires(matcher != null);
             var futures = new Dictionary<IChannel, Task>();
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.DeregisterAsync());
+                    futures.Add(channel, channel.DeregisterAsync());
                 }
             }
-            foreach (IChannel c in this.serverChannels.Values)
+            foreach (var channel in this.serverChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.DeregisterAsync());
+                    futures.Add(channel, channel.DeregisterAsync());
                 }
             }
 
@@ -233,34 +232,32 @@ namespace DotNetty.Transport.Channels.Groups
         {
             Contract.Requires(matcher != null);
             var futures = new Dictionary<IChannel, Task>();
-            foreach (IChannel c in this.nonServerChannels.Values)
+            foreach (var channel in this.nonServerChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.CloseCompletion);
+                    futures.Add(channel, channel.CloseCompletion);
                 }
             }
-            foreach (IChannel c in this.serverChannels.Values)
+            foreach (var channel in this.serverChannels.Values)
             {
-                if (matcher.Matches(c))
+                if (matcher.Matches(channel))
                 {
-                    futures.Add(c, c.CloseCompletion);
+                    futures.Add(channel, channel.CloseCompletion);
                 }
             }
 
             return new DefaultChannelGroupCompletionSource(this, futures /*, this.executor*/).Task;
         }
 
-        static object SafeDuplicate(object message)
+        private static object SafeDuplicate(object message)
         {
-            var buffer = message as IByteBuffer;
-            if (buffer != null)
+            if (message is IByteBuffer buffer)
             {
                 return buffer.Duplicate().Retain();
             }
 
-            var byteBufferHolder = message as IByteBufferHolder;
-            if (byteBufferHolder != null)
+            if (message is IByteBufferHolder byteBufferHolder)
             {
                 return byteBufferHolder.Duplicate().Retain();
             }
@@ -272,7 +269,7 @@ namespace DotNetty.Transport.Channels.Groups
 
         public bool Add(IChannel channel)
         {
-            ConcurrentDictionary<IChannelId, IChannel> map = channel is IServerChannel ? this.serverChannels : this.nonServerChannels;
+            var map = channel is IServerChannel ? this.serverChannels : this.nonServerChannels;
             bool added = map.TryAdd(channel.Id, channel);
             if (added)
             {
@@ -291,14 +288,12 @@ namespace DotNetty.Transport.Channels.Groups
 
         public bool Remove(IChannelId channelId)
         {
-            IChannel ch;
-
-            if (this.serverChannels.TryRemove(channelId, out ch))
+            if (this.serverChannels.TryRemove(channelId, out _))
             {
                 return true;
             }
 
-            if (this.nonServerChannels.TryRemove(channelId, out ch))
+            if (this.nonServerChannels.TryRemove(channelId, out _))
             {
                 return true;
             }
@@ -308,18 +303,14 @@ namespace DotNetty.Transport.Channels.Groups
 
         public bool Remove(object o)
         {
-            var id = o as IChannelId;
-            if (id != null)
+            if (o is IChannelId id)
             {
                 return this.Remove(id);
             }
-            else
+
+            if (o is IChannel channel)
             {
-                var channel = o as IChannel;
-                if (channel != null)
-                {
-                    return this.Remove(channel);
-                }
+                return this.Remove(channel);
             }
             return false;
         }

@@ -104,7 +104,7 @@ namespace DotNetty.Transport.Channels.Pool
                     : new CompatibleConcurrentQueue<IChannel>();
         }
 
-        void OnChannelInitializing(IChannel channel)
+        private void OnChannelInitializing(IChannel channel)
         {
             Contract.Assert(channel.EventLoop.InEventLoop);
             this.Handler.ChannelCreated(channel);
@@ -154,7 +154,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        async void DoHealthCheck(object channel, object state)
+        private async void DoHealthCheck(object channel, object state)
         {
             var promise = state as TaskCompletionSource<IChannel>;
             try
@@ -168,7 +168,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        async ValueTask<IChannel> DoHealthCheck(IChannel channel)
+        private async ValueTask<IChannel> DoHealthCheck(IChannel channel)
         {
             Contract.Assert(channel.EventLoop.InEventLoop);
             try
@@ -234,8 +234,8 @@ namespace DotNetty.Transport.Channels.Pool
                 throw;
             }
         }
-        
-        async void DoReleaseChannel(object channel, object state)
+
+        private async void DoReleaseChannel(object channel, object state)
         {
             var promise = state as TaskCompletionSource<bool>;
             try
@@ -249,7 +249,7 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
-        async ValueTask<bool> DoReleaseChannel(IChannel channel)
+        private async ValueTask<bool> DoReleaseChannel(IChannel channel)
         {
             Contract.Assert(channel.EventLoop.InEventLoop);
 
@@ -290,7 +290,7 @@ namespace DotNetty.Transport.Channels.Pool
         /// <c>true</c> if the <see cref="IChannel"/> was healthy, released, and offered back to the pool.
         /// <c>false</c> if the <see cref="IChannel"/> was NOT healthy and was simply released.
         /// </returns>
-        async ValueTask<bool> DoHealthCheckOnRelease(IChannel channel)
+        private async ValueTask<bool> DoHealthCheckOnRelease(IChannel channel)
         {
             if (await this.HealthChecker.IsHealthyAsync(channel))
             {
@@ -305,8 +305,8 @@ namespace DotNetty.Transport.Channels.Pool
                 return false;
             }
         }
-        
-        void ReleaseAndOffer(IChannel channel)
+
+        private void ReleaseAndOffer(IChannel channel)
         {
             if (this.TryOfferChannel(channel))
             {
@@ -318,8 +318,8 @@ namespace DotNetty.Transport.Channels.Pool
                 throw FullException;
             }
         }
-       
-        static void CloseChannel(IChannel channel)
+
+        private static void CloseChannel(IChannel channel)
         {
             channel.GetAttribute(PoolKey).GetAndSet(null);
             channel.CloseAsync();
@@ -358,8 +358,8 @@ namespace DotNetty.Transport.Channels.Pool
                 channel.CloseAsync();
             }
         }
-        
-        class CompatibleConcurrentStack<T> : ConcurrentStack<T>, IQueue<T>
+
+        private class CompatibleConcurrentStack<T> : ConcurrentStack<T>, IQueue<T>
         {
             public bool TryEnqueue(T item)
             {

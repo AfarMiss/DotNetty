@@ -1,13 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net.Sockets;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Net.Sockets;
-
     /// <summary>
     /// <see cref="AbstractSocketChannel"/> base class for <see cref="IChannel"/>s that operate on messages.
     /// </summary>
@@ -27,28 +24,28 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected class SocketMessageUnsafe : AbstractSocketUnsafe
         {
-            readonly List<object> readBuf = new List<object>();
+            private readonly List<object> readBuf = new List<object>();
 
             public SocketMessageUnsafe(AbstractSocketMessageChannel channel)
                 : base(channel)
             {
             }
 
-            new AbstractSocketMessageChannel Channel => (AbstractSocketMessageChannel)this.channel;
+            private new AbstractSocketMessageChannel Channel => (AbstractSocketMessageChannel)this.channel;
 
             public override void FinishRead(SocketChannelAsyncOperation operation)
             {
                 Contract.Assert(this.channel.EventLoop.InEventLoop);
 
-                AbstractSocketMessageChannel ch = this.Channel;
-                if ((ch.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
+                var messageChannel = this.Channel;
+                if ((messageChannel.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
                 {
                     return; // read was signaled as a result of channel closure
                 }
-                IChannelConfiguration config = ch.Configuration;
+                var config = messageChannel.Configuration;
 
-                IChannelPipeline pipeline = ch.Pipeline;
-                IRecvByteBufAllocatorHandle allocHandle = this.Channel.Unsafe.RecvBufAllocHandle;
+                var pipeline = messageChannel.Pipeline;
+                var allocHandle = this.Channel.Unsafe.RecvBufAllocHandle;
                 allocHandle.Reset(config);
 
                 bool closed = false;
@@ -59,7 +56,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     {
                         do
                         {
-                            int localRead = ch.DoReadMessages(this.readBuf);
+                            int localRead = messageChannel.DoReadMessages(this.readBuf);
                             if (localRead == 0)
                             {
                                 break;
@@ -81,7 +78,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     int size = this.readBuf.Count;
                     for (int i = 0; i < size; i++)
                     {
-                        ch.ReadPending = false;
+                        messageChannel.ReadPending = false;
                         pipeline.FireChannelRead(this.readBuf[i]);
                     }
 
@@ -96,7 +93,7 @@ namespace DotNetty.Transport.Channels.Sockets
                         {
                             // ServerChannel should not be closed even on SocketException because it can often continue
                             // accepting incoming connections. (e.g. too many open files)
-                            closed = !(ch is IServerChannel);
+                            closed = !(messageChannel is IServerChannel);
                         }
 
                         pipeline.FireExceptionCaught(exception);
@@ -104,7 +101,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                     if (closed)
                     {
-                        if (ch.Open)
+                        if (messageChannel.Open)
                         {
                             this.CloseSafe();
                         }
@@ -118,9 +115,9 @@ namespace DotNetty.Transport.Channels.Sockets
                     // /// The user called Channel.read() or ChannelHandlerContext.read() in channelReadComplete(...) method
                     //
                     // See https://github.com/netty/netty/issues/2254
-                    if (!closed && (ch.ReadPending || config.AutoRead))
+                    if (!closed && (messageChannel.ReadPending || config.AutoRead))
                     {
-                        ch.DoBeginRead();
+                        messageChannel.DoBeginRead();
                     }
                 }
             }

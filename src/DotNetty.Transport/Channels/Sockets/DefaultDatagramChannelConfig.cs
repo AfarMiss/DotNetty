@@ -1,19 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.NetworkInformation;
-    using System.Net.Sockets;
-
     public class DefaultDatagramChannelConfig : DefaultChannelConfiguration, IDatagramChannelConfig
     {
-        const int DefaultFixedBufferSize = 2048;
+        private const int DefaultFixedBufferSize = 2048;
 
-        readonly Socket socket;
+        private readonly Socket socket;
 
         public DefaultDatagramChannelConfig(IDatagramChannel channel, Socket socket)
             : base(channel, new FixedRecvByteBufAllocator(DefaultFixedBufferSize))

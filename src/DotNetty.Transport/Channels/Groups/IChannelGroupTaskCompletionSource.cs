@@ -11,9 +11,9 @@ namespace DotNetty.Transport.Channels.Groups
 
         Task Find(IChannel channel);
 
-        bool IsPartialSucess();
+        bool IsPartialSuccess();
 
-        bool IsSucess();
+        bool IsSuccess();
 
         bool IsPartialFailure();
     }

@@ -1035,16 +1035,15 @@ namespace DotNetty.Transport.Channels
             public Task ConnectAsync(IChannelHandlerContext context, EndPoint remoteAddress, EndPoint localAddress) => context.ConnectAsync(remoteAddress, localAddress);
         }
 
-        sealed class HeadContext : AbstractChannelHandlerContext, IChannelHandler
+        private sealed class HeadContext : AbstractChannelHandlerContext, IChannelHandler
         {
-            static readonly string HeadName = GenerateName0(typeof(HeadContext));
-            static readonly SkipFlags SkipFlags = SkipFlagHelper.GetSkipFlag(typeof(HeadContext));
+            private static readonly string HeadName = GenerateName0(typeof(HeadContext));
+            private static readonly SkipFlags SkipFlags = SkipFlagHelper.GetSkipFlag(typeof(HeadContext));
 
-            readonly IChannelUnsafe channelUnsafe;
-            bool firstRegistration = true;
+            private readonly IChannelUnsafe channelUnsafe;
+            private bool firstRegistration = true;
 
-            public HeadContext(DefaultChannelPipeline pipeline)
-                : base(pipeline, null, HeadName, SkipFlags)
+            public HeadContext(DefaultChannelPipeline pipeline) : base(pipeline, null, HeadName, SkipFlags)
             {
                 this.channelUnsafe = pipeline.Channel.Unsafe;
                 this.SetAdded();
@@ -1125,7 +1124,7 @@ namespace DotNetty.Transport.Channels
                 this.ReadIfIsAutoRead();
             }
 
-            void ReadIfIsAutoRead()
+            private void ReadIfIsAutoRead()
             {
                 if (this.pipeline.channel.Configuration.AutoRead)
                 {
@@ -1140,7 +1139,7 @@ namespace DotNetty.Transport.Channels
             public void ChannelWritabilityChanged(IChannelHandlerContext context) => context.FireChannelWritabilityChanged();
         }
 
-        abstract class PendingHandlerCallback : IRunnable
+        private abstract class PendingHandlerCallback : IRunnable
         {
             protected readonly DefaultChannelPipeline Pipeline;
             protected readonly AbstractChannelHandlerContext Ctx;
@@ -1157,7 +1156,7 @@ namespace DotNetty.Transport.Channels
             internal abstract void Execute();
         }
 
-        sealed class PendingHandlerAddedTask : PendingHandlerCallback
+        private sealed class PendingHandlerAddedTask : PendingHandlerCallback
         {
             public PendingHandlerAddedTask(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx)
                 : base(pipeline, ctx)
@@ -1168,7 +1167,7 @@ namespace DotNetty.Transport.Channels
 
             internal override void Execute()
             {
-                IEventExecutor executor = this.Ctx.Executor;
+                var executor = this.Ctx.Executor;
                 if (executor.InEventLoop)
                 {
                     this.Pipeline.CallHandlerAdded0(this.Ctx);
@@ -1194,7 +1193,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        sealed class PendingHandlerRemovedTask : PendingHandlerCallback
+        private sealed class PendingHandlerRemovedTask : PendingHandlerCallback
         {
             public PendingHandlerRemovedTask(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx)
                 : base(pipeline, ctx)
@@ -1205,7 +1204,7 @@ namespace DotNetty.Transport.Channels
 
             internal override void Execute()
             {
-                IEventExecutor executor = this.Ctx.Executor;
+                var executor = this.Ctx.Executor;
                 if (executor.InEventLoop)
                 {
                     this.Pipeline.CallHandlerRemoved0(this.Ctx);

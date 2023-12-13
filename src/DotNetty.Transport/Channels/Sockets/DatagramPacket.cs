@@ -1,12 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Net;
+using DotNetty.Buffers;
+using DotNetty.Common;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System.Net;
-    using DotNetty.Buffers;
-    using DotNetty.Common;
-
     public sealed class DatagramPacket : DefaultAddressedEnvelope<IByteBuffer>, IByteBufferHolder
     {
         public DatagramPacket(IByteBuffer message, EndPoint recipient)

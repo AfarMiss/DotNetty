@@ -1,23 +1,19 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using DotNetty.Common;
+using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.NetworkInformation;
-    using System.Net.Sockets;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using DotNetty.Common.Utilities;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     public class SocketDatagramChannel : AbstractSocketMessageChannel, IDatagramChannel
     {
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<SocketDatagramChannel>();
@@ -104,15 +100,15 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override void ScheduleSocketRead()
         {
-            SocketChannelAsyncOperation operation = this.ReadOperation;
+            var operation = this.ReadOperation;
             operation.RemoteEndPoint = this.anyRemoteEndPoint;
 
-            IRecvByteBufAllocatorHandle handle = this.Unsafe.RecvBufAllocHandle;
-            IByteBuffer buffer = handle.Allocate(this.config.Allocator);
+            var handle = this.Unsafe.RecvBufAllocHandle;
+            var buffer = handle.Allocate(this.config.Allocator);
             handle.AttemptedBytesRead = buffer.WritableBytes;
             operation.UserToken = buffer;
 
-            ArraySegment<byte> bytes = buffer.GetIoBuffer(0, buffer.WritableBytes);
+            var bytes = buffer.GetIoBuffer(0, buffer.WritableBytes);
             operation.SetBuffer(bytes.Array, bytes.Offset, bytes.Count);
 
             bool pending;
@@ -141,13 +137,12 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             Contract.Requires(buf != null);
 
-            SocketChannelAsyncOperation operation = this.ReadOperation;
+            var operation = this.ReadOperation;
             var data = (IByteBuffer)operation.UserToken;
             bool free = true;
 
             try
             {
-                IRecvByteBufAllocatorHandle handle = this.Unsafe.RecvBufAllocHandle;
 
                 int received = operation.BytesTransferred;
                 if (received <= 0)
@@ -155,6 +150,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     return 0;
                 }
 
+                var handle = this.Unsafe.RecvBufAllocHandle;
                 handle.LastBytesRead = received;
                 data.SetWriterIndex(data.WriterIndex + received);
                 EndPoint remoteAddress = operation.RemoteEndPoint;
@@ -174,7 +170,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        static void OnReceiveFromCompletedSync(object u, object p) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)p);
+        private static void OnReceiveFromCompletedSync(object u, object p) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)p);
 
         protected override void ScheduleMessageWrite(object message)
         {
@@ -204,7 +200,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override IChannelUnsafe NewUnsafe() => new DatagramChannelUnsafe(this);
 
-        sealed class DatagramChannelUnsafe : SocketMessageUnsafe
+        private sealed class DatagramChannelUnsafe : SocketMessageUnsafe
         {
             public DatagramChannelUnsafe(SocketDatagramChannel channel)
                 : base(channel)
@@ -219,15 +215,14 @@ namespace DotNetty.Transport.Channels.Sockets
             EndPoint remoteAddress = null;
             IByteBuffer data = null;
 
-            var envelope = msg as IAddressedEnvelope<IByteBuffer>;
-            if (envelope != null)
+            if (msg is IAddressedEnvelope<IByteBuffer> envelope)
             {
                 remoteAddress = envelope.Recipient;
                 data = envelope.Content;
             }
-            else if (msg is IByteBuffer)
+            else if (msg is IByteBuffer buffer)
             {
-                data = (IByteBuffer)msg;
+                data = buffer;
                 remoteAddress = this.RemoteAddressInternal;
             }
 
@@ -242,7 +237,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 return true;
             }
 
-            ArraySegment<byte> bytes = data.GetIoBuffer(data.ReaderIndex, length);
+            var bytes = data.GetIoBuffer(data.ReaderIndex, length);
             int writtenBytes = this.Socket.SendTo(bytes.Array, bytes.Offset, bytes.Count, SocketFlags.None, remoteAddress);
 
             return writtenBytes > 0;
@@ -250,39 +245,35 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override object FilterOutboundMessage(object msg)
         {
-            var packet = msg as DatagramPacket;
-            if (packet != null)
+            if (msg is DatagramPacket packet)
             {
                 return IsSingleBuffer(packet.Content)
                     ? packet
                     : new DatagramPacket(this.CreateNewDirectBuffer(packet, packet.Content), packet.Recipient);
             }
 
-            var buffer = msg as IByteBuffer;
-            if (buffer != null)
+            if (msg is IByteBuffer buffer)
             {
                 return IsSingleBuffer(buffer)
                     ? buffer
                     : this.CreateNewDirectBuffer(buffer);
             }
 
-            var envolope = msg as IAddressedEnvelope<IByteBuffer>;
-            if (envolope != null)
+            if (msg is IAddressedEnvelope<IByteBuffer> envolope)
             {
                 if (IsSingleBuffer(envolope.Content))
                 {
                     return envolope;
                 }
 
-                return new DefaultAddressedEnvelope<IByteBuffer>(
-                    this.CreateNewDirectBuffer(envolope, envolope.Content), envolope.Recipient);
+                return new DefaultAddressedEnvelope<IByteBuffer>(this.CreateNewDirectBuffer(envolope, envolope.Content), envolope.Recipient);
             }
 
             throw new NotSupportedException(
                 $"Unsupported message type: {msg.GetType()}, expecting instances of DatagramPacket, IByteBuffer or IAddressedEnvelope.");
         }
 
-        IByteBuffer CreateNewDirectBuffer(IByteBuffer buffer)
+        private IByteBuffer CreateNewDirectBuffer(IByteBuffer buffer)
         {
             Contract.Requires(buffer != null);
 
@@ -301,7 +292,7 @@ namespace DotNetty.Transport.Channels.Sockets
             return data;
         }
 
-        IByteBuffer CreateNewDirectBuffer(IReferenceCounted holder, IByteBuffer buffer)
+        private IByteBuffer CreateNewDirectBuffer(IReferenceCounted holder, IByteBuffer buffer)
         {
             Contract.Requires(holder != null);
             Contract.Requires(buffer != null);
@@ -325,7 +316,7 @@ namespace DotNetty.Transport.Channels.Sockets
         // Checks if the specified buffer is a direct buffer and is composed of a single NIO buffer.
         // (We check this because otherwise we need to make it a non-composite buffer.)
         //
-        static bool IsSingleBuffer(IByteBuffer buffer)
+        private static bool IsSingleBuffer(IByteBuffer buffer)
         {
             Contract.Requires(buffer != null);
             return buffer.IoBufferCount == 1;
@@ -368,7 +359,7 @@ namespace DotNetty.Transport.Channels.Sockets
             return promise.Task;
         }
 
-        void DoJoinGroup(IPEndPoint multicastAddress, NetworkInterface networkInterface, IPEndPoint source, TaskCompletionSource promise)
+        private void DoJoinGroup(IPEndPoint multicastAddress, NetworkInterface networkInterface, IPEndPoint source, TaskCompletionSource promise)
         {
             try
             {
@@ -416,7 +407,7 @@ namespace DotNetty.Transport.Channels.Sockets
             return promise.Task;
         }
 
-        void DoLeaveGroup(IPEndPoint multicastAddress, NetworkInterface networkInterface, IPEndPoint source, TaskCompletionSource promise)
+        private void DoLeaveGroup(IPEndPoint multicastAddress, NetworkInterface networkInterface, IPEndPoint source, TaskCompletionSource promise)
         {
             try
             {
@@ -433,7 +424,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        object CreateMulticastOption(IPEndPoint multicastAddress, NetworkInterface networkInterface, IPEndPoint source)
+        private object CreateMulticastOption(IPEndPoint multicastAddress, NetworkInterface networkInterface, IPEndPoint source)
         {
             int interfaceIndex = -1;
             if (networkInterface != null)

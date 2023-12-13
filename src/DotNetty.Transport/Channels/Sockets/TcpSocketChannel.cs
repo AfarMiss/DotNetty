@@ -1,17 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
-    using DotNetty.Buffers;
-    using DotNetty.Common.Concurrency;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     /// <summary>
     ///     <see cref="ISocketChannel" /> which uses Socket-based implementation.
     /// </summary>
@@ -99,7 +95,7 @@ namespace DotNetty.Transport.Channels.Sockets
             return tcs.Task;
         }
 
-        void ShutdownOutput0(TaskCompletionSource promise)
+        private void ShutdownOutput0(TaskCompletionSource promise)
         {
             try
             {
@@ -156,7 +152,7 @@ namespace DotNetty.Transport.Channels.Sockets
             this.OnConnected();
         }
 
-        void OnConnected()
+        private void OnConnected()
         {
             this.SetState(StateFlags.Active);
 
@@ -245,12 +241,6 @@ namespace DotNetty.Transport.Channels.Sockets
             return sent;
         }
 
-        //protected long doWriteFileRegion(FileRegion region)
-        //{
-        //    long position = region.transfered();
-        //    return region.transferTo(javaChannel(), position);
-        //}
-
         protected override void DoWrite(ChannelOutboundBuffer input)
         {
             List<ArraySegment<byte>> sharedBufferList = null;
@@ -306,7 +296,7 @@ namespace DotNetty.Transport.Channels.Sockets
                                 }
                                 else
                                 {
-                                    bufferList = this.AdjustBufferList(localWrittenBytes, bufferList);
+                                    bufferList = AdjustBufferList(localWrittenBytes, bufferList);
                                 }
                             }
                             break;
@@ -342,10 +332,10 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        List<ArraySegment<byte>> AdjustBufferList(long localWrittenBytes, List<ArraySegment<byte>> bufferList)
+        static List<ArraySegment<byte>> AdjustBufferList(long localWrittenBytes, List<ArraySegment<byte>> bufferList)
         {
             var adjusted = new List<ArraySegment<byte>>(bufferList.Count);
-            foreach (ArraySegment<byte> buffer in bufferList)
+            foreach (var buffer in bufferList)
             {
                 if (localWrittenBytes > 0)
                 {
@@ -372,7 +362,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override IChannelUnsafe NewUnsafe() => new TcpSocketChannelUnsafe(this);
 
-        sealed class TcpSocketChannelUnsafe : SocketByteChannelUnsafe
+        private sealed class TcpSocketChannelUnsafe : SocketByteChannelUnsafe
         {
             public TcpSocketChannelUnsafe(TcpSocketChannel channel)
                 : base(channel)
@@ -390,9 +380,9 @@ namespace DotNetty.Transport.Channels.Sockets
             //}
         }
 
-        sealed class TcpSocketChannelConfig : DefaultSocketChannelConfiguration
+        private sealed class TcpSocketChannelConfig : DefaultSocketChannelConfiguration
         {
-            volatile int maxBytesPerGatheringWrite = int.MaxValue;
+            private volatile int maxBytesPerGatheringWrite = int.MaxValue;
 
             public TcpSocketChannelConfig(TcpSocketChannel channel, Socket javaSocket)
                 : base(channel, javaSocket)
@@ -412,7 +402,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            void CalculateMaxBytesPerGatheringWrite()
+            private void CalculateMaxBytesPerGatheringWrite()
             {
                 // Multiply by 2 to give some extra space in case the OS can process write data faster than we can provide.
                 int newSendBufferSize = this.SendBufferSize << 1;

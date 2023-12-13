@@ -1,14 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Net;
+using System.Net.NetworkInformation;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System.Net;
-    using System.Net.NetworkInformation;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     public interface IDatagramChannel : IChannel
     {
         bool IsConnected();

@@ -1,14 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
+using DotNetty.Common.Internal.Logging;
+using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    using System;
-    using System.Threading.Tasks;
-    using DotNetty.Common.Concurrency;
-    using DotNetty.Common.Internal.Logging;
-    using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
-
     static class Util
     {
         static readonly IInternalLogger Log = InternalLoggerFactory.GetInstance<IChannel>();

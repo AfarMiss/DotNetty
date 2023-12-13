@@ -1,28 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.Sockets;
+using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.Sockets;
-    using DotNetty.Common.Internal.Logging;
-
     /// <summary>
     ///     A <see cref="IServerSocketChannel" /> implementation which uses Socket-based implementation to accept new
     ///     connections.
     /// </summary>
     public class TcpServerSocketChannel : AbstractSocketChannel, IServerSocketChannel
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<TcpServerSocketChannel>();
-        static readonly ChannelMetadata METADATA = new ChannelMetadata(false);
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<TcpServerSocketChannel>();
+        private static readonly ChannelMetadata METADATA = new ChannelMetadata(false);
 
-        static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
+        private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
 
-        readonly IServerSocketChannelConfiguration config;
+        private readonly IServerSocketChannelConfiguration config;
 
-        SocketChannelAsyncOperation acceptOperation;
+        private SocketChannelAsyncOperation acceptOperation;
 
         /// <summary>
         ///     Create a new instance
@@ -83,7 +80,7 @@ namespace DotNetty.Transport.Channels.Sockets
         protected override void ScheduleSocketRead()
         {
             bool closed = false;
-            SocketChannelAsyncOperation operation = this.AcceptOperation;
+            var operation = this.AcceptOperation;
             while (!closed)
             {
                 try
@@ -121,7 +118,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        static void OnReadCompletedSync(object u, object p) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)p);
+        private static void OnReadCompletedSync(object u, object p) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)p);
 
         protected override bool DoConnect(EndPoint remoteAddress, EndPoint localAddress)
         {
@@ -148,7 +145,7 @@ namespace DotNetty.Transport.Channels.Sockets
             throw new NotSupportedException();
         }
 
-        sealed class TcpServerSocketChannelUnsafe : AbstractSocketUnsafe
+        private sealed class TcpServerSocketChannelUnsafe : AbstractSocketUnsafe
         {
             public TcpServerSocketChannelUnsafe(TcpServerSocketChannel channel)
                 : base(channel)
@@ -256,7 +253,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            TcpSocketChannel PrepareChannel(Socket socket)
+            private TcpSocketChannel PrepareChannel(Socket socket)
             {
                 try
                 {
@@ -278,7 +275,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        sealed class TcpServerSocketChannelConfig : DefaultServerSocketChannelConfig
+        private sealed class TcpServerSocketChannelConfig : DefaultServerSocketChannelConfig
         {
             public TcpServerSocketChannelConfig(TcpServerSocketChannel channel, Socket javaSocket)
                 : base(channel, javaSocket)

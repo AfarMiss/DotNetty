@@ -32,7 +32,9 @@ namespace DotNetty.Transport.Channels
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChannelInitializer<T>>();
         private readonly ConcurrentDictionary<IChannelHandlerContext, bool> initMap = new ConcurrentDictionary<IChannelHandlerContext, bool>();
-
+        
+        public override bool IsSharable => true;
+        
         /// <summary>
         /// This method will be called once the <see cref="IChannel"/> was registered. After the method returns this instance
         /// will be removed from the <see cref="IChannelPipeline"/> of the <see cref="IChannel"/>.
@@ -40,17 +42,17 @@ namespace DotNetty.Transport.Channels
         /// <param name="channel">The <see cref="IChannel"/> which was registered.</param>
         protected abstract void InitChannel(T channel);
 
-        public override bool IsSharable => true;
-
         public sealed override void ChannelRegistered(IChannelHandlerContext ctx)
         {
             // Normally this method will never be called as handlerAdded(...) should call initChannel(...) and remove
             // the handler.
-            if (this.InitChannel(ctx)) {
+            if (this.InitChannel(ctx)) 
+            {
                 // we called InitChannel(...) so we need to call now pipeline.fireChannelRegistered() to ensure we not
                 // miss an event.
                 ctx.Channel.Pipeline.FireChannelRegistered();
-            } else {
+            } else 
+            {
                 // Called InitChannel(...) before which is the expected behavior, so just forward the event.
                 ctx.FireChannelRegistered();
             }
@@ -97,7 +99,7 @@ namespace DotNetty.Transport.Channels
             return false;
         }
 
-        void Remove(IChannelHandlerContext ctx)
+        private void Remove(IChannelHandlerContext ctx)
         {
             try
             {
