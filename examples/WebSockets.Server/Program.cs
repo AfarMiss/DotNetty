@@ -46,8 +46,8 @@ namespace WebSockets.Server
 
             IEventLoopGroup bossGroup;
             IEventLoopGroup workGroup;
-            bossGroup = new MultithreadEventLoopGroup(1);
-            workGroup = new MultithreadEventLoopGroup();
+            bossGroup = new MultiThreadEventLoopGroup(1);
+            workGroup = new MultiThreadEventLoopGroup();
 
             X509Certificate2 tlsCertificate = null;
             if (ServerSettings.IsSsl)

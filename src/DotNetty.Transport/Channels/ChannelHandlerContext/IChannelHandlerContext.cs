@@ -7,6 +7,10 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
+    /// <summary>
+    /// ChannelHandler上下文
+    /// ChannelHandler添加到ChannelPipeline时候分配一个上下文与之绑定 上下文可以与自身处理器或其他的处理器进行交互
+    /// </summary>
     public interface IChannelHandlerContext : IAttributeMap
     {
         IChannel Channel { get; }
@@ -36,7 +40,7 @@ namespace DotNetty.Transport.Channels
         /// contained in the <see cref="IChannelPipeline"/> of the <see cref="IChannel"/>.
         /// </summary>
         /// <returns>The current <see cref="IChannelHandlerContext"/>.</returns>
-        IChannelHandlerContext FireChannelRegistered();
+        void FireChannelRegistered();
 
         /// <summary>
         /// A <see cref="IChannel"/> was unregistered from its <see cref="IEventLoop"/>. This will result in having the
@@ -44,27 +48,27 @@ namespace DotNetty.Transport.Channels
         /// contained in the <see cref="IChannelPipeline"/> of the <see cref="IChannel"/>.
         /// </summary>
         /// <returns>The current <see cref="IChannelHandlerContext"/>.</returns>
-        IChannelHandlerContext FireChannelUnregistered();
+        void FireChannelUnregistered();
 
-        IChannelHandlerContext FireChannelActive();
+        void FireChannelActive();
 
-        IChannelHandlerContext FireChannelInactive();
+        void FireChannelInactive();
 
-        IChannelHandlerContext FireChannelRead(object message);
+        void FireChannelRead(object message);
 
-        IChannelHandlerContext FireChannelReadComplete();
+        void FireChannelReadComplete();
 
-        IChannelHandlerContext FireChannelWritabilityChanged();
+        void FireChannelWritabilityChanged();
 
-        IChannelHandlerContext FireExceptionCaught(Exception ex);
+        void FireExceptionCaught(Exception ex);
 
-        IChannelHandlerContext FireUserEventTriggered(object evt);
+        void FireUserEventTriggered(object evt);
 
-        IChannelHandlerContext Read();
+        void Read();
 
         Task WriteAsync(object message); // todo: optimize: add flag saying if handler is interested in task, do not produce task if it isn't needed
 
-        IChannelHandlerContext Flush();
+        void Flush();
 
         Task WriteAndFlushAsync(object message);
 

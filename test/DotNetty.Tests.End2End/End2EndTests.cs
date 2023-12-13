@@ -61,7 +61,7 @@ namespace DotNetty.Tests.End2End
                 ch.Pipeline.AddLast(new EchoChannelHandler());
             }, testPromise);
 
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             var readListener = new ReadListeningHandler(DefaultTimeout);
             Bootstrap b = new Bootstrap()
                 .Group(group)
@@ -132,7 +132,7 @@ namespace DotNetty.Tests.End2End
                     serverReadListener);
             }, testPromise);
 
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             var clientReadListener = new ReadListeningHandler();
             Bootstrap b = new Bootstrap()
                 .Group(group)
@@ -291,8 +291,8 @@ namespace DotNetty.Tests.End2End
         /// <returns>function to trigger closure of the server.</returns>
         async Task<Func<Task>> StartServerAsync(bool tcpNoDelay, Action<IChannel> childHandlerSetupAction, TaskCompletionSource testPromise)
         {
-            var bossGroup = new MultithreadEventLoopGroup(1);
-            var workerGroup = new MultithreadEventLoopGroup();
+            var bossGroup = new MultiThreadEventLoopGroup(1);
+            var workerGroup = new MultiThreadEventLoopGroup();
             bool started = false;
             try
             {

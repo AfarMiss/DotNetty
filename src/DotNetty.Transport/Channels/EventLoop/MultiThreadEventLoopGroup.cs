@@ -10,7 +10,7 @@ namespace DotNetty.Transport.Channels
     /// <summary>
     /// <see cref="IEventLoopGroup"/> backed by a set of <see cref="SingleThreadEventLoop"/> instances.
     /// </summary>
-    public sealed class MultithreadEventLoopGroup : AbstractEventExecutorGroup, IEventLoopGroup
+    public sealed class MultiThreadEventLoopGroup : AbstractEventExecutorGroup, IEventLoopGroup
     {
         private static readonly int DefaultEventLoopThreadCount = Environment.ProcessorCount * 2;
         private static readonly Func<IEventLoopGroup, IEventLoop> DefaultEventLoopFactory = group => new SingleThreadEventLoop(group);
@@ -33,26 +33,22 @@ namespace DotNetty.Transport.Channels
         /// <inheritdoc />
         public new IEnumerable<IEventLoop> Items => this.eventLoops;
 
-        /// <summary>Creates a new instance of <see cref="MultithreadEventLoopGroup"/>.</summary>
-        public MultithreadEventLoopGroup()
+        public MultiThreadEventLoopGroup()
             : this(DefaultEventLoopFactory, DefaultEventLoopThreadCount)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="MultithreadEventLoopGroup"/>.</summary>
-        public MultithreadEventLoopGroup(int eventLoopCount)
+        public MultiThreadEventLoopGroup(int eventLoopCount)
             : this(DefaultEventLoopFactory, eventLoopCount)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="MultithreadEventLoopGroup"/>.</summary>
-        public MultithreadEventLoopGroup(Func<IEventLoopGroup, IEventLoop> eventLoopFactory)
+        public MultiThreadEventLoopGroup(Func<IEventLoopGroup, IEventLoop> eventLoopFactory)
             : this(eventLoopFactory, DefaultEventLoopThreadCount)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="MultithreadEventLoopGroup"/>.</summary>
-        public MultithreadEventLoopGroup(Func<IEventLoopGroup, IEventLoop> eventLoopFactory, int eventLoopCount)
+        public MultiThreadEventLoopGroup(Func<IEventLoopGroup, IEventLoop> eventLoopFactory, int eventLoopCount)
         {
             this.eventLoops = new IEventLoop[eventLoopCount];
             var terminationTasks = new Task[eventLoopCount];
@@ -73,11 +69,7 @@ namespace DotNetty.Transport.Channels
                 {
                     if (!success)
                     {
-                        Task.WhenAll(
-                                this.eventLoops
-                                    .Take(i)
-                                    .Select(loop => loop.ShutdownGracefullyAsync()))
-                            .Wait();
+                        Task.WhenAll(this.eventLoops.Take(i).Select(loop => loop.ShutdownGracefullyAsync())).Wait();
                     }
                 }
 
@@ -87,10 +79,8 @@ namespace DotNetty.Transport.Channels
             this.TerminationCompletion = Task.WhenAll(terminationTasks);
         }
 
-        /// <inheritdoc />
         IEventLoop IEventLoopGroup.GetNext() => (IEventLoop)this.GetNext();
 
-        /// <inheritdoc />
         public override IEventExecutor GetNext()
         {
             int id = Interlocked.Increment(ref this.requestId);
@@ -99,10 +89,9 @@ namespace DotNetty.Transport.Channels
 
         public Task RegisterAsync(IChannel channel) => ((IEventLoop)this.GetNext()).RegisterAsync(channel);
 
-        /// <inheritdoc cref="IEventExecutorGroup.ShutdownGracefullyAsync()" />
         public override Task ShutdownGracefullyAsync(TimeSpan quietPeriod, TimeSpan timeout)
         {
-            foreach (IEventLoop eventLoop in this.eventLoops)
+            foreach (var eventLoop in this.eventLoops)
             {
                 eventLoop.ShutdownGracefullyAsync(quietPeriod, timeout);
             }

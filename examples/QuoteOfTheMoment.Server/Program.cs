@@ -17,7 +17,7 @@ namespace QuoteOfTheMoment.Server
         {
             ExampleHelper.SetConsoleLogger();
 
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             try
             {
                 var bootstrap = new Bootstrap();

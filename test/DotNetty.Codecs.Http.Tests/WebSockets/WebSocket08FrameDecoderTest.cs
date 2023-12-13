@@ -15,8 +15,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         {
             var decoder = new WebSocket08FrameDecoder(true, true, 65535, false);
             var ctx = new Mock<IChannelHandlerContext>(MockBehavior.Strict);
-            ctx.Setup(x => x.FireChannelInactive()).Returns(ctx.Object);
-
+            ctx.Setup(x => x.FireChannelInactive());
             decoder.ChannelInactive(ctx.Object);
             ctx.Verify(x => x.FireChannelInactive(), Times.Once);
         }

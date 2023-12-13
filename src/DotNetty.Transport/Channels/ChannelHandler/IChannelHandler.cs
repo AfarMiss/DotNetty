@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace DotNetty.Transport.Channels
 {
+    /// <summary> 出入站事件操作拦截和处理 </summary>
     public interface IChannelHandler
     {
         /// <summary>

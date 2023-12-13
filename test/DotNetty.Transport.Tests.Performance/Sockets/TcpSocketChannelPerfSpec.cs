@@ -70,9 +70,9 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
         {
             TaskScheduler.UnobservedTaskException += (sender, args) => Console.WriteLine(args.Exception);
 
-            this.ClientGroup = new MultithreadEventLoopGroup(1);
-            this.ServerGroup = new MultithreadEventLoopGroup(1);
-            this.WorkerGroup = new MultithreadEventLoopGroup();
+            this.ClientGroup = new MultiThreadEventLoopGroup(1);
+            this.ServerGroup = new MultiThreadEventLoopGroup(1);
+            this.WorkerGroup = new MultiThreadEventLoopGroup();
 
             this.message = Encoding.UTF8.GetBytes("ABC");
 
@@ -95,12 +95,11 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
                 .ChildOption(ChannelOption.Allocator, this.serverBufferAllocator)
                 .ChildHandler(new ActionChannelInitializer<TcpSocketChannel>(channel =>
                 {
-                    channel.Pipeline
-                        //.AddLast(TlsHandler.Server(tlsCertificate))
-                        .AddLast(this.GetEncoder())
-                        .AddLast(this.GetDecoder())
-                        .AddLast(counterHandler)
-                        .AddLast(new ReadFinishedHandler(this.signal, WriteCount));
+                    // channel.Pipeline.AddLast(TlsHandler.Server(tlsCertificate));
+                    channel.Pipeline.AddLast(this.GetEncoder());
+                    channel.Pipeline.AddLast(this.GetDecoder());
+                    channel.Pipeline.AddLast(counterHandler);
+                    channel.Pipeline.AddLast(new ReadFinishedHandler(this.signal, WriteCount));
                 }));
 
             Bootstrap cb = new Bootstrap()
@@ -110,11 +109,10 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
                 .Handler(new ActionChannelInitializer<TcpSocketChannel>(
                     channel =>
                     {
-                        channel.Pipeline
-                            //.AddLast(TlsHandler.Client(targetHost, null, (sender, certificate, chain, errors) => true))
-                            .AddLast(this.GetEncoder())
-                            .AddLast(this.GetDecoder())
-                            .AddLast(new CounterHandlerOutbound(this.outboundThroughputCounter));
+                        // channel.Pipeline.AddLast(TlsHandler.Client(targetHost, null, (sender, certificate, chain, errors) => true));
+                        channel.Pipeline.AddLast(this.GetEncoder());
+                        channel.Pipeline.AddLast(this.GetDecoder());
+                        channel.Pipeline.AddLast(new CounterHandlerOutbound(this.outboundThroughputCounter));
                     }));
 
             // start server

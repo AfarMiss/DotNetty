@@ -4,76 +4,23 @@ using System.Threading.Tasks;
 
 namespace DotNetty.Common.Concurrency
 {
+    /// <summary>
+    /// 异步线程任务 线程细节由IEventExecutor实现决定
+    /// </summary>
     public interface IExecutorService : IExecutor
     {
-        /// <summary>
-        ///     Returns <c>true</c> if this executor has been shut down, <c>false</c> otherwise.
-        /// </summary>
+        /// <summary> 是否关闭 </summary>
         bool IsShutdown { get; }
 
-        /// <summary>
-        ///     Returns <c>true</c> if all tasks have completed following shut down.
-        /// </summary>
-        /// <remarks>
-        ///     Note that <see cref="IsTerminated" /> is never <c>true</c> unless <see cref="ShutdownGracefullyAsync()" /> was called first.
-        /// </remarks>
+        /// <summary> 如果关闭后所有任务都已完成且调用<see cref="IEventExecutorGroup.ShutdownGracefullyAsync()" />则返回true </summary>
         bool IsTerminated { get; }
 
-        /// <summary>
-        ///     Executes the given function and returns <see cref="Task{T}" /> indicating completion status and result of
-        ///     execution.
-        /// </summary>
-        /// <remarks>
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
+        /// <summary> 封装执行函数为Task </summary>
         Task<T> SubmitAsync<T>(Func<T> func);
-
-        /// <summary>
-        ///     Executes the given action and returns <see cref="Task{T}" /> indicating completion status and result of execution.
-        /// </summary>
-        /// <remarks>
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
         Task<T> SubmitAsync<T>(Func<T> func, CancellationToken cancellationToken);
-
-        /// <summary>
-        ///     Executes the given action and returns <see cref="Task{T}" /> indicating completion status and result of execution.
-        /// </summary>
-        /// <remarks>
-        ///     <paramref name="state" /> parameter is useful to when repeated execution of an action against
-        ///     different objects is needed.
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
         Task<T> SubmitAsync<T>(Func<object, T> func, object state);
-
-        /// <summary>
-        ///     Executes the given action and returns <see cref="Task{T}" /> indicating completion status and result of execution.
-        /// </summary>
-        /// <remarks>
-        ///     <paramref name="state" /> parameter is useful to when repeated execution of an action against
-        ///     different objects is needed.
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
         Task<T> SubmitAsync<T>(Func<object, T> func, object state, CancellationToken cancellationToken);
-
-        /// <summary>
-        ///     Executes the given action and returns <see cref="Task{T}" /> indicating completion status and result of execution.
-        /// </summary>
-        /// <remarks>
-        ///     <paramref name="context" /> and <paramref name="state" /> parameters are useful when repeated execution of
-        ///     an action against different objects in different context is needed.
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
         Task<T> SubmitAsync<T>(Func<object, object, T> func, object context, object state);
-
-        /// <summary>
-        ///     Executes the given action and returns <see cref="Task{T}" /> indicating completion status and result of execution.
-        /// </summary>
-        /// <remarks>
-        ///     <paramref name="context" /> and <paramref name="state" /> parameters are useful when repeated execution of
-        ///     an action against different objects in different context is needed.
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
         Task<T> SubmitAsync<T>(Func<object, object, T> func, object context, object state, CancellationToken cancellationToken);
     }
 }

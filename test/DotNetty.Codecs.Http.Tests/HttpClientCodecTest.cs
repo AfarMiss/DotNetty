@@ -100,8 +100,8 @@ namespace DotNetty.Codecs.Http.Tests
         [Fact]
         public void ServerCloseSocketInputProvidesData()
         {
-            var clientGroup = new MultithreadEventLoopGroup(1);
-            var serverGroup = new MultithreadEventLoopGroup(1);
+            var clientGroup = new MultiThreadEventLoopGroup(1);
+            var serverGroup = new MultiThreadEventLoopGroup(1);
             try
             {
                 var serverCompletion = new TaskCompletionSource();

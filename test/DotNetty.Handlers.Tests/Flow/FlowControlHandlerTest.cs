@@ -23,7 +23,7 @@ namespace DotNetty.Handlers.Tests.Flow
 
         public FlowControlHandlerTest()
         {
-            this.group = new MultithreadEventLoopGroup();
+            this.group = new MultiThreadEventLoopGroup();
         }
 
         public void Dispose()

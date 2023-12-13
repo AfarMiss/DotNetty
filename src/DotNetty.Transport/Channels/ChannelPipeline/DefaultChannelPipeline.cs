@@ -100,9 +100,9 @@ namespace DotNetty.Transport.Channels
 
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<IChannelHandler>)this).GetEnumerator();
 
-        public IChannelPipeline AddFirst(string name, IChannelHandler handler) => this.AddFirst(null, name, handler);
+        public void AddFirst(string name, IChannelHandler handler) => this.AddFirst(null, name, handler);
 
-        public IChannelPipeline AddFirst(IEventExecutorGroup group, string name, IChannelHandler handler)
+        public void AddFirst(IEventExecutorGroup group, string name, IChannelHandler handler)
         {
             Contract.Requires(handler != null);
 
@@ -122,18 +122,17 @@ namespace DotNetty.Transport.Channels
                 if (executor == null)
                 {
                     this.CallHandlerCallbackLater(newCtx, true);
-                    return this;
+                    return;
                 }
 
                 if (!executor.InEventLoop)
                 {
                     executor.Execute(CallHandlerAddedAction, this, newCtx);
-                    return this;
+                    return;
                 }
             }
 
             this.CallHandlerAdded0(newCtx);
-            return this;
         }
 
         void AddFirst0(AbstractChannelHandlerContext newCtx)
@@ -145,9 +144,9 @@ namespace DotNetty.Transport.Channels
             nextCtx.Prev = newCtx;
         }
 
-        public IChannelPipeline AddLast(string name, IChannelHandler handler) => this.AddLast(null, name, handler);
+        public void AddLast(string name, IChannelHandler handler) => this.AddLast(null, name, handler);
 
-        public IChannelPipeline AddLast(IEventExecutorGroup group, string name, IChannelHandler handler)
+        public void AddLast(IEventExecutorGroup group, string name, IChannelHandler handler)
         {
             Contract.Requires(handler != null);
 
@@ -167,17 +166,16 @@ namespace DotNetty.Transport.Channels
                 if (executor == null)
                 {
                     this.CallHandlerCallbackLater(newCtx, true);
-                    return this;
+                    return;
                 }
 
                 if (!executor.InEventLoop)
                 {
                     executor.Execute(CallHandlerAddedAction, this, newCtx);
-                    return this;
+                    return;
                 }
             }
             this.CallHandlerAdded0(newCtx);
-            return this;
         }
 
         void AddLast0(AbstractChannelHandlerContext newCtx)
@@ -189,9 +187,9 @@ namespace DotNetty.Transport.Channels
             this.tail.Prev = newCtx;
         }
 
-        public IChannelPipeline AddBefore(string baseName, string name, IChannelHandler handler) => this.AddBefore(null, baseName, name, handler);
+        public void AddBefore(string baseName, string name, IChannelHandler handler) => this.AddBefore(null, baseName, name, handler);
 
-        public IChannelPipeline AddBefore(IEventExecutorGroup group, string baseName, string name, IChannelHandler handler)
+        public void AddBefore(IEventExecutorGroup group, string baseName, string name, IChannelHandler handler)
         {
             Contract.Requires(handler != null);
 
@@ -212,17 +210,16 @@ namespace DotNetty.Transport.Channels
                 if (executor == null)
                 {
                     this.CallHandlerCallbackLater(newCtx, true);
-                    return this;
+                    return;
                 }
 
                 if (!executor.InEventLoop)
                 {
                     executor.Execute(CallHandlerAddedAction, this, newCtx);
-                    return this;
+                    return;
                 }
             }
             this.CallHandlerAdded0(newCtx);
-            return this;
         }
 
         static void AddBefore0(AbstractChannelHandlerContext ctx, AbstractChannelHandlerContext newCtx)
@@ -233,9 +230,9 @@ namespace DotNetty.Transport.Channels
             ctx.Prev = newCtx;
         }
 
-        public IChannelPipeline AddAfter(string baseName, string name, IChannelHandler handler) => this.AddAfter(null, baseName, name, handler);
+        public void AddAfter(string baseName, string name, IChannelHandler handler) => this.AddAfter(null, baseName, name, handler);
 
-        public IChannelPipeline AddAfter(IEventExecutorGroup group, string baseName, string name, IChannelHandler handler)
+        public void AddAfter(IEventExecutorGroup group, string baseName, string name, IChannelHandler handler)
         {
             Contract.Requires(handler != null);
 
@@ -257,17 +254,16 @@ namespace DotNetty.Transport.Channels
                 if (executor == null)
                 {
                     this.CallHandlerCallbackLater(newCtx, true);
-                    return this;
+                    return;
                 }
 
                 if (!executor.InEventLoop)
                 {
                     executor.Execute(CallHandlerAddedAction, this, newCtx);
-                    return this;
+                    return;
                 }
             }
             this.CallHandlerAdded0(newCtx);
-            return this;
         }
 
         static void AddAfter0(AbstractChannelHandlerContext ctx, AbstractChannelHandlerContext newCtx)
@@ -278,30 +274,26 @@ namespace DotNetty.Transport.Channels
             ctx.Next = newCtx;
         }
 
-        public IChannelPipeline AddFirst(params IChannelHandler[] handlers) => this.AddFirst(null, handlers);
+        public void AddFirst(params IChannelHandler[] handlers) => this.AddFirst(null, handlers);
 
-        public IChannelPipeline AddFirst(IEventExecutorGroup group, params IChannelHandler[] handlers)
+        public void AddFirst(IEventExecutorGroup group, params IChannelHandler[] handlers)
         {
             Contract.Requires(handlers != null);
 
             for (int i = handlers.Length - 1; i >= 0; i--)
             {
-                IChannelHandler h = handlers[i];
-                this.AddFirst(group, (string)null, h);
+                this.AddFirst(group, (string)null, handlers[i]);
             }
-
-            return this;
         }
 
-        public IChannelPipeline AddLast(params IChannelHandler[] handlers) => this.AddLast(null, handlers);
+        public void AddLast(params IChannelHandler[] handlers) => this.AddLast(null, handlers);
 
-        public IChannelPipeline AddLast(IEventExecutorGroup group, params IChannelHandler[] handlers)
+        public void AddLast(IEventExecutorGroup group, params IChannelHandler[] handlers)
         {
-            foreach (IChannelHandler h in handlers)
+            foreach (var handler in handlers)
             {
-                this.AddLast(group, (string)null, h);
+                this.AddLast(group, (string)null, handler);
             }
-            return this;
         }
 
         string GenerateName(IChannelHandler handler)
@@ -394,16 +386,9 @@ namespace DotNetty.Transport.Channels
             return this.Remove(this.tail.Prev).Handler;
         }
 
-        public IChannelPipeline Replace(IChannelHandler oldHandler, string newName, IChannelHandler newHandler)
-        {
-            this.Replace(this.GetContextOrThrow(oldHandler), newName, newHandler);
-            return this;
-        }
-
-        public IChannelHandler Replace(string oldName, string newName, IChannelHandler newHandler) => this.Replace(this.GetContextOrThrow(oldName), newName, newHandler);
-
-        public T Replace<T>(string newName, IChannelHandler newHandler)
-            where T : class, IChannelHandler => (T)this.Replace(this.GetContextOrThrow<T>(), newName, newHandler);
+        public void Replace(IChannelHandler oldHandler, string newName, IChannelHandler newHandler) => this.Replace(this.GetContextOrThrow(oldHandler), newName, newHandler);
+        public void Replace(string oldName, string newName, IChannelHandler newHandler) => this.Replace(this.GetContextOrThrow(oldName), newName, newHandler);
+        public T Replace<T>(string newName, IChannelHandler newHandler) where T : class, IChannelHandler => (T)this.Replace(this.GetContextOrThrow<T>(), newName, newHandler);
 
         IChannelHandler Replace(AbstractChannelHandlerContext ctx, string newName, IChannelHandler newHandler)
         {
@@ -975,7 +960,7 @@ namespace DotNetty.Transport.Channels
         sealed class TailContext : AbstractChannelHandlerContext, IChannelHandler
         {
             static readonly string TailName = GenerateName0(typeof(TailContext));
-            static readonly SkipFlags SkipFlags = CalculateSkipPropagationFlags(typeof(TailContext));
+            static readonly SkipFlags SkipFlags = SkipFlagHelper.GetSkipFlag(typeof(TailContext));
 
             public TailContext(DefaultChannelPipeline pipeline)
                 : base(pipeline, null, TailName, SkipFlags)
@@ -1053,7 +1038,7 @@ namespace DotNetty.Transport.Channels
         sealed class HeadContext : AbstractChannelHandlerContext, IChannelHandler
         {
             static readonly string HeadName = GenerateName0(typeof(HeadContext));
-            static readonly SkipFlags SkipFlags = CalculateSkipPropagationFlags(typeof(HeadContext));
+            static readonly SkipFlags SkipFlags = SkipFlagHelper.GetSkipFlag(typeof(HeadContext));
 
             readonly IChannelUnsafe channelUnsafe;
             bool firstRegistration = true;

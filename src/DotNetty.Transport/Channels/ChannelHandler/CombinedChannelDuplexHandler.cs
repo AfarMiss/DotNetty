@@ -405,31 +405,27 @@ namespace DotNetty.Transport.Channels
 
             public bool Removed => this.removed || this.ctx.Removed;
 
-            public IChannelHandlerContext FireChannelRegistered()
+            public void FireChannelRegistered()
             {
                 this.ctx.FireChannelRegistered();
-                return this;
             }
 
-            public IChannelHandlerContext FireChannelUnregistered()
+            public void FireChannelUnregistered()
             {
                 this.ctx.FireChannelUnregistered();
-                return this;
             }
 
-            public IChannelHandlerContext FireChannelActive()
+            public void FireChannelActive()
             {
                 this.ctx.FireChannelActive();
-                return this;
             }
 
-            public IChannelHandlerContext FireChannelInactive()
+            public void FireChannelInactive()
             {
                 this.ctx.FireChannelInactive();
-                return this;
             }
 
-            public IChannelHandlerContext FireExceptionCaught(Exception ex)
+            public void FireExceptionCaught(Exception ex)
             {
                 if (this.onError != null)
                 {
@@ -439,32 +435,26 @@ namespace DotNetty.Transport.Channels
                 {
                     this.ctx.FireExceptionCaught(ex);
                 }
-
-                return this;
             }
 
-            public IChannelHandlerContext FireUserEventTriggered(object evt)
+            public void FireUserEventTriggered(object evt)
             {
                 this.ctx.FireUserEventTriggered(evt);
-                return this;
             }
 
-            public IChannelHandlerContext FireChannelRead(object message)
+            public void FireChannelRead(object message)
             {
                 this.ctx.FireChannelRead(message);
-                return this;
             }
 
-            public IChannelHandlerContext FireChannelReadComplete()
+            public void FireChannelReadComplete()
             {
                 this.ctx.FireChannelReadComplete();
-                return this;
             }
 
-            public IChannelHandlerContext FireChannelWritabilityChanged()
+            public void FireChannelWritabilityChanged()
             {
                 this.ctx.FireChannelWritabilityChanged();
-                return this;
             }
 
             public Task BindAsync(EndPoint localAddress) => this.ctx.BindAsync(localAddress);
@@ -479,18 +469,16 @@ namespace DotNetty.Transport.Channels
 
             public Task DeregisterAsync() => this.ctx.DeregisterAsync();
 
-            public IChannelHandlerContext Read()
+            public void Read()
             {
                 this.ctx.Read();
-                return this;
             }
 
             public Task WriteAsync(object message) => this.ctx.WriteAsync(message);
 
-            public IChannelHandlerContext Flush()
+            public void Flush()
             {
                 this.ctx.Flush();
-                return this;
             }
 
             public Task WriteAndFlushAsync(object message) => this.ctx.WriteAndFlushAsync(message);

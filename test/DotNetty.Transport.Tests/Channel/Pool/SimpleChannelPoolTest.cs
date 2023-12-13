@@ -19,7 +19,7 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         [Fact]
         public async Task TestAcquire()
         {
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
             var cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
 
@@ -70,7 +70,7 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         [Fact]
         public async Task TestBoundedChannelPoolSegment()
         {
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
             Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
 
@@ -113,7 +113,7 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         [Fact]
         public async Task TestUnhealthyChannelIsNotOffered()
         {
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
             Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
 
@@ -155,7 +155,7 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         [Fact]
         public async Task TestUnhealthyChannelIsOfferedWhenNoHealthCheckRequested()
         {
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
             Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
 

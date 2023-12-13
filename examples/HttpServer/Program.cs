@@ -46,8 +46,8 @@ namespace HttpServer
             IEventLoopGroup group;
             IEventLoopGroup workGroup;
 
-            group = new MultithreadEventLoopGroup(1);
-            workGroup = new MultithreadEventLoopGroup();
+            group = new MultiThreadEventLoopGroup(1);
+            workGroup = new MultiThreadEventLoopGroup();
 
             X509Certificate2 tlsCertificate = null;
             if (ServerSettings.IsSsl)

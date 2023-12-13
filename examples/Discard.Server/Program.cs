@@ -20,8 +20,8 @@ namespace Discard.Server
         {
             ExampleHelper.SetConsoleLogger();
 
-            var bossGroup = new MultithreadEventLoopGroup(1);
-            var workerGroup = new MultithreadEventLoopGroup();
+            var bossGroup = new MultiThreadEventLoopGroup(1);
+            var workerGroup = new MultiThreadEventLoopGroup();
             X509Certificate2 tlsCertificate = null;
             if (ServerSettings.IsSsl)
             {

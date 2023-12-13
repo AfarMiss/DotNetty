@@ -43,7 +43,7 @@ namespace WebSockets.Client
             Console.WriteLine("Transport type : " + (useLibuv ? "Libuv" : "Socket"));
 
             IEventLoopGroup group;
-            group = new MultithreadEventLoopGroup();
+            group = new MultiThreadEventLoopGroup();
 
             X509Certificate2 cert = null;
             string targetHost = null;

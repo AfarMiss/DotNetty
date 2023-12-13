@@ -8,7 +8,7 @@ namespace DotNetty.Transport.Channels
         public override IChannelHandler Handler { get; }
 
         public DefaultChannelHandlerContext(DefaultChannelPipeline pipeline, IEventExecutor executor, string name, IChannelHandler handler)
-            : base(pipeline, executor, name, GetSkipPropagationFlags(handler))
+            : base(pipeline, executor, name, SkipFlagHelper.GetSkipFlag(handler))
         {
             Contract.Requires(handler != null);
             this.Handler = handler;

@@ -20,7 +20,7 @@ namespace DotNetty.Transport.Tests.Channel.Pool
 
         public FixedChannelPoolTest()
         {
-            this.group = new MultithreadEventLoopGroup();
+            this.group = new MultiThreadEventLoopGroup();
         }
 
         public void Dispose()

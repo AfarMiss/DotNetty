@@ -2,6 +2,9 @@ using System.Threading;
 
 namespace DotNetty.Common.Concurrency
 {
+    /// <summary>
+    /// 任务执行器
+    /// </summary>
     public interface IEventExecutor : IEventExecutorGroup
     {
         /// <summary>

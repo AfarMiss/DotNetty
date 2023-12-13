@@ -2,48 +2,21 @@ using System.Diagnostics.Contracts;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>Represents the properties of a <see cref="IChannel" /> implementation.</summary>
+    ///<see cref="IChannel"/> 基本元数据
     public sealed class ChannelMetadata
     {
-        /// <summary>Create a new instance</summary>
-        /// <param name="hasDisconnect">
-        ///     <c>true</c> if and only if the channel has the <c>DisconnectAsync()</c> operation
-        ///     that allows a user to disconnect and then call <see cref="IChannel.ConnectAsync(System.Net.EndPoint)" />
-        ///     again, such as UDP/IP.
-        /// </param>
-        public ChannelMetadata(bool hasDisconnect)
-            : this(hasDisconnect, 1)
-        {
-        }
-
-        /// <summary>Create a new instance</summary>
-        /// <param name="hasDisconnect">
-        ///     <c>true</c> if and only if the channel has the <c>DisconnectAsync</c> operation
-        ///     that allows a user to disconnect and then call <see cref="IChannel.ConnectAsync(System.Net.EndPoint)" />
-        ///     again, such as UDP/IP.
-        /// </param>
-        /// <param name="defaultMaxMessagesPerRead">
-        ///     If a <see cref="IMaxMessagesRecvByteBufAllocator" /> is in use, then this value will be
-        ///     set for <see cref="IMaxMessagesRecvByteBufAllocator.MaxMessagesPerRead" />. Must be <c> &gt; 0</c>.
-        /// </param>
-        public ChannelMetadata(bool hasDisconnect, int defaultMaxMessagesPerRead)
+        /// <summary> 通道具备<see cref="IChannel.DisconnectAsync()"/>且允许用户断开链接并重新<see cref="IChannel.ConnectAsync(System.Net.EndPoint)"/> </summary>
+        public bool HasDisconnect { get; }
+        /// <summary> <see cref="IMaxMessagesRecvByteBufAllocator.MaxMessagesPerRead"/> </summary>
+        public int DefaultMaxMessagesPerRead { get; }
+        
+        /// <param name="hasDisconnect"> <see cref="HasDisconnect"/> </param>
+        /// <param name="defaultMaxMessagesPerRead"> <see cref="HasDisconnect"/> </param>
+        public ChannelMetadata(bool hasDisconnect, int defaultMaxMessagesPerRead = 1)
         {
             Contract.Requires(defaultMaxMessagesPerRead > 0);
             this.HasDisconnect = hasDisconnect;
             this.DefaultMaxMessagesPerRead = defaultMaxMessagesPerRead;
         }
-
-        /// <summary>
-        ///     Returns <c>true</c> if and only if the channel has the <c>DisconnectAsync()</c> operation
-        ///     that allows a user to disconnect and then call <see cref="IChannel.ConnectAsync(System.Net.EndPoint)" /> again,
-        ///     such as UDP/IP.
-        /// </summary>
-        public bool HasDisconnect { get; }
-
-        /// <summary>
-        ///     If a <see cref="IMaxMessagesRecvByteBufAllocator" /> is in use, then this is the default value for
-        ///     <see cref="IMaxMessagesRecvByteBufAllocator.MaxMessagesPerRead" />.
-        /// </summary>
-        public int DefaultMaxMessagesPerRead { get; }
     }
 }

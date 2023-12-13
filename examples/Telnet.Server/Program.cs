@@ -21,8 +21,8 @@ namespace Telnet.Server
         {
             ExampleHelper.SetConsoleLogger();
 
-            var bossGroup = new MultithreadEventLoopGroup(1);
-            var workerGroup = new MultithreadEventLoopGroup();
+            var bossGroup = new MultiThreadEventLoopGroup(1);
+            var workerGroup = new MultiThreadEventLoopGroup();
 
             var STRING_ENCODER = new StringEncoder();
             var STRING_DECODER = new StringDecoder();

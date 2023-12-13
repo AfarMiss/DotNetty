@@ -21,154 +21,7 @@ namespace DotNetty.Transport.Channels
         private static readonly Action<object> InvokeFlushAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeFlush();
         private static readonly Action<object, object> InvokeUserEventTriggeredAction = (ctx, evt) => ((AbstractChannelHandlerContext)ctx).InvokeUserEventTriggered(evt);
         private static readonly Action<object, object> InvokeChannelReadAction = (ctx, msg) => ((AbstractChannelHandlerContext)ctx).InvokeChannelRead(msg);
-
-        [Flags]
-        protected internal enum SkipFlags
-        {
-            HandlerAdded = 1,
-            HandlerRemoved = 1 << 1,
-            ExceptionCaught = 1 << 2,
-            ChannelRegistered = 1 << 3,
-            ChannelUnregistered = 1 << 4,
-            ChannelActive = 1 << 5,
-            ChannelInactive = 1 << 6,
-            ChannelRead = 1 << 7,
-            ChannelReadComplete = 1 << 8,
-            ChannelWritabilityChanged = 1 << 9,
-            UserEventTriggered = 1 << 10,
-            Bind = 1 << 11,
-            Connect = 1 << 12,
-            Disconnect = 1 << 13,
-            Close = 1 << 14,
-            Deregister = 1 << 15,
-            Read = 1 << 16,
-            Write = 1 << 17,
-            Flush = 1 << 18,
-
-            Inbound = ExceptionCaught |
-                ChannelRegistered |
-                ChannelUnregistered |
-                ChannelActive |
-                ChannelInactive |
-                ChannelRead |
-                ChannelReadComplete |
-                ChannelWritabilityChanged |
-                UserEventTriggered,
-
-            Outbound = Bind |
-                Connect |
-                Disconnect |
-                Close |
-                Deregister |
-                Read |
-                Write |
-                Flush,
-        }
-
-        static readonly ConditionalWeakTable<Type, Tuple<SkipFlags>> SkipTable = new ConditionalWeakTable<Type, Tuple<SkipFlags>>();
-
-        protected static SkipFlags GetSkipPropagationFlags(IChannelHandler handler)
-        {
-            var skipDirection = SkipTable.GetValue(handler.GetType(),
-                handlerType => Tuple.Create(CalculateSkipPropagationFlags(handlerType)));
-
-            return skipDirection?.Item1 ?? 0;
-        }
-
-        protected static SkipFlags CalculateSkipPropagationFlags(Type handlerType)
-        {
-            SkipFlags flags = 0;
-
-            // this method should never throw
-            if (IsSkippable(handlerType, nameof(IChannelHandler.HandlerAdded)))
-            {
-                flags |= SkipFlags.HandlerAdded;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.HandlerRemoved)))
-            {
-                flags |= SkipFlags.HandlerRemoved;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ExceptionCaught), typeof(Exception)))
-            {
-                flags |= SkipFlags.ExceptionCaught;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelRegistered)))
-            {
-                flags |= SkipFlags.ChannelRegistered;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelUnregistered)))
-            {
-                flags |= SkipFlags.ChannelUnregistered;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelActive)))
-            {
-                flags |= SkipFlags.ChannelActive;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelInactive)))
-            {
-                flags |= SkipFlags.ChannelInactive;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelRead), typeof(object)))
-            {
-                flags |= SkipFlags.ChannelRead;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelReadComplete)))
-            {
-                flags |= SkipFlags.ChannelReadComplete;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ChannelWritabilityChanged)))
-            {
-                flags |= SkipFlags.ChannelWritabilityChanged;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.UserEventTriggered), typeof(object)))
-            {
-                flags |= SkipFlags.UserEventTriggered;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.BindAsync), typeof(EndPoint)))
-            {
-                flags |= SkipFlags.Bind;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.ConnectAsync), typeof(EndPoint), typeof(EndPoint)))
-            {
-                flags |= SkipFlags.Connect;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.DisconnectAsync)))
-            {
-                flags |= SkipFlags.Disconnect;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.CloseAsync)))
-            {
-                flags |= SkipFlags.Close;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.DeregisterAsync)))
-            {
-                flags |= SkipFlags.Deregister;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.Read)))
-            {
-                flags |= SkipFlags.Read;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.WriteAsync), typeof(object)))
-            {
-                flags |= SkipFlags.Write;
-            }
-            if (IsSkippable(handlerType, nameof(IChannelHandler.Flush)))
-            {
-                flags |= SkipFlags.Flush;
-            }
-            return flags;
-        }
-
-        protected static bool IsSkippable(Type handlerType, string methodName) => IsSkippable(handlerType, methodName, Type.EmptyTypes);
-
-        protected static bool IsSkippable(Type handlerType, string methodName, params Type[] paramTypes)
-        {
-            var newParamTypes = new Type[paramTypes.Length + 1];
-            newParamTypes[0] = typeof(IChannelHandlerContext);
-            Array.Copy(paramTypes, 0, newParamTypes, 1, paramTypes.Length);
-            return handlerType.GetMethod(methodName, newParamTypes).GetCustomAttribute<SkipAttribute>(false) != null;
-        }
-
+        
         internal volatile AbstractChannelHandlerContext Next;
         internal volatile AbstractChannelHandlerContext Prev;
 
@@ -242,15 +95,14 @@ namespace DotNetty.Transport.Channels
         {
             return this.Channel.HasAttribute(key);
         }
-        public IChannelHandlerContext FireChannelRegistered()
+        public void FireChannelRegistered()
         {
             InvokeChannelRegistered(this.FindContextInbound());
-            return this;
         }
 
         internal static void InvokeChannelRegistered(AbstractChannelHandlerContext next)
         {
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelRegistered();
@@ -280,15 +132,14 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireChannelUnregistered()
+        public void FireChannelUnregistered()
         {
             InvokeChannelUnregistered(this.FindContextInbound());
-            return this;
         }
 
         internal static void InvokeChannelUnregistered(AbstractChannelHandlerContext next)
         {
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelUnregistered();
@@ -318,15 +169,14 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireChannelActive()
+        public void FireChannelActive()
         {
             InvokeChannelActive(this.FindContextInbound());
-            return this;
         }
 
         internal static void InvokeChannelActive(AbstractChannelHandlerContext next)
         {
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelActive();
@@ -356,15 +206,14 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireChannelInactive()
+        public void FireChannelInactive()
         {
             InvokeChannelInactive(this.FindContextInbound());
-            return this;
         }
 
         internal static void InvokeChannelInactive(AbstractChannelHandlerContext next)
         {
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelInactive();
@@ -394,17 +243,16 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public virtual IChannelHandlerContext FireExceptionCaught(Exception cause)
+        public virtual void FireExceptionCaught(Exception cause)
         {
             InvokeExceptionCaught(this.FindContextInbound(), cause);
-            return this;
         }
 
         internal static void InvokeExceptionCaught(AbstractChannelHandlerContext next, Exception cause)
         {
             Contract.Requires(cause != null);
 
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeExceptionCaught(cause);
@@ -451,16 +299,15 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireUserEventTriggered(object evt)
+        public void FireUserEventTriggered(object evt)
         {
             InvokeUserEventTriggered(this.FindContextInbound(), evt);
-            return this;
         }
 
         internal static void InvokeUserEventTriggered(AbstractChannelHandlerContext next, object evt)
         {
             Contract.Requires(evt != null);
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeUserEventTriggered(evt);
@@ -490,17 +337,16 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireChannelRead(object msg)
+        public void FireChannelRead(object msg)
         {
             InvokeChannelRead(this.FindContextInbound(), msg);
-            return this;
         }
 
         internal static void InvokeChannelRead(AbstractChannelHandlerContext next, object msg)
         {
             Contract.Requires(msg != null);
 
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelRead(msg);
@@ -530,14 +376,14 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireChannelReadComplete()
+        public void FireChannelReadComplete()
         {
             InvokeChannelReadComplete(this.FindContextInbound());
-            return this;
         }
 
-        internal static void InvokeChannelReadComplete(AbstractChannelHandlerContext next) {
-            IEventExecutor nextExecutor = next.Executor;
+        internal static void InvokeChannelReadComplete(AbstractChannelHandlerContext next) 
+        {
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelReadComplete();
@@ -568,15 +414,14 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext FireChannelWritabilityChanged()
+        public void FireChannelWritabilityChanged()
         {
             InvokeChannelWritabilityChanged(this.FindContextInbound());
-            return this;
         }
 
         internal static void InvokeChannelWritabilityChanged(AbstractChannelHandlerContext next)
         {
-            IEventExecutor nextExecutor = next.Executor;
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeChannelWritabilityChanged();
@@ -754,10 +599,10 @@ namespace DotNetty.Transport.Channels
             return this.DeregisterAsync();
         }
 
-        public IChannelHandlerContext Read()
+        public void Read()
         {
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            IEventExecutor nextExecutor = next.Executor;
+            var next = this.FindContextOutbound();
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeRead();
@@ -767,10 +612,9 @@ namespace DotNetty.Transport.Channels
                 // todo: consider caching task
                 nextExecutor.Execute(InvokeReadAction, next);
             }
-            return this;
         }
 
-        void InvokeRead()
+        private void InvokeRead()
         {
             if (this.Added)
             {
@@ -810,7 +654,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public IChannelHandlerContext Flush()
+        public void Flush()
         {
             AbstractChannelHandlerContext next = this.FindContextOutbound();
             IEventExecutor nextExecutor = next.Executor;
@@ -822,10 +666,9 @@ namespace DotNetty.Transport.Channels
             {
                 nextExecutor.Execute(InvokeFlushAction, next);
             }
-            return this;
         }
 
-        void InvokeFlush()
+        private void InvokeFlush()
         {
             if (this.Added)
             {

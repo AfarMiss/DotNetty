@@ -37,16 +37,16 @@ namespace DotNetty.Common.Concurrency
         protected virtual void CancelScheduledTasks()
         {
             Contract.Assert(this.InEventLoop);
-            PriorityQueue<IScheduledRunnable> scheduledTaskQueue = this.ScheduledTaskQueue;
+            var scheduledTaskQueue = this.ScheduledTaskQueue;
             if (IsNullOrEmpty(scheduledTaskQueue))
             {
                 return;
             }
 
-            IScheduledRunnable[] tasks = scheduledTaskQueue.ToArray();
-            foreach (IScheduledRunnable t in tasks)
+            var tasks = scheduledTaskQueue.ToArray();
+            foreach (var runnable in tasks)
             {
-                t.Cancel();
+                runnable.Cancel();
             }
 
             this.ScheduledTaskQueue.Clear();
@@ -58,7 +58,7 @@ namespace DotNetty.Common.Concurrency
         {
             Contract.Assert(this.InEventLoop);
 
-            IScheduledRunnable scheduledTask = this.ScheduledTaskQueue.Peek();
+            var scheduledTask = this.ScheduledTaskQueue.Peek();
             if (scheduledTask == null)
             {
                 return null;
@@ -74,19 +74,19 @@ namespace DotNetty.Common.Concurrency
 
         protected PreciseTimeSpan NextScheduledTaskNanos()
         {
-            IScheduledRunnable nextScheduledRunnable = this.PeekScheduledTask();
+            var nextScheduledRunnable = this.PeekScheduledTask();
             return nextScheduledRunnable?.Deadline ?? PreciseTimeSpan.MinusOne;
         }
 
         protected IScheduledRunnable PeekScheduledTask()
         {
-            PriorityQueue<IScheduledRunnable> scheduledTaskQueue = this.ScheduledTaskQueue;
+            var scheduledTaskQueue = this.ScheduledTaskQueue;
             return IsNullOrEmpty(scheduledTaskQueue) ? null : scheduledTaskQueue.Peek();
         }
 
         protected bool HasScheduledTasks()
         {
-            IScheduledRunnable scheduledTask = this.ScheduledTaskQueue.Peek();
+            var scheduledTask = this.ScheduledTaskQueue.Peek();
             return scheduledTask != null && scheduledTask.Deadline <= PreciseTimeSpan.FromStart;
         }
 

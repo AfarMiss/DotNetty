@@ -8,8 +8,8 @@ namespace DotNetty.Transport.Tests.Performance.Transport
 
     public sealed class SocketPumpPerfSpecs : AbstractPumpPerfSpecs<TcpServerSocketChannel, TcpSocketChannel>
     {
-        protected override IEventLoopGroup NewServerGroup() => new MultithreadEventLoopGroup(1);
+        protected override IEventLoopGroup NewServerGroup() => new MultiThreadEventLoopGroup(1);
 
-        protected override IEventLoopGroup NewWorkerGroup(IEventLoopGroup serverGroup) => new MultithreadEventLoopGroup(1);
+        protected override IEventLoopGroup NewWorkerGroup(IEventLoopGroup serverGroup) => new MultiThreadEventLoopGroup(1);
     }
 }

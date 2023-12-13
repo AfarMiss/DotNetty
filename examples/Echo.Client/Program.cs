@@ -23,7 +23,7 @@ namespace Echo.Client
         {
             ExampleHelper.SetConsoleLogger();
 
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
 
             X509Certificate2 cert = null;
             string targetHost = null;

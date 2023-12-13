@@ -19,7 +19,7 @@ namespace QuoteOfTheMoment.Client
         {
             ExampleHelper.SetConsoleLogger();
 
-            var group = new MultithreadEventLoopGroup();
+            var group = new MultiThreadEventLoopGroup();
 
             try
             {

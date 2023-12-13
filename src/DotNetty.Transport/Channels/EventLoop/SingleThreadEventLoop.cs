@@ -13,47 +13,43 @@ namespace DotNetty.Transport.Channels
     {
         private static readonly TimeSpan DefaultBreakoutInterval = TimeSpan.FromMilliseconds(100);
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
+        /// <inheritdoc />
+        public new IEventLoopGroup Parent => (IEventLoopGroup)base.Parent;
+        public new IEnumerable<IEventLoop> Items => new[] { this };
+        
         public SingleThreadEventLoop() : this(null, DefaultBreakoutInterval)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         public SingleThreadEventLoop(string threadName) : this(threadName, DefaultBreakoutInterval)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         public SingleThreadEventLoop(string threadName, TimeSpan breakoutInterval)
             : base(threadName, breakoutInterval)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         public SingleThreadEventLoop(IEventLoopGroup parent)
             : this(parent, null, DefaultBreakoutInterval)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         public SingleThreadEventLoop(IEventLoopGroup parent, string threadName)
             : this(parent, threadName, DefaultBreakoutInterval)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         public SingleThreadEventLoop(IEventLoopGroup parent, string threadName, TimeSpan breakoutInterval)
             : base(parent, threadName, breakoutInterval)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         protected SingleThreadEventLoop(string threadName, TimeSpan breakoutInterval, IQueue<IRunnable> taskQueue)
             : base(null, threadName, breakoutInterval, taskQueue)
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventLoop"/>.</summary>
         protected SingleThreadEventLoop(IEventLoopGroup parent, string threadName, TimeSpan breakoutInterval, IQueue<IRunnable> taskQueue)
             : base(parent, threadName, breakoutInterval, taskQueue)
         {
@@ -63,10 +59,5 @@ namespace DotNetty.Transport.Channels
 
         /// <inheritdoc />
         public Task RegisterAsync(IChannel channel) => channel.Unsafe.RegisterAsync(this);
-
-        /// <inheritdoc />
-        public new IEventLoopGroup Parent => (IEventLoopGroup)base.Parent;
-
-        public new IEnumerable<IEventLoop> Items => new[] { this };
     }
 }

@@ -231,8 +231,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
 
             T observedPacket = null;
             this.contextMock.Setup(x => x.FireChannelRead(It.IsAny<T>()))
-                .Callback((object message) => observedPacket = Assert.IsAssignableFrom<T>(message))
-                .Returns(this.contextMock.Object);
+                .Callback((object message) => observedPacket = Assert.IsAssignableFrom<T>(message));
 
             foreach (IByteBuffer message in output)
             {

@@ -24,8 +24,8 @@ namespace Echo.Server
             IEventLoopGroup bossGroup;
             IEventLoopGroup workerGroup;
 
-            bossGroup = new MultithreadEventLoopGroup(1);
-            workerGroup = new MultithreadEventLoopGroup();
+            bossGroup = new MultiThreadEventLoopGroup(1);
+            workerGroup = new MultiThreadEventLoopGroup();
 
             X509Certificate2 tlsCertificate = null;
             if (ServerSettings.IsSsl)

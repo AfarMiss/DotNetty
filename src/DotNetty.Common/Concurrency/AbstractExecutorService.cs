@@ -6,7 +6,7 @@ namespace DotNetty.Common.Concurrency
 {
     public abstract class AbstractExecutorService : IExecutorService
     {
-        /// <inheritdoc cref="IExecutorService"/>
+        /// <inheritdoc cref="IExecutorService.IsShutdown"/>
         public abstract bool IsShutdown { get; }
 
         /// <inheritdoc cref="IExecutorService"/>
@@ -64,9 +64,9 @@ namespace DotNetty.Common.Concurrency
 
         #region Queuing data structures
 
-        sealed class ActionTaskQueueNode : IRunnable
+        private sealed class ActionTaskQueueNode : IRunnable
         {
-            readonly Action action;
+            private readonly Action action;
 
             public ActionTaskQueueNode(Action action)
             {

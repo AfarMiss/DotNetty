@@ -154,8 +154,8 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
         {
             SocketDatagramChannel serverChannel = null;
             IChannel clientChannel = null;
-            var serverGroup = new MultithreadEventLoopGroup(1);
-            var clientGroup = new MultithreadEventLoopGroup(1);
+            var serverGroup = new MultiThreadEventLoopGroup(1);
+            var clientGroup = new MultiThreadEventLoopGroup(1);
             try
             {
                 var handler = new TestHandler(expectedData);

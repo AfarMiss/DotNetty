@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace DotNetty.Common.Concurrency
 {
     /// <summary>
-    /// Provides an access to a set of <see cref="IEventExecutor"/>s it manages.
+    /// 管理和调度EventExecutor组
     /// </summary>
     public interface IEventExecutorGroup : IScheduledExecutorService
     {
@@ -14,31 +14,16 @@ namespace DotNetty.Common.Concurrency
         /// </summary>
         IEnumerable<IEventExecutor> Items { get; }
 
-        /// <summary>
-        ///     Returns <c>true</c> if and only if this executor is being shut down via <see cref="ShutdownGracefullyAsync()" />.
-        /// </summary>
+        /// <summary> 仅当通过调用<see cref="ShutdownGracefullyAsync()" />关闭时返回true </summary>
         bool IsShuttingDown { get; }
-
-        /// <summary>
-        /// Terminates this <see cref="IEventExecutorGroup"/> and all its <see cref="IEventExecutor"/>s.
-        /// </summary>
-        /// <returns><see cref="Task"/> for completion of termination.</returns>
+        /// <summary> 终止回调 </summary>
+        Task TerminationCompletion { get; }
+        
+        /// <summary> 终止当前<see cref="IEventExecutorGroup"/>及其所有<see cref="IEventExecutor"/> </summary>
         Task ShutdownGracefullyAsync();
-
-        /// <summary>
-        /// Terminates this <see cref="IEventExecutorGroup"/> and all its <see cref="IEventExecutor"/>s.
-        /// </summary>
-        /// <returns><see cref="Task"/> for completion of termination.</returns>
+        /// <inheritdoc cref="ShutdownGracefullyAsync()"/>
         Task ShutdownGracefullyAsync(TimeSpan quietPeriod, TimeSpan timeout);
 
-        /// <summary>
-        /// A <see cref="Task"/> for completion of termination. <see cref="ShutdownGracefullyAsync()"/>.
-        /// </summary>
-        Task TerminationCompletion { get; }
-
-        /// <summary>
-        /// Returns <see cref="IEventExecutor"/>.
-        /// </summary>
         IEventExecutor GetNext();
     }
 }

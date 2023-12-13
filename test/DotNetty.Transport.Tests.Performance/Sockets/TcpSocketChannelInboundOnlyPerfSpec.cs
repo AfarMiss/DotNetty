@@ -58,8 +58,8 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
         [PerfSetup]
         public void SetUp(BenchmarkContext context)
         {
-            this.ServerGroup = new MultithreadEventLoopGroup(1);
-            this.WorkerGroup = new MultithreadEventLoopGroup();
+            this.ServerGroup = new MultiThreadEventLoopGroup(1);
+            this.WorkerGroup = new MultiThreadEventLoopGroup();
 
             Encoding iso = Encoding.GetEncoding("ISO-8859-1");
             var byteBuffer = Unpooled.Buffer();
@@ -82,11 +82,10 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
                 .ChildOption(ChannelOption.Allocator, this.serverBufferAllocator)
                 .ChildHandler(new ActionChannelInitializer<TcpSocketChannel>(channel =>
                 {
-                    channel.Pipeline
-                        .AddLast(this.GetEncoder())
-                        .AddLast(this.GetDecoder())
-                        .AddLast(counterHandler)
-                        .AddLast(new ReadFinishedHandler(this.signal, WriteCount));
+                    channel.Pipeline.AddLast(this.GetEncoder());
+                    channel.Pipeline.AddLast(this.GetDecoder());
+                    channel.Pipeline.AddLast(counterHandler);
+                    channel.Pipeline.AddLast(new ReadFinishedHandler(this.signal, WriteCount));
                 }));
 
             // start server
