@@ -2,7 +2,7 @@ using System;
 
 namespace DotNetty.Common.Internal.Logging
 {
-    internal sealed class GenericLogger : AbstractInternalLogger
+    internal sealed class InternalDebugLogger : AbstractInternalLogger
     {
         public override bool TraceEnabled => true;
         public override bool DebugEnabled => true;
@@ -10,7 +10,7 @@ namespace DotNetty.Common.Internal.Logging
         public override bool WarnEnabled => true;
         public override bool ErrorEnabled => true;
         
-        public GenericLogger(string name) : base(name) { }
+        public InternalDebugLogger(string name) : base(name) { }
 
         public override void Trace(string msg)
         {

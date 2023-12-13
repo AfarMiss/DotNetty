@@ -17,9 +17,9 @@ namespace DotNetty.Handlers.Logging
     /// </summary>
     public class LoggingHandler : ChannelHandlerAdapter
     {
-        const LogLevel DefaultLevel = LogLevel.DEBUG;
+        const LogLevel DefaultLevel = Logging.LogLevel.DEBUG;
 
-        protected readonly InternalLogLevel InternalLevel;
+        protected readonly Common.Internal.Logging.InternalLogLevel LogLevel;
         protected readonly IInternalLogger Logger;
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace DotNetty.Handlers.Logging
 
             this.Logger = InternalLoggerFactory.GetInstance(type);
             this.Level = level;
-            this.InternalLevel = level.ToInternalLevel();
+            this.LogLevel = level.ToInternalLevel();
         }
 
         /// <summary>
@@ -91,180 +91,180 @@ namespace DotNetty.Handlers.Logging
 
             this.Logger = InternalLoggerFactory.GetInstance(name);
             this.Level = level;
-            this.InternalLevel = level.ToInternalLevel();
+            this.LogLevel = level.ToInternalLevel();
         }
 
         public override bool IsSharable => true;
 
         /// <summary>
-        ///     Returns the <see cref="LogLevel" /> that this handler uses to log
+        ///     Returns the <see cref="Logging.LogLevel" /> that this handler uses to log
         /// </summary>
         public LogLevel Level { get; }
 
         public override void ChannelRegistered(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "REGISTERED"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "REGISTERED"));
             }
             ctx.FireChannelRegistered();
         }
 
         public override void ChannelUnregistered(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "UNREGISTERED"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "UNREGISTERED"));
             }
             ctx.FireChannelUnregistered();
         }
 
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "ACTIVE"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "ACTIVE"));
             }
             ctx.FireChannelActive();
         }
 
         public override void ChannelInactive(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "INACTIVE"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "INACTIVE"));
             }
             ctx.FireChannelInactive();
         }
 
         public override void ExceptionCaught(IChannelHandlerContext ctx, Exception cause)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "EXCEPTION", cause), cause);
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "EXCEPTION", cause), cause);
             }
             ctx.FireExceptionCaught(cause);
         }
 
         public override void UserEventTriggered(IChannelHandlerContext ctx, object evt)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "USER_EVENT", evt));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "USER_EVENT", evt));
             }
             ctx.FireUserEventTriggered(evt);
         }
 
         public override Task BindAsync(IChannelHandlerContext ctx, EndPoint localAddress)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "BIND", localAddress));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "BIND", localAddress));
             }
             return ctx.BindAsync(localAddress);
         }
 
         public override Task ConnectAsync(IChannelHandlerContext ctx, EndPoint remoteAddress, EndPoint localAddress)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "CONNECT", remoteAddress, localAddress));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "CONNECT", remoteAddress, localAddress));
             }
             return ctx.ConnectAsync(remoteAddress, localAddress);
         }
 
         public override Task DisconnectAsync(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "DISCONNECT"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "DISCONNECT"));
             }
             return ctx.DisconnectAsync();
         }
 
         public override Task CloseAsync(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "CLOSE"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "CLOSE"));
             }
             return ctx.CloseAsync();
         }
 
         public override Task DeregisterAsync(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "DEREGISTER"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "DEREGISTER"));
             }
             return ctx.DeregisterAsync();
         }
 
         public override void ChannelRead(IChannelHandlerContext ctx, object message)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "RECEIVED", message));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "RECEIVED", message));
             }
             ctx.FireChannelRead(message);
         }
 
         public override void ChannelReadComplete(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "RECEIVED_COMPLETE"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "RECEIVED_COMPLETE"));
             }
             ctx.FireChannelReadComplete();
         }
 
         public override void ChannelWritabilityChanged(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "WRITABILITY", ctx.Channel.IsWritable));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "WRITABILITY", ctx.Channel.IsWritable));
             }
             ctx.FireChannelWritabilityChanged();
         }
 
         public override void HandlerAdded(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "HANDLER_ADDED"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "HANDLER_ADDED"));
             }
         }
         public override void HandlerRemoved(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "HANDLER_REMOVED"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "HANDLER_REMOVED"));
             }
         }
 
         public override void Read(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "READ"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "READ"));
             }
             ctx.Read();
         }
 
         public override Task WriteAsync(IChannelHandlerContext ctx, object msg)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "WRITE", msg));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "WRITE", msg));
             }
             return ctx.WriteAsync(msg);
         }
 
         public override void Flush(IChannelHandlerContext ctx)
         {
-            if (this.Logger.IsEnabled(this.InternalLevel))
+            if (this.Logger.IsEnabled(this.LogLevel))
             {
-                this.Logger.Log(this.InternalLevel, this.Format(ctx, "FLUSH"));
+                this.Logger.Log(this.LogLevel, this.Format(ctx, "FLUSH"));
             }
             ctx.Flush();
         }

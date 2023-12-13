@@ -7,6 +7,6 @@ namespace DotNetty.Handlers.Logging
 
     public static class LogLevelExtensions
     {
-        public static InternalLogLevel ToInternalLevel(this LogLevel level) => (InternalLogLevel)level;
+        public static Common.Internal.Logging.InternalLogLevel ToInternalLevel(this LogLevel level) => (Common.Internal.Logging.InternalLogLevel)level;
     }
 }
