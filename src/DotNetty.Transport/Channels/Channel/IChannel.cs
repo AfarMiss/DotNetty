@@ -9,7 +9,6 @@ namespace DotNetty.Transport.Channels
     public interface IChannel : IAttributeMap, IComparable<IChannel>
     {
         IChannelId Id { get; }
-        IByteBufferAllocator Allocator { get; }
         IEventLoop EventLoop { get; }
         IChannel Parent { get; }
         bool Open { get; }

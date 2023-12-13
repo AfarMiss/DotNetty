@@ -1,15 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using DotNetty.Buffers;
+using DotNetty.Common;
+using DotNetty.Transport.Channels;
 
 namespace DotNetty.Codecs
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using DotNetty.Buffers;
-    using DotNetty.Common;
-    using DotNetty.Transport.Channels;
-
     public abstract class ByteToMessageDecoder : ChannelHandlerAdapter
     {
         public delegate IByteBuffer CumulationFunc(IByteBufferAllocator alloc, IByteBuffer cumulation, IByteBuffer input);
@@ -21,16 +18,8 @@ namespace DotNetty.Codecs
         public static readonly CumulationFunc MergeCumulator = (allocator, cumulation, input) =>
         {
             IByteBuffer buffer;
-            if (cumulation.WriterIndex > cumulation.MaxCapacity - input.ReadableBytes
-                || cumulation.ReferenceCount > 1)
+            if (cumulation.WriterIndex > cumulation.MaxCapacity - input.ReadableBytes || cumulation.ReferenceCount > 1)
             {
-                // Expand cumulation (by replace it) when either there is not more room in the buffer
-                // or if the refCnt is greater then 1 which may happen when the user use Slice().Retain() or
-                // Duplicate().Retain().
-                //
-                // See:
-                // - https://github.com/netty/netty/issues/2327
-                // - https://github.com/netty/netty/issues/1764
                 buffer = ExpandCumulation(allocator, cumulation, input.ReadableBytes);
             }
             else
@@ -139,9 +128,9 @@ namespace DotNetty.Codecs
 
         protected internal abstract void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output);
 
-        static IByteBuffer ExpandCumulation(IByteBufferAllocator allocator, IByteBuffer cumulation, int readable)
+        private static IByteBuffer ExpandCumulation(IByteBufferAllocator allocator, IByteBuffer cumulation, int readable)
         {
-            IByteBuffer oldCumulation = cumulation;
+            var oldCumulation = cumulation;
             cumulation = allocator.Buffer(oldCumulation.ReadableBytes + readable);
             cumulation.WriteBytes(oldCumulation);
             oldCumulation.Release();
@@ -157,7 +146,7 @@ namespace DotNetty.Codecs
             int readable = buf.ReadableBytes;
             if (readable > 0)
             {
-                var bytes = buf.Allocator.Buffer(readable, buf.MaxCapacity);
+                var bytes = context.Allocator.Buffer(readable, buf.MaxCapacity);
                 buf.ReadBytes(bytes, readable);
                 buf.Release();
                 context.FireChannelRead(bytes);

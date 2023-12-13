@@ -705,7 +705,7 @@ namespace DotNetty.Buffers
             else
             {
                 int maxLength = encoding.GetMaxCharCount(len);
-                IByteBuffer buffer = src.Allocator.Buffer(maxLength);
+                IByteBuffer buffer = Unpooled.Allocator.Buffer(maxLength);
                 try
                 {
                     buffer.WriteBytes(src, readerIndex, len);
@@ -1025,7 +1025,7 @@ namespace DotNetty.Buffers
                     }
                     else
                     {
-                        IByteBuffer heapBuffer = buf.Allocator.Buffer(length);
+                        IByteBuffer heapBuffer = Unpooled.Allocator.Buffer(length);
                         try
                         {
                             heapBuffer.WriteBytes(buf, index, length);

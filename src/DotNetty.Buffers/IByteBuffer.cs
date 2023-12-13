@@ -15,10 +15,7 @@ namespace DotNetty.Buffers
         int ReadableBytes { get; }
         int WritableBytes { get; }
         int MaxWritableBytes { get; }
-        
-        IByteBufferAllocator Allocator { get; }
-        
-        
+     
         /// <summary>
         ///     Returns the maximum <see cref="ArraySegment{T}" /> of <see cref="Byte" /> that this buffer holds. Note that
         ///     <see cref="GetIoBuffers()" />

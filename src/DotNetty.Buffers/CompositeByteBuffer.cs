@@ -728,8 +728,6 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        public override IByteBufferAllocator Allocator => this.allocator;
-
         /// <summary>
         ///     Return the current number of {@link IByteBuffer}'s that are composed in this instance
         /// </summary>
@@ -1021,7 +1019,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        private IByteBuffer AllocateBuffer(int capacity) => this.Allocator.Buffer(capacity);
+        private IByteBuffer AllocateBuffer(int capacity) => Unpooled.Allocator.Buffer(capacity);
 
         public override string ToString()
         {

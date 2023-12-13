@@ -850,7 +850,7 @@ namespace DotNetty.Buffers.Tests
             // buffer.WriteZero(4);
             IByteBuffer copy = withIndexAndLength ? buffer.Copy(0, 4) : buffer.Copy();
             Assert.Equal(buffer, copy);
-            Assert.Same(buffer.Allocator, copy.Allocator);
+            Assert.Same(Unpooled.Allocator, Unpooled.Allocator);
             buffer.Release();
             copy.Release();
         }

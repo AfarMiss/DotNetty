@@ -68,8 +68,6 @@ namespace DotNetty.Transport.Channels
 
         public abstract IChannelConfiguration Configuration { get; }
 
-        public IByteBufferAllocator Allocator => this.Configuration.Allocator;
-
         public IEventLoop EventLoop
         {
             get

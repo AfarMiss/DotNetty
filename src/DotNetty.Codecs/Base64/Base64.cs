@@ -21,7 +21,7 @@ namespace DotNetty.Codecs.Base64
 
         public static IByteBuffer Encode(IByteBuffer src, bool breakLines, Base64Dialect dialect) => Encode(src, src.ReaderIndex, src.ReadableBytes, breakLines, dialect);
 
-        public static IByteBuffer Encode(IByteBuffer src, int offset, int length, bool breakLines, Base64Dialect dialect) => Encode(src, offset, length, breakLines, dialect, src.Allocator);
+        public static IByteBuffer Encode(IByteBuffer src, int offset, int length, bool breakLines, Base64Dialect dialect) => Encode(src, offset, length, breakLines, dialect, Unpooled.Allocator);
 
         static unsafe int EncodeUsingPointer(byte* alphabet, IByteBuffer src, IByteBuffer dest, int offset, int length, bool breakLines)
         {
@@ -191,7 +191,7 @@ namespace DotNetty.Codecs.Base64
 
         public static IByteBuffer Decode(IByteBuffer src, Base64Dialect dialect) => Decode(src, src.ReaderIndex, src.ReadableBytes, dialect);
 
-        public static IByteBuffer Decode(IByteBuffer src, int offset, int length, Base64Dialect dialect) => Decode(src, offset, length, dialect, src.Allocator);
+        public static IByteBuffer Decode(IByteBuffer src, int offset, int length, Base64Dialect dialect) => Decode(src, offset, length, dialect, Unpooled.Allocator);
 
         static unsafe int DecodeUsingPointer(IByteBuffer src, IByteBuffer dest, sbyte* decodabet, int offset, int length)
         {

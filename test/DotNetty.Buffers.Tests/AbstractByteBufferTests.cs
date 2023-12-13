@@ -1531,7 +1531,7 @@ namespace DotNetty.Buffers.Tests
                 this.random.NextBytes(expectedValue);
                 Assert.Equal(i, this.buffer.ReaderIndex);
                 Assert.Equal(Capacity, this.buffer.WriterIndex);
-                var actualValue = this.buffer.Allocator.Buffer(BlockSize);
+                var actualValue = Unpooled.Allocator.Buffer(BlockSize);
                 this.buffer.ReadBytes(actualValue, BlockSize);
                 Assert.Equal(Unpooled.WrappedBuffer(expectedValue), actualValue, EqualityComparer<IByteBuffer>.Default);
 
@@ -2366,7 +2366,7 @@ namespace DotNetty.Buffers.Tests
         public void ReadBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() =>
         {
             var releasedBuffer = this.ReleasedBuffer();
-            releasedBuffer.Allocator.Buffer(1);
+            Unpooled.Allocator.Buffer(1);
             releasedBuffer.ReadBytes(releasedBuffer, 1);
         });
 
@@ -3323,9 +3323,9 @@ namespace DotNetty.Buffers.Tests
             IByteBuffer buf = this.NewBuffer(8);
             var bytes = new byte[8];
             buf.WriteBytes(bytes);
-            var buffer2 = buf.Allocator.Buffer(4);
+            var buffer2 = Unpooled.Allocator.Buffer(4);
             buf.ReadBytes(buffer2, 4);
-            Assert.Same(buf.Allocator, buffer2.Allocator);
+            Assert.Same(Unpooled.Allocator, Unpooled.Allocator);
             Assert.Equal(4, buf.ReaderIndex);
             Assert.True(buf.Release());
             Assert.Equal(0, buf.ReferenceCount);

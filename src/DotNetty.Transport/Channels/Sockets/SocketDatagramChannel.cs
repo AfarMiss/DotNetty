@@ -285,7 +285,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
 
             // Composite
-            IByteBuffer data = this.Allocator.Buffer(readableBytes);
+            IByteBuffer data = this.Configuration.Allocator.Buffer(readableBytes);
             data.WriteBytes(buffer, buffer.ReaderIndex, readableBytes);
             buffer.SafeRelease();
 
@@ -305,7 +305,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
 
             // Composite
-            IByteBuffer data = this.Allocator.Buffer(readableBytes);
+            IByteBuffer data = this.Configuration.Allocator.Buffer(readableBytes);
             data.WriteBytes(buffer, buffer.ReaderIndex, readableBytes);
             holder.SafeRelease();
 

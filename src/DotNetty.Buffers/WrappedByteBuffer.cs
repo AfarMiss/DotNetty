@@ -33,8 +33,6 @@ namespace DotNetty.Buffers
 
         public int MaxCapacity => this.Buf.MaxCapacity;
 
-        public IByteBufferAllocator Allocator => this.Buf.Allocator;
-
         public IByteBuffer Unwrap() => this.Buf;
 
         public int ReaderIndex => this.Buf.ReaderIndex;

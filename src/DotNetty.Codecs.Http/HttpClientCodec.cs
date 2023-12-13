@@ -148,7 +148,7 @@ namespace DotNetty.Codecs.Http
                         return;
                     }
 
-                    var byteBuffer = buffer.Allocator.Buffer(readable);
+                    var byteBuffer = Unpooled.Allocator.Buffer(readable);
                     buffer.ReadBytes(byteBuffer, readable);
                     output.Add(byteBuffer);
                 }

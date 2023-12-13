@@ -30,7 +30,6 @@ namespace DotNetty.Buffers
         public virtual int MaxWritableBytes => this.MaxCapacity - this.writerIndex;
         
         public abstract int Capacity { get; }
-        public abstract IByteBufferAllocator Allocator { get; }
         
         protected AbstractByteBuffer(int maxCapacity)
         {
@@ -202,7 +201,7 @@ namespace DotNetty.Buffers
             }
 
             // Normalize the current capacity to the power of 2.
-            int newCapacity = this.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
+            int newCapacity = Unpooled.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
 
             // Adjust to the new capacity.
             this.AdjustCapacity(newCapacity);
@@ -230,7 +229,7 @@ namespace DotNetty.Buffers
             }
 
             // Normalize the current capacity to the power of 2.
-            int newCapacity = this.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
+            int newCapacity = Unpooled.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
 
             // Adjust to the new capacity.
             this.AdjustCapacity(newCapacity);

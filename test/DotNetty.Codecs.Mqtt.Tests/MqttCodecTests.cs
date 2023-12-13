@@ -240,7 +240,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
                 {
                     while (message.IsReadable())
                     {
-                        var byteBuffer = message.Allocator.Buffer(1);
+                        var byteBuffer = Unpooled.Allocator.Buffer(1);
                         message.ReadBytes(byteBuffer, 1);
                         IByteBuffer finalBuffer = byteBuffer;
                         mqttDecoder.ChannelRead(this.contextMock.Object, finalBuffer);

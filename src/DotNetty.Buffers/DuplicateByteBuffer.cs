@@ -26,8 +26,6 @@ namespace DotNetty.Buffers
 
         private AbstractByteBuffer UnwrapCore() => this.buffer;
 
-        public override IByteBufferAllocator Allocator => this.Unwrap().Allocator;
-
         public override int Capacity => this.Unwrap().Capacity;
 
         public override IByteBuffer AdjustCapacity(int newCapacity) => this.Unwrap().AdjustCapacity(newCapacity);

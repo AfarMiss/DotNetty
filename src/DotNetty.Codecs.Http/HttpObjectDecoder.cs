@@ -340,7 +340,7 @@ namespace DotNetty.Codecs.Http
                         // other handler will replace this codec with the upgraded protocol codec to
                         // take the traffic over at some point then.
                         // See https://github.com/netty/netty/issues/2173
-                        var byteBuffer = buffer.Allocator.Buffer(readableBytes);
+                        var byteBuffer = Unpooled.Allocator.Buffer(readableBytes);
                         buffer.ReadBytes(byteBuffer, readableBytes);
                         output.Add(byteBuffer);
                     }

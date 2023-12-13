@@ -77,7 +77,7 @@ namespace DotNetty.Handlers.Tests
                 {
                     do
                     {
-                        var byteBuffer = this.pendingBuffer.Allocator.Buffer(this.maxBatchSize);
+                        var byteBuffer = Unpooled.Allocator.Buffer(this.maxBatchSize);
                         this.pendingBuffer.ReadBytes(byteBuffer, this.maxBatchSize);
                         this.channel.WriteInbound(byteBuffer);
                     }

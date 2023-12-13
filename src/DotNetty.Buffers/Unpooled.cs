@@ -14,7 +14,7 @@ namespace DotNetty.Buffers
     /// </summary>
     public static class Unpooled
     {
-        static readonly ByteBufferAllocator Allocator = ByteBufferAllocator.Default;
+        public static readonly ByteBufferAllocator Allocator = ByteBufferAllocator.Default;
 
         public static readonly IByteBuffer Empty = Allocator.Buffer(0, 0);
 

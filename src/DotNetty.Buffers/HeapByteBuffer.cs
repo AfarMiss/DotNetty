@@ -10,11 +10,9 @@ namespace DotNetty.Buffers
     {
         #region IByteBuffer
 
-        private readonly IByteBufferAllocator allocator;
         private byte[] array;
         private bool isPool;
         private readonly int capacity;
-        public override IByteBufferAllocator Allocator => this.allocator;
 
         public override int Capacity
         {
@@ -47,7 +45,6 @@ namespace DotNetty.Buffers
             Contract.Requires(alloc != null);
             Contract.Requires(initialCapacity <= maxCapacity);
 
-            this.allocator = alloc;
             this.capacity = initialCapacity;
             this.SetArray(this.NewArray(initialCapacity));
             this.SetIndex0(0, 0);
@@ -64,7 +61,6 @@ namespace DotNetty.Buffers
                 throw new ArgumentException($"initialCapacity({initialArray.Length}) > maxCapacity({maxCapacity})");
             }
 
-            this.allocator = alloc;
             this.capacity = initialArray.Length;
             this.SetArray(initialArray);
             this.SetIndex0(0, initialArray.Length);
@@ -149,7 +145,7 @@ namespace DotNetty.Buffers
             var copiedArray = new byte[length];
             PlatformDependent.CopyMemory(this.array, index, copiedArray, 0, length);
 
-            return new HeapByteBuffer(this.Allocator, copiedArray, this.MaxCapacity);
+            return new HeapByteBuffer(Unpooled.Allocator, copiedArray, this.MaxCapacity);
         }
 
         protected internal override void Deallocate()

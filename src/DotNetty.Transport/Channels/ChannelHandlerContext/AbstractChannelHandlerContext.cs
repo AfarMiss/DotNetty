@@ -57,7 +57,7 @@ namespace DotNetty.Transport.Channels
 
         public IChannel Channel => this.pipeline.Channel;
 
-        public IByteBufferAllocator Allocator => this.Channel.Allocator;
+        public IByteBufferAllocator Allocator => this.Channel.Configuration.Allocator;
 
         public abstract IChannelHandler Handler { get; }
 

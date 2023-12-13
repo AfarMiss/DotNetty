@@ -17,8 +17,6 @@ namespace DotNetty.Buffers
         public EmptyByteBuffer(IByteBufferAllocator allocator)
         {
             Contract.Requires(allocator != null);
-
-            this.Allocator = allocator;
         }
 
         public int Capacity => 0;
@@ -26,8 +24,6 @@ namespace DotNetty.Buffers
         public IByteBuffer AdjustCapacity(int newCapacity) =>throw new NotSupportedException();
 
         public int MaxCapacity => 0;
-
-        public IByteBufferAllocator Allocator { get; }
 
         public IByteBuffer Unwrap() => null;
 
