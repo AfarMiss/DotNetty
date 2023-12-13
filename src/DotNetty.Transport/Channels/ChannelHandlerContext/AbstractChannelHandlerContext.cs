@@ -13,7 +13,7 @@ using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    internal abstract class AbstractChannelHandlerContext : IChannelHandlerContext, IResourceLeakHint
+    internal abstract class AbstractChannelHandlerContext : IChannelHandlerContext
     {
         private static readonly Action<object> InvokeChannelReadCompleteAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelReadComplete();
         private static readonly Action<object> InvokeReadAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeRead();
@@ -767,8 +767,6 @@ namespace DotNetty.Transport.Channels
                 }
             }
         }
-
-        public string ToHintString() => $"\'{this.Name}\' will handle the message from this point.";
 
         public override string ToString() => $"{typeof(IChannelHandlerContext).Name} ({this.Name}, {this.Channel})";
 

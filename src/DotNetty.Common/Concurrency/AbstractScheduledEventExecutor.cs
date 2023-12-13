@@ -18,8 +18,7 @@ namespace DotNetty.Common.Concurrency
         {
         }
 
-        protected AbstractScheduledEventExecutor(IEventExecutorGroup parent)
-            : base(parent)
+        protected AbstractScheduledEventExecutor(IEventExecutorGroup parent) : base(parent)
         {
         }
 

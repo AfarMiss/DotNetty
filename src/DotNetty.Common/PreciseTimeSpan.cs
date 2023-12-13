@@ -8,23 +8,16 @@ namespace DotNetty.Common
         private static readonly long StartTime = Stopwatch.GetTimestamp();
         private static readonly double PrecisionRatio = (double)Stopwatch.Frequency / TimeSpan.TicksPerSecond;
         private static readonly double ReversePrecisionRatio = (double)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
+        public static readonly PreciseTimeSpan Zero = new PreciseTimeSpan(0);
+        public static readonly PreciseTimeSpan MinusOne = new PreciseTimeSpan(-1);
+        public static PreciseTimeSpan FromStart => new PreciseTimeSpan(GetTimeChangeSinceStart());
 
         private readonly long ticks;
-
-        private PreciseTimeSpan(long ticks) : this()
-        {
-            this.ticks = ticks;
-        }
-
         public long Ticks => this.ticks;
 
-        public static readonly PreciseTimeSpan Zero = new PreciseTimeSpan(0);
-
-        public static readonly PreciseTimeSpan MinusOne = new PreciseTimeSpan(-1);
+        private PreciseTimeSpan(long ticks) : this() => this.ticks = ticks;
 
         public static PreciseTimeSpan FromTicks(long ticks) => new PreciseTimeSpan(ticks);
-
-        public static PreciseTimeSpan FromStart => new PreciseTimeSpan(GetTimeChangeSinceStart());
 
         public static PreciseTimeSpan FromTimeSpan(TimeSpan timeSpan) => new PreciseTimeSpan(TicksToPreciseTicks(timeSpan.Ticks));
 
@@ -32,24 +25,15 @@ namespace DotNetty.Common
 
         public static PreciseTimeSpan Deadline(PreciseTimeSpan deadline) => new PreciseTimeSpan(GetTimeChangeSinceStart() + deadline.ticks);
 
-        static long TicksToPreciseTicks(long ticks) => Stopwatch.IsHighResolution ? (long)(ticks * PrecisionRatio) : ticks;
+        private static long TicksToPreciseTicks(long ticks) => Stopwatch.IsHighResolution ? (long)(ticks * PrecisionRatio) : ticks;
 
         public TimeSpan ToTimeSpan() => TimeSpan.FromTicks((long)(this.ticks * ReversePrecisionRatio));
 
-        static long GetTimeChangeSinceStart() => Stopwatch.GetTimestamp() - StartTime;
+        private static long GetTimeChangeSinceStart() => Stopwatch.GetTimestamp() - StartTime;
 
         public bool Equals(PreciseTimeSpan other) => this.ticks == other.ticks;
 
-        public override bool Equals(object obj)
-        {
-            if (obj is PreciseTimeSpan)
-            {
-                return this.Equals((PreciseTimeSpan)obj);
-            }
-
-            return false;
-        }
-
+        public override bool Equals(object obj) => obj is PreciseTimeSpan timeSpan && this.Equals(timeSpan);
         public override int GetHashCode() => this.ticks.GetHashCode();
 
         public int CompareTo(PreciseTimeSpan other) => this.ticks.CompareTo(other.ticks);

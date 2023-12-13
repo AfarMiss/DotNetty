@@ -50,7 +50,7 @@ namespace DotNetty.Common
             Schedule(thread, task, false);
         }
 
-        static void Schedule(Thread thread, Action task, bool isWatch)
+        private static void Schedule(Thread thread, Action task, bool isWatch)
         {
             PendingEntries.TryEnqueue(new Entry(thread, task, isWatch));
 
@@ -86,24 +86,24 @@ namespace DotNetty.Common
             }
         }
 
-        sealed class Watcher : IRunnable
+        private sealed class Watcher : IRunnable
         {
-            readonly List<Entry> watchees = new List<Entry>();
+            private readonly List<Entry> watchers = new List<Entry>();
 
             public void Run()
             {
                 for (;;)
                 {
-                    this.FetchWatchees();
-                    this.NotifyWatchees();
+                    this.FetchWatchers();
+                    this.NotifyWatchers();
 
                     // Try once again just in case notifyWatchees() triggered watch() or unwatch().
-                    this.FetchWatchees();
-                    this.NotifyWatchees();
+                    this.FetchWatchers();
+                    this.NotifyWatchers();
 
                     Thread.Sleep(1000);
 
-                    if (this.watchees.Count == 0 && PendingEntries.IsEmpty)
+                    if (this.watchers.Count == 0 && PendingEntries.IsEmpty)
                     {
                         // Mark the current worker thread as stopped.
                         // The following CAS must always success and must be uncontended,
@@ -136,36 +136,35 @@ namespace DotNetty.Common
                 }
             }
 
-            void FetchWatchees()
+            private void FetchWatchers()
             {
                 for (;;)
                 {
-                    Entry e;
-                    if (!PendingEntries.TryDequeue(out e))
+                    if (!PendingEntries.TryDequeue(out var entry))
                     {
                         break;
                     }
 
-                    if (e.IsWatch)
+                    if (entry.IsWatch)
                     {
-                        this.watchees.Add(e);
+                        this.watchers.Add(entry);
                     }
                     else
                     {
-                        this.watchees.Remove(e);
+                        this.watchers.Remove(entry);
                     }
                 }
             }
 
-            void NotifyWatchees()
+            private void NotifyWatchers()
             {
-                List<Entry> watchees = this.watchees;
-                for (int i = 0; i < watchees.Count;)
+                var watchers = this.watchers;
+                for (int i = 0; i < watchers.Count;)
                 {
-                    Entry e = watchees[i];
+                    Entry e = watchers[i];
                     if (!e.Thread.IsAlive)
                     {
-                        watchees.RemoveAt(i);
+                        watchers.RemoveAt(i);
                         try
                         {
                             e.Task();
@@ -183,7 +182,7 @@ namespace DotNetty.Common
             }
         }
 
-        sealed class Entry
+        private sealed class Entry
         {
             internal readonly Thread Thread;
             internal readonly Action Task;
@@ -205,13 +204,12 @@ namespace DotNetty.Common
                     return true;
                 }
 
-                if (!(obj is Entry))
+                if (!(obj is Entry entry))
                 {
                     return false;
                 }
 
-                var that = (Entry)obj;
-                return this.Thread == that.Thread && this.Task == that.Task;
+                return this.Thread == entry.Thread && this.Task == entry.Task;
             }
         }
     }

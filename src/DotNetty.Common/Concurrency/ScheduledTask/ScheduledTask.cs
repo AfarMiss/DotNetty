@@ -71,7 +71,7 @@ namespace DotNetty.Common.Concurrency
 
         bool TrySetUncancelable() => this.AtomicCancellationStateUpdate(CancellationProhibited, CancellationRequested);
 
-        bool AtomicCancellationStateUpdate(int newBits, int illegalBits)
+        private bool AtomicCancellationStateUpdate(int newBits, int illegalBits)
         {
             int cancellationState = Volatile.Read(ref this.volatileCancellationState);
             int oldCancellationState;

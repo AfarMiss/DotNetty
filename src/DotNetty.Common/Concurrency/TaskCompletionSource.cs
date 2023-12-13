@@ -23,7 +23,7 @@ namespace DotNetty.Common.Concurrency
 
         public override string ToString() => "TaskCompletionSource[status: " + this.Task.Status.ToString() + "]";
 
-        static TaskCompletionSource CreateVoidTcs()
+        private static TaskCompletionSource CreateVoidTcs()
         {
             var tcs = new TaskCompletionSource();
             tcs.TryComplete();
