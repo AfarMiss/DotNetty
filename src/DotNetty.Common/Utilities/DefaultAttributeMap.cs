@@ -139,14 +139,12 @@ namespace DotNetty.Common.Utilities
             }
         }
 
-        sealed class DefaultAttribute<T> : DefaultAttribute, IAttribute<T>
-            where T : class
+        private sealed class DefaultAttribute<T> : DefaultAttribute, IAttribute<T> where T : class
         {
-            readonly AttributeKey<T> key;
-            T value;
+            private readonly AttributeKey<T> key;
+            private T value;
 
-            public DefaultAttribute(DefaultAttribute head, AttributeKey<T> key)
-                : base(head)
+            public DefaultAttribute(DefaultAttribute head, AttributeKey<T> key) : base(head)
             {
                 this.key = key;
             }

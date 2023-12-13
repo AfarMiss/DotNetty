@@ -1,21 +1,11 @@
 ﻿namespace DotNetty.Common.Utilities
 {
-    /// <summary>Holds <see cref="IAttribute{T}" />s which can be accessed via <see cref="AttributeKey{T}" />.</summary>
-    /// <remarks>Implementations must be Thread-safe.</remarks>
+    /// <summary>持有 <see cref="IAttribute{T}"/> 容器</summary>
+    /// <remarks>实现必须是线程安全</remarks>
     public interface IAttributeMap
     {
-        /// <summary>
-        ///     Get the <see cref="IAttribute{T}" /> for the given <see cref="AttributeKey{T}" />. This method will never return
-        ///     null, but may return an <see cref="IAttribute{T}" /> which does not have a value set yet.
-        /// </summary>
-        IAttribute<T> GetAttribute<T>(AttributeKey<T> key)
-            where T : class;
-
-        /// <summary>
-        ///     Returns <c>true</c> if and only if the given <see cref="IAttribute{T}" /> exists in this
-        ///     <see cref="IAttributeMap" />.
-        /// </summary>
-        bool HasAttribute<T>(AttributeKey<T> key)
-            where T : class;
+        /// <summary> <see cref="AttributeKey{T}"/> 不存在则是默认</summary>
+        IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class;
+        bool HasAttribute<T>(AttributeKey<T> key) where T : class;
     }
 }
