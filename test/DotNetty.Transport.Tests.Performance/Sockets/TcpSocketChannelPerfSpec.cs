@@ -90,7 +90,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             string targetHost = tlsCertificate.GetNameInfo(X509NameType.DnsName, false);
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.ServerGroup, this.WorkerGroup)
+                .SetGroup(this.ServerGroup, this.WorkerGroup)
                 .Channel<TcpServerSocketChannel>()
                 .ChildOption(ChannelOption.Allocator, this.serverBufferAllocator)
                 .ChildHandler(new ActionChannelInitializer<TcpSocketChannel>(channel =>
@@ -103,10 +103,10 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
                 }));
 
             Bootstrap cb = new Bootstrap()
-                .Group(this.ClientGroup)
+                .SetGroup(this.ClientGroup)
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.Allocator, this.clientBufferAllocator)
-                .Handler(new ActionChannelInitializer<TcpSocketChannel>(
+                .SetHandler(new ActionChannelInitializer<TcpSocketChannel>(
                     channel =>
                     {
                         // channel.Pipeline.AddLast(TlsHandler.Client(targetHost, null, (sender, certificate, chain, errors) => true));

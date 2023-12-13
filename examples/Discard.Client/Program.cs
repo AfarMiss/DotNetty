@@ -35,10 +35,10 @@ namespace Discard.Client
             {
                 var bootstrap = new Bootstrap();
                 bootstrap
-                    .Group(group)
+                    .SetGroup(group)
                     .Channel<TcpSocketChannel>()
                     .Option(ChannelOption.TcpNodelay, true)
-                    .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                    .SetHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
 

@@ -107,12 +107,12 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 var multicastHandler = new MulticastTestHandler();
                 var serverBootstrap = new Bootstrap();
                 serverBootstrap
-                    .Group(serverGroup)
+                    .SetGroup(serverGroup)
                     .ChannelFactory(() => new SocketDatagramChannel(addressFamily))
                     .Option(ChannelOption.Allocator, allocator)
                     .Option(ChannelOption.SoReuseaddr, true)
                     .Option(ChannelOption.IpMulticastLoopDisabled, false)
-                    .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                    .SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         channel.Pipeline.AddLast(nameof(SocketDatagramChannelMulticastTest), multicastHandler);
                     }));
@@ -130,12 +130,12 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
                 var clientBootstrap = new Bootstrap();
                 clientBootstrap
-                    .Group(clientGroup)
+                    .SetGroup(clientGroup)
                     .ChannelFactory(() => new SocketDatagramChannel(addressFamily))
                     .Option(ChannelOption.Allocator, allocator)
                     .Option(ChannelOption.SoReuseaddr, true)
                     .Option(ChannelOption.IpMulticastLoopDisabled, false)
-                    .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                    .SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         channel.Pipeline.AddLast("Dummy", new NetUtil.DummyHandler());
                     }));

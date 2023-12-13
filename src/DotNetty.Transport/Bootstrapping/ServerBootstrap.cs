@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
@@ -40,18 +39,18 @@ namespace DotNetty.Transport.Bootstrapping
         /// <summary>
         /// Specifies the <see cref="IEventLoopGroup"/> which is used for the parent (acceptor) and the child (client).
         /// </summary>
-        public override ServerBootstrap Group(IEventLoopGroup group) => this.Group(group, group);
+        public override ServerBootstrap SetGroup(IEventLoopGroup group) => this.SetGroup(group, group);
 
         /// <summary>
         /// Sets the <see cref="IEventLoopGroup"/> for the parent (acceptor) and the child (client). These
         /// <see cref="IEventLoopGroup"/>'s are used to handle all the events and IO for <see cref="IServerChannel"/>
         /// and <see cref="IChannel"/>'s.
         /// </summary>
-        public ServerBootstrap Group(IEventLoopGroup parentGroup, IEventLoopGroup childGroup)
+        public ServerBootstrap SetGroup(IEventLoopGroup parentGroup, IEventLoopGroup childGroup)
         {
             Contract.Requires(childGroup != null);
 
-            base.Group(parentGroup);
+            base.SetGroup(parentGroup);
             if (this.childGroup != null)
             {
                 throw new InvalidOperationException("childGroup set already");
@@ -128,7 +127,7 @@ namespace DotNetty.Transport.Bootstrapping
             }
 
             IChannelPipeline p = channel.Pipeline;
-            IChannelHandler channelHandler = this.Handler();
+            IChannelHandler channelHandler = this.Handler;
             if (channelHandler != null)
             {
                 p.AddLast((string)null, channelHandler);
@@ -146,7 +145,7 @@ namespace DotNetty.Transport.Bootstrapping
             }));
         }
 
-        public override ServerBootstrap Validate()
+        public override void Validate()
         {
             base.Validate();
             if (this.childHandler == null)
@@ -156,12 +155,11 @@ namespace DotNetty.Transport.Bootstrapping
             if (this.childGroup == null)
             {
                 Logger.Warn("childGroup is not set. Using parentGroup instead.");
-                this.childGroup = this.Group();
+                this.childGroup = this.Group;
             }
-            return this;
         }
 
-        class ServerBootstrapAcceptor : ChannelHandlerAdapter
+        private class ServerBootstrapAcceptor : ChannelHandlerAdapter
         {
             private readonly IEventLoopGroup childGroup;
             private readonly IChannelHandler childHandler;
@@ -226,48 +224,5 @@ namespace DotNetty.Transport.Bootstrapping
         }
 
         public override ServerBootstrap Clone() => new ServerBootstrap(this);
-
-        public override string ToString()
-        {
-            var buf = new StringBuilder(base.ToString());
-            buf.Length = buf.Length - 1;
-            buf.Append(", ");
-            if (this.childGroup != null)
-            {
-                buf.Append("childGroup: ")
-                    .Append(this.childGroup.GetType().Name)
-                    .Append(", ");
-            }
-            buf.Append("childOptions: ")
-                .Append(this.childOptions.ToDebugString())
-                .Append(", ");
-            // todo: attrs
-            //lock (childAttrs)
-            //{
-            //    if (!childAttrs.isEmpty())
-            //    {
-            //        buf.Append("childAttrs: ");
-            //        buf.Append(childAttrs);
-            //        buf.Append(", ");
-            //    }
-            //}
-            if (this.childHandler != null)
-            {
-                buf.Append("childHandler: ");
-                buf.Append(this.childHandler);
-                buf.Append(", ");
-            }
-            if (buf[buf.Length - 1] == '(')
-            {
-                buf.Append(')');
-            }
-            else
-            {
-                buf[buf.Length - 2] = ')';
-                buf.Length = buf.Length - 1;
-            }
-
-            return buf.ToString();
-        }
     }
 }

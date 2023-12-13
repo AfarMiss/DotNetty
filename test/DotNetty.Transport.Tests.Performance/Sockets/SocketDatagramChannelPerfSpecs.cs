@@ -136,12 +136,12 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.serverGroup = new MultiThreadEventLoopGroup(1);
             this.serverBootstrap = new Bootstrap();
             this.serverBootstrap
-                .Group(this.serverGroup)
+                .SetGroup(this.serverGroup)
                 .Channel<SocketDatagramChannel>()
                 .Option(ChannelOption.Allocator, this.serverBufferAllocator)
                 .Option(ChannelOption.SoBroadcast, true)
                 .Option(ChannelOption.IpMulticastLoopDisabled, false)
-                .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                .SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                 {
                     channel.Pipeline.AddLast(this.inboundCounter);
                 }));
@@ -161,12 +161,12 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.clientBufferAllocator = new ByteBufferAllocator();
             this.clientBootstrap = new Bootstrap();
             this.clientBootstrap
-                .Group(this.clientGroup)
+                .SetGroup(this.clientGroup)
                 .Channel<SocketDatagramChannel>()
                 .Option(ChannelOption.Allocator, this.clientBufferAllocator)
                 .Option(ChannelOption.SoBroadcast, true)
                 .Option(ChannelOption.IpMulticastLoopDisabled, false)
-                .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                .SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                 {
                     channel.Pipeline.AddLast(this.outboundCounter);
                 }));

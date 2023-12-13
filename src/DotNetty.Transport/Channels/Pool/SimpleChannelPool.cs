@@ -97,7 +97,7 @@ namespace DotNetty.Transport.Channels.Pool
 
             // Clone the original Bootstrap as we want to set our own handler
             this.Bootstrap = bootstrap.Clone();
-            this.Bootstrap.Handler(new ActionChannelInitializer<IChannel>(this.OnChannelInitializing));
+            this.Bootstrap.SetHandler(new ActionChannelInitializer<IChannel>(this.OnChannelInitializing));
             this.store =
                 lastRecentUsed
                     ? (IQueue<IChannel>)new CompatibleConcurrentStack<IChannel>()

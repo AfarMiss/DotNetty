@@ -32,10 +32,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestAcquire()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -70,10 +70,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestAcquireTimeout()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -101,10 +101,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestAcquireNewConnection()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -139,10 +139,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestAcquireNewConnectionWhen()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -168,10 +168,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestAcquireBoundQueue()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -202,10 +202,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestReleaseDifferentPool()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -235,10 +235,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestReleaseAfterClosePool()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -266,10 +266,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         public async Task TestReleaseClosed()
         {
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(this.group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(this.group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.group)
+                .SetGroup(this.group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(

@@ -35,13 +35,13 @@ namespace Echo.Server
             try
             {
                 var bootstrap = new ServerBootstrap();
-                bootstrap.Group(bossGroup, workerGroup);
+                bootstrap.SetGroup(bossGroup, workerGroup);
 
                 bootstrap.Channel<TcpServerSocketChannel>();
 
                 bootstrap
                     .Option(ChannelOption.SoBacklog, 100)
-                    .Handler(new LoggingHandler("SRV-LSTN"))
+                    .SetHandler(new LoggingHandler("SRV-LSTN"))
                     .ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;

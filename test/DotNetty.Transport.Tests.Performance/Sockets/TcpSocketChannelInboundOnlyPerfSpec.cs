@@ -77,7 +77,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             this.serverBufferAllocator = new ByteBufferAllocator();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.ServerGroup, this.WorkerGroup)
+                .SetGroup(this.ServerGroup, this.WorkerGroup)
                 .Channel<TcpServerSocketChannel>()
                 .ChildOption(ChannelOption.Allocator, this.serverBufferAllocator)
                 .ChildHandler(new ActionChannelInitializer<TcpSocketChannel>(channel =>

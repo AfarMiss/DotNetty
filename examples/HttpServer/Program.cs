@@ -57,7 +57,7 @@ namespace HttpServer
             try
             {
                 var bootstrap = new ServerBootstrap();
-                bootstrap.Group(group, workGroup);
+                bootstrap.SetGroup(group, workGroup);
 
                 bootstrap.Channel<TcpServerSocketChannel>();
 

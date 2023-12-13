@@ -203,7 +203,7 @@ namespace DotNetty.Transport.Channels.Pool
                 }
             }
 
-            this.executor = bootstrap.Group().GetNext();
+            this.executor = bootstrap.Group.GetNext();
             this.maxConnections = maxConnections;
             this.maxPendingAcquires = maxPendingAcquires;
         }

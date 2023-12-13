@@ -46,7 +46,7 @@ namespace DotNetty.Transport.Tests.Performance.Transport
             // Start server
             this.serverHandler = new BlackholeServerHandler();
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.serverGroup, this.workerGroup)
+                .SetGroup(this.serverGroup, this.workerGroup)
                 .Channel<TServer>()
                 .ChildHandler(new ActionChannelInitializer<TClient>(channel =>
                 {

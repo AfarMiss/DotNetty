@@ -31,10 +31,10 @@ namespace Factorial.Server
             {
                 var bootstrap = new ServerBootstrap();
                 bootstrap
-                    .Group(bossGroup, workerGroup)
+                    .SetGroup(bossGroup, workerGroup)
                     .Channel<TcpServerSocketChannel>()
                     .Option(ChannelOption.SoBacklog, 100)
-                    .Handler(new LoggingHandler("LSTN"))
+                    .SetHandler(new LoggingHandler("LSTN"))
                     .ChildHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;

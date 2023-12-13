@@ -57,7 +57,7 @@ namespace WebSockets.Server
             try
             {
                 var bootstrap = new ServerBootstrap();
-                bootstrap.Group(bossGroup, workGroup);
+                bootstrap.SetGroup(bossGroup, workGroup);
 
                 bootstrap.Channel<TcpServerSocketChannel>();
 

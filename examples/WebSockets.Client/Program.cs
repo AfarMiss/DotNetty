@@ -56,7 +56,7 @@ namespace WebSockets.Client
             {
                 var bootstrap = new Bootstrap();
                 bootstrap
-                    .Group(group)
+                    .SetGroup(group)
                     .Option(ChannelOption.TcpNodelay, true);
                 bootstrap.Channel<TcpSocketChannel>();
 
@@ -67,7 +67,7 @@ namespace WebSockets.Client
                     WebSocketClientHandshakerFactory.NewHandshaker(
                             uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
 
-                bootstrap.Handler(new ActionChannelInitializer<IChannel>(channel =>
+                bootstrap.SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
                     if (cert != null)

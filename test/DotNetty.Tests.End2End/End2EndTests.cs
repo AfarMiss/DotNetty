@@ -64,10 +64,10 @@ namespace DotNetty.Tests.End2End
             var group = new MultiThreadEventLoopGroup();
             var readListener = new ReadListeningHandler(DefaultTimeout);
             Bootstrap b = new Bootstrap()
-                .Group(group)
+                .SetGroup(group)
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.TcpNodelay, true)
-                .Handler(new ActionChannelInitializer<ISocketChannel>(ch =>
+                .SetHandler(new ActionChannelInitializer<ISocketChannel>(ch =>
                 {
                     string targetHost = tlsCertificate.GetNameInfo(X509NameType.DnsName, false);
                     var clientTlsSettings = new ClientTlsSettings(targetHost);
@@ -135,10 +135,10 @@ namespace DotNetty.Tests.End2End
             var group = new MultiThreadEventLoopGroup();
             var clientReadListener = new ReadListeningHandler();
             Bootstrap b = new Bootstrap()
-                .Group(group)
+                .SetGroup(group)
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.TcpNodelay, true)
-                .Handler(new ActionChannelInitializer<ISocketChannel>(ch =>
+                .SetHandler(new ActionChannelInitializer<ISocketChannel>(ch =>
                 {
                     string targetHost = tlsCertificate.GetNameInfo(X509NameType.DnsName, false);
                     var clientTlsSettings = new ClientTlsSettings(targetHost);
@@ -297,9 +297,9 @@ namespace DotNetty.Tests.End2End
             try
             {
                 ServerBootstrap b = new ServerBootstrap()
-                    .Group(bossGroup, workerGroup)
+                    .SetGroup(bossGroup, workerGroup)
                     .Channel<TcpServerSocketChannel>()
-                    .Handler(new ExceptionCatchHandler(ex => testPromise.TrySetException(ex)))
+                    .SetHandler(new ExceptionCatchHandler(ex => testPromise.TrySetException(ex)))
                     .ChildHandler(new ActionChannelInitializer<ISocketChannel>(childHandlerSetupAction))
                     .ChildOption(ChannelOption.TcpNodelay, tcpNoDelay);
 

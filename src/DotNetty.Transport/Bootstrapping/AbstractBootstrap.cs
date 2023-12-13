@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
@@ -30,6 +29,13 @@ namespace DotNetty.Transport.Bootstrapping
         private readonly ConcurrentDictionary<IConstant, AttributeValue> attrs;
         private volatile IChannelHandler handler;
 
+        protected ICollection<ChannelOptionValue> Options => this.options.Values;
+        protected ICollection<AttributeValue> Attributes => this.attrs.Values;
+        protected EndPoint LocalAddress() => this.localAddress;
+        
+        protected IChannelHandler Handler => this.handler;
+        public IEventLoopGroup Group => this.group;
+        
         protected internal AbstractBootstrap()
         {
             this.options = new ConcurrentDictionary<ChannelOption, ChannelOptionValue>();
@@ -52,7 +58,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// </summary>
         /// <param name="group">The <see cref="IEventLoopGroup"/> which is used to handle all the events for the to-be-created <see cref="IChannel"/>.</param>
         /// <returns>The <see cref="AbstractBootstrap{TBootstrap,TChannel}"/> instance.</returns>
-        public virtual TBootstrap Group(IEventLoopGroup group)
+        public virtual TBootstrap SetGroup(IEventLoopGroup group)
         {
             Contract.Requires(group != null);
 
@@ -108,9 +114,9 @@ namespace DotNetty.Transport.Bootstrapping
 
         /// <summary>
         /// Assigns the local <see cref="EndPoint"/> which is used to bind the local "end" to.
-        /// This overload binds to a <see cref="IPEndPoint"/> for a given <see cref="IPAddress"/> and port.
         /// </summary>
         /// <param name="inetHost">The <see cref="IPAddress"/> to bind the local "end" to.</param>
+        /// This overload binds to a <see cref="IPEndPoint"/> for a given <see cref="IPAddress"/> and port.
         /// <param name="inetPort">The port to bind the local "end" to.</param>
         /// <returns>The <see cref="AbstractBootstrap{TBootstrap,TChannel}"/> instance.</returns>
         public TBootstrap LocalAddress(IPAddress inetHost, int inetPort) => this.LocalAddress(new IPEndPoint(inetHost, inetPort));
@@ -142,26 +148,24 @@ namespace DotNetty.Transport.Bootstrapping
         /// Allows specification of an initial attribute of the newly created <see cref="IChannel" />. If the <c>value</c> is
         /// <c>null</c>, the attribute of the specified <c>key</c> is removed.
         /// </summary>
-        public TBootstrap Attribute<T>(AttributeKey<T> key, T value) where T : class
+        public void Attribute<T>(AttributeKey<T> key, T value) where T : class
         {
             Contract.Requires(key != null);
 
             if (value == null)
             {
-                AttributeValue removed;
-                this.attrs.TryRemove(key, out removed);
+                this.attrs.TryRemove(key, out _);
             }
             else
             {
                 this.attrs[key] = new AttributeValue<T>(key, value);
             }
-            return (TBootstrap)this;
         }
 
         /// <summary>
         /// Validates all the parameters. Sub-classes may override this, but should call the super method in that case.
         /// </summary>
-        public virtual TBootstrap Validate()
+        public virtual void Validate()
         {
             if (this.group == null)
             {
@@ -171,7 +175,6 @@ namespace DotNetty.Transport.Bootstrapping
             {
                 throw new InvalidOperationException("channel or channelFactory not set");
             }
-            return (TBootstrap)this;
         }
 
         /// <summary>
@@ -246,9 +249,8 @@ namespace DotNetty.Transport.Bootstrapping
 
         private async Task<IChannel> DoBindAsync(EndPoint localAddress)
         {
-            IChannel channel = await this.InitAndRegisterAsync();
+            var channel = await this.InitAndRegisterAsync();
             await DoBind0Async(channel, localAddress);
-
             return channel;
         }
 
@@ -268,7 +270,7 @@ namespace DotNetty.Transport.Bootstrapping
 
             try
             {
-                await this.Group().GetNext().RegisterAsync(channel);
+                await this.Group.GetNext().RegisterAsync(channel);
             }
             catch (Exception)
             {
@@ -329,25 +331,12 @@ namespace DotNetty.Transport.Bootstrapping
         /// </summary>
         /// <param name="handler">The <see cref="IChannelHandler"/> to use for serving requests.</param>
         /// <returns>The <see cref="AbstractBootstrap{TBootstrap,TChannel}"/> instance.</returns>
-        public TBootstrap Handler(IChannelHandler handler)
+        public TBootstrap SetHandler(IChannelHandler handler)
         {
             Contract.Requires(handler != null);
             this.handler = handler;
             return (TBootstrap)this;
         }
-
-        protected EndPoint LocalAddress() => this.localAddress;
-
-        protected IChannelHandler Handler() => this.handler;
-
-        /// <summary>
-        /// Returns the configured <see cref="IEventLoopGroup"/> or <c>null</c> if none is configured yet.
-        /// </summary>
-        public IEventLoopGroup Group() => this.group;
-
-        protected ICollection<ChannelOptionValue> Options => this.options.Values;
-
-        protected ICollection<AttributeValue> Attributes => this.attrs.Values;
 
         protected static void SetChannelOptions(IChannel channel, ICollection<ChannelOptionValue> options, IInternalLogger logger)
         {
@@ -379,88 +368,6 @@ namespace DotNetty.Transport.Bootstrapping
                 logger.Warn("Failed to set channel option '{}' with value '{}' for channel '{}'", option.Option, option, channel, ex);
             }
         }
-
-        public override string ToString()
-        {
-            StringBuilder buf = new StringBuilder()
-                .Append(this.GetType().Name)
-                .Append('(');
-            if (this.group != null)
-            {
-                buf.Append("group: ")
-                    .Append(this.group.GetType().Name)
-                    .Append(", ");
-            }
-            if (this.channelFactory != null)
-            {
-                buf.Append("channelFactory: ")
-                    .Append(this.channelFactory)
-                    .Append(", ");
-            }
-            if (this.localAddress != null)
-            {
-                buf.Append("localAddress: ")
-                    .Append(this.localAddress)
-                    .Append(", ");
-            }
-
-            if (this.options.Count > 0)
-            {
-                buf.Append("options: ")
-                    .Append(this.options.ToDebugString())
-                    .Append(", ");
-            }
-
-            if (this.attrs.Count > 0)
-            {
-                buf.Append("attrs: ")
-                    .Append(this.attrs.ToDebugString())
-                    .Append(", ");
-            }
-
-            if (this.handler != null)
-            {
-                buf.Append("handler: ")
-                    .Append(this.handler)
-                    .Append(", ");
-            }
-            if (buf[buf.Length - 1] == '(')
-            {
-                buf.Append(')');
-            }
-            else
-            {
-                buf[buf.Length - 2] = ')';
-                buf.Length = buf.Length - 1;
-            }
-            return buf.ToString();
-        }
-
-        //static class PendingRegistrationPromise : DefaultChannelPromise
-        //{
-        //    // Is set to the correct EventExecutor once the registration was successful. Otherwise it will
-        //    // stay null and so the GlobalEventExecutor.INSTANCE will be used for notifications.
-        //    volatile EventExecutor executor;
-
-        //    PendingRegistrationPromise(Channel channel)
-        //    {
-        //        super(channel);
-        //    }
-
-        //    protected EventExecutor executor()
-        //    {
-        //        EventExecutor executor = this.executor;
-        //        if (executor != null)
-        //        {
-        //            // If the registration was a success executor is set.
-        //            //
-        //            // See https://github.com/netty/netty/issues/2586
-        //            return executor;
-        //        }
-        //        // The registration failed so we can only use the GlobalEventExecutor as last resort to notify.
-        //        return GlobalEventExecutor.INSTANCE;
-        //    }
-        //}
 
         protected abstract class ChannelOptionValue
         {

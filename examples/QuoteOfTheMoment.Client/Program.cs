@@ -25,10 +25,10 @@ namespace QuoteOfTheMoment.Client
             {
                 var bootstrap = new Bootstrap();
                 bootstrap
-                    .Group(group)
+                    .SetGroup(group)
                     .Channel<SocketDatagramChannel>()
                     .Option(ChannelOption.SoBroadcast, true)
-                    .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                    .SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         channel.Pipeline.AddLast("Quote", new QuoteOfTheMomentClientHandler());
                     }));

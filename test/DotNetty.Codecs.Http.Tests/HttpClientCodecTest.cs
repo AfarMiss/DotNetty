@@ -108,7 +108,7 @@ namespace DotNetty.Codecs.Http.Tests
 
                 var serverHandler = new ServerHandler();
                 ServerBootstrap sb = new ServerBootstrap()
-                    .Group(serverGroup)
+                    .SetGroup(serverGroup)
                     .Channel<TcpServerSocketChannel>()
                     .ChildHandler(
                         new ActionChannelInitializer<ISocketChannel>(
@@ -123,9 +123,9 @@ namespace DotNetty.Codecs.Http.Tests
 
                 var clientHandler = new ClientHandler();
                 Bootstrap cb = new Bootstrap()
-                    .Group(clientGroup)
+                    .SetGroup(clientGroup)
                     .Channel<TcpSocketChannel>()
-                    .Handler(
+                    .SetHandler(
                         new ActionChannelInitializer<ISocketChannel>(
                             ch =>
                             {

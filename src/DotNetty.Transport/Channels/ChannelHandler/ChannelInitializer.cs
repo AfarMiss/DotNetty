@@ -9,7 +9,7 @@ namespace DotNetty.Transport.Channels
     /// A special <see cref="IChannelHandler"/> which offers an easy way to initialize a <see cref="IChannel"/> once it was
     /// registered to its <see cref="IEventLoop"/>.
     /// <para>
-    /// Implementations are most often used in the context of <see cref="AbstractBootstrap{TBootstrap,TChannel}.Handler(IChannelHandler)"/>
+    /// Implementations are most often used in the context of <see cref="AbstractBootstrap{TBootstrap,TChannel}.SetHandler"/>
     /// and <see cref="ServerBootstrap.ChildHandler"/> to setup the <see cref="IChannelPipeline"/> of a <see cref="IChannel"/>.
     /// </para>
     /// Be aware that this class is marked as Sharable (via <see cref="IsSharable"/>) and so the implementation must be safe to be re-used.

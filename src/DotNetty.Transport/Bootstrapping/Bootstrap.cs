@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
@@ -40,11 +39,10 @@ namespace DotNetty.Transport.Bootstrapping
         /// </summary>
         /// <param name="resolver">The <see cref="INameResolver"/> which will resolve the address of the unresolved named address.</param>
         /// <returns>The <see cref="Bootstrap"/> instance.</returns>
-        public Bootstrap Resolver(INameResolver resolver)
+        public void Resolver(INameResolver resolver)
         {
             Contract.Requires(resolver != null);
             this.resolver = resolver;
-            return this;
         }
 
         /// <summary>
@@ -211,7 +209,7 @@ namespace DotNetty.Transport.Bootstrapping
         protected override void Init(IChannel channel)
         {
             IChannelPipeline p = channel.Pipeline;
-            p.AddLast(null, (string)null, this.Handler());
+            p.AddLast(null, (string)null, this.Handler);
 
             ICollection<ChannelOptionValue> options = this.Options;
             SetChannelOptions(channel, options, Logger);
@@ -223,14 +221,13 @@ namespace DotNetty.Transport.Bootstrapping
             }
         }
 
-        public override Bootstrap Validate()
+        public override void Validate()
         {
             base.Validate();
-            if (this.Handler() == null)
+            if (this.Handler == null)
             {
                 throw new InvalidOperationException("handler not set");
             }
-            return this;
         }
 
         public override Bootstrap Clone() => new Bootstrap(this);
@@ -243,24 +240,8 @@ namespace DotNetty.Transport.Bootstrapping
         public Bootstrap Clone(IEventLoopGroup group)
         {
             var bs = new Bootstrap(this);
-            bs.Group(group);
+            bs.SetGroup(group);
             return bs;
-        }
-
-        public override string ToString()
-        {
-            if (this.remoteAddress == null)
-            {
-                return base.ToString();
-            }
-
-            var buf = new StringBuilder(base.ToString());
-            buf.Length = buf.Length - 1;
-
-            return buf.Append(", remoteAddress: ")
-                .Append(this.remoteAddress)
-                .Append(')')
-                .ToString();
         }
     }
 }

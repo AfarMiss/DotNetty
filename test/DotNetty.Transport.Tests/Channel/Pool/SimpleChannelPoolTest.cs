@@ -21,10 +21,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         {
             var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            var cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
+            var cb = new Bootstrap().RemoteAddress(addr).SetGroup(group).Channel<LocalChannel>();
 
             var sb = new ServerBootstrap()
-                .Group(group)
+                .SetGroup(group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -72,10 +72,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         {
             var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(group)
+                .SetGroup(group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -115,10 +115,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         {
             var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(group)
+                .SetGroup(group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(
@@ -157,10 +157,10 @@ namespace DotNetty.Transport.Tests.Channel.Pool
         {
             var group = new MultiThreadEventLoopGroup();
             var addr = new LocalAddress(LOCAL_ADDR_ID);
-            Bootstrap cb = new Bootstrap().RemoteAddress(addr).Group(group).Channel<LocalChannel>();
+            Bootstrap cb = new Bootstrap().RemoteAddress(addr).SetGroup(group).Channel<LocalChannel>();
 
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(group)
+                .SetGroup(group)
                 .Channel<LocalServerChannel>()
                 .ChildHandler(
                     new ActionChannelInitializer<LocalChannel>(

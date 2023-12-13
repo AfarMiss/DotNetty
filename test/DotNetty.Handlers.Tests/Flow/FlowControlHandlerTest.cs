@@ -41,7 +41,7 @@ namespace DotNetty.Handlers.Tests.Flow
             Assert.True(handlers.Length >= 1);
 
             var serverBootstrap = new ServerBootstrap();
-            serverBootstrap.Group(this.group)
+            serverBootstrap.SetGroup(this.group)
                 .Channel<TcpServerSocketChannel>()
                 .ChildOption(ChannelOption.AutoRead, autoRead)
                 .ChildHandler(
@@ -60,10 +60,10 @@ namespace DotNetty.Handlers.Tests.Flow
         {
             var bootstrap = new Bootstrap();
 
-            bootstrap.Group(this.group)
+            bootstrap.SetGroup(this.group)
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.ConnectTimeout, TimeSpan.FromMilliseconds(1000))
-                .Handler(new TestHandler(onRead: (ctx, m) => Assert.True(false, "In this test the client is never receiving a message from the server.")));
+                .SetHandler(new TestHandler(onRead: (ctx, m) => Assert.True(false, "In this test the client is never receiving a message from the server.")));
 
             return bootstrap.ConnectAsync(server);
         }

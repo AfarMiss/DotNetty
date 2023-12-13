@@ -22,11 +22,11 @@ namespace QuoteOfTheMoment.Server
             {
                 var bootstrap = new Bootstrap();
                 bootstrap
-                    .Group(group)
+                    .SetGroup(group)
                     .Channel<SocketDatagramChannel>()
                     .Option(ChannelOption.SoBroadcast, true)
-                    .Handler(new LoggingHandler("SRV-LSTN"))
-                    .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                    .SetHandler(new LoggingHandler("SRV-LSTN"))
+                    .SetHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         channel.Pipeline.AddLast("Quote", new QuoteOfTheMomentServerHandler());
                     }));

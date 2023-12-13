@@ -37,10 +37,10 @@ namespace SecureChat.Server
             {
                 var bootstrap = new ServerBootstrap();
                 bootstrap
-                    .Group(bossGroup, workerGroup)
+                    .SetGroup(bossGroup, workerGroup)
                     .Channel<TcpServerSocketChannel>()
                     .Option(ChannelOption.SoBacklog, 100)
-                    .Handler(new LoggingHandler(LogLevel.INFO))
+                    .SetHandler(new LoggingHandler(LogLevel.INFO))
                     .ChildHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;

@@ -42,7 +42,7 @@ namespace DotNetty.Transport.Tests.Performance.Transport
 
             // Start server
             ServerBootstrap sb = new ServerBootstrap()
-                .Group(this.serverGroup, this.workerGroup)
+                .SetGroup(this.serverGroup, this.workerGroup)
                 .Channel<TServer>()
                 .ChildHandler(new ActionChannelInitializer<TClient>(channel =>
                 {
@@ -55,9 +55,9 @@ namespace DotNetty.Transport.Tests.Performance.Transport
             // Connect to server
             this.clientHandler = new EchoClientHandler(this.roundTripCounter, TimeSpan.FromMilliseconds(Duration));
             Bootstrap cb = new Bootstrap()
-                .Group(this.clientGroup)
+                .SetGroup(this.clientGroup)
                 .Channel<TClient>()
-                .Handler(new ActionChannelInitializer<TClient>(channel =>
+                .SetHandler(new ActionChannelInitializer<TClient>(channel =>
                 {
                     channel.Pipeline.AddLast(this.clientHandler);
                 }));
