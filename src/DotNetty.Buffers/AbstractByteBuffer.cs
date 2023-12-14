@@ -284,27 +284,16 @@ namespace DotNetty.Buffers
 
         public override string ToString()
         {
-            if (this.ReferenceCount == 0)
-            {
-                return StringUtil.SimpleClassName(this) + "(freed)";
-            }
+            if (this.ReferenceCount == 0) return this.GetType().Name + "(freed)";
 
-            StringBuilder buf = new StringBuilder()
-                .Append(StringUtil.SimpleClassName(this))
-                .Append("(ridx: ").Append(this.readerIndex)
-                .Append(", widx: ").Append(this.writerIndex)
-                .Append(", cap: ").Append(this.Capacity);
-            if (this.MaxCapacity != int.MaxValue)
-            {
-                buf.Append('/').Append(this.MaxCapacity);
-            }
+            var buf = new StringBuilder()
+                .Append("RIdx: ").Append(this.readerIndex)
+                .Append(" ")
+                .Append("WIdx: ").Append(this.writerIndex);
+            buf.Append(this.Capacity).Append('/').Append(this.MaxCapacity);
 
-            IByteBuffer unwrapped = this.Unwrap();
-            if (unwrapped != null)
-            {
-                buf.Append(", unwrapped: ").Append(unwrapped);
-            }
-            buf.Append(')');
+            var unwrapped = this.Unwrap();
+            if (unwrapped != null) buf.Append(" unwrapped: ").Append(unwrapped);
             return buf.ToString();
         }
 
