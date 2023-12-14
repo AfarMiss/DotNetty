@@ -16,39 +16,18 @@ namespace DotNetty.Buffers
         public static IByteBuffer Buffer(int initialCapacity) => Allocator.Buffer(initialCapacity);
         public static IByteBuffer Buffer(int initialCapacity, int maxCapacity) => Allocator.Buffer(initialCapacity, maxCapacity);
 
-        /// <summary>
-        ///     Creates a new big-endian buffer which wraps the specified array.
-        ///     A modification on the specified array's content will be visible to the returned buffer.
-        /// </summary>
-        public static IByteBuffer WrappedBuffer(byte[] array) =>
-            array.Length == 0 ? Empty  : new HeapByteBuffer(Allocator, array, array.Length);
-
-        /// <summary>
-        ///     Creates a new big-endian buffer which wraps the sub-region of the
-        ///     specified array. A modification on the specified array's content 
-        ///     will be visible to the returned buffer.
-        /// </summary>
-        public static IByteBuffer WrappedBuffer(byte[] array, int offset, int length)
+        public static IByteBuffer WrappedBuffer(byte[] array)
         {
-            if (length == 0)
-            {
-                return Empty;
-            }
-
-            if (offset == 0 && length == array.Length)
-            {
-                return WrappedBuffer(array);
-            }
-
-            return WrappedBuffer(array).Slice(offset, length);
+            if (array.Length == 0) return Empty;
+            return new HeapByteBuffer(Allocator, array, array.Length);
         }
 
-        /// <summary>
-        ///     Creates a new buffer which wraps the specified buffer's readable bytes.
-        ///     A modification on the specified buffer's content will be visible to the returned buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer to wrap. Reference count ownership of this variable is transfered to this method.</param>
-        /// <returns>The readable portion of the buffer, or an empty buffer if there is no readable portion.</returns>
+        public static IByteBuffer WrappedBuffer(byte[] array, int offset, int length)
+        {
+            if (length == 0) return Empty;
+            return offset == 0 && length == array.Length ? WrappedBuffer(array) : WrappedBuffer(array).Slice(offset, length);
+        }
+
         public static IByteBuffer WrappedBuffer(IByteBuffer buffer)
         {
             if (buffer.IsReadable())
@@ -62,24 +41,16 @@ namespace DotNetty.Buffers
             }
         }
 
-        /// <summary>
-        ///     Creates a new big-endian composite buffer which wraps the specified arrays without copying them.
-        ///     A modification on the specified arrays' content will be visible to the returned buffer.
-        /// </summary>
-        public static IByteBuffer WrappedBuffer(params byte[][] arrays) => WrappedBuffer(AbstractByteBufferAllocator.DefaultMaxComponents, arrays);
+        public static IByteBuffer WrappedBuffer(params byte[][] arrays)
+        {
+            return WrappedBuffer(AbstractByteBufferAllocator.DefaultMaxComponents, arrays);
+        }
 
-        /// <summary>
-        ///     Creates a new big-endian composite buffer which wraps the readable bytes of the specified buffers without copying them. 
-        ///     A modification on the content of the specified buffers will be visible to the returned buffer.
-        /// </summary>
-        /// <param name="buffers">The buffers to wrap. Reference count ownership of all variables is transfered to this method.</param>
-        /// <returns>The readable portion of the buffers. The caller is responsible for releasing this buffer.</returns>
-        public static IByteBuffer WrappedBuffer(params IByteBuffer[] buffers) => WrappedBuffer(AbstractByteBufferAllocator.DefaultMaxComponents, buffers);
+        public static IByteBuffer WrappedBuffer(params IByteBuffer[] buffers)
+        {
+            return WrappedBuffer(AbstractByteBufferAllocator.DefaultMaxComponents, buffers);
+        }
 
-        /// <summary>
-        ///     Creates a new big-endian composite buffer which wraps the specified arrays without copying them.
-        ///     A modification on the specified arrays' content will be visible to the returned buffer.
-        /// </summary>
         public static IByteBuffer WrappedBuffer(int maxNumComponents, params byte[][] arrays)
         {
             switch (arrays.Length)
@@ -93,14 +64,10 @@ namespace DotNetty.Buffers
                     }
                     break;
                 default:
-                    // Get the list of the component, while guessing the byte order.
                     var components = new List<IByteBuffer>(arrays.Length);
-                    foreach (byte[] array in arrays)
+                    foreach (var array in arrays)
                     {
-                        if (array == null)
-                        {
-                            break;
-                        }
+                        if (array == null) break;
                         if (array.Length > 0)
                         {
                             components.Add(WrappedBuffer(array));
@@ -117,13 +84,6 @@ namespace DotNetty.Buffers
             return Empty;
         }
 
-        /// <summary>
-        ///     Creates a new big-endian composite buffer which wraps the readable bytes of the specified buffers without copying them.
-        ///     A modification on the content of the specified buffers will be visible to the returned buffer.
-        /// </summary>
-        /// <param name="maxNumComponents">Advisement as to how many independent buffers are allowed to exist before consolidation occurs.</param>
-        /// <param name="buffers">The buffers to wrap. Reference count ownership of all variables is transfered to this method.</param>
-        /// <returns>The readable portion of the buffers. The caller is responsible for releasing this buffer.</returns>
         public static IByteBuffer WrappedBuffer(int maxNumComponents, params IByteBuffer[] buffers)
         {
             switch (buffers.Length)
@@ -156,13 +116,6 @@ namespace DotNetty.Buffers
 
         public static CompositeByteBuffer CompositeBuffer(int maxNumComponents) => new CompositeByteBuffer(Allocator, maxNumComponents);
 
-        /// <summary>
-        ///     Creates a new big-endian buffer whose content is a copy of the specified array
-        ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
-        ///     are <c>0</c> and <see cref="Array.Length" /> respectively.
-        /// </summary>
-        /// <param name="array">A buffer we're going to copy.</param>
-        /// <returns>The new buffer that copies the contents of array.</returns>
         public static IByteBuffer CopiedBuffer(byte[] array)
         {
             if (array.Length == 0)
@@ -176,17 +129,6 @@ namespace DotNetty.Buffers
             return WrappedBuffer(newArray);
         }
 
-        /// <summary>
-        ///     Creates a new big-endian buffer whose content is a copy of the specified array.
-        ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
-        ///     are <c>0</c> and <see cref="Array.Length" /> respectively.
-        /// </summary>
-        /// <param name="array">A buffer we're going to copy.</param>
-        /// <param name="offset">The index offset from which we're going to read array.</param>
-        /// <param name="length">
-        ///     The number of bytes we're going to read from array beginning from position offset.
-        /// </param>
-        /// <returns>The new buffer that copies the contents of array.</returns>
         public static IByteBuffer CopiedBuffer(byte[] array, int offset, int length)
         {
             if (length == 0)
@@ -199,13 +141,6 @@ namespace DotNetty.Buffers
             return WrappedBuffer(copy);
         }
 
-        /// <summary>
-        ///     Creates a new big-endian buffer whose content is a copy of the specified <see cref="Array" />.
-        ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
-        ///     are <c>0</c> and <see cref="IByteBuffer.Capacity" /> respectively.
-        /// </summary>
-        /// <param name="buffer">A buffer we're going to copy.</param>
-        /// <returns>The new buffer that copies the contents of buffer.</returns>
         public static IByteBuffer CopiedBuffer(IByteBuffer buffer)
         {
             int readable = buffer.ReadableBytes;
@@ -221,13 +156,6 @@ namespace DotNetty.Buffers
             }
         }
 
-        /// <summary>
-        ///     Creates a new big-endian buffer whose content is a merged copy of of the specified arrays.
-        ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
-        ///     are <c>0</c> and <see cref="Array.Length" /> respectively.
-        /// </summary>
-        /// <param name="arrays"></param>
-        /// <returns></returns>
         public static IByteBuffer CopiedBuffer(params byte[][] arrays)
         {
             switch (arrays.Length)
@@ -265,13 +193,6 @@ namespace DotNetty.Buffers
             return WrappedBuffer(mergedArray);
         }
 
-        /// <summary>
-        ///     Creates a new big-endian buffer whose content  is a merged copy of the specified <see cref="Array" />.
-        ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
-        ///     are <c>0</c> and <see cref="IByteBuffer.Capacity" /> respectively.
-        /// </summary>
-        /// <param name="buffers">Buffers we're going to copy.</param>
-        /// <returns>The new buffer that copies the contents of buffers.</returns>
         public static IByteBuffer CopiedBuffer(params IByteBuffer[] buffers)
         {
             switch (buffers.Length)
