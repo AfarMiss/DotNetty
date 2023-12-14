@@ -46,7 +46,7 @@ namespace DotNetty.Common.Utilities
             return this.ReleaseCore(decrement);
         }
 
-        bool ReleaseCore(int decrement)
+        private bool ReleaseCore(int decrement)
         {
             while (true)
             {
@@ -67,7 +67,7 @@ namespace DotNetty.Common.Utilities
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void ThrowIllegalReferenceCountException(int count, int increment)
+        private static void ThrowIllegalReferenceCountException(int count, int increment)
         {
             throw GetIllegalReferenceCountException();
 

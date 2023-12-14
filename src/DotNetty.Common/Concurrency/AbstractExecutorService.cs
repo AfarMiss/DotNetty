@@ -6,10 +6,7 @@ namespace DotNetty.Common.Concurrency
 {
     public abstract class AbstractExecutorService : IExecutorService
     {
-        /// <inheritdoc cref="IExecutorService.IsShutdown"/>
         public abstract bool IsShutdown { get; }
-
-        /// <inheritdoc cref="IExecutorService"/>
         public abstract bool IsTerminated { get; }
 
         /// <inheritdoc cref="IExecutorService"/>
@@ -76,10 +73,10 @@ namespace DotNetty.Common.Concurrency
             public void Run() => this.action();
         }
 
-        sealed class StateActionTaskQueueNode : IRunnable
+        private sealed class StateActionTaskQueueNode : IRunnable
         {
-            readonly Action<object> action;
-            readonly object state;
+            private readonly Action<object> action;
+            private readonly object state;
 
             public StateActionTaskQueueNode(Action<object> action, object state)
             {
@@ -90,11 +87,11 @@ namespace DotNetty.Common.Concurrency
             public void Run() => this.action(this.state);
         }
 
-        sealed class StateActionWithContextTaskQueueNode : IRunnable
+        private sealed class StateActionWithContextTaskQueueNode : IRunnable
         {
-            readonly Action<object, object> action;
-            readonly object context;
-            readonly object state;
+            private readonly Action<object, object> action;
+            private readonly object context;
+            private readonly object state;
 
             public StateActionWithContextTaskQueueNode(Action<object, object> action, object context, object state)
             {
@@ -106,10 +103,10 @@ namespace DotNetty.Common.Concurrency
             public void Run() => this.action(this.context, this.state);
         }
 
-        abstract class FuncQueueNodeBase<T> : IRunnable
+        private abstract class FuncQueueNodeBase<T> : IRunnable
         {
-            readonly TaskCompletionSource<T> promise;
-            readonly CancellationToken cancellationToken;
+            private readonly TaskCompletionSource<T> promise;
+            private readonly CancellationToken cancellationToken;
 
             protected FuncQueueNodeBase(TaskCompletionSource<T> promise, CancellationToken cancellationToken)
             {
@@ -142,9 +139,9 @@ namespace DotNetty.Common.Concurrency
             protected abstract T Call();
         }
 
-        sealed class FuncSubmitQueueNode<T> : FuncQueueNodeBase<T>
+        private sealed class FuncSubmitQueueNode<T> : FuncQueueNodeBase<T>
         {
-            readonly Func<T> func;
+            private readonly Func<T> func;
 
             public FuncSubmitQueueNode(Func<T> func, CancellationToken cancellationToken)
                 : base(new TaskCompletionSource<T>(), cancellationToken)
@@ -155,9 +152,9 @@ namespace DotNetty.Common.Concurrency
             protected override T Call() => this.func();
         }
 
-        sealed class StateFuncSubmitQueueNode<T> : FuncQueueNodeBase<T>
+        private sealed class StateFuncSubmitQueueNode<T> : FuncQueueNodeBase<T>
         {
-            readonly Func<object, T> func;
+            private readonly Func<object, T> func;
 
             public StateFuncSubmitQueueNode(Func<object, T> func, object state, CancellationToken cancellationToken)
                 : base(new TaskCompletionSource<T>(state), cancellationToken)
@@ -168,10 +165,10 @@ namespace DotNetty.Common.Concurrency
             protected override T Call() => this.func(this.Completion.AsyncState);
         }
 
-        sealed class StateFuncWithContextSubmitQueueNode<T> : FuncQueueNodeBase<T>
+        private sealed class StateFuncWithContextSubmitQueueNode<T> : FuncQueueNodeBase<T>
         {
-            readonly Func<object, object, T> func;
-            readonly object context;
+            private readonly Func<object, object, T> func;
+            private readonly object context;
 
             public StateFuncWithContextSubmitQueueNode(
                 Func<object, object, T> func,

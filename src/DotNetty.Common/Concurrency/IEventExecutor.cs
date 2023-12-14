@@ -2,30 +2,15 @@ using System.Threading;
 
 namespace DotNetty.Common.Concurrency
 {
-    /// <summary>
     /// 任务执行器
-    /// </summary>
     public interface IEventExecutor : IEventExecutorGroup
     {
-        /// <summary>
-        /// Parent <see cref="IEventExecutorGroup"/>.
-        /// </summary>
+        /// <see cref="IEventExecutorGroup"/>
         IEventExecutorGroup Parent { get; }
-
-        /// <summary>
-        ///     Returns <c>true</c> if the current <see cref="Thread" /> belongs to this event loop,
-        ///     <c>false</c> otherwise.
-        /// </summary>
-        /// <remarks>
-        ///     It is a convenient way to determine whether code can be executed directly or if it
-        ///     should be posted for execution to this executor instance explicitly to ensure execution in the loop.
-        /// </remarks>
+        /// 当前<see cref="Thread"/>是否属于此事件循环
         bool InEventLoop { get; }
 
-        /// <summary>
-        ///     Returns <c>true</c> if the given <see cref="Thread" /> belongs to this event loop,
-        ///     <c>false></c> otherwise.
-        /// </summary>
+        /// <see cref="InEventLoop"/>
         bool IsInEventLoop(Thread thread);
     }
 }

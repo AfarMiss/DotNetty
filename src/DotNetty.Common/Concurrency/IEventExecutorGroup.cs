@@ -9,15 +9,11 @@ namespace DotNetty.Common.Concurrency
     /// </summary>
     public interface IEventExecutorGroup : IScheduledExecutorService
     {
-        /// <summary>
-        /// Returns list of owned event executors.
-        /// </summary>
-        IEnumerable<IEventExecutor> Items { get; }
-
         /// <summary> 仅当通过调用<see cref="ShutdownGracefullyAsync()" />关闭时返回true </summary>
         bool IsShuttingDown { get; }
         /// <summary> 终止回调 </summary>
         Task TerminationCompletion { get; }
+        IEnumerable<IEventExecutor> Items { get; }
         
         /// <summary> 终止当前<see cref="IEventExecutorGroup"/>及其所有<see cref="IEventExecutor"/> </summary>
         Task ShutdownGracefullyAsync();

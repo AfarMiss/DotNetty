@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 namespace DotNetty.Common.Concurrency
 {
     /// <summary>
-    /// 异步线程任务 线程细节由IEventExecutor实现决定
+    /// 异步线程任务 线程细节由<see cref="IEventExecutor"/>实现决定
     /// </summary>
     public interface IExecutorService : IExecutor
     {
         /// <summary> 是否关闭 </summary>
         bool IsShutdown { get; }
-
-        /// <summary> 如果关闭后所有任务都已完成且调用<see cref="IEventExecutorGroup.ShutdownGracefullyAsync()" />则返回true </summary>
+        /// <summary> 如果关闭后所有任务都已完成且调用<see cref="IEventExecutorGroup.ShutdownGracefullyAsync()"/>则返回true </summary>
         bool IsTerminated { get; }
 
         /// <summary> 封装执行函数为Task </summary>
