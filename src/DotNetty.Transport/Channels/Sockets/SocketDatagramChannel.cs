@@ -280,14 +280,14 @@ namespace DotNetty.Transport.Channels.Sockets
             int readableBytes = buffer.ReadableBytes;
             if (readableBytes == 0)
             {
-                buffer.SafeRelease();
+                ReferenceCountUtil.SafeRelease(buffer);
                 return ByteBuffer.Empty;
             }
 
             // Composite
             IByteBuffer data = this.Configuration.Allocator.Buffer(readableBytes);
             data.WriteBytes(buffer, buffer.ReaderIndex, readableBytes);
-            buffer.SafeRelease();
+            ReferenceCountUtil.SafeRelease(buffer);
 
             return data;
         }
@@ -300,14 +300,14 @@ namespace DotNetty.Transport.Channels.Sockets
             int readableBytes = buffer.ReadableBytes;
             if (readableBytes == 0)
             {
-                holder.SafeRelease();
+                ReferenceCountUtil.SafeRelease(holder);
                 return ByteBuffer.Empty;
             }
 
             // Composite
             IByteBuffer data = this.Configuration.Allocator.Buffer(readableBytes);
             data.WriteBytes(buffer, buffer.ReaderIndex, readableBytes);
-            holder.SafeRelease();
+            ReferenceCountUtil.SafeRelease(holder);
 
             return data;
         }

@@ -758,9 +758,10 @@ namespace DotNetty.Transport.Channels
         private abstract class AbstractWriteTask<T> : IRunnable , IRecycle where T : AbstractWriteTask<T>, new()
         {
             private static readonly ThreadLocalPool<T> Pool = new ThreadLocalPool<T>(() => new T());
-            private static readonly bool EstimateTaskSizeOnSubmit = SystemPropertyUtil.GetBoolean("io.netty.transport.estimateSizeOnSubmit", true);
+
+            private static readonly bool EstimateTaskSizeOnSubmit = true;
             // Assuming a 64-bit .NET VM, 16 bytes object header, 4 reference fields and 2 int field
-            private static readonly int WriteTaskOverhead = SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 56);
+            private static readonly int WriteTaskOverhead = 56;
             
             private AbstractChannelHandlerContext ctx;
             private TaskCompletionSource promise;

@@ -298,7 +298,7 @@ namespace DotNetty.Transport.Channels
             return name;
         }
 
-        private static string GenerateName0(Type handlerType) => StringUtil.SimpleClassName(handlerType) + "#0";
+        private static string GenerateName0(Type handlerType) => handlerType.Name + "#0";
 
         public IChannelPipeline Remove(IChannelHandler handler)
         {

@@ -36,98 +36,49 @@ namespace DotNetty.Transport.Channels
 
         static DefaultChannelId()
         {
-            int processId = -1;
-            string customProcessId = SystemPropertyUtil.Get("io.netty.processId");
-            if (customProcessId != null)
+            var processId = DefaultProcessId();
+            if (Logger.DebugEnabled)
             {
-                if (!int.TryParse(customProcessId, out processId))
-                {
-                    processId = -1;
-                }
-                if (processId < 0 || processId > MaxProcessId)
-                {
-                    processId = -1;
-                    Logger.Warn("-Dio.netty.processId: {} (malformed)", customProcessId);
-                }
-                else if (Logger.DebugEnabled)
-                {
-                    Logger.Debug("-Dio.netty.processId: {} (user-set)", processId);
-                }
-            }
-            if (processId < 0)
-            {
-                processId = DefaultProcessId();
-                if (Logger.DebugEnabled)
-                {
-                    Logger.Debug("-Dio.netty.processId: {} (auto-detected)", processId);
-                }
+                Logger.Debug("-Dio.netty.processId: {} (auto-detected)", processId);
             }
             ProcessId = processId;
-            byte[] machineId = null;
-            string customMachineId = SystemPropertyUtil.Get("io.netty.machineId");
-            if (customMachineId != null)
+            
+            var machineId = DefaultMachineId();
+            if (Logger.DebugEnabled)
             {
-                if (MachineIdPattern.Match(customMachineId).Success)
-                {
-                    machineId = ParseMachineId(customMachineId);
-                    Logger.Debug("-Dio.netty.machineId: {} (user-set)", customMachineId);
-                }
-                else
-                {
-                    Logger.Warn("-Dio.netty.machineId: {} (malformed)", customMachineId);
-                }
-            }
-
-            if (machineId == null)
-            {
-                machineId = DefaultMachineId();
-                if (Logger.DebugEnabled)
-                {
-                    Logger.Debug("-Dio.netty.machineId: {} (auto-detected)", MacAddressUtil.FormatAddress(machineId));
-                }
+                Logger.Debug("-Dio.netty.machineId: {} (auto-detected)", MacAddressUtil.FormatAddress(machineId));
             }
             MachineId = machineId;
         }
 
         public string AsShortText()
         {
-            string asShortText = this.shortValue;
-            if (asShortText == null)
-            {
-                this.shortValue = asShortText = ByteBufferUtil.HexDump(this.data, MachineIdLen + ProcessIdLen + SequenceLen + TimestampLen, RandomLen);
-            }
-
-            return asShortText;
+            throw new NotImplementedException();
+            // string asShortText = this.shortValue;
+            // if (asShortText == null)
+            // {
+            //     this.shortValue = asShortText = ByteBufferUtil.HexDump(this.data, MachineIdLen + ProcessIdLen + SequenceLen + TimestampLen, RandomLen);
+            // }
+            //
+            // return asShortText;
         }
 
         public string AsLongText()
         {
-            string asLongText = this.longValue;
-            if (asLongText == null)
-            {
-                this.longValue = asLongText = this.NewLongValue();
-            }
-            return asLongText;
+            throw new NotImplementedException();
+            // string asLongText = this.longValue;
+            // if (asLongText == null)
+            // {
+            //     this.longValue = asLongText = this.NewLongValue();
+            // }
+            // return asLongText;
         }
 
         public int CompareTo(IChannelId other) => 0;
 
-        private static byte[] ParseMachineId(string value)
-        {
-            // Strip separators.
-            value = value.Replace("[:-]", "");
-            var machineId = new byte[MachineIdLen];
-            for (int i = 0; i < value.Length; i += 2)
-            {
-                machineId[i] = (byte)int.Parse(value.Substring(i, 2), NumberStyles.AllowHexSpecifier);
-            }
-            return machineId;
-        }
-
         private static int DefaultProcessId()
         {
-            int pId = Platform.GetCurrentProcessId();
-
+            var pId = Process.GetCurrentProcess().Id;
             if (pId <= 0)
             {
                 pId = ThreadLocalRandom.Value.Next(MaxProcessId + 1);
@@ -144,7 +95,7 @@ namespace DotNetty.Transport.Channels
 
         private static byte[] DefaultMachineId()
         {
-            byte[] bestMacAddr = Platform.GetDefaultDeviceId();
+            byte[] bestMacAddr = MacAddressUtil.GetBestAvailableMac();
             if (bestMacAddr == null) {
                 bestMacAddr = new byte[MacAddressUtil.MacAddressLength];
                 ThreadLocalRandom.Value.NextBytes(bestMacAddr);
@@ -156,26 +107,26 @@ namespace DotNetty.Transport.Channels
         }
 
 
-        private string NewLongValue()
-        {
-            var buf = new StringBuilder(2 * this.data.Length + 5);
-            int i = 0;
-            i = this.AppendHexDumpField(buf, i, MachineIdLen);
-            i = this.AppendHexDumpField(buf, i, ProcessIdLen);
-            i = this.AppendHexDumpField(buf, i, SequenceLen);
-            i = this.AppendHexDumpField(buf, i, TimestampLen);
-            i = this.AppendHexDumpField(buf, i, RandomLen);
-            Debug.Assert(i == this.data.Length);
-            return buf.ToString().Substring(0, buf.Length - 1);
-        }
-
-        private int AppendHexDumpField(StringBuilder buf, int i, int length)
-        {
-            buf.Append(ByteBufferUtil.HexDump(this.data, i, length));
-            buf.Append('-');
-            i += length;
-            return i;
-        }
+        // private string NewLongValue()
+        // {
+        //     var buf = new StringBuilder(2 * this.data.Length + 5);
+        //     int i = 0;
+        //     i = this.AppendHexDumpField(buf, i, MachineIdLen);
+        //     i = this.AppendHexDumpField(buf, i, ProcessIdLen);
+        //     i = this.AppendHexDumpField(buf, i, SequenceLen);
+        //     i = this.AppendHexDumpField(buf, i, TimestampLen);
+        //     i = this.AppendHexDumpField(buf, i, RandomLen);
+        //     Debug.Assert(i == this.data.Length);
+        //     return buf.ToString().Substring(0, buf.Length - 1);
+        // }
+        //
+        // private int AppendHexDumpField(StringBuilder buf, int i, int length)
+        // {
+        //     buf.Append(ByteBufferUtil.HexDump(this.data, i, length));
+        //     buf.Append('-');
+        //     i += length;
+        //     return i;
+        // }
 
         private void Init()
         {

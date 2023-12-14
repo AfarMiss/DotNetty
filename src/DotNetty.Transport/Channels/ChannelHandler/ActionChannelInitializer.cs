@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.Contracts;
-using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
@@ -16,6 +15,6 @@ namespace DotNetty.Transport.Channels
 
         protected override void InitChannel(T channel) => this.initializationAction(channel);
 
-        public override string ToString() => nameof(ActionChannelInitializer<T>) + "[" + StringUtil.SimpleClassName(typeof(T)) + "]";
+        public override string ToString() => nameof(ActionChannelInitializer<T>) + "[" + typeof(T).Name + "]";
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace DotNetty.Common.Concurrency
         private static readonly IRunnable WAKEUP_TASK = new NoOpRunnable();
         private static readonly IInternalLogger Logger =InternalLoggerFactory.GetInstance<SingleThreadEventExecutor>();
 
-        private readonly IQueue<IRunnable> taskQueue;
+        private readonly ConcurrentQueue<IRunnable> taskQueue;
         private readonly Thread thread;
         private volatile int executionState = ST_NOT_STARTED;
         private readonly PreciseTimeSpan preciseBreakoutInterval;
@@ -40,21 +41,21 @@ namespace DotNetty.Common.Concurrency
 
         /// <summary>Creates a new instance of <see cref="SingleThreadEventExecutor"/>.</summary>
         public SingleThreadEventExecutor(string threadName, TimeSpan breakoutInterval)
-            : this(null, threadName, breakoutInterval, new CompatibleConcurrentQueue<IRunnable>())
+            : this(null, threadName, breakoutInterval, new ConcurrentQueue<IRunnable>())
         {
         }
 
         /// <summary>Creates a new instance of <see cref="SingleThreadEventExecutor"/>.</summary>
         public SingleThreadEventExecutor(IEventExecutorGroup parent, string threadName, TimeSpan breakoutInterval)
-            : this(parent, threadName, breakoutInterval, new CompatibleConcurrentQueue<IRunnable>())
+            : this(parent, threadName, breakoutInterval, new ConcurrentQueue<IRunnable>())
         {
         }
 
-        protected SingleThreadEventExecutor(string threadName, TimeSpan breakoutInterval, IQueue<IRunnable> taskQueue)
+        protected SingleThreadEventExecutor(string threadName, TimeSpan breakoutInterval, ConcurrentQueue<IRunnable> taskQueue)
             : this(null, threadName, breakoutInterval, taskQueue)
         { }
 
-        protected SingleThreadEventExecutor(IEventExecutorGroup parent, string threadName, TimeSpan breakoutInterval, IQueue<IRunnable> taskQueue)
+        protected SingleThreadEventExecutor(IEventExecutorGroup parent, string threadName, TimeSpan breakoutInterval, ConcurrentQueue<IRunnable> taskQueue)
             : base(parent)
         {
             this.terminationCompletionSource = new TaskCompletionSource();
@@ -140,7 +141,7 @@ namespace DotNetty.Common.Concurrency
         /// <inheritdoc cref="IEventExecutor"/>
         public override void Execute(IRunnable task)
         {
-            this.taskQueue.TryEnqueue(task);
+            this.taskQueue.Enqueue(task);
 
             if (!this.InEventLoop)
             {
@@ -466,12 +467,7 @@ namespace DotNetty.Common.Concurrency
             IScheduledRunnable scheduledTask = this.PollScheduledTask(nanoTime);
             while (scheduledTask != null)
             {
-                if (!this.taskQueue.TryEnqueue(scheduledTask))
-                {
-                    // No space left in the task queue add it back to the scheduledTaskQueue so we pick it up again.
-                    this.ScheduledTaskQueue.Enqueue(scheduledTask);
-                    return false;
-                }
+                this.taskQueue.Enqueue(scheduledTask);
                 scheduledTask = this.PollScheduledTask(nanoTime);
             }
             return true;

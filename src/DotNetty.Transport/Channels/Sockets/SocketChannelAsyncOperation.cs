@@ -14,7 +14,7 @@ namespace DotNetty.Transport.Channels.Sockets
             this.Completed += AbstractSocketChannel.IoCompletedCallback;
             if (setEmptyBuffer)
             {
-                this.SetBuffer(ArrayExtensions.ZeroBytes, 0, 0);
+                this.SetBuffer(System.Array.Empty<byte>(), 0, 0);
             }
         }
 

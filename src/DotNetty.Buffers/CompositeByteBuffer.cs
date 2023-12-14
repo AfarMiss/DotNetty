@@ -532,7 +532,7 @@ namespace DotNetty.Buffers
             {
                 Contract.Assert(merged.Length - offset >= buf.Count);
 
-                PlatformDependent.CopyMemory(buf.Array, buf.Offset, merged, offset, buf.Count);
+                ByteBuffer.CopyMemory(buf.Array, buf.Offset, merged, offset, buf.Count);
                 offset += buf.Count;
             }
 
@@ -598,7 +598,7 @@ namespace DotNetty.Buffers
                 switch (this.components.Count)
                 {
                     case 0:
-                        return ArrayExtensions.ZeroBytes;
+                        return System.Array.Empty<byte>();
                     case 1:
                         return this.components[0].Buffer.Array;
                     default:

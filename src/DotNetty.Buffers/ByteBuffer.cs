@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
-using DotNetty.Common.Internal;
 
 namespace DotNetty.Buffers
 {
     public static partial class ByteBuffer
     {
         public static readonly ByteBufferAllocator Allocator = ByteBufferAllocator.Default;
-
+        
         public static readonly IByteBuffer Empty = Allocator.Buffer(0, 0);
-
+        
         public static IByteBuffer Buffer() => Allocator.Buffer();
         public static IByteBuffer Buffer(int initialCapacity) => Allocator.Buffer(initialCapacity);
         public static IByteBuffer Buffer(int initialCapacity, int maxCapacity) => Allocator.Buffer(initialCapacity, maxCapacity);
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer which wraps the specified array.
         ///     A modification on the specified array's content will be visible to the returned buffer.
         /// </summary>
         public static IByteBuffer WrappedBuffer(byte[] array) =>
             array.Length == 0 ? Empty  : new HeapByteBuffer(Allocator, array, array.Length);
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer which wraps the sub-region of the
         ///     specified array. A modification on the specified array's content 
@@ -34,15 +33,15 @@ namespace DotNetty.Buffers
             {
                 return Empty;
             }
-
+        
             if (offset == 0 && length == array.Length)
             {
                 return WrappedBuffer(array);
             }
-
+        
             return WrappedBuffer(array).Slice(offset, length);
         }
-
+        
         /// <summary>
         ///     Creates a new buffer which wraps the specified buffer's readable bytes.
         ///     A modification on the specified buffer's content will be visible to the returned buffer.
@@ -61,13 +60,13 @@ namespace DotNetty.Buffers
                 return Empty;
             }
         }
-
+        
         /// <summary>
         ///     Creates a new big-endian composite buffer which wraps the specified arrays without copying them.
         ///     A modification on the specified arrays' content will be visible to the returned buffer.
         /// </summary>
         public static IByteBuffer WrappedBuffer(params byte[][] arrays) => WrappedBuffer(AbstractByteBufferAllocator.DefaultMaxComponents, arrays);
-
+        
         /// <summary>
         ///     Creates a new big-endian composite buffer which wraps the readable bytes of the specified buffers without copying them. 
         ///     A modification on the content of the specified buffers will be visible to the returned buffer.
@@ -75,7 +74,7 @@ namespace DotNetty.Buffers
         /// <param name="buffers">The buffers to wrap. Reference count ownership of all variables is transfered to this method.</param>
         /// <returns>The readable portion of the buffers. The caller is responsible for releasing this buffer.</returns>
         public static IByteBuffer WrappedBuffer(params IByteBuffer[] buffers) => WrappedBuffer(AbstractByteBufferAllocator.DefaultMaxComponents, buffers);
-
+        
         /// <summary>
         ///     Creates a new big-endian composite buffer which wraps the specified arrays without copying them.
         ///     A modification on the specified arrays' content will be visible to the returned buffer.
@@ -106,17 +105,17 @@ namespace DotNetty.Buffers
                             components.Add(WrappedBuffer(array));
                         }
                     }
-
+        
                     if (components.Count > 0)
                     {
                         return new CompositeByteBuffer(Allocator, maxNumComponents, components);
                     }
                     break;
             }
-
+        
             return Empty;
         }
-
+        
         /// <summary>
         ///     Creates a new big-endian composite buffer which wraps the readable bytes of the specified buffers without copying them.
         ///     A modification on the content of the specified buffers will be visible to the returned buffer.
@@ -148,14 +147,14 @@ namespace DotNetty.Buffers
                     }
                     break;
             }
-
+        
             return Empty;
         }
-
+        
         public static CompositeByteBuffer CompositeBuffer() => CompositeBuffer(AbstractByteBufferAllocator.DefaultMaxComponents);
-
+        
         public static CompositeByteBuffer CompositeBuffer(int maxNumComponents) => new CompositeByteBuffer(Allocator, maxNumComponents);
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer whose content is a copy of the specified array
         ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
@@ -169,13 +168,13 @@ namespace DotNetty.Buffers
             {
                 return Empty;
             }
-
+        
             var newArray = new byte[array.Length];
             ByteBuffer.CopyMemory(array, 0, newArray, 0, array.Length);
-
+        
             return WrappedBuffer(newArray);
         }
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer whose content is a copy of the specified array.
         ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
@@ -193,12 +192,12 @@ namespace DotNetty.Buffers
             {
                 return Empty;
             }
-
+        
             var copy = new byte[length];
             ByteBuffer.CopyMemory(array, offset, copy, 0, length);
             return WrappedBuffer(copy);
         }
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer whose content is a copy of the specified <see cref="Array" />.
         ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
@@ -220,7 +219,7 @@ namespace DotNetty.Buffers
                 return Empty;
             }
         }
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer whose content is a merged copy of of the specified arrays.
         ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
@@ -237,7 +236,7 @@ namespace DotNetty.Buffers
                 case 1:
                     return arrays[0].Length == 0 ? Empty : CopiedBuffer(arrays[0]);
             }
-
+        
             // Merge the specified arrays into one array.
             int length = 0;
             foreach (byte[] a in arrays)
@@ -248,12 +247,12 @@ namespace DotNetty.Buffers
                 }
                 length += a.Length;
             }
-
+        
             if (length == 0)
             {
                 return Empty;
             }
-
+        
             var mergedArray = new byte[length];
             for (int i = 0, j = 0; i < arrays.Length; i++)
             {
@@ -261,10 +260,10 @@ namespace DotNetty.Buffers
                 ByteBuffer.CopyMemory(a, 0, mergedArray, j, a.Length);
                 j += a.Length;
             }
-
+        
             return WrappedBuffer(mergedArray);
         }
-
+        
         /// <summary>
         ///     Creates a new big-endian buffer whose content  is a merged copy of the specified <see cref="Array" />.
         ///     The new buffer's <see cref="IByteBuffer.ReaderIndex" /> and <see cref="IByteBuffer.WriterIndex" />
@@ -281,7 +280,7 @@ namespace DotNetty.Buffers
                 case 1:
                     return CopiedBuffer(buffers[0]);
             }
-
+        
             // Merge the specified buffers into one buffer.
             int length = 0;
             foreach (IByteBuffer b in buffers)
@@ -295,15 +294,15 @@ namespace DotNetty.Buffers
                 {
                     throw new ArgumentException("The total length of the specified buffers is too big.");
                 }
-
+        
                 length += bLen;
             }
-
+        
             if (length == 0)
             {
                 return Empty;
             }
-
+        
             var mergedArray = new byte[length];
             for (int i = 0, j = 0; i < buffers.Length; i++)
             {
@@ -312,244 +311,21 @@ namespace DotNetty.Buffers
                 b.GetBytes(b.ReaderIndex, mergedArray, j, bLen);
                 j += bLen;
             }
-
+        
             return WrappedBuffer(mergedArray);
         }
-
+        
         public static IByteBuffer CopiedBuffer(char[] array, int offset, int length, Encoding encoding)
         {
             Contract.Requires(array != null);
             return length == 0 ? Empty : CopiedBuffer(new string(array, offset, length), encoding);
         }
-
+        
         public static IByteBuffer CopiedBuffer(string value, Encoding encoding) => ByteBufferUtil.EncodeString0(Allocator, true, value, encoding, 0);
-
-        /// <summary>
-        ///     Creates a new 4-byte big-endian buffer that holds the specified 32-bit integer.
-        /// </summary>
-        public static IByteBuffer CopyInt(int value)
-        {
-            IByteBuffer buf = Buffer(4);
-            buf.Write(value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a big-endian buffer that holds a sequence of the specified 32-bit integers.
-        /// </summary>
-        public static IByteBuffer CopyInt(params int[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 4);
-            foreach (int v in values)
-            {
-                buffer.Write(v);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Creates a new 2-byte big-endian buffer that holds the specified 16-bit integer.
-        /// </summary>
-        public static IByteBuffer CopyShort(int value)
-        {
-            IByteBuffer buf = Buffer(2);
-            buf.Write((short)value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified 16-bit integers.
-        /// </summary>
-        public static IByteBuffer CopyShort(params short[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 2);
-            foreach (short v in values)
-            {
-                buffer.Write(v);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified 16-bit integers.
-        /// </summary>
-        public static IByteBuffer CopyShort(params int[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 2);
-            foreach (int v in values)
-            {
-                buffer.Write((short)v);
-            }
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Creates a new 3-byte big-endian buffer that holds the specified 24-bit integer.
-        /// </summary>
-        public static IByteBuffer CopyMedium(int value)
-        {
-            IByteBuffer buf = Buffer(3);
-            throw new NotImplementedException();
-            // buf.WriteMedium(value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified 24-bit integers.
-        /// </summary>
-        public static IByteBuffer CopyMedium(params int[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 3);
-            foreach (int v in values)
-            {
-                throw new NotImplementedException();
-                // buffer.WriteMedium(v);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Creates a new 8-byte big-endian buffer that holds the specified 64-bit integer.
-        /// </summary>
-        public static IByteBuffer CopyLong(long value)
-        {
-            IByteBuffer buf = Buffer(8);
-            buf.Write(value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified 64-bit integers.
-        /// </summary>
-        public static IByteBuffer CopyLong(params long[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 8);
-            foreach (long v in values)
-            {
-                buffer.Write(v);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Creates a new single-byte big-endian buffer that holds the specified boolean value.
-        /// </summary>
-        public static IByteBuffer CopyBoolean(bool value)
-        {
-            IByteBuffer buf = Buffer(1);
-            buf.Write(value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified boolean values.
-        /// </summary>
-        public static IByteBuffer CopyBoolean(params bool[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length);
-            foreach (bool v in values)
-            {
-                buffer.Write(v);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Creates a new 4-byte big-endian buffer that holds the specified 32-bit floating point number.
-        /// </summary>
-        public static IByteBuffer CopyFloat(float value)
-        {
-            IByteBuffer buf = Buffer(4);
-            buf.Write(value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified 32-bit floating point numbers.
-        /// </summary>
-        public static IByteBuffer CopyFloat(params float[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 4);
-            foreach (float v in values)
-            {
-                buffer.Write(v);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        ///     Creates a new 8-byte big-endian buffer that holds the specified 64-bit floating point number.
-        /// </summary>
-        public static IByteBuffer CopyDouble(double value)
-        {
-            IByteBuffer buf = Buffer(8);
-            buf.Write(value);
-            return buf;
-        }
-
-        /// <summary>
-        ///     Create a new big-endian buffer that holds a sequence of the specified 64-bit floating point numbers.
-        /// </summary>
-        public static IByteBuffer CopyDouble(params double[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return Empty;
-            }
-
-            IByteBuffer buffer = Buffer(values.Length * 8);
-            foreach (double v in values)
-            {
-                buffer.Write(v);
-            }
-
-            return buffer;
-        }
-
+        
         /// <summary>
         ///     Return a unreleasable view on the given {@link ByteBuf} which will just ignore release and retain calls.
         /// </summary>
-        public static IByteBuffer UnreleasableBuffer(IByteBuffer buffer) => new KeepByteBuffer(buffer);
+        public static IByteBuffer KeepByteBuffer(IByteBuffer buffer) => new KeepByteBuffer(buffer);
     }
 }

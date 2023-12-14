@@ -46,7 +46,7 @@ namespace DotNetty.Transport.Channels
         {
             if (this.InboundHandler != null)
             {
-                throw new InvalidOperationException($"init() can not be invoked if {StringUtil.SimpleClassName(this)} was constructed with non-default constructor.");
+                throw new InvalidOperationException($"init() can not be invoked if {this.GetType().Name} was constructed with non-default constructor.");
             }
 
             if (inbound == null)
@@ -84,7 +84,7 @@ namespace DotNetty.Transport.Channels
         {
             if (this.InboundHandler == null)
             {
-                throw new InvalidOperationException($"Init() must be invoked before being added to a {nameof(IChannelPipeline)} if {StringUtil.SimpleClassName(this)} was constructed with the default constructor.");
+                throw new InvalidOperationException($"Init() must be invoked before being added to a {nameof(IChannelPipeline)} if {this.GetType().Name} was constructed with the default constructor.");
             }
 
             this.outboundCtx = new DelegatingChannelHandlerContext(context, this.OutboundHandler);
@@ -483,7 +483,7 @@ namespace DotNetty.Transport.Channels
                 }
                 catch (Exception cause)
                 {
-                    this.FireExceptionCaught(new ChannelPipelineException($"{StringUtil.SimpleClassName(this.handler)}.handlerRemoved() has thrown an exception.", cause));
+                    this.FireExceptionCaught(new ChannelPipelineException($"{this.handler.GetType().Name}.handlerRemoved() has thrown an exception.", cause));
                 }
             }
         }

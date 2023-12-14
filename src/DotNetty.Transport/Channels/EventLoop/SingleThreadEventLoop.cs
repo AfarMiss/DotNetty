@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
@@ -41,12 +42,12 @@ namespace DotNetty.Transport.Channels
         {
         }
 
-        protected SingleThreadEventLoop(string threadName, TimeSpan breakoutInterval, IQueue<IRunnable> taskQueue)
+        protected SingleThreadEventLoop(string threadName, TimeSpan breakoutInterval, ConcurrentQueue<IRunnable> taskQueue)
             : base(null, threadName, breakoutInterval, taskQueue)
         {
         }
 
-        protected SingleThreadEventLoop(IEventLoopGroup parent, string threadName, TimeSpan breakoutInterval, IQueue<IRunnable> taskQueue)
+        protected SingleThreadEventLoop(IEventLoopGroup parent, string threadName, TimeSpan breakoutInterval, ConcurrentQueue<IRunnable> taskQueue)
             : base(parent, threadName, breakoutInterval, taskQueue)
         {
         }

@@ -10,7 +10,7 @@ namespace DotNetty.Buffers
     {
         #region IByteBuffer
 
-        static readonly ArraySegment<byte> EmptyBuffer = new ArraySegment<byte>(ArrayExtensions.ZeroBytes);
+        static readonly ArraySegment<byte> EmptyBuffer = new ArraySegment<byte>(System.Array.Empty<byte>());
         static readonly ArraySegment<byte>[] EmptyBuffers = { EmptyBuffer };
         private static Action NoMethod => () => { };
 
@@ -126,9 +126,9 @@ namespace DotNetty.Buffers
 
         public bool HasArray => true;
 
-        public byte[] Array => ArrayExtensions.ZeroBytes;
+        public byte[] Array => System.Array.Empty<byte>();
 
-        public byte[] ToArray() => ArrayExtensions.ZeroBytes;
+        public byte[] ToArray() => System.Array.Empty<byte>();
 
         public int ArrayOffset => 0;
 

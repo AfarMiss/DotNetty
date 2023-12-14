@@ -206,7 +206,7 @@ namespace DotNetty.Codecs.Compression
             try
             {
                 // Configure input.
-                this.z.next_in = ArrayExtensions.ZeroBytes;
+                this.z.next_in = System.Array.Empty<byte>();
                 this.z.next_in_index = 0;
                 this.z.avail_in = 0;
 

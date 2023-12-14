@@ -250,6 +250,13 @@ namespace DotNetty.Transport.Channels.Pool
             }
         }
 
+        private interface IQueue<T>
+        {
+            bool TryEnqueue(T item);
+            bool TryDequeue(out T item);
+            void Clear();
+        }
+        
         private class CompatibleConcurrentStack<T> : ConcurrentStack<T>, IQueue<T>
         {
             public bool TryEnqueue(T item)
@@ -259,6 +266,20 @@ namespace DotNetty.Transport.Channels.Pool
             }
 
             public bool TryDequeue(out T item) => this.TryPop(out item);
+        }
+        
+        private class CompatibleConcurrentQueue<T> : ConcurrentQueue<T>, IQueue<T>
+        {
+            public bool TryEnqueue(T element)
+            {
+                this.Enqueue(element);
+                return true;
+            }
+
+            void IQueue<T>.Clear()
+            {
+                this.Clear();
+            }
         }
     }
 }

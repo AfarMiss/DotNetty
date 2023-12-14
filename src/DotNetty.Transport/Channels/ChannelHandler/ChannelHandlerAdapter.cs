@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
@@ -75,7 +74,7 @@ namespace DotNetty.Transport.Channels
         {
             if (this.IsSharable)
             {
-                throw new InvalidOperationException($"ChannelHandler {StringUtil.SimpleClassName(this)} is not allowed to be shared");
+                throw new InvalidOperationException($"ChannelHandler {this.GetType().Name} is not allowed to be shared");
             }
         }
     }

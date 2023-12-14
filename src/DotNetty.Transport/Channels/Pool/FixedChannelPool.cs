@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
@@ -28,7 +29,7 @@ namespace DotNetty.Transport.Channels.Pool
         private readonly TimeSpan acquireTimeout;
         private readonly IRunnable timeoutTask;
 
-        private readonly IQueue<AcquireTask> pendingAcquireQueue = PlatformDependent.NewMpscQueue<AcquireTask>();
+        private readonly ConcurrentQueue<AcquireTask> pendingAcquireQueue = new ConcurrentQueue<AcquireTask>();
 
         private readonly int maxConnections;
         private readonly int maxPendingAcquires;
@@ -147,18 +148,12 @@ namespace DotNetty.Transport.Channels.Pool
                 {
                     promise = promise ?? new TaskCompletionSource<IChannel>();
                     var task = new AcquireTask(this, promise);
-                    if (this.pendingAcquireQueue.TryEnqueue(task))
-                    {
-                        ++this.pendingAcquireCount;
+                    this.pendingAcquireQueue.Enqueue(task);
+                    ++this.pendingAcquireCount;
 
-                        if (this.timeoutTask != null)
-                        {
-                            task.TimeoutTask = this.executor.Schedule(this.timeoutTask, this.acquireTimeout);
-                        }
-                    }
-                    else
+                    if (this.timeoutTask != null)
                     {
-                        throw FullException;
+                        task.TimeoutTask = this.executor.Schedule(this.timeoutTask, this.acquireTimeout);
                     }
 
                     return new ValueTask<IChannel>(promise.Task);

@@ -8,7 +8,7 @@ namespace DotNetty.Transport.Channels.Sockets
 {
     public abstract class AbstractSocketByteChannel : AbstractSocketChannel
     {
-        private static readonly string ExpectedTypes = $" (expected: {StringUtil.SimpleClassName<IByteBuffer>()})"; //+ ", " +
+        private static readonly string ExpectedTypes = $" (expected: {nameof(IByteBuffer)})"; //+ ", " +
 
         private static readonly Action<object> FlushAction = o => ((AbstractSocketByteChannel)o).Flush();
         private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
