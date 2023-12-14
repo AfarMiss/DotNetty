@@ -11,11 +11,9 @@ namespace DotNetty.Common.Concurrency
         private static readonly TimeSpan DefaultShutdownTimeout = TimeSpan.FromSeconds(15);
 
         public abstract bool IsShutdown { get; }
-
         public abstract bool IsTerminated { get; }
 
         public abstract bool IsShuttingDown { get; }
-
         public abstract Task TerminationCompletion { get; }
 
         public IEnumerable<IEventExecutor> Items => this.GetItems();
@@ -40,7 +38,7 @@ namespace DotNetty.Common.Concurrency
 
         public Task<T> SubmitAsync<T>(Func<object, object, T> func, object context, object state) => this.GetNext().SubmitAsync(func, context, state);
 
-        public Task<T> SubmitAsync<T>(Func<object, object, T> func, object context, object state, CancellationToken cancellationToken) => this.GetNext().SubmitAsync(func, context, cancellationToken);
+        public Task<T> SubmitAsync<T>(Func<object, object, T> func, object context, object state, CancellationToken cancellationToken) => this.GetNext().SubmitAsync(func, context, state, cancellationToken);
 
         public IScheduledTask Schedule(IRunnable action, TimeSpan delay) => this.GetNext().Schedule(action, delay);
 

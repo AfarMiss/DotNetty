@@ -9,9 +9,6 @@ using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Common.Concurrency
 {
-    /// <summary>
-    /// <see cref="IEventExecutor"/> backed by a single thread.
-    /// </summary>
     public class SingleThreadEventExecutor : AbstractScheduledEventExecutor
     {
         private const int ST_NOT_STARTED = 1;
@@ -38,13 +35,11 @@ namespace DotNetty.Common.Concurrency
         private readonly ISet<Action> shutdownHooks = new HashSet<Action>();
         private long progress;
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventExecutor"/>.</summary>
         public SingleThreadEventExecutor(string threadName, TimeSpan breakoutInterval)
             : this(null, threadName, breakoutInterval, new CompatibleConcurrentQueue<IRunnable>())
         {
         }
 
-        /// <summary>Creates a new instance of <see cref="SingleThreadEventExecutor"/>.</summary>
         public SingleThreadEventExecutor(IEventExecutorGroup parent, string threadName, TimeSpan breakoutInterval)
             : this(parent, threadName, breakoutInterval, new CompatibleConcurrentQueue<IRunnable>())
         {
@@ -94,12 +89,11 @@ namespace DotNetty.Common.Concurrency
         /// </summary>
         public int BacklogLength => this.taskQueue.Count;
 
-        void Loop()
+        private void Loop()
         {
             SetCurrentExecutor(this);
 
-            Task.Factory.StartNew(
-                () =>
+            Task.Factory.StartNew(() =>
                 {
                     try
                     {
@@ -116,28 +110,19 @@ namespace DotNetty.Common.Concurrency
                         this.executionState = ST_TERMINATED;
                         this.terminationCompletionSource.TrySetException(ex);
                     }
-                },
-                CancellationToken.None,
-                TaskCreationOptions.None,
-                this.scheduler);
+                }, CancellationToken.None, TaskCreationOptions.None, this.scheduler);
         }
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override bool IsShuttingDown => this.executionState >= ST_SHUTTING_DOWN;
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override Task TerminationCompletion => this.terminationCompletionSource.Task;
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override bool IsShutdown => this.executionState >= ST_SHUTDOWN;
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override bool IsTerminated => this.executionState == ST_TERMINATED;
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override bool IsInEventLoop(Thread t) => this.thread == t;
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override void Execute(IRunnable task)
         {
             this.taskQueue.TryEnqueue(task);
