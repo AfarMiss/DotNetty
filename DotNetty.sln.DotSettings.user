@@ -4,9 +4,16 @@
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProgram_0020Files_005CUnity_005CHub_005CEditor_005C2022_002E3_002E7f1_005CEditor_005CData_005CManaged_005CUnityEngine_005CUnityEngine_002ECoreModule_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProgram_0020Files_005CUnity_005CHub_005CEditor_005C2022_002E3_002E7f1_005CEditor_005CData_005CManaged_005CUnityEngine_005CUnityEngine_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProgram_0020Files_005CUnity_005CHub_005CEditor_005C2022_002E3_002E7f1_005CEditor_005CData_005CManaged_005CUnityEngine_005CUnity_002ECecil_002EPdb_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=25F7AD69_002D7836_002D46E8_002D9B29_002D0FBB3C128FFB_002Ff_003ADecoderException_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF4FF0D0_002DA5CE_002D471F_002DB946_002D538C28C21CBB_002Fd_003AInternal_002Fd_003ALogging_002Ff_003AGenericLogger_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF4FF0D0_002DA5CE_002D471F_002DB946_002D538C28C21CBB_002Fd_003AUtilities_002Ff_003AMathUtil_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=12DCCEFD_002D623B_002D46CC_002D979C_002D407FA265E239/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=1F442118_002DA665_002D4891_002DB056_002DFE9E54C5B049/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=25F7AD69_002D7836_002D46E8_002D9B29_002D0FBB3C128FFB/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=541093F6_002D616E_002D43D9_002DB671_002DFCD1F9C0A181/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=5ADB0FF5_002D8EFC_002D475A_002DBF08_002D6B35EF728329/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=5F68A5B1_002D7907_002D4B16_002D8AFE_002D326E9DD7D65B/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=75A1BCC1_002DA7F3_002D4893_002D99C5_002D3235F87DB00E/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=9FE6A783_002DC20D_002D4097_002D9988_002D4178E2C4CE75/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=D284C2BF_002DE06E_002D481B_002DB301_002D503A9D477B0E/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CustomTools/CustomToolsData/@EntryValue"></s:String>
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\Administrator\.nuget\packages\microsoft.extensions.logging.abstractions\5.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Administrator\.nuget\packages\microsoft.extensions.logging\5.0.0\lib\netstandard2.1\Microsoft.Extensions.Logging.dll" /&gt;&#xD;
@@ -16,12 +23,12 @@
   &lt;Project Location="E:\2023-12DotNetty" Presentation="&amp;lt;test&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=07c97a77_002D61b6_002D4bb5_002D9436_002D3a7fc379b75e_0023Telnet_002EServer/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=08c19033_002D23b2_002D47d7_002D8332_002D86273ae287bc_0023DotNetty_002ECodecs_002ERedis_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=1012c962_002D7f6d_002D4ec5_002Da0ec_002D0741a95bad6b_0023DotNetty_002ETransport_002ELibuv_002ETests/@EntryIndexedValue">True</s:Boolean>
 	
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=12dccefd_002D623b_002D46cc_002D979c_002D407fa265e239_0023DotNetty_002EHandlers/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=16c89e7c_002D1575_002D4685_002D8dfa_002D8e7e2c6101bf_0023DotNetty_002ECodecs_002EHttp_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=25f7ad69_002D7836_002D46e8_002D9b29_002D0fbb3c128ffb_0023DotNetty_002ECodecs/@EntryIndexedValue">True</s:Boolean>
+	
+	
+	
+	
+	
 	
 	
 	
@@ -33,12 +40,6 @@
 	
 	
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=3326db6e_002D023e_002D483f_002D9a1c_002D5905d3091b57_0023WebSockets_002EClient/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=3af8a62f_002Df5ce_002D4c2d_002Db356_002D8b9fdfa51668_0023DotNetty_002ECodecs_002EProtobuf_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=3da49c12_002D3614_002D40f5_002Db5ce_002D8b95f872efc1_0023DotNetty_002ETransport_002ETests_002EPerformance/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=572e1914_002D489f_002D402d_002D944f_002D71ee0632e5d8_0023DotNetty_002EBuffers_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=5d5a3137_002Df118_002D4f6c_002Dabe7_002D2523184a3a2d_0023DotNetty_002ETests_002EEnd2End/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=7155d1e6_002D00ce_002D4081_002Db922_002De6c5524ee600_0023DotNetty_002EMicrobench/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=72c92f76_002Df804_002D4300_002Dbff1_002D459420d9ef0b_0023DotNetty_002ECommon_002ETests/@EntryIndexedValue">True</s:Boolean>
 	
 	
 	
@@ -57,13 +58,20 @@
 	
 	
 	
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=9fe6a783_002Dc20d_002D4097_002D9988_002D4178e2c4ce75_0023DotNetty_002ETransport_002ELibuv/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=a7fc497e_002D790a_002D4980_002Db57c_002D32af4ad4ab9d_0023DotNetty_002ECodecs_002EProtocolBuffers_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=bda099c5_002De435_002D49df_002D9922_002D58d63e11b764_0023DotNetty_002ETransport_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=ce97d2ec_002D3ea9_002D4fec_002Db304_002Df57646db54fd_0023DotNetty_002ECodecs_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=d0dbb346_002Dbdda_002D4e28_002Da335_002D6d3e1f9902df_0023DotNetty_002EHandlers_002ETests/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=da54dbaf_002Dccda_002D4ad1_002D9ff9_002Deb6f890d1091_0023DotNetty_002ETests_002ECommon/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=e31a5d46_002D71b7_002D4b7e_002Da9f8_002D3f011822f28a_0023DotNetty_002ECodecs_002EMqtt_002ETests/@EntryIndexedValue">True</s:Boolean>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
