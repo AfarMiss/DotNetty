@@ -1,17 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Text;
+using DotNetty.Common.Internal;
 
 namespace DotNetty.Buffers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Text;
-    using DotNetty.Common.Internal;
-
-    /// <summary>
-    ///     Utility class for managing and creating unpooled buffers
-    /// </summary>
     public static partial class ByteBuffer
     {
         public static readonly ByteBufferAllocator Allocator = ByteBufferAllocator.Default;
