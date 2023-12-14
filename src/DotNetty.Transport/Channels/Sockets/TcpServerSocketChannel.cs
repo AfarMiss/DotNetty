@@ -6,10 +6,6 @@ using DotNetty.Common.Internal.Logging;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    /// <summary>
-    ///     A <see cref="IServerSocketChannel" /> implementation which uses Socket-based implementation to accept new
-    ///     connections.
-    /// </summary>
     public class TcpServerSocketChannel : AbstractSocketChannel, IServerSocketChannel
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<TcpServerSocketChannel>();
@@ -21,27 +17,15 @@ namespace DotNetty.Transport.Channels.Sockets
 
         private SocketChannelAsyncOperation acceptOperation;
 
-        /// <summary>
-        ///     Create a new instance
-        /// </summary>
-        public TcpServerSocketChannel()
-            : this(new Socket(SocketType.Stream, ProtocolType.Tcp))
+        public TcpServerSocketChannel() : this(new Socket(SocketType.Stream, ProtocolType.Tcp))
         {
         }
 
-        /// <summary>
-        ///     Create a new instance
-        /// </summary>
-        public TcpServerSocketChannel(AddressFamily addressFamily)
-            : this(new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp))
+        public TcpServerSocketChannel(AddressFamily addressFamily) : this(new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp))
         {
         }
 
-        /// <summary>
-        ///     Create a new instance using the given <see cref="Socket"/>.
-        /// </summary>
-        public TcpServerSocketChannel(Socket socket)
-            : base(null, socket)
+        public TcpServerSocketChannel(Socket socket) : base(null, socket)
         {
             this.config = new TcpServerSocketChannelConfig(this, socket);
         }
@@ -56,7 +40,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override EndPoint LocalAddressInternal => this.Socket.LocalEndPoint;
 
-        SocketChannelAsyncOperation AcceptOperation => this.acceptOperation ?? (this.acceptOperation = new SocketChannelAsyncOperation(this, false));
+        SocketChannelAsyncOperation AcceptOperation => this.acceptOperation ??= new SocketChannelAsyncOperation(this, false);
 
         protected override IChannelUnsafe NewUnsafe() => new TcpServerSocketChannelUnsafe(this);
 
@@ -147,25 +131,24 @@ namespace DotNetty.Transport.Channels.Sockets
 
         private sealed class TcpServerSocketChannelUnsafe : AbstractSocketUnsafe
         {
-            public TcpServerSocketChannelUnsafe(TcpServerSocketChannel channel)
-                : base(channel)
+            private new TcpServerSocketChannel Channel => (TcpServerSocketChannel)this.channel;
+
+            public TcpServerSocketChannelUnsafe(TcpServerSocketChannel channel) : base(channel)
             {
             }
-
-            new TcpServerSocketChannel Channel => (TcpServerSocketChannel)this.channel;
 
             public override void FinishRead(SocketChannelAsyncOperation operation)
             {
                 Contract.Assert(this.channel.EventLoop.InEventLoop);
 
-                TcpServerSocketChannel ch = this.Channel;
+                var ch = this.Channel;
                 if ((ch.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
                 {
                     return; // read was signaled as a result of channel closure
                 }
-                IChannelConfiguration config = ch.Configuration;
-                IChannelPipeline pipeline = ch.Pipeline;
-                IRecvByteBufAllocatorHandle allocHandle = this.Channel.Unsafe.RecvBufAllocHandle;
+                var config = ch.Configuration;
+                var pipeline = ch.Pipeline;
+                var allocHandle = this.Channel.Unsafe.RecvBufAllocHandle;
                 allocHandle.Reset(config);
 
                 bool closed = false;
@@ -173,16 +156,14 @@ namespace DotNetty.Transport.Channels.Sockets
 
                 try
                 {
-                    Socket connectedSocket = null;
                     try
                     {
-                        connectedSocket = operation.AcceptSocket;
+                        var connectedSocket = operation.AcceptSocket;
                         operation.AcceptSocket = null;
                         operation.Validate();
 
                         var message = this.PrepareChannel(connectedSocket);
-                        
-                        connectedSocket = null;
+
                         ch.ReadPending = false;
                         pipeline.FireChannelRead(message);
                         allocHandle.IncMessagesRead(1);
@@ -199,7 +180,6 @@ namespace DotNetty.Transport.Channels.Sockets
                             connectedSocket = ch.Socket.Accept();
                             message = this.PrepareChannel(connectedSocket);
 
-                            connectedSocket = null;
                             ch.ReadPending = false;
                             pipeline.FireChannelRead(message);
                             allocHandle.IncMessagesRead(1);

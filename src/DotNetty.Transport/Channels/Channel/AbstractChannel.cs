@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using DotNetty.Buffers;
 using DotNetty.Common.Concurrency;
 using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
@@ -28,28 +27,18 @@ namespace DotNetty.Transport.Channels
         private volatile IEventLoop eventLoop;
         private volatile bool registered;
 
-        /// <summary>Cache for the string representation of this channel</summary>
         private bool strValActive;
 
         private string strVal;
 
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="parent">The parent of this channel. Pass <c>null</c> if there's no parent.</param>
         protected AbstractChannel(IChannel parent)
         {
             this.Parent = parent;
-            this.Id = this.NewId();
+            this.Id = this.NewChannelId();
             this.channelUnsafe = this.NewUnsafe();
             this.pipeline = this.NewChannelPipeline();
         }
 
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="parent">The parent of this channel. Pass <c>null</c> if there's no parent.</param>
-        /// <param name="id">An <see cref="IChannelId"/> for the new channel.</param>
         protected AbstractChannel(IChannel parent, IChannelId id)
         {
             this.Parent = parent;
@@ -59,13 +48,9 @@ namespace DotNetty.Transport.Channels
         }
 
         public IChannelId Id { get; }
-
         public bool IsWritable => this.channelUnsafe.OutboundBuffer != null && this.channelUnsafe.OutboundBuffer.IsWritable;
-
         public IChannel Parent { get; }
-
         public IChannelPipeline Pipeline => this.pipeline;
-
         public abstract IChannelConfiguration Configuration { get; }
 
         public IEventLoop EventLoop
@@ -81,15 +66,12 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public abstract bool Open { get; }
-
-        public abstract bool Active { get; }
-
-        public abstract ChannelMetadata Metadata { get; }
-
         public EndPoint LocalAddress => this.localAddress ?? this.CacheLocalAddress();
         public EndPoint RemoteAddress => this.remoteAddress ?? this.CacheRemoteAddress();
-
+        
+        public abstract bool Open { get; }
+        public abstract bool Active { get; }
+        public abstract ChannelMetadata Metadata { get; }
         protected abstract EndPoint LocalAddressInternal { get; }
 
         protected void InvalidateLocalAddress() => this.localAddress = null;
@@ -129,14 +111,8 @@ namespace DotNetty.Transport.Channels
 
         public bool Registered => this.registered;
 
-        /// <summary>
-        /// Returns a new <see cref="DefaultChannelId"/> instance. Subclasses may override this method to assign custom
-        /// <see cref="IChannelId"/>s to <see cref="IChannel"/>s that use the <see cref="AbstractChannel"/> constructor.
-        /// </summary>
-        /// <returns>A new <see cref="DefaultChannelId"/> instance.</returns>
-        protected virtual IChannelId NewId() => DefaultChannelId.NewInstance();
+        protected virtual IChannelId NewChannelId() => DefaultChannelId.NewInstance();
 
-        /// <summary>Returns a new pipeline instance.</summary>
         protected virtual DefaultChannelPipeline NewChannelPipeline() => new DefaultChannelPipeline(this);
 
         public virtual Task BindAsync(EndPoint localAddress) => this.pipeline.BindAsync(localAddress);
@@ -151,17 +127,9 @@ namespace DotNetty.Transport.Channels
 
         public Task DeregisterAsync() => this.pipeline.DeregisterAsync();
 
-        public IChannel Flush()
-        {
-            this.pipeline.Flush();
-            return this;
-        }
+        public void Flush() => this.pipeline.Flush();
 
-        public IChannel Read()
-        {
-            this.pipeline.Read();
-            return this;
-        }
+        public void Read() => this.pipeline.Read();
 
         public Task WriteAsync(object msg) => this.pipeline.WriteAsync(msg);
 
@@ -171,21 +139,10 @@ namespace DotNetty.Transport.Channels
 
         public IChannelUnsafe Unsafe => this.channelUnsafe;
 
-        /// <summary>
-        /// Create a new <see cref="AbstractUnsafe" /> instance which will be used for the life-time of the
-        /// <see cref="IChannel" />
-        /// </summary>
         protected abstract IChannelUnsafe NewUnsafe();
 
-        /// <summary>
-        /// Returns the ID of this channel.
-        /// </summary>
         public override int GetHashCode() => this.Id.GetHashCode();
 
-        /// <summary>
-        /// Returns <c>true</c> if and only if the specified object is identical
-        /// with this channel (i.e. <c>this == o</c>).
-        /// </summary>
         public override bool Equals(object o) => this == o;
 
         public int CompareTo(IChannel o) => ReferenceEquals(this, o) ? 0 : this.Id.CompareTo(o.Id);
@@ -253,9 +210,6 @@ namespace DotNetty.Transport.Channels
             return this.strVal;
         }
 
-        /// <summary>
-        /// <see cref="IChannelUnsafe" /> implementation which sub-classes must extend and use.
-        /// </summary>
         protected abstract class AbstractUnsafe : IChannelUnsafe
         {
             protected readonly AbstractChannel channel;

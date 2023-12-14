@@ -7,9 +7,6 @@ using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    /// <see cref="IEventLoopGroup"/> backed by a set of <see cref="SingleThreadEventLoop"/> instances.
-    /// </summary>
     public sealed class MultiThreadEventLoopGroup : AbstractEventExecutorGroup, IEventLoopGroup
     {
         private static readonly int DefaultEventLoopThreadCount = Environment.ProcessorCount * 2;
@@ -24,13 +21,10 @@ namespace DotNetty.Transport.Channels
 
         public override bool IsShuttingDown => eventLoops.All(eventLoop => eventLoop.IsShuttingDown);
 
-        /// <inheritdoc />
         public override Task TerminationCompletion { get; }
 
-        /// <inheritdoc />
         protected override IEnumerable<IEventExecutor> GetItems() => this.eventLoops;
 
-        /// <inheritdoc />
         public new IEnumerable<IEventLoop> Items => this.eventLoops;
 
         public MultiThreadEventLoopGroup()

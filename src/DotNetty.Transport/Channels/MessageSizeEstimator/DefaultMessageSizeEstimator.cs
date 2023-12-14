@@ -5,9 +5,6 @@ namespace DotNetty.Transport.Channels
 {
     public sealed class DefaultMessageSizeEstimator : IMessageSizeEstimator
     {
-        /// <summary>
-        /// Returns the default implementation, which returns <c>0</c> for unknown messages.
-        /// </summary>
         public static readonly IMessageSizeEstimator Default = new DefaultMessageSizeEstimator(0);
         private readonly IMessageSizeEstimatorHandle handle;
 

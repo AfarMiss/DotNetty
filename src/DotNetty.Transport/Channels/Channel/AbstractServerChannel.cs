@@ -5,12 +5,6 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    /// A skeletal server-side <see cref="IChannel"/> implementation. A server-side <see cref="IChannel"/> does not
-    /// allow the following operations: <see cref="IChannel.ConnectAsync(EndPoint)"/>,
-    /// <see cref="IChannel.DisconnectAsync()"/>, <see cref="IChannel.WriteAsync(object)"/>,
-    /// <see cref="IChannel.Flush()"/>.
-    /// </summary>
     public abstract class AbstractServerChannel : AbstractChannel, IServerChannel
     {
         private static readonly ChannelMetadata METADATA = new ChannelMetadata(false, 16);

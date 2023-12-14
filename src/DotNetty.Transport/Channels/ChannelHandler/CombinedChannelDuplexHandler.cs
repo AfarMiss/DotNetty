@@ -376,13 +376,12 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        sealed class DelegatingChannelHandlerContext : IChannelHandlerContext
+        private sealed class DelegatingChannelHandlerContext : IChannelHandlerContext
         {
-
-            readonly IChannelHandlerContext ctx;
-            readonly IChannelHandler handler;
-            readonly Action<Exception> onError;
-            bool removed;
+            private readonly IChannelHandlerContext ctx;
+            private readonly IChannelHandler handler;
+            private readonly Action<Exception> onError;
+            private bool removed;
 
             public DelegatingChannelHandlerContext(IChannelHandlerContext ctx, IChannelHandler handler, Action<Exception> onError = null)
             {

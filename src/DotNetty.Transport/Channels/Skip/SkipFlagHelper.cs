@@ -19,7 +19,6 @@ namespace DotNetty.Transport.Channels
         {
             SkipFlags flags = 0;
 
-            // this method should never throw
             if (IsSkipFlagMethod(handlerType, nameof(IChannelHandler.HandlerAdded)))
             {
                 flags |= SkipFlags.HandlerAdded;
@@ -99,9 +98,9 @@ namespace DotNetty.Transport.Channels
             return flags;
         }
 
-        internal static bool IsSkipFlagMethod(Type handlerType, string methodName) => IsSkipFlagMethod(handlerType, methodName, Type.EmptyTypes);
+        private static bool IsSkipFlagMethod(Type handlerType, string methodName) => IsSkipFlagMethod(handlerType, methodName, Type.EmptyTypes);
 
-        internal static bool IsSkipFlagMethod(Type handlerType, string methodName, params Type[] paramTypes)
+        private static bool IsSkipFlagMethod(Type handlerType, string methodName, params Type[] paramTypes)
         {
             var newParamTypes = new Type[paramTypes.Length + 1];
             newParamTypes[0] = typeof(IChannelHandlerContext);

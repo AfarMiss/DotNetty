@@ -29,18 +29,12 @@ namespace DotNetty.Transport.Channels
 
         private enum HandlerState
         {
-            /// <summary>Neither <see cref="IChannelHandler.HandlerAdded"/> nor <see cref="IChannelHandler.HandlerRemoved"/> was called.</summary>
             Init = 0,
-            /// <summary><see cref="IChannelHandler.HandlerAdded"/> was called.</summary>
-            Added = 1,
-            /// <summary><see cref="IChannelHandler.HandlerRemoved"/> was called.</summary>
-            Removed = 2
+            Added,
+            Removed
         }
 
         internal readonly DefaultChannelPipeline pipeline;
-
-        // Will be set to null if no child executor should be used, otherwise it will be set to the
-        // child executor.
         internal readonly IEventExecutor executor;
         private HandlerState handlerState = HandlerState.Init;
 
@@ -61,16 +55,6 @@ namespace DotNetty.Transport.Channels
 
         public abstract IChannelHandler Handler { get; }
 
-        /// <summary>
-        ///     Makes best possible effort to detect if <see cref="IChannelHandler.HandlerAdded(IChannelHandlerContext)" /> was
-        ///     called
-        ///     yet. If not return <c>false</c> and if called or could not detect return <c>true</c>.
-        ///     If this method returns <c>true</c> we will not invoke the <see cref="IChannelHandler" /> but just forward the
-        ///     event.
-        ///     This is needed as <see cref="DefaultChannelPipeline" /> may already put the <see cref="IChannelHandler" /> in the
-        ///     linked-list
-        ///     but not called
-        /// </summary>
         public bool Added => handlerState == HandlerState.Added;
 
         public bool Removed => handlerState == HandlerState.Removed;
@@ -768,7 +752,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public override string ToString() => $"{typeof(IChannelHandlerContext).Name} ({this.Name}, {this.Channel})";
+        public override string ToString() => $"{nameof(IChannelHandlerContext)} ({this.Name}, {this.Channel})";
 
 
         private abstract class AbstractWriteTask<T> : IRunnable , IRecycle where T : AbstractWriteTask<T>, new()

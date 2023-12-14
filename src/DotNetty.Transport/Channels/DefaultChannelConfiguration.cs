@@ -5,10 +5,6 @@ using DotNetty.Buffers;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    ///     Shared configuration for SocketAsyncChannel. Provides access to pre-configured resources like ByteBuf allocator and
-    ///     IO buffer pools
-    /// </summary>
     public class DefaultChannelConfiguration : IChannelConfiguration
     {
         private static readonly TimeSpan DefaultConnectTimeout = TimeSpan.FromSeconds(30);
@@ -35,8 +31,7 @@ namespace DotNetty.Transport.Channels
             Contract.Requires(channel != null);
 
             this.Channel = channel;
-            var maxMessagesAllocator = allocator as IMaxMessagesRecvByteBufAllocator;
-            if (maxMessagesAllocator != null)
+            if (allocator is IMaxMessagesRecvByteBufAllocator maxMessagesAllocator)
             {
                 maxMessagesAllocator.MaxMessagesPerRead = channel.Metadata.DefaultMaxMessagesPerRead;
             }
@@ -183,9 +178,7 @@ namespace DotNetty.Transport.Channels
             get { return this.autoRead == 1; }
             set
             {
-#pragma warning disable 420 // atomic exchange is ok
                 bool oldAutoRead = Interlocked.Exchange(ref this.autoRead, value ? 1 : 0) == 1;
-#pragma warning restore 420
                 if (value && !oldAutoRead)
                 {
                     this.Channel.Read();

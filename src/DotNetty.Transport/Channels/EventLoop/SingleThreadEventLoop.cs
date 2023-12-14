@@ -6,14 +6,10 @@ using DotNetty.Common.Internal;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    /// <see cref="IEventLoop"/> implementation based on <see cref="SingleThreadEventExecutor"/>.
-    /// </summary>
     public class SingleThreadEventLoop : SingleThreadEventExecutor, IEventLoop
     {
         private static readonly TimeSpan DefaultBreakoutInterval = TimeSpan.FromMilliseconds(100);
 
-        /// <inheritdoc />
         public new IEventLoopGroup Parent => (IEventLoopGroup)base.Parent;
         public new IEnumerable<IEventLoop> Items => new[] { this };
         
@@ -57,7 +53,6 @@ namespace DotNetty.Transport.Channels
 
         public new IEventLoop GetNext() => this;
 
-        /// <inheritdoc />
         public Task RegisterAsync(IChannel channel) => channel.Unsafe.RegisterAsync(this);
     }
 }

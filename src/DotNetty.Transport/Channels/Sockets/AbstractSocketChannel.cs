@@ -72,9 +72,6 @@ namespace DotNetty.Transport.Channels.Sockets
 
         public override bool Active => this.IsInState(StateFlags.Active);
 
-        /// <summary>
-        ///     Set read pending to <c>false</c>.
-        /// </summary>
         protected internal void ClearReadPending()
         {
             if (this.Registered)
@@ -106,7 +103,6 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected void SetState(StateFlags stateToSet) => this.state |= stateToSet;
 
-        /// <returns>state before modification</returns>
         protected StateFlags ResetState(StateFlags stateToReset)
         {
             StateFlags oldState = this.state;
@@ -223,14 +219,8 @@ namespace DotNetty.Transport.Channels.Sockets
 
         internal interface ISocketChannelUnsafe : IChannelUnsafe
         {
-            /// <summary>
-            ///     Finish connect
-            /// </summary>
             void FinishConnect(SocketChannelAsyncOperation operation);
 
-            /// <summary>
-            ///     Read from underlying {@link SelectableChannel}
-            /// </summary>
             void FinishRead(SocketChannelAsyncOperation operation);
 
             void FinishWrite(SocketChannelAsyncOperation operation);

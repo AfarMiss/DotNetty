@@ -6,28 +6,8 @@ using DotNetty.Transport.Bootstrapping;
 namespace DotNetty.Transport.Channels
 {
     /// <summary>
-    /// A special <see cref="IChannelHandler"/> which offers an easy way to initialize a <see cref="IChannel"/> once it was
-    /// registered to its <see cref="IEventLoop"/>.
-    /// <para>
-    /// Implementations are most often used in the context of <see cref="AbstractBootstrap{TBootstrap,TChannel}.SetHandler"/>
-    /// and <see cref="ServerBootstrap.ChildHandler"/> to setup the <see cref="IChannelPipeline"/> of a <see cref="IChannel"/>.
-    /// </para>
-    /// Be aware that this class is marked as Sharable (via <see cref="IsSharable"/>) and so the implementation must be safe to be re-used.
+    /// 特殊<see cref="IChannelHandler"/> 辅助<see cref="IChannel"/>注册到<see cref="IEventLoop"/>后初始化
     /// </summary>
-    /// <example>
-    /// <code>
-    /// public class MyChannelInitializer extends <see cref="ChannelInitializer{T}"/> {
-    ///     public void InitChannel(<see cref="IChannel"/> channel) {
-    ///         channel.Pipeline().AddLast("myHandler", new MyHandler());
-    ///     }
-    /// }
-    /// <see cref="ServerBootstrap"/> bootstrap = ...;
-    /// ...
-    /// bootstrap.childHandler(new MyChannelInitializer());
-    /// ...
-    /// </code>
-    /// </example>
-    /// <typeparam name="T">A sub-type of <see cref="IChannel"/>.</typeparam>
     public abstract class ChannelInitializer<T> : ChannelHandlerAdapter where T : IChannel
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChannelInitializer<T>>();
@@ -36,24 +16,18 @@ namespace DotNetty.Transport.Channels
         public override bool IsSharable => true;
         
         /// <summary>
-        /// This method will be called once the <see cref="IChannel"/> was registered. After the method returns this instance
-        /// will be removed from the <see cref="IChannelPipeline"/> of the <see cref="IChannel"/>.
+        /// 注册<see cref="IChannel"/>成功调用,方法执行后从<see cref="IChannelPipeline"/>移除
         /// </summary>
-        /// <param name="channel">The <see cref="IChannel"/> which was registered.</param>
         protected abstract void InitChannel(T channel);
 
         public sealed override void ChannelRegistered(IChannelHandlerContext ctx)
         {
-            // Normally this method will never be called as handlerAdded(...) should call initChannel(...) and remove
-            // the handler.
             if (this.InitChannel(ctx)) 
             {
-                // we called InitChannel(...) so we need to call now pipeline.fireChannelRegistered() to ensure we not
-                // miss an event.
                 ctx.Channel.Pipeline.FireChannelRegistered();
-            } else 
+            } 
+            else 
             {
-                // Called InitChannel(...) before which is the expected behavior, so just forward the event.
                 ctx.FireChannelRegistered();
             }
         }
@@ -68,17 +42,13 @@ namespace DotNetty.Transport.Channels
         {
             if (ctx.Channel.Registered)
             {
-                // This should always be true with our current DefaultChannelPipeline implementation.
-                // The good thing about calling InitChannel(...) in HandlerAdded(...) is that there will be no ordering
-                // surprises if a ChannelInitializer will add another ChannelInitializer. This is as all handlers
-                // will be added in the expected order.
                 this.InitChannel(ctx);
             }
         }
 
-        bool InitChannel(IChannelHandlerContext ctx)
+        private bool InitChannel(IChannelHandlerContext ctx)
         {
-            if (initMap.TryAdd(ctx, true)) // Guard against re-entrance.
+            if (initMap.TryAdd(ctx, true))
             {
                 try
                 {
@@ -86,8 +56,6 @@ namespace DotNetty.Transport.Channels
                 }
                 catch (Exception cause)
                 {
-                    // Explicitly call exceptionCaught(...) as we removed the handler before calling initChannel(...).
-                    // We do so to prevent multiple calls to initChannel(...).
                     this.ExceptionCaught(ctx, cause);
                 }
                 finally
@@ -103,7 +71,7 @@ namespace DotNetty.Transport.Channels
         {
             try
             {
-                IChannelPipeline pipeline = ctx.Channel.Pipeline;
+                var pipeline = ctx.Channel.Pipeline;
                 if (pipeline.Context(this) != null)
                 {
                     pipeline.Remove(this);
@@ -111,7 +79,7 @@ namespace DotNetty.Transport.Channels
             }
             finally
             {
-                initMap.TryRemove(ctx, out bool removed);
+                initMap.TryRemove(ctx, out _);
             }
         }
     }

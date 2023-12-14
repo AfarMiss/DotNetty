@@ -18,17 +18,12 @@ namespace DotNetty.Transport.Channels
 
         public override bool IsShuttingDown => this.innerGroup.IsShuttingDown;
 
-        /// <inheritdoc cref="IEventExecutorGroup"/>
         public override Task TerminationCompletion => this.innerGroup.TerminationCompletion;
 
         protected override IEnumerable<IEventExecutor> GetItems() => this.innerGroup.Items;
 
-        public new IEnumerable<IEventLoop> Items => ((IEventLoopGroup)this.innerGroup).Items;
+        public new IEnumerable<IEventLoop> Items => this.innerGroup.Items;
 
-        /// <summary>
-        /// Creates a new instance of <see cref="AffinitizedEventLoopGroup"/>.
-        /// </summary>
-        /// <param name="innerGroup"><see cref="IEventLoopGroup"/> serving as an actual provider of <see cref="IEventLoop"/>s.</param>
         public AffinitizedEventLoopGroup(IEventLoopGroup innerGroup)
         {
             this.innerGroup = innerGroup;
@@ -54,7 +49,6 @@ namespace DotNetty.Transport.Channels
 
         public Task RegisterAsync(IChannel channel) => ((IEventLoop)this.GetNext()).RegisterAsync(channel);
 
-        /// <inheritdoc cref="IEventExecutorGroup"/>
         public override Task ShutdownGracefullyAsync(TimeSpan quietPeriod, TimeSpan timeout) => this.innerGroup.ShutdownGracefullyAsync(quietPeriod, timeout);
     }
 }

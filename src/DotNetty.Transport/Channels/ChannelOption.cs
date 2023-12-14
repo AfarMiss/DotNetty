@@ -16,41 +16,12 @@ namespace DotNetty.Transport.Channels
             protected override IConstant NewConstant<T>(int id, string name) => new ChannelOption<T>(id, name);
         }
 
-        /// <summary>
-        /// Returns the <see cref="ChannelOption"/> of the specified name.
-        /// </summary>
-        /// <typeparam name="T">The type of option being retrieved.</typeparam>
-        /// <param name="name">The name of the desired option.</param>
-        /// <returns>The matching <see cref="ChannelOption{T}"/> instance.</returns>
         public static ChannelOption<T> ValueOf<T>(string name) => (ChannelOption<T>)Pool.ValueOf<T>(name);
 
-        /// <summary>
-        /// Returns the <see cref="ChannelOption{T}"/> of the given pair: (<see cref="Type"/>, secondary name)
-        /// </summary>
-        /// <typeparam name="T">The type of option being retrieved.</typeparam>
-        /// <param name="firstNameComponent">
-        /// A <see cref="Type"/> whose name will be used as the first part of the desired option's name.
-        /// </param>
-        /// <param name="secondNameComponent">
-        /// A string representing the second part of the desired option's name.
-        /// </param>
-        /// <returns>The matching <see cref="ChannelOption{T}"/> instance.</returns>
         public static ChannelOption<T> ValueOf<T>(Type firstNameComponent, string secondNameComponent) => (ChannelOption<T>)Pool.ValueOf<T>(firstNameComponent, secondNameComponent);
-
-        /// <summary>
-        /// Checks whether a given <see cref="ChannelOption"/> exists.
-        /// </summary>
-        /// <param name="name">The name of the <see cref="ChannelOption"/>.</param>
-        /// <returns><c>true</c> if a <see cref="ChannelOption"/> exists for the given <paramref name="name"/>, otherwise <c>false</c>.</returns>
+        
         public static bool Exists(string name) => Pool.Exists(name);
 
-        /// <summary>
-        /// Creates a new <see cref="ChannelOption"/> for the given <paramref name="name"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of option to create.</typeparam>
-        /// <param name="name">The name to associate with the new option.</param>
-        /// <exception cref="ArgumentException">Thrown if a <see cref="ChannelOption"/> for the given <paramref name="name"/> exists.</exception>
-        /// <returns>The new <see cref="ChannelOption{T}"/> instance.</returns>
         public static  ChannelOption<T> NewInstance<T>(string name) => (ChannelOption<T>)Pool.NewInstance<T>(name);
 
         public static readonly ChannelOption<IByteBufferAllocator> Allocator = ValueOf<IByteBufferAllocator>("ALLOCATOR");
@@ -83,8 +54,7 @@ namespace DotNetty.Transport.Channels
 
         public static readonly ChannelOption<bool> TcpNodelay = ValueOf<bool>("TCP_NODELAY");
 
-        internal ChannelOption(int id, string name)
-            : base(id, name)
+        internal ChannelOption(int id, string name) : base(id, name)
         {
         }
 
@@ -93,8 +63,7 @@ namespace DotNetty.Transport.Channels
 
     public sealed class ChannelOption<T> : ChannelOption
     {
-        internal ChannelOption(int id, string name)
-            : base(id, name)
+        internal ChannelOption(int id, string name) : base(id, name)
         {
         }
 

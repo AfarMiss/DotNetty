@@ -9,11 +9,6 @@ using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    /// A queue of write operations which are pending for later execution. It also updates the writability of the
-    /// associated <see cref="IChannel"/> (<see cref="IChannel.IsWritable"/>), so that the pending write operations are
-    /// also considered to determine the writability.
-    /// </summary>
     public sealed class PendingWriteQueue
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<PendingWriteQueue>();

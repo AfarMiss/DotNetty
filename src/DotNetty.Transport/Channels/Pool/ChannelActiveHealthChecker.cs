@@ -2,9 +2,6 @@
 
 namespace DotNetty.Transport.Channels.Pool
 {
-    /// <summary>
-    /// <see cref="IChannelHealthChecker"/> implementation that checks if <see cref="IChannel.Active"/> returns <c>true</c>.
-    /// </summary>
     public class ChannelActiveHealthChecker : IChannelHealthChecker
     {
         public static readonly IChannelHealthChecker Instance;

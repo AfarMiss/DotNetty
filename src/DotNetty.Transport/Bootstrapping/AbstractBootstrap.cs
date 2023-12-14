@@ -11,7 +11,7 @@ using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Bootstrapping
 {
-    /// <summary> 引导 </summary>
+    /// <summary> 引导基类 </summary>
     public abstract class AbstractBootstrap<TBootstrap, TChannel> where TBootstrap : AbstractBootstrap<TBootstrap, TChannel> where TChannel : IChannel
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractBootstrap<TBootstrap, TChannel>>();

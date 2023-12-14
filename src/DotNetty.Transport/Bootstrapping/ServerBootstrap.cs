@@ -9,9 +9,7 @@ using DotNetty.Transport.Channels;
 
 namespace DotNetty.Transport.Bootstrapping
 {
-    /// <summary>
-    /// A <see cref="Bootstrap"/> sub-class which allows easy bootstrapping of <see cref="IServerChannel"/>.
-    /// </summary>
+    /// <summary> 服务端引导 </summary>
     public class ServerBootstrap : AbstractBootstrap<ServerBootstrap, IServerChannel>
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
@@ -35,16 +33,8 @@ namespace DotNetty.Transport.Bootstrapping
             this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>(bootstrap.childAttrs);
         }
 
-        /// <summary>
-        /// Specifies the <see cref="IEventLoopGroup"/> which is used for the parent (acceptor) and the child (client).
-        /// </summary>
         public override ServerBootstrap SetGroup(IEventLoopGroup group) => this.SetGroup(group, group);
 
-        /// <summary>
-        /// Sets the <see cref="IEventLoopGroup"/> for the parent (acceptor) and the child (client). These
-        /// <see cref="IEventLoopGroup"/>'s are used to handle all the events and IO for <see cref="IServerChannel"/>
-        /// and <see cref="IChannel"/>'s.
-        /// </summary>
         public ServerBootstrap SetGroup(IEventLoopGroup parentGroup, IEventLoopGroup childGroup)
         {
             Contract.Requires(childGroup != null);
@@ -58,11 +48,6 @@ namespace DotNetty.Transport.Bootstrapping
             return this;
         }
 
-        /// <summary>
-        /// Allows specification of a <see cref="ChannelOption"/> which is used for the <see cref="IChannel"/>
-        /// instances once they get created (after the acceptor accepted the <see cref="IChannel"/>). Use a
-        /// value of <c>null</c> to remove a previously set <see cref="ChannelOption"/>.
-        /// </summary>
         public ServerBootstrap ChildOption<T>(ChannelOption<T> childOption, T value)
         {
             Contract.Requires(childOption != null);
@@ -79,10 +64,6 @@ namespace DotNetty.Transport.Bootstrapping
             return this;
         }
 
-        /// <summary>
-        /// Sets the specific <see cref="AttributeKey{T}"/> with the given value on every child <see cref="IChannel"/>.
-        /// If the value is <c>null</c>, the <see cref="AttributeKey{T}"/> is removed.
-        /// </summary>
         public ServerBootstrap ChildAttribute<T>(AttributeKey<T> childKey, T value) where T : class
         {
             Contract.Requires(childKey != null);
@@ -99,9 +80,6 @@ namespace DotNetty.Transport.Bootstrapping
             return this;
         }
 
-        /// <summary>
-        /// Sets the <see cref="IChannelHandler"/> which is used to serve the request for the <see cref="IChannel"/>'s.
-        /// </summary>
         public ServerBootstrap ChildHandler(IChannelHandler childHandler)
         {
             Contract.Requires(childHandler != null);
@@ -110,10 +88,6 @@ namespace DotNetty.Transport.Bootstrapping
             return this;
         }
 
-        /// <summary>
-        /// Returns the configured <see cref="IEventLoopGroup"/> which will be used for the child channels or <c>null</c>
-        /// if none is configured yet.
-        /// </summary>
         public IEventLoopGroup ChildGroup() => this.childGroup;
 
         protected override void Init(IChannel channel)
@@ -132,15 +106,14 @@ namespace DotNetty.Transport.Bootstrapping
                 p.AddLast((string)null, channelHandler);
             }
 
-            IEventLoopGroup currentChildGroup = this.childGroup;
-            IChannelHandler currentChildHandler = this.childHandler;
-            ChannelOptionValue[] currentChildOptions = this.childOptions.Values.ToArray();
-            AttributeValue[] currentChildAttrs = this.childAttrs.Values.ToArray();
+            var currentChildGroup = this.childGroup;
+            var currentChildHandler = this.childHandler;
+            var currentChildOptions = this.childOptions.Values.ToArray();
+            var currentChildAttrs = this.childAttrs.Values.ToArray();
 
             p.AddLast(new ActionChannelInitializer<IChannel>(ch =>
             {
-                ch.Pipeline.AddLast(new ServerBootstrapAcceptor(currentChildGroup, currentChildHandler,
-                    currentChildOptions, currentChildAttrs));
+                ch.Pipeline.AddLast(new ServerBootstrapAcceptor(currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
             }));
         }
 

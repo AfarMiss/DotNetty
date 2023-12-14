@@ -5,9 +5,6 @@ using System.Net.Sockets;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    /// <summary>
-    /// <see cref="AbstractSocketChannel"/> base class for <see cref="IChannel"/>s that operate on messages.
-    /// </summary>
     public abstract class AbstractSocketMessageChannel : AbstractSocketChannel
     {
         /// <summary>

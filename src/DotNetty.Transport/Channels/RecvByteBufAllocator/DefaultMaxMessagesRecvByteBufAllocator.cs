@@ -3,11 +3,6 @@ using DotNetty.Buffers;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    ///     Default implementation of <see cref="IMaxMessagesRecvByteBufAllocator" /> which respects
-    ///     <see cref="IChannelConfiguration.AutoRead" />
-    ///     and also prevents overflow.
-    /// </summary>
     public abstract class DefaultMaxMessagesRecvByteBufAllocator : IMaxMessagesRecvByteBufAllocator
     {
         private volatile int maxMessagesPerRead;

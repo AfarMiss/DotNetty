@@ -5,16 +5,6 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    ///     The <see cref="IRecvByteBufAllocator" /> that automatically increases and
-    ///     decreases the predicted buffer size on feed back.
-    ///     <p />
-    ///     It gradually increases the expected number of readable bytes if the previous
-    ///     read fully filled the allocated buffer. It gradually decreases the expected
-    ///     number of readable bytes if the read operation was not able to fill a certain
-    ///     amount of the allocated buffer two times consecutively. Otherwise, it keeps
-    ///     returning the same prediction.
-    /// </summary>
     public class AdaptiveRecvByteBufAllocator : DefaultMaxMessagesRecvByteBufAllocator
     {
         private const int DefaultMinimum = 64;
@@ -127,20 +117,10 @@ namespace DotNetty.Transport.Channels
         private readonly int maxIndex;
         private readonly int initial;
 
-        /// <summary>
-        ///     Creates a new predictor with the default parameters.  With the default
-        ///     parameters, the expected buffer size starts from <c>1024</c>, does not
-        ///     go down below <c>64</c>, and does not go up above <c>65536</c>.
-        /// </summary>
-        public AdaptiveRecvByteBufAllocator()
-            : this(DefaultMinimum, DefaultInitial, DefaultMaximum)
+        public AdaptiveRecvByteBufAllocator() : this(DefaultMinimum, DefaultInitial, DefaultMaximum)
         {
         }
 
-        /// <summary>Creates a new predictor with the specified parameters.</summary>
-        /// <param name="minimum">the inclusive lower bound of the expected buffer size</param>
-        /// <param name="initial">the initial buffer size when no feed back was received</param>
-        /// <param name="maximum">the inclusive upper bound of the expected buffer size</param>
         public AdaptiveRecvByteBufAllocator(int minimum, int initial, int maximum)
         {
             Contract.Requires(minimum > 0);

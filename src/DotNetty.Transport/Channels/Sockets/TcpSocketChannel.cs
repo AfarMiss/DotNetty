@@ -8,52 +8,32 @@ using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    /// <summary>
-    ///     <see cref="ISocketChannel" /> which uses Socket-based implementation.
-    /// </summary>
     public class TcpSocketChannel : AbstractSocketByteChannel, ISocketChannel
     {
         static readonly ChannelMetadata METADATA = new ChannelMetadata(false, 16);
 
-        readonly ISocketChannelConfiguration config;
+        private readonly ISocketChannelConfiguration config;
 
-        /// <summary>Create a new instance</summary>
-        public TcpSocketChannel()
-            : this(new Socket(SocketType.Stream, ProtocolType.Tcp))
+        public TcpSocketChannel() : this(new Socket(SocketType.Stream, ProtocolType.Tcp))
         {
         }
 
-        /// <summary>Create a new instance</summary>
-        public TcpSocketChannel(AddressFamily addressFamily)
-            : this(new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp))
+        public TcpSocketChannel(AddressFamily addressFamily) : this(new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp))
         {
         }
 
-        /// <summary>Create a new instance using the given <see cref="ISocketChannel" />.</summary>
-        public TcpSocketChannel(Socket socket)
-            : this(null, socket)
+        public TcpSocketChannel(Socket socket) : this(null, socket)
         {
         }
 
-        /// <summary>Create a new instance</summary>
-        /// <param name="parent">
-        ///     the <see cref="IChannel" /> which created this instance or <c>null</c> if it was created by the
-        ///     user
-        /// </param>
-        /// <param name="socket">the <see cref="ISocketChannel" /> which will be used</param>
-        public TcpSocketChannel(IChannel parent, Socket socket)
-            : this(parent, socket, false)
+        public TcpSocketChannel(IChannel parent, Socket socket) : this(parent, socket, false)
         {
         }
 
-        internal TcpSocketChannel(IChannel parent, Socket socket, bool connected)
-            : base(parent, socket)
+        internal TcpSocketChannel(IChannel parent, Socket socket, bool connected) : base(parent, socket)
         {
             this.config = new TcpSocketChannelConfig(this, socket);
-            if (connected)
-            {
-                this.OnConnected();
-            }
+            if (connected) this.OnConnected();
         }
 
         public override ChannelMetadata Metadata => METADATA;
@@ -73,16 +53,7 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             var tcs = new TaskCompletionSource();
             // todo: use closeExecutor if available
-            //Executor closeExecutor = ((TcpSocketChannelUnsafe) unsafe()).closeExecutor();
-            //if (closeExecutor != null) {
-            //    closeExecutor.execute(new OneTimeTask() {
-
-            //        public void run() {
-            //            shutdownOutput0(promise);
-            //        }
-            //    });
-            //} else {
-            IEventLoop loop = this.EventLoop;
+            var loop = this.EventLoop;
             if (loop.InEventLoop)
             {
                 this.ShutdownOutput0(tcs);
@@ -156,7 +127,6 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             this.SetState(StateFlags.Active);
 
-            // preserve local and remote addresses for later availability even if Socket fails
             this.CacheLocalAddress();
             this.CacheRemoteAddress();
         }
@@ -191,7 +161,8 @@ namespace DotNetty.Transport.Channels.Sockets
 
             if (!this.Socket.Connected)
             {
-                return -1; // prevents ObjectDisposedException from being thrown in case connection has been lost in the meantime
+                // prevents ObjectDisposedException from being thrown in case connection has been lost in the meantime
+                return -1;
             }
 
             int received = this.Socket.Receive(byteBuf.Array, byteBuf.ArrayOffset + byteBuf.WriterIndex, byteBuf.WritableBytes, SocketFlags.None, out SocketError errorCode);
@@ -201,7 +172,8 @@ namespace DotNetty.Transport.Channels.Sockets
                 case SocketError.Success:
                     if (received == 0)
                     {
-                        return -1; // indicate that socket was closed
+                        // indicate that socket was closed
+                        return -1;
                     }
                     break;
                 case SocketError.WouldBlock:
@@ -332,7 +304,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        static List<ArraySegment<byte>> AdjustBufferList(long localWrittenBytes, List<ArraySegment<byte>> bufferList)
+        private static List<ArraySegment<byte>> AdjustBufferList(long localWrittenBytes, List<ArraySegment<byte>> bufferList)
         {
             var adjusted = new List<ArraySegment<byte>>(bufferList.Count);
             foreach (var buffer in bufferList)
@@ -368,16 +340,6 @@ namespace DotNetty.Transport.Channels.Sockets
                 : base(channel)
             {
             }
-
-            // todo: review
-            //protected Executor closeExecutor()
-            //{
-            //    if (javaChannel().isOpen() && config().getSoLinger() > 0)
-            //    {
-            //        return GlobalEventExecutor.INSTANCE;
-            //    }
-            //    return null;
-            //}
         }
 
         private sealed class TcpSocketChannelConfig : DefaultSocketChannelConfiguration
@@ -404,7 +366,6 @@ namespace DotNetty.Transport.Channels.Sockets
 
             private void CalculateMaxBytesPerGatheringWrite()
             {
-                // Multiply by 2 to give some extra space in case the OS can process write data faster than we can provide.
                 int newSendBufferSize = this.SendBufferSize << 1;
                 if (newSendBufferSize > 0)
                 {

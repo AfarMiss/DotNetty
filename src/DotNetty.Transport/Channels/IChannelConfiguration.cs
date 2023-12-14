@@ -6,12 +6,8 @@ namespace DotNetty.Transport.Channels
     public interface IChannelConfiguration
     {
         T GetOption<T>(ChannelOption<T> option);
-
         bool SetOption(ChannelOption option, object value);
-
         bool SetOption<T>(ChannelOption<T> option, T value);
-
-        //void SetOptions<T>(Dictionary<ChannelOption<T>, object> option);
 
         TimeSpan ConnectTimeout { get; set; }
         int WriteSpinCount { get; set; }

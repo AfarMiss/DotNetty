@@ -6,12 +6,7 @@ namespace DotNetty.Transport.Channels.Sockets
 {
     public class SocketChannelAsyncOperation : SocketAsyncEventArgs
     {
-        public SocketChannelAsyncOperation(AbstractSocketChannel channel)
-            : this(channel, true)
-        {
-        }
-
-        public SocketChannelAsyncOperation(AbstractSocketChannel channel, bool setEmptyBuffer)
+        public SocketChannelAsyncOperation(AbstractSocketChannel channel, bool setEmptyBuffer = true)
         {
             Contract.Requires(channel != null);
 

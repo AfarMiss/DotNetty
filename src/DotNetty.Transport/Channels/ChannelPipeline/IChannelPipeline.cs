@@ -335,7 +335,7 @@ namespace DotNetty.Transport.Channels
         /// </para>
         /// </summary>
         /// <returns>This <see cref="IChannelPipeline"/>.</returns>
-        IChannelPipeline Read();
+        void Read();
 
         /// <summary>
         /// 写入消息 此方法不会Flush数据,如需要将消息Flush调用<see cref="Flush"/>
@@ -346,7 +346,7 @@ namespace DotNetty.Transport.Channels
         /// Request to flush all pending messages.
         /// </summary>
         /// <returns>This <see cref="IChannelPipeline"/>.</returns>
-        IChannelPipeline Flush();
+        void Flush();
 
         /// <summary>
         /// <see cref="WriteAsync"/>和<see cref="Flush"/>.

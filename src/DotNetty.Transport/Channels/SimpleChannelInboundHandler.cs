@@ -24,8 +24,7 @@ namespace DotNetty.Transport.Channels
             {
                 if (this.AcceptInboundMessage(msg))
                 {
-                    I imsg = (I)msg;
-                    this.ChannelRead0(ctx, imsg);
+                    this.ChannelRead0(ctx, (I)msg);
                 }
                 else
                 {

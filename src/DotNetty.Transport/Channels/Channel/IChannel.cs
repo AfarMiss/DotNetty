@@ -35,9 +35,9 @@ namespace DotNetty.Transport.Channels
         Task DisconnectAsync();
         Task CloseAsync();
         // todo: make these available through separate interface to hide them from public API on channel
-        IChannel Read();
+        void Read();
         Task WriteAsync(object message);
-        IChannel Flush();
+        void Flush();
         Task WriteAndFlushAsync(object message);
     }
 }

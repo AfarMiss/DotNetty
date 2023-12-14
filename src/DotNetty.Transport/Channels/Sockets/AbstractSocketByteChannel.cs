@@ -6,9 +6,6 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    /// <summary>
-    /// <see cref="AbstractSocketChannel"/> base class for <see cref="IChannel"/>s that operate on bytes.
-    /// </summary>
     public abstract class AbstractSocketByteChannel : AbstractSocketChannel
     {
         private static readonly string ExpectedTypes = $" (expected: {StringUtil.SimpleClassName<IByteBuffer>()})"; //+ ", " +
@@ -16,9 +13,6 @@ namespace DotNetty.Transport.Channels.Sockets
         private static readonly Action<object> FlushAction = o => ((AbstractSocketByteChannel)o).Flush();
         private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
 
-        /// <summary>Create a new instance</summary>
-        /// <param name="parent">the parent <see cref="IChannel"/> by which this instance was created. May be <c>null</c></param>
-        /// <param name="socket">the underlying <see cref="Socket"/> on which it operates</param>
         protected AbstractSocketByteChannel(IChannel parent, Socket socket)
             : base(parent, socket)
         {
@@ -40,13 +34,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 this.Channel.ShutdownInput();
                 if (this.channel.Open)
                 {
-                    // todo: support half-closure
-                    //if (bool.TrueString.Equals(this.channel.Configuration.getOption(ChannelOption.ALLOW_HALF_CLOSURE))) {
-                    //    key.interestOps(key.interestOps() & ~readInterestOp);
-                    //    this.channel.Pipeline.FireUserEventTriggered(ChannelInputShutdownEvent.INSTANCE);
-                    //} else {
                     this.CloseSafe();
-                    //}
                 }
             }
 
@@ -146,22 +134,8 @@ namespace DotNetty.Transport.Channels.Sockets
         protected override void ScheduleSocketRead()
         {
             var operation = this.ReadOperation;
-            bool pending;
-#if NETSTANDARD2_0 || NETCOREAPP3_1_OR_GREATER || NET5_0_OR_GREATER
-            pending = this.Socket.ReceiveAsync(operation);
-#else
-            if (ExecutionContext.IsFlowSuppressed())
-            {
-                pending = this.Socket.ReceiveAsync(operation);
-            }
-            else
-            {
-                using (ExecutionContext.SuppressFlow())
-                {
-                    pending = this.Socket.ReceiveAsync(operation);
-                }
-            }
-#endif
+            var pending = this.Socket.ReceiveAsync(operation);
+
             if (!pending)
             {
                 // todo: potential allocation / non-static field?
@@ -217,7 +191,7 @@ namespace DotNetty.Transport.Channels.Sockets
                         }
                     }
 
-                    input.Progress(flushedAmount);
+                    ChannelOutboundBuffer.Progress(flushedAmount);
 
                     if (done)
                     {
@@ -238,16 +212,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override object FilterOutboundMessage(object msg)
         {
-            if (msg is IByteBuffer)
-            {
-                return msg;
-                //IByteBuffer buf = (IByteBuffer) msg;
-                //if (buf.isDirect()) {
-                //    return msg;
-                //}
-
-                //return newDirectBuffer(buf);
-            }
+            if (msg is IByteBuffer) return msg;
 
             throw new NotSupportedException("unsupported message type: " + msg.GetType().Name + ExpectedTypes);
         }
@@ -258,23 +223,8 @@ namespace DotNetty.Transport.Channels.Sockets
             if (scheduleAsync)
             {
                 this.SetState(StateFlags.WriteScheduled);
-                bool pending;
 
-#if NETSTANDARD2_0 || NETCOREAPP3_1_OR_GREATER || NET5_0_OR_GREATER
-                pending = this.Socket.SendAsync(operation);
-#else
-                if (ExecutionContext.IsFlowSuppressed())
-                {
-                    pending = this.Socket.SendAsync(operation);
-                }
-                else
-                {
-                    using (ExecutionContext.SuppressFlow())
-                    {
-                        pending = this.Socket.SendAsync(operation);
-                    }
-                }
-#endif
+                var pending = this.Socket.SendAsync(operation);
 
                 if (!pending)
                 {
