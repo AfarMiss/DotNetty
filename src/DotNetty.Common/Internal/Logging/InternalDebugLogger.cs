@@ -9,7 +9,7 @@ namespace DotNetty.Common.Internal.Logging
         public override bool InfoEnabled => true;
         public override bool WarnEnabled => true;
         public override bool ErrorEnabled => true;
-        
+
         public InternalDebugLogger(string name) : base(name) { }
 
         public override void Trace(string msg)
@@ -101,7 +101,7 @@ namespace DotNetty.Common.Internal.Logging
             if (this.InfoEnabled)
             {
                 var message = MessageFormatter.Format(InternalLogLevel.INFO, this.Name, format, arg);
-                System.Diagnostics.Trace.WriteLine(message);
+                System.Diagnostics.Debug.WriteLine(message);
             }
         }
 

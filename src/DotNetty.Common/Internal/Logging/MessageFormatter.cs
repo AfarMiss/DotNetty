@@ -9,7 +9,7 @@ namespace DotNetty.Common
         public static string Format(InternalLogLevel level, string name, string message, Exception e)
         {
             var buf = new StringBuilder();
-            buf.Append($"{name}: [{level}] - {message} \nException:{e}");
+            buf.Append($"{name}: [{level}] -> {message} \nException:{e}");
             return buf.ToString();
         }
 
@@ -18,7 +18,7 @@ namespace DotNetty.Common
             var buf = new StringBuilder();
             if (string.IsNullOrEmpty(message) || arguments.Length <= 0)
             {
-                buf.Append($"{name}: [{level}] - {message}");
+                buf.Append($"{name}: [{level}] -> {message}");
             }
             else if (message.IndexOf("{}", StringComparison.Ordinal) >= 0)
             {
@@ -27,11 +27,11 @@ namespace DotNetty.Common
                     message = message.Replace("{}", obj.ToString());
                 }
 
-                buf.Append($"{name}: [{level}] - {message}");
+                buf.Append($"{name}: [{level}] -> {message}");
             }
             else
             {
-                buf.Append($"{name}: [{level}] - {string.Format(message, arguments)}");
+                buf.Append($"{name}: [{level}] -> {string.Format(message, arguments)}");
             }
             return buf.ToString();
         }
