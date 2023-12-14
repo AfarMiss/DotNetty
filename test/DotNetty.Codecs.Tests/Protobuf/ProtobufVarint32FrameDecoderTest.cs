@@ -17,18 +17,18 @@ namespace DotNetty.Codecs.Tests.Protobuf
         {
             byte[] bytes = { 4, 1, 1, 1, 1 };
 
-            IByteBuffer content = Unpooled.WrappedBuffer(bytes, 0, 1);
+            IByteBuffer content = ByteBuffer.WrappedBuffer(bytes, 0, 1);
             var channel = new EmbeddedChannel(new ProtobufVarint32FrameDecoder());
             Assert.False(channel.WriteInbound(content));
             var written = channel.ReadInbound<IByteBuffer>();
             Assert.Null(written);
 
-            content = Unpooled.WrappedBuffer(bytes, 1, 2);
+            content = ByteBuffer.WrappedBuffer(bytes, 1, 2);
             Assert.False(channel.WriteInbound(content));
             written = channel.ReadInbound<IByteBuffer>();
             Assert.Null(written);
 
-            content = Unpooled.WrappedBuffer(bytes, 3, bytes.Length - 3);
+            content = ByteBuffer.WrappedBuffer(bytes, 3, bytes.Length - 3);
             Assert.True(channel.WriteInbound(content));
             written = channel.ReadInbound<IByteBuffer>();
             Assert.NotNull(written);
@@ -55,22 +55,22 @@ namespace DotNetty.Codecs.Tests.Protobuf
 
             var channel = new EmbeddedChannel(new ProtobufVarint32FrameDecoder());
 
-            IByteBuffer content = Unpooled.WrappedBuffer(bytes, 0, 1);
+            IByteBuffer content = ByteBuffer.WrappedBuffer(bytes, 0, 1);
             Assert.False(channel.WriteInbound(content));
             var written = channel.ReadInbound<IByteBuffer>();
             Assert.Null(written);
 
-            content = Unpooled.WrappedBuffer(bytes, 1, 127);
+            content = ByteBuffer.WrappedBuffer(bytes, 1, 127);
             Assert.False(channel.WriteInbound(content));
             written = channel.ReadInbound<IByteBuffer>();
             Assert.Null(written);
 
-            content = Unpooled.WrappedBuffer(bytes, 127, 600);
+            content = ByteBuffer.WrappedBuffer(bytes, 127, 600);
             Assert.False(channel.WriteInbound(content));
             written = channel.ReadInbound<IByteBuffer>();
             Assert.Null(written);
 
-            content = Unpooled.WrappedBuffer(bytes, 727, bytes.Length - 727);
+            content = ByteBuffer.WrappedBuffer(bytes, 727, bytes.Length - 727);
             Assert.True(channel.WriteInbound(content));
             written = channel.ReadInbound<IByteBuffer>();
             byte[] output = TestUtil.GetReadableBytes(written);

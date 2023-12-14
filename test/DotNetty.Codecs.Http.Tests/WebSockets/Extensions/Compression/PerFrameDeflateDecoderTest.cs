@@ -31,7 +31,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             var payload = new byte[300];
             this.random.NextBytes(payload);
 
-            encoderChannel.WriteOutbound(Unpooled.WrappedBuffer(payload));
+            encoderChannel.WriteOutbound(ByteBuffer.WrappedBuffer(payload));
             var compressedPayload = encoderChannel.ReadOutbound<IByteBuffer>();
 
             var compressedFrame = new BinaryWebSocketFrame(true,
@@ -62,7 +62,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             this.random.NextBytes(payload);
 
             var frame = new BinaryWebSocketFrame(true,
-                WebSocketRsv.Rsv3, Unpooled.WrappedBuffer(payload));
+                WebSocketRsv.Rsv3, ByteBuffer.WrappedBuffer(payload));
 
             decoderChannel.WriteInbound(frame);
             var newFrame = decoderChannel.ReadInbound<BinaryWebSocketFrame>();
@@ -87,7 +87,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
                 ZlibCodecFactory.NewZlibEncoder(ZlibWrapper.None, 9, 15, 8));
             var decoderChannel = new EmbeddedChannel(new PerFrameDeflateDecoder(false));
 
-            encoderChannel.WriteOutbound(Unpooled.Empty);
+            encoderChannel.WriteOutbound(ByteBuffer.Empty);
             var compressedPayload = encoderChannel.ReadOutbound<IByteBuffer>();
             var compressedFrame =
                 new BinaryWebSocketFrame(true, WebSocketRsv.Rsv1 | WebSocketRsv.Rsv3, compressedPayload);

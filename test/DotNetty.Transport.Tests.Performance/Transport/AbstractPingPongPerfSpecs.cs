@@ -76,7 +76,7 @@ namespace DotNetty.Transport.Tests.Performance.Transport
         public void RoundTrip(BenchmarkContext context)
         {
             this.clientHandler.Start();
-            this.client.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes("PING")));
+            this.client.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes("PING")));
             this.clientHandler.Completion.Wait(TimeSpan.FromSeconds(10));
         }
 

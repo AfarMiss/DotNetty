@@ -9,7 +9,7 @@ namespace DotNetty.Codecs.Http.WebSockets
     public class TextWebSocketFrame : WebSocketFrame
     {
         public TextWebSocketFrame()
-            : base(Unpooled.Buffer(0))
+            : base(ByteBuffer.Buffer(0))
         {
         }
 
@@ -29,7 +29,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         }
 
         static IByteBuffer FromText(string text) => string.IsNullOrEmpty(text) 
-            ? Unpooled.Empty : Unpooled.CopiedBuffer(text, Encoding.UTF8);
+            ? ByteBuffer.Empty : ByteBuffer.CopiedBuffer(text, Encoding.UTF8);
 
         public TextWebSocketFrame(bool finalFragment, int rsv, IByteBuffer binaryData)
             : base(finalFragment, rsv, binaryData)

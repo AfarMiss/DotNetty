@@ -97,7 +97,7 @@ namespace DotNetty.Transport.Libuv.Tests
             for (int i = 0; i < this.data.Length;)
             {
                 int length = Math.Min(this.random.Next(1024 * 64), this.data.Length - i);
-                IByteBuffer buf = Unpooled.WrappedBuffer(this.data, i, length);
+                IByteBuffer buf = ByteBuffer.WrappedBuffer(this.data, i, length);
                 this.clientChannel.WriteAndFlushAsync(buf);
                 i += length;
             }
@@ -160,7 +160,7 @@ namespace DotNetty.Transport.Libuv.Tests
 
                 if (this.channel.Parent != null)
                 {
-                    this.channel.WriteAsync(Unpooled.WrappedBuffer(actual));
+                    this.channel.WriteAsync(ByteBuffer.WrappedBuffer(actual));
                 }
 
                 this.counter += actual.Length;

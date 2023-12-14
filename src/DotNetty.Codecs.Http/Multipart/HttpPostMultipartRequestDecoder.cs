@@ -91,7 +91,7 @@ namespace DotNetty.Codecs.Http.Multipart
             }
             else
             {
-                this.undecodedChunk = Unpooled.Buffer();
+                this.undecodedChunk = ByteBuffer.Buffer();
                 this.ParseBody();
             }
         }
@@ -958,7 +958,7 @@ namespace DotNetty.Codecs.Http.Multipart
             int readerIndex = undecodedChunk.ReaderIndex;
             try
             {
-                IByteBuffer line = Unpooled.Buffer(64);
+                IByteBuffer line = ByteBuffer.Buffer(64);
 
                 while (undecodedChunk.IsReadable())
                 {
@@ -1008,7 +1008,7 @@ namespace DotNetty.Codecs.Http.Multipart
             int readerIndex = undecodedChunk.ReaderIndex;
             try
             {
-                IByteBuffer line = Unpooled.Buffer(64);
+                IByteBuffer line = ByteBuffer.Buffer(64);
 
                 while (sao.Pos < sao.Limit)
                 {

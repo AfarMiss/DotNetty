@@ -22,14 +22,14 @@
 //             var random = new Random(Guid.NewGuid().GetHashCode());
 //             random.NextBytes(bytes);
 //
-//             IByteBuffer buffer = Unpooled.Buffer(BufferCapacity);
+//             IByteBuffer buffer = ByteBuffer.Buffer(BufferCapacity);
 //             int initialWriterIndex = buffer.WriterIndex;
 //             using (var stream = new PortionedMemoryStream(bytes, Enumerable.Repeat(1, int.MaxValue).Select(_ => random.Next(1, 10240))))
 //             {
 //                 await buffer.WriteBytesAsync(stream, CopyLength);
 //             }
 //             Assert.Equal(CopyLength, buffer.WriterIndex - initialWriterIndex);
-//             Assert.True(ByteBufferUtil.Equals(Unpooled.WrappedBuffer(bytes.Slice(0, CopyLength)), buffer));
+//             Assert.True(ByteBufferUtil.Equals(ByteBuffer.WrappedBuffer(bytes.Slice(0, CopyLength)), buffer));
 //         }
 //     }
 // }

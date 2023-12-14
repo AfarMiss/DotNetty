@@ -38,7 +38,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         public void Check(IByteBuffer buffer)
         {
             this.checking = true;
-            ByteBufferEx.ForEachByte(buffer, this);
+            ByteBufferUtil.ForEachByte(buffer, this);
         }
 
         public void Finish()

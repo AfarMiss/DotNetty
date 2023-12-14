@@ -21,7 +21,7 @@ namespace DotNetty.Codecs.Tests
             var sender = new IPEndPoint(IPAddress.Loopback, 20000);
 
             const string Content = "netty";
-            IByteBuffer data = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(Content));
+            IByteBuffer data = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(Content));
             try
             {
                 Assert.True(channel.WriteInbound(new DatagramPacket(data, sender, recipient)));

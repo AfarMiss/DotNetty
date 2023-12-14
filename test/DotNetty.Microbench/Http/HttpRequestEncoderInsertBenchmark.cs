@@ -27,7 +27,7 @@ namespace DotNetty.Microbench.Http
         [Benchmark]
         public IByteBuffer EncodeInitialLine()
         {
-            IByteBuffer buffer = Unpooled.Buffer(100);
+            IByteBuffer buffer = ByteBuffer.Buffer(100);
             try
             {
                 this.encoder.EncodeInitialLine(buffer, new DefaultHttpRequest(HttpVersion.Http11, 

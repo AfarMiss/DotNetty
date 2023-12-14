@@ -48,8 +48,8 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 HttpHeaderValues.Identity.ToString(),
                 Encoding.UTF8,
                 123);
-            file1.SetContent(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("file1 content")));
-            file2.SetContent(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("file2 content")));
+            file1.SetContent(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("file1 content")));
+            file2.SetContent(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("file2 content")));
 
             // Assert that they are not deleted
             Assert.NotNull(attribute1.GetByteBuffer());
@@ -99,8 +99,8 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 HttpHeaderValues.Identity.ToString(),
                 Encoding.UTF8,
                 123);
-            file1.SetContent(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("file content")));
-            file2.SetContent(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("file content")));
+            file1.SetContent(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("file content")));
+            file2.SetContent(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("file content")));
 
             // Before doing anything, assert that the data items are equal
             Assert.Equal(attribute1.GetHashCode(), attribute2.GetHashCode());

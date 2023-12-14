@@ -34,7 +34,7 @@ namespace DotNetty.Handlers.Tests.Flow
         /**
          * The {@link OneByteToThreeStringsDecoder} decodes this {@code byte[]} into three messages.
          */
-        static IByteBuffer NewOneMessage() => Unpooled.WrappedBuffer(new byte[] { 1 });
+        static IByteBuffer NewOneMessage() => ByteBuffer.WrappedBuffer(new byte[] { 1 });
 
         Task<IChannel> NewServer(bool autoRead, params IChannelHandler[] handlers)
         {

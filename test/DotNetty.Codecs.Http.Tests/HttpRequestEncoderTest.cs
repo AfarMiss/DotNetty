@@ -16,7 +16,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void UriWithoutPath()
         {
             var encoder = new HttpRequestEncoder();
-            IByteBuffer buffer = Unpooled.Buffer(64);
+            IByteBuffer buffer = ByteBuffer.Buffer(64);
             encoder.EncodeInitialLine(
                 buffer,
                 new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "http://localhost"));
@@ -28,7 +28,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void UriWithoutPath2()
         {
             var encoder = new HttpRequestEncoder();
-            IByteBuffer buffer = Unpooled.Buffer(64);
+            IByteBuffer buffer = ByteBuffer.Buffer(64);
             encoder.EncodeInitialLine(
                 buffer,
                 new DefaultHttpRequest(
@@ -43,7 +43,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void UriWithPath()
         {
             var encoder = new HttpRequestEncoder();
-            IByteBuffer buffer = Unpooled.Buffer(64);
+            IByteBuffer buffer = ByteBuffer.Buffer(64);
             encoder.EncodeInitialLine(
                 buffer,
                 new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "http://localhost/"));
@@ -55,7 +55,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void AbsPath()
         {
             var encoder = new HttpRequestEncoder();
-            IByteBuffer buffer = Unpooled.Buffer(64);
+            IByteBuffer buffer = ByteBuffer.Buffer(64);
             encoder.EncodeInitialLine(
                 buffer,
                 new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/"));
@@ -67,7 +67,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void EmptyAbsPath()
         {
             var encoder = new HttpRequestEncoder();
-            IByteBuffer buffer = Unpooled.Buffer(64);
+            IByteBuffer buffer = ByteBuffer.Buffer(64);
             encoder.EncodeInitialLine(
                 buffer,
                 new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, ""));
@@ -79,7 +79,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void QueryStringPath()
         {
             var encoder = new HttpRequestEncoder();
-            IByteBuffer buffer = Unpooled.Buffer(64);
+            IByteBuffer buffer = ByteBuffer.Buffer(64);
             encoder.EncodeInitialLine(
                 buffer,
                 new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/?url=http://example.com"));
@@ -92,7 +92,7 @@ namespace DotNetty.Codecs.Http.Tests
         {
             var encoder = new HttpRequestEncoder();
             var channel = new EmbeddedChannel(encoder);
-            IByteBuffer buf = Unpooled.Buffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             buf.Release();
             var exception = Assert.Throws<AggregateException>(() => channel.WriteAndFlushAsync(buf).Wait());
             Assert.Single(exception.InnerExceptions);
@@ -106,7 +106,7 @@ namespace DotNetty.Codecs.Http.Tests
         {
             var encoder = new HttpRequestEncoder();
             var channel = new EmbeddedChannel(encoder);
-            IByteBuffer buffer = Unpooled.Buffer();
+            IByteBuffer buffer = ByteBuffer.Buffer();
             channel.WriteAndFlushAsync(buffer).Wait();
             channel.FinishAndReleaseAll();
             Assert.Equal(0, buffer.ReferenceCount);

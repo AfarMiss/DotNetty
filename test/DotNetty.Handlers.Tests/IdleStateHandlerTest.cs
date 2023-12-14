@@ -199,9 +199,9 @@ namespace DotNetty.Handlers.Tests
             try
             {
                 // We're writing 3 messages that will be consumed at different rates!
-                channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(new byte[] { 1 }));
-                channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(new byte[] { 2 }));
-                channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(new byte[] { 3 }));
+                channel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(new byte[] { 1 }));
+                channel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(new byte[] { 2 }));
+                channel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(new byte[] { 3 }));
 
                 // Establish a baseline. We're not consuming anything and let it idle once.
                 idleStateHandler.TickRun();

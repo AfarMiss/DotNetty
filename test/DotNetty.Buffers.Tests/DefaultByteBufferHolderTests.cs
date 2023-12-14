@@ -10,7 +10,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ConvertToString()
         {
-            var holder = new DefaultByteBufferHolder(Unpooled.Buffer());
+            var holder = new DefaultByteBufferHolder(ByteBuffer.Buffer());
             Assert.Equal(1, holder.ReferenceCount);
             Assert.NotNull(holder.ToString());
             Assert.True(holder.Release());
@@ -20,7 +20,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void EqualsAndHashCode()
         {
-            var holder = new DefaultByteBufferHolder(Unpooled.Empty);
+            var holder = new DefaultByteBufferHolder(ByteBuffer.Empty);
             IByteBufferHolder copy = holder.Copy();
             try
             {

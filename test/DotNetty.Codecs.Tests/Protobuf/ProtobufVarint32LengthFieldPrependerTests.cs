@@ -178,7 +178,7 @@ namespace DotNetty.Codecs.Tests.Protobuf
             try
             {
                 var channel = new EmbeddedChannel(new ProtobufVarint32LengthFieldPrepender());
-                IByteBuffer content = Unpooled.WrappedBuffer(data, size, data.Length - size);
+                IByteBuffer content = ByteBuffer.WrappedBuffer(data, size, data.Length - size);
                 Assert.True(channel.WriteOutbound(content));
                 written = channel.ReadOutbound<IByteBuffer>();
                 Assert.NotNull(written);

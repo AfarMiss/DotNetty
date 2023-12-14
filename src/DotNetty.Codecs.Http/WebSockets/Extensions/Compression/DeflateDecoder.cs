@@ -42,7 +42,7 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions.Compression
             this.decoder.WriteInbound(msg.Content.Retain());
             if (this.AppendFrameTail(msg))
             {
-                this.decoder.WriteInbound(Unpooled.WrappedBuffer(FrameTail));
+                this.decoder.WriteInbound(ByteBuffer.WrappedBuffer(FrameTail));
             }
 
             CompositeByteBuffer compositeUncompressedContent = ctx.Allocator.CompositeBuffer();

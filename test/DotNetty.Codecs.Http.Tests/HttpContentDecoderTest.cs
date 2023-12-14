@@ -52,7 +52,7 @@ namespace DotNetty.Codecs.Http.Tests
                          "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                          "Content-Encoding: gzip\r\n" +
                          "\r\n";
-            IByteBuffer buf = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
             Assert.True(channel.WriteInbound(buf));
 
             var req = channel.ReadInbound<IFullHttpRequest>();
@@ -80,7 +80,7 @@ namespace DotNetty.Codecs.Http.Tests
                              "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                              "Content-Encoding: gzip\r\n" +
                              "\r\n";
-            IByteBuffer buf = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
             Assert.True(channel.WriteInbound(buf));
 
             var resp = channel.ReadInbound<IFullHttpResponse>();
@@ -110,12 +110,12 @@ namespace DotNetty.Codecs.Http.Tests
             // note: the following writeInbound() returns false as there is no message is inbound buffer
             // until HttpObjectAggregator caches composes a complete message.
             // however, http response "100 continue" must be sent as soon as headers are received
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
 
             var resp = channel.ReadOutbound<IFullHttpResponse>();
             Assert.NotNull(resp);
             Assert.Equal(100, resp.Status.Code);
-            Assert.True(channel.WriteInbound(Unpooled.WrappedBuffer(GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.WrappedBuffer(GzHelloWorld)));
             resp.Release();
 
             AssertHasInboundMessages(channel, true);
@@ -136,13 +136,13 @@ namespace DotNetty.Codecs.Http.Tests
                          "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                          "Expect: 100-continue\r\n" +
                          "\r\n";
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
 
             var resp = channel.ReadOutbound<IFullHttpResponse>();
             Assert.NotNull(resp);
             Assert.Equal(100, resp.Status.Code);
             resp.Release();
-            Assert.True(channel.WriteInbound(Unpooled.WrappedBuffer(GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.WrappedBuffer(GzHelloWorld)));
 
             AssertHasInboundMessages(channel, true);
             AssertHasOutboundMessages(channel, false);
@@ -163,12 +163,12 @@ namespace DotNetty.Codecs.Http.Tests
                          "Expect: 100-continue\r\n" +
                          "Content-Encoding: gzip\r\n" +
                          "\r\n";
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
 
             var resp = channel.ReadOutbound<IFullHttpResponse>();
             Assert.Equal(100, resp.Status.Code);
             resp.Release();
-            Assert.True(channel.WriteInbound(Unpooled.WrappedBuffer(GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.WrappedBuffer(GzHelloWorld)));
 
             AssertHasInboundMessages(channel, true);
             AssertHasOutboundMessages(channel, false);
@@ -189,13 +189,13 @@ namespace DotNetty.Codecs.Http.Tests
                          "Expect: 100-continue\r\n" +
                          "Content-Encoding: gzip\r\n" +
                          "\r\n";
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(req))));
 
             var resp = channel.ReadOutbound<IFullHttpResponse>();
             Assert.NotNull(resp);
             Assert.Equal(100, resp.Status.Code);
             resp.Release();
-            Assert.True(channel.WriteInbound(Unpooled.WrappedBuffer(GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.WrappedBuffer(GzHelloWorld)));
 
             AssertHasInboundMessages(channel, true);
             AssertHasOutboundMessages(channel, false);
@@ -239,7 +239,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Content-Length: " + (MaxBytes + 1) + "\r\n" +
                 "Expect: 100-continue\r\n" +
                 "\r\n";
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(req1))));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(req1))));
 
             var resp = channel.ReadOutbound<IFullHttpResponse>();
             Assert.Equal(HttpStatusClass.ClientError, resp.Status.CodeClass);
@@ -249,14 +249,14 @@ namespace DotNetty.Codecs.Http.Tests
                 "Content-Length: " + MaxBytes + "\r\n" +
                 "Expect: 100-continue\r\n" +
                 "\r\n";
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(req2))));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(req2))));
 
             resp = channel.ReadOutbound<IFullHttpResponse>();
             Assert.Equal(100, resp.Status.Code);
             resp.Release();
 
             var content = new byte[MaxBytes];
-            Assert.False(channel.WriteInbound(Unpooled.WrappedBuffer(content)));
+            Assert.False(channel.WriteInbound(ByteBuffer.WrappedBuffer(content)));
 
             IFullHttpRequest req = testHandler.Request;
             Assert.NotNull(req);
@@ -283,7 +283,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                 "Content-Encoding: gzip\r\n" +
                 "\r\n";
-            IByteBuffer buf = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
             Assert.True(channel.WriteInbound(buf));
 
             Queue<object> req = channel.InboundMessages;
@@ -315,7 +315,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                 "Content-Encoding: gzip\r\n" +
                 "\r\n";
-            IByteBuffer buf = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
             Assert.True(channel.WriteInbound(buf));
 
             var req = channel.ReadInbound<IFullHttpRequest>();
@@ -343,7 +343,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                 "Content-Encoding: gzip\r\n" +
                 "\r\n";
-            IByteBuffer buf = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
             Assert.True(channel.WriteInbound(buf));
 
             Queue<object> resp = channel.InboundMessages;
@@ -376,7 +376,7 @@ namespace DotNetty.Codecs.Http.Tests
                              "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                              "Content-Encoding: gzip\r\n" +
                              "\r\n";
-            IByteBuffer buf = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld);
             Assert.True(channel.WriteInbound(buf));
 
             var res = channel.ReadInbound<IFullHttpResponse>();
@@ -402,7 +402,7 @@ namespace DotNetty.Codecs.Http.Tests
                              "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                              "Content-Encoding: gzip\r\n" +
                              "\r\n";
-            Assert.True(channel.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld)));
 
             Queue<object> req = channel.InboundMessages;
             Assert.True(req.Count > 1);
@@ -428,7 +428,7 @@ namespace DotNetty.Codecs.Http.Tests
                              "Content-Length: " + GzHelloWorld.Length + "\r\n" +
                              "Content-Encoding: gzip\r\n" +
                              "\r\n";
-            Assert.True(channel.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld)));
 
             Queue<object> resp = channel.InboundMessages;
             Assert.True(resp.Count > 1);
@@ -453,7 +453,7 @@ namespace DotNetty.Codecs.Http.Tests
             string headers = "HTTP/1.1 200 OK\r\n" +
                     "Content-Encoding: gzip\r\n" +
                     "\r\n";
-            Assert.True(channel.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld)));
+            Assert.True(channel.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(headers), GzHelloWorld)));
             // This should terminate it.
             Assert.True(channel.Finish());
 
@@ -500,7 +500,7 @@ namespace DotNetty.Codecs.Http.Tests
             var channel = new EmbeddedChannel(decoder, inboundHandler);
 
             Assert.True(channel.WriteInbound(new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/")));
-            var content = new DefaultHttpContent(Unpooled.Buffer(10));
+            var content = new DefaultHttpContent(ByteBuffer.Buffer(10));
             Assert.True(channel.WriteInbound(content));
             Assert.Equal(1, content.ReferenceCount);
 
@@ -552,7 +552,7 @@ namespace DotNetty.Codecs.Http.Tests
         {
             ZlibEncoder encoder = ZlibCodecFactory.NewZlibEncoder(ZlibWrapper.Gzip);
             var channel = new EmbeddedChannel(encoder);
-            Assert.True(channel.WriteOutbound(Unpooled.WrappedBuffer(input)));
+            Assert.True(channel.WriteOutbound(ByteBuffer.WrappedBuffer(input)));
             Assert.True(channel.Finish());  // close the channel to indicate end-of-data
 
             int outputSize = 0;
@@ -582,7 +582,7 @@ namespace DotNetty.Codecs.Http.Tests
         {
             ZlibDecoder decoder = ZlibCodecFactory.NewZlibDecoder(ZlibWrapper.Gzip);
             var channel = new EmbeddedChannel(decoder);
-            Assert.True(channel.WriteInbound(Unpooled.WrappedBuffer(input)));
+            Assert.True(channel.WriteInbound(ByteBuffer.WrappedBuffer(input)));
             Assert.True(channel.Finish()); // close the channel to indicate end-of-data
 
             int outputSize = 0;

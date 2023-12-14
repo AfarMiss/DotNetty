@@ -355,7 +355,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 }
             }
 
-            IByteBuffer content = Unpooled.WrappedBuffer(buffers);
+            IByteBuffer content = ByteBuffer.WrappedBuffer(buffers);
             string contentStr = content.ToString(Encoding.UTF8);
             content.Release();
             return contentStr;

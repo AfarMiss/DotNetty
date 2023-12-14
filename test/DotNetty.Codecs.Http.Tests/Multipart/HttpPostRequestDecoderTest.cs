@@ -50,8 +50,8 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 // Create decoder instance to test.
                 var decoder = new HttpPostRequestDecoder(inMemoryFactory, req);
 
-                decoder.Offer(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(body))));
-                decoder.Offer(new DefaultHttpContent(Unpooled.Empty));
+                decoder.Offer(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(body))));
+                decoder.Offer(new DefaultHttpContent(ByteBuffer.Empty));
 
                 // Validate it's enough chunks to decode upload.
                 Assert.True(decoder.HasNext);
@@ -286,13 +286,13 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
             const int FirstChunk = 10;
             const int MiddleChunk = 1024;
 
-            var part1 = new DefaultHttpContent(Unpooled.WrappedBuffer(
+            var part1 = new DefaultHttpContent(ByteBuffer.WrappedBuffer(
                 Encoding.UTF8.GetBytes(Payload.Substring(0, FirstChunk))));
-            var part2 = new DefaultHttpContent(Unpooled.WrappedBuffer(
+            var part2 = new DefaultHttpContent(ByteBuffer.WrappedBuffer(
                 Encoding.UTF8.GetBytes(Payload.Substring(FirstChunk, MiddleChunk))));
-            var part3 = new DefaultHttpContent(Unpooled.WrappedBuffer(
+            var part3 = new DefaultHttpContent(ByteBuffer.WrappedBuffer(
                 Encoding.UTF8.GetBytes(Payload.Substring(FirstChunk + MiddleChunk, MiddleChunk))));
-            var part4 = new DefaultHttpContent(Unpooled.WrappedBuffer(
+            var part4 = new DefaultHttpContent(ByteBuffer.WrappedBuffer(
                 Encoding.UTF8.GetBytes(Payload.Substring(FirstChunk + MiddleChunk * 2))));
 
             decoder.Offer(part1);
@@ -446,7 +446,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
         [Fact]
         public void FormEncodeIncorrect()
         {
-            var content = new DefaultLastHttpContent(Unpooled.CopiedBuffer(
+            var content = new DefaultLastHttpContent(ByteBuffer.CopiedBuffer(
                 Encoding.ASCII.GetBytes("project=netty&&project=netty")));
             var req = new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Post, "/");
             var decoder = new HttpPostRequestDecoder(req);
@@ -473,7 +473,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
             var req = new DefaultFullHttpRequest(HttpVersion.Http11,
                 HttpMethod.Post,
                 "http://localhost",
-                Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(body)));
+                ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(body)));
 
             req.Headers.Add(HttpHeaderNames.ContentType, "multipart/form-data; boundary=" + Boundary);
             var inMemoryFactory = new DefaultHttpDataFactory(false);
@@ -509,7 +509,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 HttpVersion.Http11,
                 HttpMethod.Post,
                 "http://localhost",
-                Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(body)));
+                ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(body)));
 
             req.Headers.Add(HttpHeaderNames.ContentType, "multipart/form-data; boundary=" + Boundary);
             var inMemoryFactory = new DefaultHttpDataFactory(false);
@@ -539,7 +539,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 HttpVersion.Http11,
                 HttpMethod.Post,
                 "http://localhost",
-                Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(Body)));
+                ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(Body)));
 
             req.Headers.Add(HttpHeaderNames.ContentType, "multipart/form-data; boundary=" + Boundary);
             var inMemoryFactory = new DefaultHttpDataFactory(false);
@@ -563,7 +563,7 @@ namespace DotNetty.Codecs.Http.Tests.Multipart
                 HttpVersion.Http11,
                 HttpMethod.Post,
                 "http://localhost",
-                Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(Body)));
+                ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(Body)));
 
             req.Headers.Add(HttpHeaderNames.ContentType, "multipart/form-data; boundary=" + Boundary);
 

@@ -11,10 +11,10 @@ namespace DotNetty.Codecs.Http
     public class HttpServerExpectContinueHandler : ChannelHandlerAdapter
     {
         static readonly IFullHttpResponse ExpectationFailed = new DefaultFullHttpResponse(
-            HttpVersion.Http11, HttpResponseStatus.ExpectationFailed, Unpooled.Empty);
+            HttpVersion.Http11, HttpResponseStatus.ExpectationFailed, ByteBuffer.Empty);
 
         static readonly IFullHttpResponse Accept = new DefaultFullHttpResponse(
-            HttpVersion.Http11, HttpResponseStatus.Continue, Unpooled.Empty);
+            HttpVersion.Http11, HttpResponseStatus.Continue, ByteBuffer.Empty);
 
         static HttpServerExpectContinueHandler()
         {

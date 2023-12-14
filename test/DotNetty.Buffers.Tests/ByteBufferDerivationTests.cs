@@ -10,7 +10,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void Slice()
         {
-            IByteBuffer buf = Unpooled.Buffer(8);
+            IByteBuffer buf = ByteBuffer.Buffer(8);
             buf.SetIndex(1, 7);
             IByteBuffer slice = buf.Slice(1, 7);
 
@@ -29,7 +29,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void SliceOfSlice()
         {
-            IByteBuffer buf = Unpooled.Buffer(8);
+            IByteBuffer buf = ByteBuffer.Buffer(8);
             IByteBuffer slice = buf.Slice(1, 7);
             IByteBuffer slice2 = slice.Slice(0, 6);
 
@@ -43,7 +43,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void Duplicate()
         {
-            IByteBuffer buf = Unpooled.Buffer(8);
+            IByteBuffer buf = ByteBuffer.Buffer(8);
             buf.SetIndex(1, 7);
             IByteBuffer dup = buf.Duplicate();
 
@@ -62,7 +62,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void DuplicateOfDuplicate()
         {
-            IByteBuffer buf = Unpooled.Buffer(8);
+            IByteBuffer buf = ByteBuffer.Buffer(8);
             buf.SetIndex(1, 7);
             IByteBuffer dup = buf.Duplicate();
             dup.SetIndex(2, 6);

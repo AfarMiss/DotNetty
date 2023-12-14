@@ -13,7 +13,7 @@ namespace DotNetty.Codecs.Http
 
         EmptyLastHttpContent()
         {
-            this.Content = Unpooled.Empty;
+            this.Content = ByteBuffer.Empty;
         }
 
         public DecoderResult Result

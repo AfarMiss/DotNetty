@@ -59,7 +59,7 @@ namespace DotNetty.Codecs.Http.Tests
         static void DecodeWholeRequestAtOnce(byte[] content)
         {
             var channel = new EmbeddedChannel(new HttpRequestDecoder());
-            Assert.True(channel.WriteInbound(Unpooled.WrappedBuffer(content)));
+            Assert.True(channel.WriteInbound(ByteBuffer.WrappedBuffer(content)));
             var req = channel.ReadInbound<IHttpRequest>();
             Assert.NotNull(req);
             CheckHeaders(req.Headers);
@@ -67,7 +67,7 @@ namespace DotNetty.Codecs.Http.Tests
             var c = channel.ReadInbound<ILastHttpContent>();
             Assert.Equal(ContentLength, c.Content.ReadableBytes);
             Assert.Equal(
-                Unpooled.WrappedBuffer(content, content.Length - ContentLength, ContentLength), 
+                ByteBuffer.WrappedBuffer(content, content.Length - ContentLength, ContentLength), 
                 c.Content.ReadSlice(ContentLength));
             c.Release();
 
@@ -129,14 +129,14 @@ namespace DotNetty.Codecs.Http.Tests
                 }
 
                 // if header is done it should produce a HttpRequest
-                channel.WriteInbound(Unpooled.WrappedBuffer(content, a, amount));
+                channel.WriteInbound(ByteBuffer.WrappedBuffer(content, a, amount));
                 a += amount;
             }
 
             for (int i = ContentLength; i > 0; i--)
             {
                 // Should produce HttpContent
-                channel.WriteInbound(Unpooled.WrappedBuffer(content, content.Length - i, 1));
+                channel.WriteInbound(ByteBuffer.WrappedBuffer(content, content.Length - i, 1));
             }
 
             var req = channel.ReadInbound<IHttpRequest>();
@@ -172,7 +172,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "MyTestHeader2: part21" + Crlf +
                 "\t            newLinePart22"
                 + Crlf + Crlf;
-            Assert.True(channel.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(Request))));
+            Assert.True(channel.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(Request))));
             var req = channel.ReadInbound<IHttpRequest>();
             Assert.Equal("part1 newLinePart2", req.Headers.Get(new AsciiString("MyTestHeader"), null).ToString());
             Assert.Equal("part21 newLinePart22", req.Headers.Get(new AsciiString("MyTestHeader2"), null).ToString());
@@ -195,7 +195,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "EmptyHeader:" + Crlf + Crlf;
             byte[] data = Encoding.ASCII.GetBytes(Request);
 
-            channel.WriteInbound(Unpooled.WrappedBuffer(data));
+            channel.WriteInbound(ByteBuffer.WrappedBuffer(data));
             var req = channel.ReadInbound<IHttpRequest>();
             Assert.Equal("", req.Headers.Get((AsciiString)"EmptyHeader", null).ToString());
         }
@@ -209,7 +209,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Expect: 100-continue\r\n" +
                 "Content-Length: 1048576000\r\n\r\n";
             byte[] data = Encoding.ASCII.GetBytes(Oversized);
-            channel.WriteInbound(Unpooled.CopiedBuffer(data));
+            channel.WriteInbound(ByteBuffer.CopiedBuffer(data));
             var req = channel.ReadInbound<IHttpRequest>();
             Assert.NotNull(req);
 
@@ -219,7 +219,7 @@ namespace DotNetty.Codecs.Http.Tests
 
             const string Query = "GET /max-file-size HTTP/1.1\r\n\r\n";
             data = Encoding.ASCII.GetBytes(Query);
-            channel.WriteInbound(Unpooled.CopiedBuffer(data));
+            channel.WriteInbound(ByteBuffer.CopiedBuffer(data));
 
             req = channel.ReadInbound<IHttpRequest>();
             Assert.NotNull(req);
@@ -242,7 +242,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Content-Length: 1048576000\r\n\r\n" +
                 "WAY_TOO_LARGE_DATA_BEGINS";
             byte[] data = Encoding.ASCII.GetBytes(Oversized);
-            channel.WriteInbound(Unpooled.CopiedBuffer(data));
+            channel.WriteInbound(ByteBuffer.CopiedBuffer(data));
             var req = channel.ReadInbound<IHttpRequest>();
             Assert.NotNull(req);
 
@@ -258,7 +258,7 @@ namespace DotNetty.Codecs.Http.Tests
 
             const string Query = "GET /max-file-size HTTP/1.1\r\n\r\n";
             data = Encoding.ASCII.GetBytes(Query);
-            channel.WriteInbound(Unpooled.CopiedBuffer(data));
+            channel.WriteInbound(ByteBuffer.CopiedBuffer(data));
 
             req = channel.ReadInbound<IHttpRequest>();
             Assert.NotNull(req);
@@ -283,7 +283,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "content-length: 0" + Crlf + Crlf;
 
             byte[] data = Encoding.ASCII.GetBytes(Str1);
-            channel.WriteInbound(Unpooled.CopiedBuffer(data));
+            channel.WriteInbound(ByteBuffer.CopiedBuffer(data));
 
             var req = channel.ReadInbound<IHttpRequest>();
             Assert.Equal(HttpVersion.Http11, req.ProtocolVersion);
@@ -294,7 +294,7 @@ namespace DotNetty.Codecs.Http.Tests
             cnt.Release();
 
             data = Encoding.ASCII.GetBytes(Str2);
-            channel.WriteInbound(Unpooled.CopiedBuffer(data));
+            channel.WriteInbound(ByteBuffer.CopiedBuffer(data));
             req = channel.ReadInbound<IHttpRequest>();
             Assert.Equal(HttpVersion.Http10, req.ProtocolVersion);
             Assert.Equal("/some/other/path", req.Uri);
@@ -314,7 +314,7 @@ namespace DotNetty.Codecs.Http.Tests
             const string RequestStr = "GET /some/path HTTP/1.1\r\n" +
                 "Host: localhost1\r\n\r\n";
 
-            Assert.True(channel.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(RequestStr))));
+            Assert.True(channel.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(RequestStr))));
             var request = channel.ReadInbound<IHttpRequest>();
             Assert.True(request.Result.IsFailure);
             Assert.IsType<TooLongFrameException>(request.Result.Cause);
@@ -328,7 +328,7 @@ namespace DotNetty.Codecs.Http.Tests
             const string RequestStr = "GET /some/path HTTP/1.1\r\n" +
                 "Host: localhost1\r\n\r\n";
 
-            Assert.True(channel.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(RequestStr))));
+            Assert.True(channel.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(RequestStr))));
             var request = channel.ReadInbound<IHttpRequest>();
             Assert.True(request.Result.IsFailure);
             Assert.IsType<TooLongFrameException>(request.Result.Cause);

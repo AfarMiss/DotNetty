@@ -268,7 +268,7 @@ namespace DotNetty.Codecs.Http
         static IFullHttpResponse CreateUpgradeResponse(ICharSequence upgradeProtocol)
         {
             var res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.SwitchingProtocols, 
-                Unpooled.Empty, false);
+                ByteBuffer.Empty, false);
             res.Headers.Add(HttpHeaderNames.Connection, HttpHeaderValues.Upgrade);
             res.Headers.Add(HttpHeaderNames.Upgrade, upgradeProtocol);
             return res;

@@ -20,7 +20,7 @@ namespace DotNetty.Buffers.Tests
         public void WriteEmptyByteBuf()
         {
             var empty = new EmptyByteBuffer(ByteBufferAllocator.Default);
-            empty.WriteBytes(Unpooled.Empty); // Ok
+            empty.WriteBytes(ByteBuffer.Empty); // Ok
             IByteBuffer nonEmpty = ByteBufferAllocator.Default.Buffer();
             nonEmpty.Write<bool>(false);
             Assert.Throws<IndexOutOfRangeException>(() => empty.WriteBytes(nonEmpty));

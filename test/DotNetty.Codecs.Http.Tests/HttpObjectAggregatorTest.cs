@@ -22,9 +22,9 @@ namespace DotNetty.Codecs.Http.Tests
 
             var message = new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "http://localhost");
             message.Headers.Set((AsciiString)"X-Test", true);
-            IHttpContent chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
-            IHttpContent chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
-            IHttpContent chunk3 = new DefaultLastHttpContent(Unpooled.Empty);
+            IHttpContent chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            IHttpContent chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
+            IHttpContent chunk3 = new DefaultLastHttpContent(ByteBuffer.Empty);
 
             Assert.False(ch.WriteInbound(message));
             Assert.False(ch.WriteInbound(chunk1));
@@ -51,8 +51,8 @@ namespace DotNetty.Codecs.Http.Tests
             var message = new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Get, "http://localhost");
             message.Headers.Set((AsciiString)"X-Test", true);
             HttpUtil.SetTransferEncodingChunked(message, true);
-            var chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
-            var chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
+            var chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            var chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
             var trailer = new DefaultLastHttpContent();
             trailer.TrailingHeaders.Set((AsciiString)"X-Trailer", true);
 
@@ -80,8 +80,8 @@ namespace DotNetty.Codecs.Http.Tests
             var aggregator = new HttpObjectAggregator(4);
             var ch = new EmbeddedChannel(aggregator);
             var message = new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Put, "http://localhost");
-            var chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
-            var chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
+            var chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            var chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
             EmptyLastHttpContent chunk3 = EmptyLastHttpContent.Default;
 
             Assert.False(ch.WriteInbound(message));
@@ -129,8 +129,8 @@ namespace DotNetty.Codecs.Http.Tests
             var aggregator = new HttpObjectAggregator(4);
             var ch = new EmbeddedChannel(aggregator);
             var message = new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK);
-            var chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
-            var chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
+            var chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            var chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
 
             Assert.False(ch.WriteInbound(message));
             Assert.False(ch.WriteInbound(chunk1));
@@ -172,8 +172,8 @@ namespace DotNetty.Codecs.Http.Tests
             var message = new DefaultHttpRequest(HttpVersion.Http11, HttpMethod.Put, "http://localhost");
             message.Headers.Set((AsciiString)"X-Test", true);
             message.Headers.Set((AsciiString)"Transfer-Encoding", (AsciiString)"Chunked");
-            var chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
-            var chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
+            var chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            var chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test2")));
             EmptyLastHttpContent chunk3 = EmptyLastHttpContent.Default;
             Assert.False(ch.WriteInbound(message));
             Assert.False(ch.WriteInbound(chunk1));
@@ -196,7 +196,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void BadRequest()
         {
             var ch = new EmbeddedChannel(new HttpRequestDecoder(), new HttpObjectAggregator(1024 * 1024));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("GET / HTTP/1.0 with extra\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("GET / HTTP/1.0 with extra\r\n")));
             var req = ch.ReadInbound<IFullHttpRequest>();
             Assert.NotNull(req);
             Assert.True(req.Result.IsFailure);
@@ -209,7 +209,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void BadResponse()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder(), new HttpObjectAggregator(1024 * 1024));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 BAD_CODE Bad Server\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 BAD_CODE Bad Server\r\n")));
             var resp = ch.ReadInbound<IFullHttpResponse>();
             Assert.NotNull(resp);
             Assert.True(resp.Result.IsFailure);
@@ -228,8 +228,8 @@ namespace DotNetty.Codecs.Http.Tests
             HttpUtil.Set100ContinueExpected(message, true);
             HttpUtil.SetContentLength(message, 16);
 
-            var chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("some")));
-            var chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            var chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("some")));
+            var chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
             EmptyLastHttpContent chunk3 = EmptyLastHttpContent.Default;
 
             // Send a request with 100-continue + large Content-Length header value.
@@ -272,7 +272,7 @@ namespace DotNetty.Codecs.Http.Tests
             var aggregator = new HttpObjectAggregator(maxContentLength, close);
             var ch = new EmbeddedChannel(new HttpRequestDecoder(), aggregator);
 
-            Assert.False(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(
+            Assert.False(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(
                 "GET / HTTP/1.1\r\n" +
                 "Expect: chocolate=yummy\r\n" +
                 "Content-Length: 100\r\n\r\n"))));
@@ -294,7 +294,7 @@ namespace DotNetty.Codecs.Http.Tests
                 Assert.True(ch.Open);
 
                 // the decoder should be reset by the aggregator at this point and be able to decode the next request
-                Assert.True(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\n\r\n"))));
+                Assert.True(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\n\r\n"))));
 
                 var request = ch.ReadInbound<IFullHttpRequest>();
                 Assert.NotNull(request);
@@ -311,7 +311,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void OversizedRequestWith100ContinueAndDecoder()
         {
             var ch = new EmbeddedChannel(new HttpRequestDecoder(), new HttpObjectAggregator(4));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(
                     "PUT /upload HTTP/1.1\r\n" +
                             "Expect: 100-continue\r\n" +
                             "Content-Length: 100\r\n\r\n")));
@@ -327,7 +327,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.True(ch.Open);
 
             // The decoder should be reset by the aggregator at this point and be able to decode the next request.
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("GET /max-upload-size HTTP/1.1\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("GET /max-upload-size HTTP/1.1\r\n\r\n")));
 
             var request = ch.ReadInbound<IFullHttpRequest>();
             Assert.Equal(HttpMethod.Get, request.Method);
@@ -342,7 +342,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void OversizedRequestWith100ContinueAndDecoderCloseConnection()
         {
             var ch = new EmbeddedChannel(new HttpRequestDecoder(), new HttpObjectAggregator(4, true));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(
                     "PUT /upload HTTP/1.1\r\n" +
                             "Expect: 100-continue\r\n" +
                             "Content-Length: 100\r\n\r\n")));
@@ -369,8 +369,8 @@ namespace DotNetty.Codecs.Http.Tests
             HttpUtil.Set100ContinueExpected(message, true);
             HttpUtil.SetContentLength(message, 16);
 
-            var chunk1 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("some")));
-            var chunk2 = new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
+            var chunk1 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("some")));
+            var chunk2 = new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("test")));
             EmptyLastHttpContent chunk3 = EmptyLastHttpContent.Default;
 
             // Send a request with 100-continue + large Content-Length header value.
@@ -416,7 +416,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.True(ch.WriteInbound(req) && ch.Finish());
 
             var aggregatedReq = ch.ReadInbound<IFullHttpRequest>();
-            var replacedReq = (IFullHttpRequest)aggregatedReq.Replace(Unpooled.Empty);
+            var replacedReq = (IFullHttpRequest)aggregatedReq.Replace(ByteBuffer.Empty);
 
             Assert.Equal(replacedReq.Result, aggregatedReq.Result);
             aggregatedReq.Release();
@@ -435,7 +435,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.True(ch.WriteInbound(rep) && ch.Finish());
 
             var aggregatedRep = ch.ReadInbound<IFullHttpResponse>();
-            var replacedRep = (IFullHttpResponse)aggregatedRep.Replace(Unpooled.Empty);
+            var replacedRep = (IFullHttpResponse)aggregatedRep.Replace(ByteBuffer.Empty);
 
             Assert.Equal(replacedRep.Result, aggregatedRep.Result);
             aggregatedRep.Release();

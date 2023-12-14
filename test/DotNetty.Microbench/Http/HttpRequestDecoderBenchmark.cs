@@ -49,14 +49,14 @@ namespace DotNetty.Microbench.Http
                 }
 
                 // if header is done it should produce a HttpRequest
-                channel.WriteInbound(Unpooled.WrappedBuffer(content, a, amount));
+                channel.WriteInbound(ByteBuffer.WrappedBuffer(content, a, amount));
                 a += amount;
             }
 
             for (int i = ContentLength; i > 0; i--)
             {
                 // Should produce HttpContent
-                channel.WriteInbound(Unpooled.WrappedBuffer(content, content.Length - i, 1));
+                channel.WriteInbound(ByteBuffer.WrappedBuffer(content, content.Length - i, 1));
             }
         }
 

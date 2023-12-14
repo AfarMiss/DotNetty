@@ -14,7 +14,7 @@ namespace DotNetty.Buffers.Tests
             this.AssumedMaxCapacity = maxCapacity == int.MaxValue;
 
             int offset = length == 0 ? 0 : PlatformDependent.GetThreadLocalRandom().Next(length);
-            IByteBuffer buffer = Unpooled.Buffer(length * 2);
+            IByteBuffer buffer = ByteBuffer.Buffer(length * 2);
             IByteBuffer slice = this.NewSlice(buffer, offset, length);
             Assert.Equal(0, slice.ReaderIndex);
             Assert.Equal(length, slice.WriterIndex);
@@ -57,7 +57,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReaderIndexAndMarks()
         {
-            IByteBuffer wrapped = Unpooled.Buffer(16);
+            IByteBuffer wrapped = ByteBuffer.Buffer(16);
             try
             {
                 wrapped.SetWriterIndex(14);
@@ -85,7 +85,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void SliceEmptyNotLeak()
         {
-            var buffer = (IByteBuffer)Unpooled.Buffer(8).Retain();
+            var buffer = (IByteBuffer)ByteBuffer.Buffer(8).Retain();
             Assert.Equal(2, buffer.ReferenceCount);
 
             IByteBuffer slice1 = buffer.Slice();

@@ -37,7 +37,7 @@ namespace Discard.Client
         {
             try
             {
-                IByteBuffer buffer = Unpooled.WrappedBuffer(this.array);
+                IByteBuffer buffer = ByteBuffer.WrappedBuffer(this.array);
                 // Flush the outbound buffer to the socket.
                 // Once flushed, generate the same amount of traffic again.
                 await this.ctx.WriteAndFlushAsync(buffer);

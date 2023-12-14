@@ -61,7 +61,7 @@ namespace DotNetty.Codecs.Http
 
             // Bypass the encoder in case of an empty buffer, so that the following idiom works:
             //
-            //     ch.write(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+            //     ch.write(ByteBuffer.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
             //
             // See https://github.com/netty/netty/issues/2983 for more information.
             if (message is IByteBuffer potentialEmptyBuf)
@@ -122,7 +122,7 @@ namespace DotNetty.Codecs.Http
                             // buffer.
                             // Writing an empty buffer will not actually write anything on the wire, so if there is a user
                             // error with msg it will not be visible externally
-                            output.Add(Unpooled.Empty);
+                            output.Add(ByteBuffer.Empty);
                         }
 
                         break;

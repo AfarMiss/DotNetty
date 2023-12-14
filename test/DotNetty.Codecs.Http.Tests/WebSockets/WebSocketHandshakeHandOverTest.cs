@@ -125,7 +125,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
                     {
                         if (mergedBuffer == null)
                         {
-                            mergedBuffer = Unpooled.Buffer();
+                            mergedBuffer = ByteBuffer.Buffer();
                         }
                         mergedBuffer.WriteBytes(srcBuf);
                     }

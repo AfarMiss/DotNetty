@@ -111,7 +111,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Connection: Upgrade, HTTP2-Settings\r\n" +
                 "Upgrade: nextprotocol\r\n" +
                 "HTTP2-Settings: AAMAAABkAAQAAP__\r\n\r\n";
-            IByteBuffer upgrade = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(UpgradeString));
+            IByteBuffer upgrade = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(UpgradeString));
 
             Assert.False(channel.WriteInbound(upgrade));
             //Assert.Null(channel.Pipeline.Get<HttpServerCodec>());

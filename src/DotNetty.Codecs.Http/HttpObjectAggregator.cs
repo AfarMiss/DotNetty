@@ -18,10 +18,10 @@ namespace DotNetty.Codecs.Http
     public class HttpObjectAggregator : MessageAggregator<IHttpObject, IHttpMessage, IHttpContent, IFullHttpMessage>
     {
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<HttpObjectAggregator>();
-        static readonly IFullHttpResponse Continue = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.Continue, Unpooled.Empty);
-        static readonly IFullHttpResponse ExpectationFailed = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.ExpectationFailed, Unpooled.Empty);
-        static readonly IFullHttpResponse TooLargeClose = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.RequestEntityTooLarge, Unpooled.Empty);
-        static readonly IFullHttpResponse TooLarge = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.RequestEntityTooLarge, Unpooled.Empty);
+        static readonly IFullHttpResponse Continue = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.Continue, ByteBuffer.Empty);
+        static readonly IFullHttpResponse ExpectationFailed = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.ExpectationFailed, ByteBuffer.Empty);
+        static readonly IFullHttpResponse TooLargeClose = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.RequestEntityTooLarge, ByteBuffer.Empty);
+        static readonly IFullHttpResponse TooLarge = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.RequestEntityTooLarge, ByteBuffer.Empty);
 
         static HttpObjectAggregator()
         {

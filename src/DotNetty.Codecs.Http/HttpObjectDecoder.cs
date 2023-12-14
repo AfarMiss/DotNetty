@@ -340,7 +340,7 @@ namespace DotNetty.Codecs.Http
                         // other handler will replace this codec with the upgraded protocol codec to
                         // take the traffic over at some point then.
                         // See https://github.com/netty/netty/issues/2173
-                        var byteBuffer = Unpooled.Allocator.Buffer(readableBytes);
+                        var byteBuffer = ByteBuffer.Allocator.Buffer(readableBytes);
                         buffer.ReadBytes(byteBuffer, readableBytes);
                         output.Add(byteBuffer);
                     }
@@ -377,7 +377,7 @@ namespace DotNetty.Codecs.Http
                 {
                     // If we are still in the state of reading headers we need to create a new invalid message that
                     // signals that the connection was closed before we received the headers.
-                    output.Add(this.InvalidMessage(Unpooled.Empty, 
+                    output.Add(this.InvalidMessage(ByteBuffer.Empty, 
                         new PrematureChannelClosureException("Connection closed before received headers")));
                     this.ResetNow();
                     return;
@@ -519,7 +519,7 @@ namespace DotNetty.Codecs.Http
             // when we produced an invalid message without consuming anything.
             buf.SkipBytes(buf.ReadableBytes);
 
-            IHttpContent chunk = new DefaultLastHttpContent(Unpooled.Empty);
+            IHttpContent chunk = new DefaultLastHttpContent(ByteBuffer.Empty);
             chunk.Result = DecoderResult.Failure(cause);
             this.message = null;
             this.trailer = null;
@@ -636,7 +636,7 @@ namespace DotNetty.Codecs.Http
                 ILastHttpContent trailingHeaders = this.trailer;
                 if (trailingHeaders == null)
                 {
-                    trailingHeaders = new DefaultLastHttpContent(Unpooled.Empty, this.ValidateHeaders);
+                    trailingHeaders = new DefaultLastHttpContent(ByteBuffer.Empty, this.ValidateHeaders);
                     this.trailer = trailingHeaders;
                 }
                 do
@@ -817,7 +817,7 @@ namespace DotNetty.Codecs.Http
             {
                 int oldSize = this.size;
                 this.seq.Reset();
-                int i = ByteBufferEx.ForEachByte(buffer, this);
+                int i = ByteBufferUtil.ForEachByte(buffer, this);
                 if (i == -1)
                 {
                     this.size = oldSize;

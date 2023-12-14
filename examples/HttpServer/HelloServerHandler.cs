@@ -42,9 +42,9 @@ namespace HttpServer
 
         static HelloServerHandler()
         {
-            var byteBuffer = Unpooled.Buffer();
+            var byteBuffer = ByteBuffer.Buffer();
             byteBuffer.WriteBytes(StaticPlaintext);
-            PlaintextContentBuffer = Unpooled.UnreleasableBuffer(byteBuffer);
+            PlaintextContentBuffer = ByteBuffer.UnreleasableBuffer(byteBuffer);
         }
 
         static int JsonLen() => Encoding.UTF8.GetBytes(NewMessage().ToJsonFormat()).Length;
@@ -80,10 +80,10 @@ namespace HttpServer
                     break;
                 case "/json":
                     byte[] json = Encoding.UTF8.GetBytes(NewMessage().ToJsonFormat());
-                    this.WriteResponse(ctx, Unpooled.WrappedBuffer(json), TypeJson, JsonClheaderValue);
+                    this.WriteResponse(ctx, ByteBuffer.WrappedBuffer(json), TypeJson, JsonClheaderValue);
                     break;
                 default:
-                    var response = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.NotFound, Unpooled.Empty, false);
+                    var response = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.NotFound, ByteBuffer.Empty, false);
                     ctx.WriteAndFlushAsync(response);
                     ctx.CloseAsync();
                     break;

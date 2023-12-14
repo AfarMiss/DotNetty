@@ -216,12 +216,12 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
             WebSocketServerHandshaker socketServerHandshaker = factory.NewHandshaker(shaker.NewHandshakeRequest());
             var websocketChannel = new EmbeddedChannel(socketServerHandshaker.NewWebSocketEncoder(),
                 socketServerHandshaker.NewWebsocketDecoder());
-            Assert.True(websocketChannel.WriteOutbound(new BinaryWebSocketFrame(Unpooled.WrappedBuffer(data))));
+            Assert.True(websocketChannel.WriteOutbound(new BinaryWebSocketFrame(ByteBuffer.WrappedBuffer(data))));
 
             byte[] bytes = Encoding.ASCII.GetBytes("HTTP/1.1 101 Switching Protocols\r\nContent-Length: 0\r\n\r\n");
 
-            CompositeByteBuffer compositeByteBuf = Unpooled.CompositeBuffer();
-            compositeByteBuf.AddComponent(true, Unpooled.WrappedBuffer(bytes));
+            CompositeByteBuffer compositeByteBuf = ByteBuffer.CompositeBuffer();
+            compositeByteBuf.AddComponent(true, ByteBuffer.WrappedBuffer(bytes));
             for (;;)
             {
                 var frameBytes = websocketChannel.ReadOutbound<IByteBuffer>();
@@ -259,7 +259,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
             Assert.True(ch.Finish());
 
             var frame = ch.ReadInbound<BinaryWebSocketFrame>();
-            IByteBuffer expect = Unpooled.WrappedBuffer(data);
+            IByteBuffer expect = ByteBuffer.WrappedBuffer(data);
             try
             {
                 Assert.Equal(expect, frame.Content);

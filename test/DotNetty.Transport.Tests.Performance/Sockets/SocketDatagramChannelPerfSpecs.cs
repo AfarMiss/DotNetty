@@ -194,7 +194,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
                 for (int i = 0; i < MessageCount; i++)
                 {
                     this.clientChannel.WriteAsync(
-                        new DatagramPacket(Unpooled.WrappedBuffer(this.message), this.serverEndPoint));
+                        new DatagramPacket(ByteBuffer.WrappedBuffer(this.message), this.serverEndPoint));
                 }
                 this.clientChannel.Flush();
             });

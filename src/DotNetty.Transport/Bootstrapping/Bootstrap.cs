@@ -28,7 +28,7 @@ namespace DotNetty.Transport.Bootstrapping
         {
         }
 
-        Bootstrap(Bootstrap bootstrap) : base(bootstrap)
+        private Bootstrap(Bootstrap bootstrap) : base(bootstrap)
         {
             this.resolver = bootstrap.resolver;
             this.remoteAddress = bootstrap.remoteAddress;
@@ -221,7 +221,7 @@ namespace DotNetty.Transport.Bootstrapping
             }
         }
 
-        public override void Validate()
+        protected override void Validate()
         {
             base.Validate();
             if (this.Handler == null)

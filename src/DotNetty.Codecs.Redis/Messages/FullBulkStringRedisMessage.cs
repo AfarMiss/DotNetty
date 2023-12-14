@@ -32,7 +32,7 @@ namespace DotNetty.Codecs.Redis.Messages
         {
             public bool IsNull => true;
 
-            public IByteBuffer Content => Unpooled.Empty;
+            public IByteBuffer Content => ByteBuffer.Empty;
 
             public IByteBufferHolder Copy() => this;
 
@@ -54,7 +54,7 @@ namespace DotNetty.Codecs.Redis.Messages
         {
             public bool IsNull => false;
 
-            public IByteBuffer Content => Unpooled.Empty;
+            public IByteBuffer Content => ByteBuffer.Empty;
 
             public IByteBufferHolder Copy() => this;
 

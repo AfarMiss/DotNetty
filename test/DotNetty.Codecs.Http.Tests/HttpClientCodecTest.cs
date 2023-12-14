@@ -80,7 +80,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.NotNull(buffer);
             buffer.Release();
             Assert.Null(ch.ReadInbound<IByteBuffer>());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(IncompleteChunkedResponse)));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(IncompleteChunkedResponse)));
             var response = ch.ReadInbound<IHttpResponse>();
             Assert.NotNull(response);
             var content = ch.ReadInbound<IHttpContent>();
@@ -197,8 +197,8 @@ namespace DotNetty.Codecs.Http.Tests
                  * See <a href="https://tools.ietf.org/html/rfc7230#section-3.3.3">RFC 7230, 3.3.3</a>.
                  */
 
-                sChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 200 OK\r\n" + "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n" + "Content-Type: text/html\r\n\r\n")));
-                sChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("<html><body>hello half closed!</body></html>\r\n")));
+                sChannel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 200 OK\r\n" + "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n" + "Content-Type: text/html\r\n\r\n")));
+                sChannel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("<html><body>hello half closed!</body></html>\r\n")));
                 sChannel.CloseAsync();
 
                 sChannel.CloseCompletion.LinkOutcome(this.completion);
@@ -253,7 +253,7 @@ namespace DotNetty.Codecs.Http.Tests
                 ch.WriteOutbound(new DefaultFullHttpRequest(HttpVersion.Http11, httpMethod, "http://localhost/")),
                 "Channel outbound write failed.");
             Assert.True(
-                ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(response))),
+                ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(response))),
                 "Channel inbound write failed.");
 
             for (;;)
@@ -316,14 +316,14 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.True(ch.WriteOutbound(request), "Channel outbound write failed.");
 
             Assert.True(
-                ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(SwitchingProtocolsResponse))),
+                ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(SwitchingProtocolsResponse))),
                 "Channel inbound write failed.");
             var switchingProtocolsResponse = ch.ReadInbound<IFullHttpResponse>();
             Assert.NotNull(switchingProtocolsResponse);
             switchingProtocolsResponse.Release();
 
             Assert.True(
-                ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(Response))),
+                ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(Response))),
                 "Channel inbound write failed");
             var finalResponse = ch.ReadInbound<IFullHttpResponse>();
             Assert.NotNull(finalResponse);
@@ -342,7 +342,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "\r\n" +
                 "1234567812345678");
             var ch = new EmbeddedChannel(new HttpClientCodec());
-            Assert.True(ch.WriteInbound(Unpooled.WrappedBuffer(data)));
+            Assert.True(ch.WriteInbound(ByteBuffer.WrappedBuffer(data)));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);

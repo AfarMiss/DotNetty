@@ -148,7 +148,7 @@ namespace DotNetty.Codecs.Redis.Tests
 
         static IByteBuffer ReadAll(EmbeddedChannel channel)
         {
-            IByteBuffer buf = Unpooled.Buffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             IByteBuffer read;
             while ((read = channel.ReadOutbound<IByteBuffer>()) != null)
             {

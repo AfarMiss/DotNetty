@@ -25,17 +25,17 @@ namespace DotNetty.Codecs.Http.Tests
             var bytes = new byte[MaxHeaderSize / 2 - 2];
             bytes.Fill((byte)'a');
 
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n")));
 
             // Write two 4096-byte headers (= 8192 bytes)
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("A:")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(bytes));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("A:")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(bytes));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
             Assert.Null(ch.ReadInbound<IByteBuffer>());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("B:")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(bytes));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("B:")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(bytes));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Null(res.Result.Cause);
@@ -58,17 +58,17 @@ namespace DotNetty.Codecs.Http.Tests
             var bytes = new byte[MaxHeaderSize / 2 - 2];
             bytes.Fill((byte)'a');
 
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n")));
 
             // Write a 4096-byte header and a 4097-byte header to test an off-by-one case (= 8193 bytes)
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("A:")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(bytes));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("A:")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(bytes));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
             Assert.Null(ch.ReadInbound<IByteBuffer>());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("B: "))); // Note an extra space.
-            ch.WriteInbound(Unpooled.CopiedBuffer(bytes));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("B: "))); // Note an extra space.
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(bytes));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.True(res.Result.Cause is TooLongFrameException);
@@ -83,7 +83,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void ResponseChunked()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -97,8 +97,8 @@ namespace DotNetty.Codecs.Http.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                Assert.False(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes($"{Convert.ToString(data.Length, 16)}\r\n"))));
-                Assert.True(ch.WriteInbound(Unpooled.WrappedBuffer(data)));
+                Assert.False(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes($"{Convert.ToString(data.Length, 16)}\r\n"))));
+                Assert.True(ch.WriteInbound(ByteBuffer.WrappedBuffer(data)));
                 var content = ch.ReadInbound<IHttpContent>();
                 Assert.Equal(data.Length, content.Content.ReadableBytes);
 
@@ -107,11 +107,11 @@ namespace DotNetty.Codecs.Http.Tests
                 Assert.True(data.SequenceEqual(decodedData));
                 content.Release();
 
-                Assert.False(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n"))));
+                Assert.False(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n"))));
             }
 
             // Write the last chunk.
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("0\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("0\r\n\r\n")));
 
             // Ensure the last chunk was decoded.
             var lastContent = ch.ReadInbound<ILastHttpContent>();
@@ -128,7 +128,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void ResponseChunkedExceedMaxChunkSize()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder(4096, 8192, 32));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -142,8 +142,8 @@ namespace DotNetty.Codecs.Http.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                Assert.False(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes($"{Convert.ToString(data.Length, 16)}\r\n"))));
-                Assert.True(ch.WriteInbound(Unpooled.WrappedBuffer(data)));
+                Assert.False(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes($"{Convert.ToString(data.Length, 16)}\r\n"))));
+                Assert.True(ch.WriteInbound(ByteBuffer.WrappedBuffer(data)));
 
                 var decodedData = new byte[data.Length];
                 var content = ch.ReadInbound<IHttpContent>();
@@ -160,11 +160,11 @@ namespace DotNetty.Codecs.Http.Tests
                 Assert.True(decodedData.SequenceEqual(data));
                 content.Release();
 
-                Assert.False(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n"))));
+                Assert.False(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("\r\n"))));
             }
 
             // Write the last chunk.
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("0\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("0\r\n\r\n")));
 
             // Ensure the last chunk was decoded.
             var lastContent = ch.ReadInbound<ILastHttpContent>();
@@ -181,7 +181,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void ClosureWithoutContentLength1()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n")));
 
             // Read the response headers.
             var res = ch.ReadInbound<IHttpResponse>();
@@ -211,7 +211,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
 
             // Write the partial response.
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n12345678")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n12345678")));
 
             // Read the response headers.
             var res = ch.ReadInbound<IHttpResponse>();
@@ -245,7 +245,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void PrematureClosureWithChunkedEncoding1()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n")));
 
             // Read the response headers.
             var res = ch.ReadInbound<IHttpResponse>();
@@ -269,7 +269,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
 
             // Write the partial response.
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n8\r\n12345678")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n8\r\n12345678")));
 
             // Read the response headers.
             var res = ch.ReadInbound<IHttpResponse>();
@@ -298,7 +298,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void LastResponseWithEmptyHeaderAndEmptyContent()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -321,7 +321,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void LastResponseWithoutContentLengthHeader()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -329,7 +329,7 @@ namespace DotNetty.Codecs.Http.Tests
             var content = ch.ReadInbound<IHttpContent>();
             Assert.Null(content);
 
-            ch.WriteInbound(Unpooled.WrappedBuffer(new byte[1024]));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(new byte[1024]));
             content = ch.ReadInbound<IHttpContent>();
             Assert.Equal(1024, content.Content.ReadableBytes);
             content.Release();
@@ -348,7 +348,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void LastResponseWithHeaderRemoveTrailingSpaces()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nX-Header: h2=h2v2; Expires=Wed, 09-Jun-2021 10:18:14 GMT       \r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nX-Header: h2=h2v2; Expires=Wed, 09-Jun-2021 10:18:14 GMT       \r\n\r\n")));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -357,7 +357,7 @@ namespace DotNetty.Codecs.Http.Tests
             var content = ch.ReadInbound<IHttpContent>();
             Assert.Null(content);
 
-            ch.WriteInbound(Unpooled.WrappedBuffer(new byte[1024]));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(new byte[1024]));
             content = ch.ReadInbound<IHttpContent>();
             Assert.Equal(1024, content.Content.ReadableBytes);
             content.Release();
@@ -376,7 +376,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void ResetContentResponseWithTransferEncoding()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            Assert.True(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(
+            Assert.True(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(
                 "HTTP/1.1 205 Reset Content\r\n" +
                 "Transfer-Encoding: chunked\r\n" +
                 "\r\n" +
@@ -398,7 +398,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void LastResponseWithTrailingHeader()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(
                 "HTTP/1.1 200 OK\r\n" +
                 "Transfer-Encoding: chunked\r\n" +
                 "\r\n" +
@@ -459,11 +459,11 @@ namespace DotNetty.Codecs.Http.Tests
 
                 // if header is done it should produce a HttpRequest
                 bool headerDone = a + amount == HeaderLength;
-                Assert.Equal(headerDone, ch.WriteInbound(Unpooled.WrappedBuffer(content, a, amount)));
+                Assert.Equal(headerDone, ch.WriteInbound(ByteBuffer.WrappedBuffer(content, a, amount)));
                 a += amount;
             }
 
-            ch.WriteInbound(Unpooled.WrappedBuffer(content, HeaderLength, content.Length - HeaderLength));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(content, HeaderLength, content.Length - HeaderLength));
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
             Assert.Equal(HttpResponseStatus.OK, res.Status);
@@ -488,7 +488,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void ResponseWithContentLength()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(
                 "HTTP/1.1 200 OK\r\n" +
                 "Content-Length: 10\r\n" +
                 "\r\n")));
@@ -498,8 +498,8 @@ namespace DotNetty.Codecs.Http.Tests
             {
                 data[i] = (byte)i;
             }
-            ch.WriteInbound(Unpooled.WrappedBuffer(data, 0, data.Length / 2));
-            ch.WriteInbound(Unpooled.WrappedBuffer(data, 5, data.Length / 2));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data, 0, data.Length / 2));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data, 5, data.Length / 2));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -507,12 +507,12 @@ namespace DotNetty.Codecs.Http.Tests
 
             var firstContent = ch.ReadInbound<IHttpContent>();
             Assert.Equal(5, firstContent.Content.ReadableBytes);
-            Assert.Equal(Unpooled.WrappedBuffer(data, 0, 5), firstContent.Content);
+            Assert.Equal(ByteBuffer.WrappedBuffer(data, 0, 5), firstContent.Content);
             firstContent.Release();
 
             var lastContent = ch.ReadInbound<ILastHttpContent>();
             Assert.Equal(5, lastContent.Content.ReadableBytes);
-            Assert.Equal(Unpooled.WrappedBuffer(data, 5, 5), lastContent.Content);
+            Assert.Equal(ByteBuffer.WrappedBuffer(data, 5, 5), lastContent.Content);
             lastContent.Release();
 
             Assert.False(ch.Finish());
@@ -545,7 +545,7 @@ namespace DotNetty.Codecs.Http.Tests
                     amount = header.Length - a;
                 }
 
-                ch.WriteInbound(Unpooled.WrappedBuffer(header, a, amount));
+                ch.WriteInbound(ByteBuffer.WrappedBuffer(header, a, amount));
                 a += amount;
             }
             var data = new byte[10];
@@ -553,8 +553,8 @@ namespace DotNetty.Codecs.Http.Tests
             {
                 data[i] = (byte)i;
             }
-            ch.WriteInbound(Unpooled.WrappedBuffer(data, 0, data.Length / 2));
-            ch.WriteInbound(Unpooled.WrappedBuffer(data, 5, data.Length / 2));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data, 0, data.Length / 2));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data, 5, data.Length / 2));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -562,12 +562,12 @@ namespace DotNetty.Codecs.Http.Tests
 
             var firstContent = ch.ReadInbound<IHttpContent>();
             Assert.Equal(5, firstContent.Content.ReadableBytes);
-            Assert.Equal(Unpooled.WrappedBuffer(data, 0, 5), firstContent.Content);
+            Assert.Equal(ByteBuffer.WrappedBuffer(data, 0, 5), firstContent.Content);
             firstContent.Release();
 
             var lastContent = ch.ReadInbound<ILastHttpContent>();
             Assert.Equal(5, lastContent.Content.ReadableBytes);
-            Assert.Equal(Unpooled.WrappedBuffer(data, 5, 5), lastContent.Content);
+            Assert.Equal(ByteBuffer.WrappedBuffer(data, 5, 5), lastContent.Content);
             lastContent.Release();
 
             Assert.False(ch.Finish());
@@ -586,7 +586,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "\r\n" +
                 "1234567812345678");
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.WrappedBuffer(data));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data));
 
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http11, res.ProtocolVersion);
@@ -614,7 +614,7 @@ namespace DotNetty.Codecs.Http.Tests
             byte[] otherData = { 1, 2, 3, 4 };
 
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            IByteBuffer compositeBuffer = Unpooled.WrappedBuffer(data, otherData);
+            IByteBuffer compositeBuffer = ByteBuffer.WrappedBuffer(data, otherData);
             ch.WriteInbound(compositeBuffer);
 
             var res = ch.ReadInbound<IHttpResponse>();
@@ -626,7 +626,7 @@ namespace DotNetty.Codecs.Http.Tests
 
             Assert.True(ch.Finish());
 
-            IByteBuffer expected = Unpooled.WrappedBuffer(otherData);
+            IByteBuffer expected = ByteBuffer.WrappedBuffer(otherData);
             var buffer = ch.ReadInbound<IByteBuffer>();
             try
             {
@@ -652,7 +652,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "</html>\r\n");
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
 
-            ch.WriteInbound(Unpooled.WrappedBuffer(data));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data));
             // Garbage input should generate the 999 Unknown response.
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.Same(HttpVersion.Http10, res.ProtocolVersion);
@@ -664,7 +664,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.Null(next);
 
             // More garbage should not generate anything (i.e. the decoder discards anything beyond this point.)
-            ch.WriteInbound(Unpooled.WrappedBuffer(data));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(data));
             next = ch.ReadInbound<IByteBufferHolder>();
             Assert.Null(next);
 
@@ -684,7 +684,7 @@ namespace DotNetty.Codecs.Http.Tests
                 "Transfer-Encoding: chunked\r\n\r\n" +
                 "NOT_A_CHUNK_LENGTH\r\n";
 
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(ResponseWithIllegalChunk)));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(ResponseWithIllegalChunk)));
             var res = ch.ReadInbound<IHttpResponse>();
             Assert.NotNull(res);
 
@@ -706,7 +706,7 @@ namespace DotNetty.Codecs.Http.Tests
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
             const string ResponseInitialLine = "HTTP/1.1 200 OK\r\n";
-            Assert.False(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(ResponseInitialLine))));
+            Assert.False(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(ResponseInitialLine))));
             Assert.True(ch.Finish());
             var message = ch.ReadInbound<IHttpMessage>();
             Assert.True(message.Result.IsFailure);

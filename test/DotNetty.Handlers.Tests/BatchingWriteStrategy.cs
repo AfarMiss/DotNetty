@@ -33,7 +33,7 @@ namespace DotNetty.Handlers.Tests
                 {
                     this.FlushPendingBuffer();
                 }
-                ch.WriteInbound(Unpooled.Empty);
+                ch.WriteInbound(ByteBuffer.Empty);
             }
 
             if (this.pendingBuffer == null)
@@ -68,7 +68,7 @@ namespace DotNetty.Handlers.Tests
 
         async Task SetupPendingBufferAsync(ArraySegment<byte> input)
         {
-            this.pendingBuffer = Unpooled.Buffer(Math.Max(this.maxBatchSize, input.Count));
+            this.pendingBuffer = ByteBuffer.Buffer(Math.Max(this.maxBatchSize, input.Count));
             this.pendingBuffer.WriteBytes(input.Array, input.Offset, input.Count);
 
             if (this.pendingBuffer.ReadableBytes >= this.maxBatchSize)
@@ -77,7 +77,7 @@ namespace DotNetty.Handlers.Tests
                 {
                     do
                     {
-                        var byteBuffer = Unpooled.Allocator.Buffer(this.maxBatchSize);
+                        var byteBuffer = ByteBuffer.Allocator.Buffer(this.maxBatchSize);
                         this.pendingBuffer.ReadBytes(byteBuffer, this.maxBatchSize);
                         this.channel.WriteInbound(byteBuffer);
                     }

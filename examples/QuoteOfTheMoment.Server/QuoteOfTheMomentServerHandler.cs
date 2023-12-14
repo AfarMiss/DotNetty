@@ -44,7 +44,7 @@ namespace QuoteOfTheMoment.Server
             }
 
             byte[] bytes = Encoding.UTF8.GetBytes("QOTM: " + NextQuote());
-            IByteBuffer buffer = Unpooled.WrappedBuffer(bytes);
+            IByteBuffer buffer = ByteBuffer.WrappedBuffer(bytes);
             ctx.WriteAsync(new DatagramPacket(buffer, packet.Sender));
         }
 

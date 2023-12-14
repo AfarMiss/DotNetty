@@ -725,7 +725,7 @@ namespace DotNetty.Codecs.Http.Multipart
             }
             this.currentBuffer = this.currentBuffer == null 
                 ? buffer 
-                : Unpooled.WrappedBuffer(this.currentBuffer, buffer);
+                : ByteBuffer.WrappedBuffer(this.currentBuffer, buffer);
 
             if (this.currentBuffer.ReadableBytes < HttpPostBodyUtil.ChunkSize)
             {
@@ -752,19 +752,19 @@ namespace DotNetty.Codecs.Http.Multipart
             if (this.isKey)
             {
                 string key = this.currentData.Name;
-                buffer = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(key));
+                buffer = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(key));
                 this.isKey = false;
                 if (this.currentBuffer == null)
                 {
-                    this.currentBuffer = Unpooled.WrappedBuffer(buffer,  
-                        Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("=")));
+                    this.currentBuffer = ByteBuffer.WrappedBuffer(buffer,  
+                        ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("=")));
                     // continue
                     size -= buffer.ReadableBytes + 1;
                 }
                 else
                 {
-                    this.currentBuffer = Unpooled.WrappedBuffer(this.currentBuffer, buffer, 
-                        Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("=")));
+                    this.currentBuffer = ByteBuffer.WrappedBuffer(this.currentBuffer, buffer, 
+                        ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("=")));
                     // continue
                     size -= buffer.ReadableBytes + 1;
                 }
@@ -791,7 +791,7 @@ namespace DotNetty.Codecs.Http.Multipart
             {
                 this.isKey = true;
                 delimiter = this.iterator.HasNext()
-                    ? Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("&")) 
+                    ? ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("&")) 
                     : null;
             }
 
@@ -807,7 +807,7 @@ namespace DotNetty.Codecs.Http.Multipart
                 {
                     if (delimiter != null)
                     {
-                        this.currentBuffer = Unpooled.WrappedBuffer(this.currentBuffer, delimiter);
+                        this.currentBuffer = ByteBuffer.WrappedBuffer(this.currentBuffer, delimiter);
                     }
                 }
                 Debug.Assert(this.currentBuffer != null);
@@ -823,14 +823,14 @@ namespace DotNetty.Codecs.Http.Multipart
             if (this.currentBuffer == null)
             {
                 this.currentBuffer = delimiter != null 
-                    ? Unpooled.WrappedBuffer(buffer, delimiter) 
+                    ? ByteBuffer.WrappedBuffer(buffer, delimiter) 
                     : buffer;
             }
             else
             {
                 this.currentBuffer = delimiter != null 
-                    ? Unpooled.WrappedBuffer(this.currentBuffer, buffer, delimiter) 
-                    : Unpooled.WrappedBuffer(this.currentBuffer, buffer);
+                    ? ByteBuffer.WrappedBuffer(this.currentBuffer, buffer, delimiter) 
+                    : ByteBuffer.WrappedBuffer(this.currentBuffer, buffer);
             }
 
             // end for current InterfaceHttpData, need more data

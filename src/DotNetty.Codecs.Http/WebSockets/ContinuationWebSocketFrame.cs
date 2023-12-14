@@ -9,7 +9,7 @@ namespace DotNetty.Codecs.Http.WebSockets
     public class ContinuationWebSocketFrame : WebSocketFrame
     {
         public ContinuationWebSocketFrame()
-            : this(Unpooled.Buffer(0))
+            : this(ByteBuffer.Buffer(0))
         {
         }
 
@@ -31,7 +31,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         public string Text() => this.Content.ToString(Encoding.UTF8);
 
         static IByteBuffer FromText(string text) => string.IsNullOrEmpty(text) 
-            ? Unpooled.Empty : Unpooled.CopiedBuffer(text, Encoding.UTF8);
+            ? ByteBuffer.Empty : ByteBuffer.CopiedBuffer(text, Encoding.UTF8);
 
         public override IByteBufferHolder Replace(IByteBuffer content) => new ContinuationWebSocketFrame(this.IsFinalFragment, this.Rsv, content);
     }

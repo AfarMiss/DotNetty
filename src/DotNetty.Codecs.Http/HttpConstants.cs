@@ -48,8 +48,8 @@ namespace DotNetty.Codecs.Http
 
         internal static readonly byte[] ZeroCrlfCrlf = { (byte)'0', CarriageReturn, LineFeed, CarriageReturn, LineFeed };
 
-        internal static readonly IByteBuffer CrlfBuf = Unpooled.UnreleasableBuffer(Unpooled.WrappedBuffer(new[] { CarriageReturn, LineFeed }));
+        internal static readonly IByteBuffer CrlfBuf = ByteBuffer.UnreleasableBuffer(ByteBuffer.WrappedBuffer(new[] { CarriageReturn, LineFeed }));
 
-        internal static readonly IByteBuffer ZeroCrlfCrlfBuf = Unpooled.UnreleasableBuffer(Unpooled.WrappedBuffer(ZeroCrlfCrlf));
+        internal static readonly IByteBuffer ZeroCrlfCrlfBuf = ByteBuffer.UnreleasableBuffer(ByteBuffer.WrappedBuffer(ZeroCrlfCrlf));
     }
 }

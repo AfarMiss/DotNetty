@@ -10,7 +10,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void CantRelease()
         {
-            IByteBuffer buffer = Unpooled.UnreleasableBuffer(Unpooled.Buffer(1));
+            IByteBuffer buffer = ByteBuffer.UnreleasableBuffer(ByteBuffer.Buffer(1));
 
             Assert.Equal(1, buffer.ReferenceCount);
             Assert.False(buffer.Release());

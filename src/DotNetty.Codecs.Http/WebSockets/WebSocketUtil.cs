@@ -45,7 +45,7 @@ namespace DotNetty.Codecs.Http.WebSockets
 
         internal static string Base64String(byte[] data)
         {
-            IByteBuffer encodedData = Unpooled.WrappedBuffer(data);
+            IByteBuffer encodedData = ByteBuffer.WrappedBuffer(data);
             IByteBuffer encoded = Base64.Encode(encodedData);
             string encodedString = encoded.ToString(Encoding.UTF8);
             encoded.Release();

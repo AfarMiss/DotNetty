@@ -15,7 +15,7 @@ namespace Echo.Client
 
         public EchoClientHandler()
         {
-            this.initialMessage = Unpooled.Buffer(ClientSettings.Size);
+            this.initialMessage = ByteBuffer.Buffer(ClientSettings.Size);
             byte[] messageBytes = Encoding.UTF8.GetBytes("Hello world");
             this.initialMessage.WriteBytes(messageBytes);
         }

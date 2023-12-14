@@ -18,7 +18,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void RequestWithBadInitialLine()
         {
             var ch = new EmbeddedChannel(new HttpRequestDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("GET / HTTP/1.0 with extra\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("GET / HTTP/1.0 with extra\r\n")));
             var req = ch.ReadInbound<IHttpRequest>();
             DecoderResult dr = req.Result;
             Assert.NotNull(dr);
@@ -31,10 +31,10 @@ namespace DotNetty.Codecs.Http.Tests
         public void RequestWithBadHeader()
         {
             var ch = new EmbeddedChannel(new HttpRequestDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("GET /maybe-something HTTP/1.0\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("Good_Name: Good Value\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("Bad=Name: Bad Value\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("GET /maybe-something HTTP/1.0\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("Good_Name: Good Value\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("Bad=Name: Bad Value\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("\r\n")));
             var req = ch.ReadInbound<IHttpRequest>();
             DecoderResult dr = req.Result;
             Assert.NotNull(dr);
@@ -49,7 +49,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void ResponseWithBadInitialLine()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 BAD_CODE Bad Server\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 BAD_CODE Bad Server\r\n")));
             var res = ch.ReadInbound<IHttpResponse>();
             DecoderResult dr = res.Result;
             Assert.NotNull(dr);
@@ -62,10 +62,10 @@ namespace DotNetty.Codecs.Http.Tests
         public void ResponseWithBadHeader()
         {
             var ch = new EmbeddedChannel(new HttpResponseDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 200 Maybe OK\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("Good_Name: Good Value\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("Bad=Name: Bad Value\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("HTTP/1.0 200 Maybe OK\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("Good_Name: Good Value\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("Bad=Name: Bad Value\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("\r\n")));
             var res = ch.ReadInbound<IHttpResponse>();
             DecoderResult dr = res.Result;
             Assert.NotNull(dr);
@@ -80,9 +80,9 @@ namespace DotNetty.Codecs.Http.Tests
         public void BadChunk()
         {
             var ch = new EmbeddedChannel(new HttpRequestDecoder());
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("GET / HTTP/1.0\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("Transfer-Encoding: chunked\r\n\r\n")));
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("BAD_LENGTH\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("GET / HTTP/1.0\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("Transfer-Encoding: chunked\r\n\r\n")));
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("BAD_LENGTH\r\n")));
             var req = ch.ReadInbound<IHttpRequest>();
             DecoderResult dr = req.Result;
             Assert.NotNull(dr);
@@ -100,7 +100,7 @@ namespace DotNetty.Codecs.Http.Tests
             var data = new byte[1048576];
             this.rnd.NextBytes(data);
 
-            IByteBuffer buf = Unpooled.WrappedBuffer(data);
+            IByteBuffer buf = ByteBuffer.WrappedBuffer(data);
             for (int i = 0; i < 4096; i++)
             {
                 buf.SetIndex(0, data.Length);

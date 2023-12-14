@@ -213,7 +213,7 @@ namespace DotNetty.Codecs.Redis.Tests
         [Fact]
         public void DecodeNestedArray()
         {
-            IByteBuffer buf = Unpooled.Buffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             buf.WriteBytes(ByteBufOf("*2\r\n"));
             buf.WriteBytes(ByteBufOf("*3\r\n:1\r\n:2\r\n:3\r\n"));
             buf.WriteBytes(ByteBufOf("*2\r\n+Foo\r\n-Bar\r\n"));
@@ -242,7 +242,7 @@ namespace DotNetty.Codecs.Redis.Tests
         [Fact]
         public void DoubleReleaseArrayReferenceCounted()
         {
-            IByteBuffer buf = Unpooled.Buffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             buf.WriteBytes(ByteBufOf("*2\r\n"));
             buf.WriteBytes(ByteBufOf("*3\r\n:1\r\n:2\r\n:3\r\n"));
             buf.WriteBytes(ByteBufOf("*2\r\n+Foo\r\n-Bar\r\n"));
@@ -257,7 +257,7 @@ namespace DotNetty.Codecs.Redis.Tests
         [Fact]
         public void ReleaseArrayChildReferenceCounted()
         {
-            IByteBuffer buf = Unpooled.Buffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             buf.WriteBytes(ByteBufOf("*2\r\n"));
             buf.WriteBytes(ByteBufOf("*3\r\n:1\r\n:2\r\n:3\r\n"));
             buf.WriteBytes(ByteBufOf("$3\r\nFoo\r\n"));
@@ -273,7 +273,7 @@ namespace DotNetty.Codecs.Redis.Tests
         [Fact]
         public void ReleasecontentOfArrayChildReferenceCounted()
         {
-            IByteBuffer buf = Unpooled.Buffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             buf.WriteBytes(ByteBufOf("*2\r\n"));
             buf.WriteBytes(ByteBufOf("$3\r\nFoo\r\n$3\r\nBar\r\n"));
             Assert.True(this.channel.WriteInbound(buf));

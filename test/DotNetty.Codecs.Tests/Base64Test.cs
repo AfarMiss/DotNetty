@@ -32,8 +32,8 @@
 //                rand.NextBytes(bytes);
 
 //                string base64String = Convert.ToBase64String(bytes);
-//                IByteBuffer buff = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(base64String));
-//                IByteBuffer expectedDecoded = Unpooled.CopiedBuffer(Convert.FromBase64String(base64String));
+//                IByteBuffer buff = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(base64String));
+//                IByteBuffer expectedDecoded = ByteBuffer.CopiedBuffer(Convert.FromBase64String(base64String));
 
 //                TestDecode(buff, expectedDecoded);
 //            }
@@ -51,9 +51,9 @@
 //                var bytes = new byte[rand.Next(minLength, maxLength)];
 //                rand.NextBytes(bytes);
 
-//                IByteBuffer buff = Unpooled.WrappedBuffer(bytes);
+//                IByteBuffer buff = ByteBuffer.WrappedBuffer(bytes);
 //                string base64String = Convert.ToBase64String(bytes).Replace("\r", "");
-//                IByteBuffer expectedEncoded = Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(base64String));
+//                IByteBuffer expectedEncoded = ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(base64String));
 
 //                this.TestEncode(buff, expectedEncoded, false);
 //            }
@@ -90,8 +90,8 @@
 //        [Fact]
 //        public void TestNotAddNewLineWhenEndOnLimit()
 //        {
-//            IByteBuffer src = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("____abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde"));
-//            IByteBuffer expectedEncoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5emFiY2Rl"));
+//            IByteBuffer src = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("____abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde"));
+//            IByteBuffer expectedEncoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5emFiY2Rl"));
 //            IByteBuffer buff = src.Slice(3, src.ReadableBytes - 3);
 //            buff.ReadByte();
 //            this.TestEncode(buff, expectedEncoded);
@@ -100,8 +100,8 @@
 //        [Fact]
 //        public void TestSimpleDecode()
 //        {
-//            IByteBuffer src = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("____YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5emFiY2Rl"));
-//            IByteBuffer expectedDecoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde"));
+//            IByteBuffer src = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("____YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5emFiY2Rl"));
+//            IByteBuffer expectedDecoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde"));
 //            IByteBuffer buff = src.Slice(3, src.ReadableBytes - 3);
 //            buff.ReadByte();
 
@@ -112,10 +112,10 @@
 //        public void TestCompositeBufferDecoder()
 //        {
 //            string s = "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5emFiY2Rl";
-//            IByteBuffer src1 = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(0, 10)));
-//            IByteBuffer src2 = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(10)));
+//            IByteBuffer src1 = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(0, 10)));
+//            IByteBuffer src2 = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(10)));
 //            var src = new CompositeByteBuffer(src1.Allocator, 2, src1, src2);
-//            IByteBuffer expectedDecoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde"));
+//            IByteBuffer expectedDecoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde"));
 
 //            TestDecode(src, expectedDecoded);
 //        }
@@ -124,19 +124,19 @@
 //        public void TestCompositeBufferEncoder()
 //        {
 //            string s = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678";
-//            IByteBuffer src1 = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(0, 10)));
-//            IByteBuffer src2 = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(10)));
+//            IByteBuffer src1 = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(0, 10)));
+//            IByteBuffer src2 = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(s.Substring(10)));
 //            var src = new CompositeByteBuffer(src1.Allocator, 2, src1, src2);
 
-//            IByteBuffer expectedEncoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejEyMzQ1\nNjc4"));
+//            IByteBuffer expectedEncoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejEyMzQ1\nNjc4"));
 //            this.TestEncode(src, expectedEncoded);
 //        }
 
 //        [Fact]
 //        public void TestDecodeWithLineBreak()
 //        {
-//            IByteBuffer src = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejEyMzQ1\nNjc4"));
-//            IByteBuffer expectedDecoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678"));
+//            IByteBuffer src = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejEyMzQ1\nNjc4"));
+//            IByteBuffer expectedDecoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678"));
 
 //            TestDecode(src, expectedDecoded);
 //        }
@@ -144,16 +144,16 @@
 //        [Fact]
 //        public void TestAddNewLine()
 //        {
-//            IByteBuffer src = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678"));
-//            IByteBuffer expectedEncoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejEyMzQ1\nNjc4"));
+//            IByteBuffer src = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678"));
+//            IByteBuffer expectedEncoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejEyMzQ1\nNjc4"));
 //            this.TestEncode(src, expectedEncoded);
 //        }
 
 //        [Fact]
 //        public void TestEncodeEmpty()
 //        {
-//            IByteBuffer src = Unpooled.Empty;
-//            IByteBuffer expected = Unpooled.Empty;
+//            IByteBuffer src = ByteBuffer.Empty;
+//            IByteBuffer expected = ByteBuffer.Empty;
 //            this.TestEncode(src, expected);
 //        }
 
@@ -179,8 +179,8 @@
 //                "-----END CERTIFICATE-----";
 
 //            X509Certificate cert = FromString(certString);
-//            IByteBuffer src = Unpooled.WrappedBuffer(cert.Export(X509ContentType.Cert));
-//            IByteBuffer expectedEncoded = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(expected));
+//            IByteBuffer src = ByteBuffer.WrappedBuffer(cert.Export(X509ContentType.Cert));
+//            IByteBuffer expectedEncoded = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(expected));
 //            this.TestEncode(src, expectedEncoded);
 //        }
 

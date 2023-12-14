@@ -25,6 +25,6 @@ namespace DotNetty.Codecs.Redis.Tests
 
         internal static IByteBuffer ByteBufOf(string s) => ByteBufOf(BytesOf(s));
 
-        internal static IByteBuffer ByteBufOf(byte[] data) => Unpooled.WrappedBuffer(data);
+        internal static IByteBuffer ByteBufOf(byte[] data) => ByteBuffer.WrappedBuffer(data);
     }
 }

@@ -27,7 +27,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
                 new HttpObjectAggregator(42), new HttpRequestDecoder(), new HttpResponseEncoder());
 
             var req = new DefaultFullHttpRequest(Http11, HttpMethod.Get, "/chat", 
-                Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("^n:ds[4U")));
+                ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("^n:ds[4U")));
 
             req.Headers.Set(HttpHeaderNames.Host, "server.example.com");
             req.Headers.Set(HttpHeaderNames.Upgrade, HttpHeaderValues.Websocket);

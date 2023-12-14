@@ -30,7 +30,7 @@ namespace DotNetty.Codecs.Protobuf
                     return;
                 }
                 //todo: Implement ByteBufferStream to avoid allocations.
-                buffer = Unpooled.WrappedBuffer(message.ToByteArray());
+                buffer = ByteBuffer.WrappedBuffer(message.ToByteArray());
                 output.Add(buffer);
                 buffer = null;
             }

@@ -22,7 +22,7 @@ namespace DotNetty.Codecs.Http
 
         public IByteBufferHolder Copy()
         {
-            var content = new DefaultLastHttpContent(Unpooled.Empty);
+            var content = new DefaultLastHttpContent(ByteBuffer.Empty);
             content.TrailingHeaders.Set(this.trailingHeaders);
             return content;
         }
@@ -40,7 +40,7 @@ namespace DotNetty.Codecs.Http
 
         public IReferenceCounted Retain(int increment = 1) => this;
 
-        public IByteBuffer Content => Unpooled.Empty;
+        public IByteBuffer Content => ByteBuffer.Empty;
 
         public DecoderResult Result
         {

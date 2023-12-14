@@ -8,8 +8,6 @@ namespace DotNetty.Codecs.Http.WebSockets
     using DotNetty.Buffers;
     using DotNetty.Transport.Channels;
 
-    using static Buffers.ByteBufferUtil;
-
     public class WebSocket00FrameDecoder : ReplayingDecoder<WebSocket00FrameDecoder.Void>, IWebSocketFrameDecoder
     {
         public enum Void
@@ -87,7 +85,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 this.receivedClosingHandshake = true;
                 return new CloseWebSocketFrame();
             }
-            IByteBuffer payload = ReadBytes(ctx.Allocator, buffer, (int)frameSize);
+            IByteBuffer payload = ByteBufferUtil.ReadBytes(ctx.Allocator, buffer, (int)frameSize);
             return new BinaryWebSocketFrame(payload);
         }
 
@@ -95,7 +93,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         {
             int ridx = buffer.ReaderIndex;
             int rbytes = this.ActualReadableBytes;
-            int delimPos = ByteBufferEx.IndexOf(buffer, ridx, ridx + rbytes, 0xFF);
+            int delimPos = ByteBufferUtil.IndexOf(buffer, ridx, ridx + rbytes, 0xFF);
             if (delimPos == -1)
             {
                 // Frame delimiter (0xFF) not found
@@ -117,10 +115,10 @@ namespace DotNetty.Codecs.Http.WebSockets
                 throw new TooLongFrameException(nameof(WebSocket00FrameDecoder));
             }
 
-            IByteBuffer binaryData = ReadBytes(ctx.Allocator, buffer, frameSize);
+            IByteBuffer binaryData = ByteBufferUtil.ReadBytes(ctx.Allocator, buffer, frameSize);
             buffer.SkipBytes(1);
 
-            int ffDelimPos = ByteBufferEx.IndexOf(binaryData, binaryData.ReaderIndex, binaryData.WriterIndex, 0xFF);
+            int ffDelimPos = ByteBufferUtil.IndexOf(binaryData, binaryData.ReaderIndex, binaryData.WriterIndex, 0xFF);
             if (ffDelimPos >= 0)
             {
                 binaryData.Release();

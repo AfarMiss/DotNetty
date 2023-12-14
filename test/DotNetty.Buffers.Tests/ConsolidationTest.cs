@@ -6,7 +6,7 @@ namespace DotNetty.Buffers.Tests
     using System.Text;
     using Xunit;
 
-    using static Unpooled;
+    using static ByteBuffer;
 
     public class ConsolidationTest
     {

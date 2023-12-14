@@ -25,7 +25,7 @@ namespace DotNetty.Microbench.Http
         public void GlobalSetup()
         {
             // ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
-            this.buf = Unpooled.Buffer(16);
+            this.buf = ByteBuffer.Buffer(16);
         }
 
         [Benchmark]

@@ -82,7 +82,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 int b = (int)(long.Parse(BeginningDigit.Replace(key2, "")) /
                     BeginningSpace.Replace(key2, "").Length);
                 long c = req.Content.Read<long>();
-                IByteBuffer input = Unpooled.Buffer(16);
+                IByteBuffer input = ByteBuffer.Buffer(16);
                 input.Write<int>(a);
                 input.Write<int>(b);
                 input.Write<long>(c);

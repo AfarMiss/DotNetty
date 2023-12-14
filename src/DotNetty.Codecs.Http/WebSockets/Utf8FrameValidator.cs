@@ -81,7 +81,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             {
                 if (ctx.Channel.Active)
                 {
-                    ctx.WriteAndFlushAsync(Unpooled.Empty)
+                    ctx.WriteAndFlushAsync(ByteBuffer.Empty)
                         .ContinueWith(t => ctx.Channel.CloseAsync());
                 }
             }

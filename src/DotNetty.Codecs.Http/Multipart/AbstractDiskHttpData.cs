@@ -205,18 +205,18 @@ namespace DotNetty.Codecs.Http.Multipart
         {
             if (this.fileStream == null)
             {
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
 
             byte[] array = ReadFrom(this.fileStream);
-            return Unpooled.WrappedBuffer(array);
+            return ByteBuffer.WrappedBuffer(array);
         }
 
         public override IByteBuffer GetChunk(int length)
         {
             if (this.fileStream == null || length == 0)
             {
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
             int read = 0;
             var bytes = new byte[length];
@@ -232,9 +232,9 @@ namespace DotNetty.Codecs.Http.Multipart
             }
             if (read == 0)
             {
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
-            IByteBuffer buffer = Unpooled.WrappedBuffer(bytes);
+            IByteBuffer buffer = ByteBuffer.WrappedBuffer(bytes);
             buffer.SetReaderIndex(0);
             buffer.SetWriterIndex(read);
             return buffer;

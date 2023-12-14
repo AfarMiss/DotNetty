@@ -27,8 +27,7 @@ namespace DotNetty.Transport.Bootstrapping
             this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>();
         }
 
-        ServerBootstrap(ServerBootstrap bootstrap)
-            : base(bootstrap)
+        private ServerBootstrap(ServerBootstrap bootstrap) : base(bootstrap)
         {
             this.childGroup = bootstrap.childGroup;
             this.childHandler = bootstrap.childHandler;
@@ -145,7 +144,7 @@ namespace DotNetty.Transport.Bootstrapping
             }));
         }
 
-        public override void Validate()
+        protected override void Validate()
         {
             base.Validate();
             if (this.childHandler == null)

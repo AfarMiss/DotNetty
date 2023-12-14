@@ -299,7 +299,7 @@ namespace DotNetty.Codecs.Redis
                 return null;
             }
 
-            int lfIndex = ByteBufferEx.ForEachByte(input, ByteProcessor.FindLF);
+            int lfIndex = ByteBufferUtil.ForEachByte(input, ByteProcessor.FindLF);
             if (lfIndex < 0)
             {
                 return null;
@@ -334,7 +334,7 @@ namespace DotNetty.Codecs.Redis
         long ParsePositiveNumber(IByteBuffer byteBuffer)
         {
             this.toPositiveLongProcessor.Reset();
-            ByteBufferEx.ForEachByte(byteBuffer, this.toPositiveLongProcessor);
+            ByteBufferUtil.ForEachByte(byteBuffer, this.toPositiveLongProcessor);
             return this.toPositiveLongProcessor.Content;
         }
 

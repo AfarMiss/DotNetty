@@ -108,7 +108,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 var serverBootstrap = new Bootstrap();
                 serverBootstrap
                     .SetGroup(serverGroup)
-                    .ChannelFactory(() => new SocketDatagramChannel(addressFamily))
+                    .Channel(() => new SocketDatagramChannel(addressFamily))
                     .Option(ChannelOption.Allocator, allocator)
                     .Option(ChannelOption.SoReuseaddr, true)
                     .Option(ChannelOption.IpMulticastLoopDisabled, false)
@@ -131,7 +131,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 var clientBootstrap = new Bootstrap();
                 clientBootstrap
                     .SetGroup(clientGroup)
-                    .ChannelFactory(() => new SocketDatagramChannel(addressFamily))
+                    .Channel(() => new SocketDatagramChannel(addressFamily))
                     .Option(ChannelOption.Allocator, allocator)
                     .Option(ChannelOption.SoReuseaddr, true)
                     .Option(ChannelOption.IpMulticastLoopDisabled, false)
@@ -155,7 +155,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 Assert.True(joinTask.Wait(TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds * 5)),
                     $"Multicast server join group {groupAddress} timed out!");
 
-                var byteBuffer = Unpooled.Buffer();
+                var byteBuffer = ByteBuffer.Buffer();
                 byteBuffer.Write<int>(1);
                 clientChannel.WriteAndFlushAsync(new DatagramPacket(byteBuffer, groupAddress)).Wait();
                 Assert.True(multicastHandler.WaitForResult(), "Multicast server should have receivied the message.");
@@ -168,7 +168,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 Task.Delay(DefaultTimeOutInMilliseconds).Wait();
 
                 // we should not receive a message anymore as we left the group before
-                var buffer = Unpooled.Buffer();
+                var buffer = ByteBuffer.Buffer();
                 buffer.Write<int>(1);
                 clientChannel.WriteAndFlushAsync(new DatagramPacket(buffer, groupAddress)).Wait();
                 Assert.False(multicastHandler.WaitForResult(), "Multicast server should not receive the message.");

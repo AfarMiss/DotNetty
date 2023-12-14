@@ -73,12 +73,12 @@ namespace DotNetty.Transport.Libuv.Tests
             Assert.NotNull(this.clientChannel.LocalAddress);
 
             // 3 bytes means 3 independent reads for TestRecvByteBufAllocator
-            Task writeTask = this.clientChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(new byte[3]));
+            Task writeTask = this.clientChannel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(new byte[3]));
             Assert.True(writeTask.Wait(TimeSpan.FromSeconds(5)), "Client write task timed out");
             serverInitializer.AutoReadHandler.AssertSingleRead();
 
             // 3 bytes means 3 independent reads for TestRecvByteBufAllocator
-            writeTask = serverInitializer.Channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(new byte[3]));
+            writeTask = serverInitializer.Channel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(new byte[3]));
             Assert.True(writeTask.Wait(TimeSpan.FromSeconds(5)), "Server write task timed out");
             clientInitializer.AutoReadHandler.AssertSingleRead();
 

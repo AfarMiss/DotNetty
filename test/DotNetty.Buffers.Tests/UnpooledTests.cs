@@ -8,7 +8,7 @@ namespace DotNetty.Buffers.Tests
     using System;
     using System.Collections.Generic;
     using Xunit;
-    using static Unpooled;
+    using static ByteBuffer;
 
     /// <summary>
     /// Tests channel buffers

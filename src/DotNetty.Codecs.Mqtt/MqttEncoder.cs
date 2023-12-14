@@ -233,7 +233,7 @@ namespace DotNetty.Codecs.Mqtt
 
         static void EncodePublishMessage(IByteBufferAllocator bufferAllocator, PublishPacket packet, List<object> output)
         {
-            IByteBuffer payload = packet.Payload ?? Unpooled.Empty;
+            IByteBuffer payload = packet.Payload ?? ByteBuffer.Empty;
 
             string topicName = packet.TopicName;
             Util.ValidateTopicName(topicName);

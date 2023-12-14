@@ -207,13 +207,13 @@ namespace DotNetty.Codecs.Protobuf.Tests
             IByteBuffer inputBuffer;
             if (isCompositeBuffer)
             {
-                inputBuffer = Unpooled.WrappedBuffer(
-                    Unpooled.CopiedBuffer(data, 0, 2),
-                    Unpooled.CopiedBuffer(data, 2, data.Length - 2));
+                inputBuffer = ByteBuffer.WrappedBuffer(
+                    ByteBuffer.CopiedBuffer(data, 0, 2),
+                    ByteBuffer.CopiedBuffer(data, 2, data.Length - 2));
             }
             else
             {
-                inputBuffer = Unpooled.WrappedBuffer(data);
+                inputBuffer = ByteBuffer.WrappedBuffer(data);
             }
 
             Assert.True(channel.WriteInbound(inputBuffer));
@@ -273,13 +273,13 @@ namespace DotNetty.Codecs.Protobuf.Tests
             IByteBuffer inputBuffer;
             if (isCompositeBuffer)
             {
-                inputBuffer = Unpooled.WrappedBuffer(
-                    Unpooled.CopiedBuffer(data, 0, 2),
-                    Unpooled.CopiedBuffer(data, 2, data.Length - 2));
+                inputBuffer = ByteBuffer.WrappedBuffer(
+                    ByteBuffer.CopiedBuffer(data, 0, 2),
+                    ByteBuffer.CopiedBuffer(data, 2, data.Length - 2));
             }
             else
             {
-                inputBuffer = Unpooled.WrappedBuffer(data);
+                inputBuffer = ByteBuffer.WrappedBuffer(data);
             }
 
             Assert.True(channel.WriteInbound(inputBuffer));

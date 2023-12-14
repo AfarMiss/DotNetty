@@ -90,7 +90,7 @@
 //                 
 //                 int randomSeed = Environment.TickCount;
 //                 var random = new Random(randomSeed);
-//                 IByteBuffer expectedBuffer = Unpooled.Buffer(16 * 1024);
+//                 IByteBuffer expectedBuffer = ByteBuffer.Buffer(16 * 1024);
 //                 foreach (int len in frameLengths)
 //                 {
 //                     var data = new byte[len];
@@ -99,7 +99,7 @@
 //                     await driverStream.WriteAsync(data, 0, data.Length).WithTimeout(TimeSpan.FromSeconds(5));
 //                 }
 //                 await Task.WhenAll(writeTasks).WithTimeout(TimeSpan.FromSeconds(5));
-//                 IByteBuffer finalReadBuffer = Unpooled.Buffer(16 * 1024);
+//                 IByteBuffer finalReadBuffer = ByteBuffer.Buffer(16 * 1024);
 //                 
 //                 await ReadOutboundAsync(async () => ch.ReadInbound<IByteBuffer>(), expectedBuffer.ReadableBytes, finalReadBuffer, TestTimeout);
 //                 bool isEqual = ByteBufferUtil.Equals(expectedBuffer, finalReadBuffer);
@@ -171,7 +171,7 @@
 //                 
 //                 int randomSeed = Environment.TickCount;
 //                 var random = new Random(randomSeed);
-//                 IByteBuffer expectedBuffer = Unpooled.Buffer(16 * 1024);
+//                 IByteBuffer expectedBuffer = ByteBuffer.Buffer(16 * 1024);
 //                 foreach (IEnumerable<int> lengths in frameLengths.Split(x => x < 0))
 //                 {
 //                     ch.WriteOutbound(lengths.Select(len =>
@@ -179,17 +179,17 @@
 //                         var data = new byte[len];
 //                         random.NextBytes(data);
 //                         expectedBuffer.WriteBytes(data);
-//                         return (object)Unpooled.WrappedBuffer(data);
+//                         return (object)ByteBuffer.WrappedBuffer(data);
 //                     }).ToArray());
 //                 }
 //                 
-//                 IByteBuffer finalReadBuffer = Unpooled.Buffer(16 * 1024);
+//                 IByteBuffer finalReadBuffer = ByteBuffer.Buffer(16 * 1024);
 //                 var readBuffer = new byte[16 * 1024 * 10];
 //                 await ReadOutboundAsync(
 //                     async () =>
 //                     {
 //                         int read = await driverStream.ReadAsync(readBuffer, 0, readBuffer.Length);
-//                         return Unpooled.WrappedBuffer(readBuffer, 0, read);
+//                         return ByteBuffer.WrappedBuffer(readBuffer, 0, read);
 //                     },
 //                     expectedBuffer.ReadableBytes, finalReadBuffer, TestTimeout);
 //                 bool isEqual = ByteBufferUtil.Equals(expectedBuffer, finalReadBuffer);
@@ -221,7 +221,7 @@
 //             IEmbeddedChannel ch = new EmbeddedChannel(tlsHandler);
 // #endif
 //
-//             IByteBuffer readResultBuffer = Unpooled.Buffer(4 * 1024);
+//             IByteBuffer readResultBuffer = ByteBuffer.Buffer(4 * 1024);
 //             Func<ArraySegment<byte>, Task<int>> readDataFunc = async output =>
 //             {
 //                 if (writeTasks.Count > 0)
@@ -339,7 +339,7 @@
 //            ch.Configuration.AutoRead = false;
 //            ch.Register();
 //            Assert.False(ch.Configuration.AutoRead);
-//            Assert.True(ch.WriteOutbound(Unpooled.Empty));
+//            Assert.True(ch.WriteOutbound(ByteBuffer.Empty));
 //            Assert.True(readHandler.ReadIssued);
 //            ch.CloseAsync();
 //         }

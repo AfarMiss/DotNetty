@@ -8,7 +8,7 @@ namespace DotNetty.Codecs.Http.WebSockets
     public class PingWebSocketFrame : WebSocketFrame
     {
         public PingWebSocketFrame()
-            : base(true, 0, Unpooled.Buffer(0))
+            : base(true, 0, ByteBuffer.Buffer(0))
         {
         }
 

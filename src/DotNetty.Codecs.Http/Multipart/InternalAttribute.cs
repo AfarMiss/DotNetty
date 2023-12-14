@@ -30,7 +30,7 @@ namespace DotNetty.Codecs.Http.Multipart
         {
             Contract.Requires(stringValue != null);
 
-            IByteBuffer buf = Unpooled.CopiedBuffer(this.charset.GetBytes(stringValue));
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(this.charset.GetBytes(stringValue));
             this.value.Add(buf);
             this.size += buf.ReadableBytes;
         }
@@ -39,7 +39,7 @@ namespace DotNetty.Codecs.Http.Multipart
         {
             Contract.Requires(stringValue != null);
 
-            IByteBuffer buf = Unpooled.CopiedBuffer(this.charset.GetBytes(stringValue));
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(this.charset.GetBytes(stringValue));
             this.value[rank] = buf;
             this.size += buf.ReadableBytes;
         }
@@ -48,7 +48,7 @@ namespace DotNetty.Codecs.Http.Multipart
         {
             Contract.Requires(stringValue != null);
 
-            IByteBuffer buf = Unpooled.CopiedBuffer(this.charset.GetBytes(stringValue));
+            IByteBuffer buf = ByteBuffer.CopiedBuffer(this.charset.GetBytes(stringValue));
             IByteBuffer old = this.value[rank];
             this.value[rank] = buf;
             if (old != null)
@@ -97,7 +97,7 @@ namespace DotNetty.Codecs.Http.Multipart
 
         public IByteBuffer ToByteBuffer()
         {
-            CompositeByteBuffer compositeBuffer = Unpooled.CompositeBuffer(this.value.Count);
+            CompositeByteBuffer compositeBuffer = ByteBuffer.CompositeBuffer(this.value.Count);
             compositeBuffer.AddComponents(this.value);
             compositeBuffer.SetWriterIndex(this.size);
             compositeBuffer.SetReaderIndex(0);

@@ -20,28 +20,28 @@ namespace DotNetty.Buffers.Tests
             var buffers = new List<IByteBuffer>();
             for (int i = 0; i < length + 45; i += 45)
             {
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[1]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[2]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[3]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[4]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[5]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[6]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[7]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[8]));
-                buffers.Add(Unpooled.Empty);
-                buffers.Add(Unpooled.WrappedBuffer(new byte[9]));
-                buffers.Add(Unpooled.Empty);
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[1]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[2]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[3]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[4]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[5]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[6]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[7]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[8]));
+                buffers.Add(ByteBuffer.Empty);
+                buffers.Add(ByteBuffer.WrappedBuffer(new byte[9]));
+                buffers.Add(ByteBuffer.Empty);
             }
 
-            IByteBuffer buffer = Unpooled.WrappedBuffer(int.MaxValue, buffers.ToArray());
+            IByteBuffer buffer = ByteBuffer.WrappedBuffer(int.MaxValue, buffers.ToArray());
 
             // Truncate to the requested capacity.
             buffer.AdjustCapacity(length);
@@ -58,7 +58,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ComponentAtOffset()
         {
-            var buf = (CompositeByteBuffer)Unpooled.WrappedBuffer(
+            var buf = (CompositeByteBuffer)ByteBuffer.WrappedBuffer(
                 new byte[] { 1, 2, 3, 4, 5 },
                 new byte[] { 4, 5, 6, 7, 8, 9, 26 });
 
@@ -83,10 +83,10 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void DiscardReadBytes3()
         {
-            IByteBuffer a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            IByteBuffer b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, 0, 5),
-                Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, 5, 5));
+            IByteBuffer a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            IByteBuffer b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, 0, 5),
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, 5, 5));
             a.SkipBytes(6);
             a.MarkReaderIndex();
             b.SkipBytes(6);
@@ -125,17 +125,17 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void AutoConsolidation()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer(2);
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer(2);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1 }));
             Assert.Equal(1, buf.NumComponents);
 
-            var wrappedBuffer = Unpooled.Buffer();
+            var wrappedBuffer = ByteBuffer.Buffer();
             wrappedBuffer.WriteBytes(new byte[] { 2, 3 });
             buf.AddComponent(wrappedBuffer);
             Assert.Equal(2, buf.NumComponents);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4, 5, 6 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 4, 5, 6 }));
             var byteBuffer = buf.Slice();
             wrappedBuffer.Release();
             
@@ -150,15 +150,15 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void CompositeToSingleBuffer()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer(3);
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer(3);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
             Assert.Equal(1, buf.NumComponents);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 4 }));
             Assert.Equal(2, buf.NumComponents);
 
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 5, 6 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 5, 6 }));
             Assert.Equal(3, buf.NumComponents);
 
             // NOTE: hard-coding 6 here, since it seems like addComponent doesn't bump the writer index.
@@ -173,10 +173,10 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void FullConsolidation()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer(int.MaxValue);
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1 }));
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 2, 3 }));
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4, 5, 6 }));
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer(int.MaxValue);
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 2, 3 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 4, 5, 6 }));
             buf.Consolidate();
 
             Assert.Equal(1, buf.NumComponents);
@@ -190,17 +190,17 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void RangedConsolidation()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer(int.MaxValue);
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1 }));
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 2, 3 }));
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 4, 5, 6 }));
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 7, 8, 9, 10 }));
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer(int.MaxValue);
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 2, 3 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 4, 5, 6 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 7, 8, 9, 10 }));
             buf.Consolidate(1, 2);
 
             Assert.Equal(3, buf.NumComponents);
-            Assert.Equal(Unpooled.WrappedBuffer(new byte[] { 1 }), buf[0]);
-            Assert.Equal(Unpooled.WrappedBuffer(new byte[] { 2, 3, 4, 5, 6 }), buf[1]);
-            Assert.Equal(Unpooled.WrappedBuffer(new byte[] { 7, 8, 9, 10 }), buf[2]);
+            Assert.Equal(ByteBuffer.WrappedBuffer(new byte[] { 1 }), buf[0]);
+            Assert.Equal(ByteBuffer.WrappedBuffer(new byte[] { 2, 3, 4, 5, 6 }), buf[1]);
+            Assert.Equal(ByteBuffer.WrappedBuffer(new byte[] { 7, 8, 9, 10 }), buf[2]);
 
             buf.Release();
         }
@@ -208,13 +208,13 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void CompositeWrappedBuffer()
         {
-            IByteBuffer header = Unpooled.Buffer(12);
-            IByteBuffer payload = Unpooled.Buffer(512);
+            IByteBuffer header = ByteBuffer.Buffer(12);
+            IByteBuffer payload = ByteBuffer.Buffer(512);
 
             header.WriteBytes(new byte[12]);
             payload.WriteBytes(new byte[512]);
 
-            IByteBuffer buffer = Unpooled.WrappedBuffer(header, payload);
+            IByteBuffer buffer = ByteBuffer.WrappedBuffer(header, payload);
 
             Assert.Equal(12, header.ReadableBytes);
             Assert.Equal(512, payload.ReadableBytes);
@@ -230,92 +230,92 @@ namespace DotNetty.Buffers.Tests
         {
             // XXX Same tests with several buffers in wrappedCheckedBuffer
             // Different length.
-            IByteBuffer a = Unpooled.WrappedBuffer(new byte[] { 1 });
-            IByteBuffer b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1 }),
-                Unpooled.WrappedBuffer(new byte[] { 2 }));
+            IByteBuffer a = ByteBuffer.WrappedBuffer(new byte[] { 1 });
+            IByteBuffer b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 2 }));
             Assert.False(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Same content, same firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1 }),
-                Unpooled.WrappedBuffer(new byte[] { 2 }),
-                Unpooled.WrappedBuffer(new byte[] { 3 }));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 2 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 3 }));
             Assert.True(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Same content, different firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 1, 2),
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 3, 1));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 1, 2),
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 3, 1));
             Assert.True(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Different content, same firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1, 2 }),
-                Unpooled.WrappedBuffer(new byte[] { 4 }));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 4 }));
             Assert.False(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Different content, different firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 1, 2),
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 3, 1));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 1, 2),
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 3, 1));
             Assert.False(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Same content, same firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }),
-                Unpooled.WrappedBuffer(new byte[] { 4, 5, 6 }),
-                Unpooled.WrappedBuffer(new byte[] { 7, 8, 9, 10 }));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 4, 5, 6 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 7, 8, 9, 10 }));
             Assert.True(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Same content, different firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 1, 5),
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 6, 5));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 1, 5),
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 6, 5));
             Assert.True(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Different content, same firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 6 }),
-                Unpooled.WrappedBuffer(new byte[] { 7, 8, 5, 9, 10 }));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 6 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 7, 8, 5, 9, 10 }));
             Assert.False(ByteBufferUtil.Equals(a, b));
 
             a.Release();
             b.Release();
 
             // Different content, different firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 1, 5),
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 6, 5));
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 1, 5),
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 6, 5));
             Assert.False(ByteBufferUtil.Equals(a, b));
 
             a.Release();
@@ -326,19 +326,19 @@ namespace DotNetty.Buffers.Tests
         public void WrappedBuffer()
         {
             var bytes = new byte[16];
-            IByteBuffer a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(bytes));
+            IByteBuffer a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(bytes));
             Assert.Equal(16, a.Capacity);
             a.Release();
 
-            a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            IByteBuffer b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[][] { new byte[] { 1, 2, 3 } }));
+            a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            IByteBuffer b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[][] { new byte[] { 1, 2, 3 } }));
             Assert.Equal(a, b);
 
             a.Release();
             b.Release();
 
-            a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(
+            a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(
                 new byte[] { 1 },
                 new byte[] { 2 },
                 new byte[] { 3 }));
@@ -347,39 +347,39 @@ namespace DotNetty.Buffers.Tests
             a.Release();
             b.Release();
 
-            a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            b = Unpooled.WrappedBuffer(new [] {
-                Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }) 
+            a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            b = ByteBuffer.WrappedBuffer(new [] {
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }) 
             });
             Assert.Equal(a, b);
 
             a.Release();
             b.Release();
 
-            a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1 }),
-                Unpooled.WrappedBuffer(new byte[] { 2 }),
-                Unpooled.WrappedBuffer(new byte[] { 3 }));
+            a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 2 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 3 }));
             Assert.Equal(a, b);
 
             a.Release();
             b.Release();
 
-            a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new [] {
-                Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 })
+            a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new [] {
+                ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 })
             }));
             Assert.Equal(a, b);
 
             a.Release();
             b.Release();
 
-            a = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }));
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 1 }),
-                Unpooled.WrappedBuffer(new byte[] { 2 }),
-                Unpooled.WrappedBuffer(new byte[] { 3 })));
+            a = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }));
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 1 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 2 }),
+                ByteBuffer.WrappedBuffer(new byte[] { 3 })));
             Assert.Equal(a, b);
 
             a.Release();
@@ -391,9 +391,9 @@ namespace DotNetty.Buffers.Tests
         {
             //XXX Same tests than testEquals with written AggregateChannelBuffers
             // Different length.
-            IByteBuffer a = Unpooled.WrappedBuffer(new byte[] { 1 });
-            IByteBuffer b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1 }, new byte[1]));
-            IByteBuffer c = Unpooled.WrappedBuffer(new byte[] { 2 });
+            IByteBuffer a = ByteBuffer.WrappedBuffer(new byte[] { 1 });
+            IByteBuffer b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1 }, new byte[1]));
+            IByteBuffer c = ByteBuffer.WrappedBuffer(new byte[] { 2 });
 
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 1);
@@ -405,15 +405,15 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Same content, same firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1 }, new byte[2]));
-            c = Unpooled.WrappedBuffer(new byte[] { 2 });
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1 }, new byte[2]));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 2 });
 
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 2);
             b.WriteBytes(c);
             c.Release();
-            c = Unpooled.WrappedBuffer(new byte[] { 3 });
+            c = ByteBuffer.WrappedBuffer(new byte[] { 3 });
 
             b.WriteBytes(c);
             Assert.True(ByteBufferUtil.Equals(a, b));
@@ -423,9 +423,9 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Same content, different firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 1, 3));
-            c = Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 3, 1);
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 1, 3));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4 }, 3, 1);
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 1);
             b.WriteBytes(c);
@@ -436,9 +436,9 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Different content, same firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2 }, new byte[1]));
-            c = Unpooled.WrappedBuffer(new byte[] { 4 });
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }, new byte[1]));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 4 });
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 1);
             b.WriteBytes(c);
@@ -449,9 +449,9 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Different content, different firstIndex, short length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 });
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 1, 3));
-            c = Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 3, 1);
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 });
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 1, 3));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 4, 5 }, 3, 1);
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 1);
             b.WriteBytes(c);
@@ -462,15 +462,15 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Same content, same firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3 }, new byte[7]));
-            c = Unpooled.WrappedBuffer(new byte[] { 4, 5, 6 });
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3 }, new byte[7]));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 4, 5, 6 });
 
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 7);
             b.WriteBytes(c);
             c.Release();
-            c = Unpooled.WrappedBuffer(new byte[] { 7, 8, 9, 10 });
+            c = ByteBuffer.WrappedBuffer(new byte[] { 7, 8, 9, 10 });
             b.WriteBytes(c);
             Assert.True(ByteBufferUtil.Equals(a, b));
 
@@ -479,10 +479,10 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Same content, different firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 1, 10));
-            c = Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 6, 5);
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 1, 10));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 6, 5);
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 5);
             b.WriteBytes(c);
@@ -493,9 +493,9 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Different content, same firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 6 }, new byte[5]));
-            c = Unpooled.WrappedBuffer(new byte[] { 7, 8, 5, 9, 10 });
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 6 }, new byte[5]));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 7, 8, 5, 9, 10 });
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 5);
             b.WriteBytes(c);
@@ -506,10 +506,10 @@ namespace DotNetty.Buffers.Tests
             c.Release();
 
             // Different content, different firstIndex, long length.
-            a = Unpooled.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            b = Unpooled.WrappedBuffer(
-                Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 1, 10));
-            c = Unpooled.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 6, 5);
+            a = ByteBuffer.WrappedBuffer(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            b = ByteBuffer.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 1, 10));
+            c = ByteBuffer.WrappedBuffer(new byte[] { 0, 1, 2, 3, 4, 6, 7, 8, 5, 9, 10, 11 }, 6, 5);
             // to enable writeBytes
             b.SetWriterIndex(b.WriterIndex - 5);
             b.WriteBytes(c);
@@ -523,7 +523,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void EmptyBuffer()
         {
-            IByteBuffer b = Unpooled.WrappedBuffer(new byte[] { 1, 2 }, new byte[] { 3, 4 });
+            IByteBuffer b = ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }, new byte[] { 3, 4 });
             b.ReadBytes(new byte[4]);
             b.ReadBytes(ArrayExtensions.ZeroBytes);
             b.Release();
@@ -532,7 +532,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReadWithEmptyCompositeBuffer()
         {
-            IByteBuffer buf = Unpooled.CompositeBuffer();
+            IByteBuffer buf = ByteBuffer.CompositeBuffer();
             int n = 65;
             for (int i = 0; i < n; i++)
             {
@@ -545,8 +545,8 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ComponentMustBeDuplicate()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
-            var byteBuffer = Unpooled.Buffer(4, 6);
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
+            var byteBuffer = ByteBuffer.Buffer(4, 6);
             byteBuffer.SetIndex(1, 3);
             buf.AddComponent(byteBuffer);
             Assert.IsAssignableFrom<AbstractDerivedByteBuffer>(buf[0]);
@@ -559,16 +559,16 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReferenceCounts1()
         {
-            IByteBuffer c1 = Unpooled.Buffer();
+            IByteBuffer c1 = ByteBuffer.Buffer();
             c1.Write<byte>(1);
-            var c2 = (IByteBuffer)Unpooled.Buffer();
+            var c2 = (IByteBuffer)ByteBuffer.Buffer();
             c2.Write<byte>(2);
             c2.Retain();
-            var c3 = (IByteBuffer)Unpooled.Buffer();
+            var c3 = (IByteBuffer)ByteBuffer.Buffer();
             c3.Write<byte>(3);
             c3.Retain(2);
 
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
             Assert.Equal(1, buf.ReferenceCount);
             buf.AddComponents(c1, c2, c3);
 
@@ -591,19 +591,19 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReferenceCounts2()
         {
-            IByteBuffer c1 = Unpooled.Buffer();
+            IByteBuffer c1 = ByteBuffer.Buffer();
             c1.Write<byte>(1);
-            var c2 = (IByteBuffer)Unpooled.Buffer();
+            var c2 = (IByteBuffer)ByteBuffer.Buffer();
             c2.Write<byte>(2);
             c2.Retain();
-            var c3 = (IByteBuffer)Unpooled.Buffer();
+            var c3 = (IByteBuffer)ByteBuffer.Buffer();
             c3.Write<byte>(3);
             c3.Retain(2);
 
-            CompositeByteBuffer bufA = Unpooled.CompositeBuffer();
+            CompositeByteBuffer bufA = ByteBuffer.CompositeBuffer();
             bufA.AddComponents(c1, c2, c3).SetWriterIndex(3);
 
-            CompositeByteBuffer bufB = Unpooled.CompositeBuffer();
+            CompositeByteBuffer bufB = ByteBuffer.CompositeBuffer();
             bufB.AddComponents((IByteBuffer)bufA);
 
             // Ensure that bufA.refCnt() did not change.
@@ -633,16 +633,16 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void ReferenceCounts3()
         {
-            IByteBuffer c1 = Unpooled.Buffer();
+            IByteBuffer c1 = ByteBuffer.Buffer();
             c1.Write<byte>(1);
-            var c2 = (IByteBuffer)Unpooled.Buffer();
+            var c2 = (IByteBuffer)ByteBuffer.Buffer();
             c2.Write<byte>(2);
             c2.Retain();
-            var c3 = (IByteBuffer)Unpooled.Buffer();
+            var c3 = (IByteBuffer)ByteBuffer.Buffer();
             c3.Write<byte>(3);
             c3.Retain(2);
 
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
             Assert.Equal(1, buf.ReferenceCount);
 
             var components = new List<IByteBuffer>
@@ -670,11 +670,11 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void NestedLayout()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
             buf.AddComponent(
-                Unpooled.CompositeBuffer()
-                    .AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2 }))
-                    .AddComponent(Unpooled.WrappedBuffer(new byte[] { 3, 4 })).Slice(1, 2));
+                ByteBuffer.CompositeBuffer()
+                    .AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }))
+                    .AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 3, 4 })).Slice(1, 2));
 
             ArraySegment<byte>[] nioBuffers = buf.GetIoBuffers(0, 2);
             Assert.Equal(2, nioBuffers.Length);
@@ -686,8 +686,8 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void RemoveLastComponent()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2 }));
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }));
             Assert.Equal(1, buf.NumComponents);
             buf.RemoveComponent(0);
             Assert.Equal(0, buf.NumComponents);
@@ -697,7 +697,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void CopyEmpty()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
             Assert.Equal(0, buf.NumComponents);
 
             IByteBuffer copy = buf.Copy();
@@ -710,7 +710,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void DuplicateEmpty()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
             Assert.Equal(0, buf.NumComponents);
             Assert.Equal(0, buf.Duplicate().ReadableBytes);
 
@@ -720,9 +720,9 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void RemoveLastComponentWithOthersLeft()
         {
-            CompositeByteBuffer buf = Unpooled.CompositeBuffer();
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2 }));
-            buf.AddComponent(Unpooled.WrappedBuffer(new byte[] { 1, 2 }));
+            CompositeByteBuffer buf = ByteBuffer.CompositeBuffer();
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }));
+            buf.AddComponent(ByteBuffer.WrappedBuffer(new byte[] { 1, 2 }));
             Assert.Equal(2, buf.NumComponents);
             buf.RemoveComponent(1);
             Assert.Equal(1, buf.NumComponents);
@@ -732,11 +732,11 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void DiscardSomeReadBytes()
         {
-            CompositeByteBuffer cbuf = Unpooled.CompositeBuffer();
+            CompositeByteBuffer cbuf = ByteBuffer.CompositeBuffer();
             int len = 8 * 4;
             for (int i = 0; i < len; i += 4)
             {
-                IByteBuffer buf = Unpooled.Buffer();
+                IByteBuffer buf = ByteBuffer.Buffer();
                 buf.Write<int>(i);
                 cbuf.AdjustCapacity(cbuf.WriterIndex);
                 cbuf.AddComponent(buf).SetWriterIndex(i + 4);
@@ -754,8 +754,8 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void AddEmptyBufferRelease()
         {
-            CompositeByteBuffer cbuf = Unpooled.CompositeBuffer();
-            IByteBuffer buf = Unpooled.Buffer();
+            CompositeByteBuffer cbuf = ByteBuffer.CompositeBuffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
             Assert.Equal(1, buf.ReferenceCount);
             cbuf.AddComponent(buf);
             Assert.Equal(1, buf.ReferenceCount);
@@ -767,11 +767,11 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void AddEmptyBuffersRelease()
         {
-            CompositeByteBuffer cbuf = Unpooled.CompositeBuffer();
-            IByteBuffer buf = Unpooled.Buffer();
-            IByteBuffer buf2 = Unpooled.Buffer();
+            CompositeByteBuffer cbuf = ByteBuffer.CompositeBuffer();
+            IByteBuffer buf = ByteBuffer.Buffer();
+            IByteBuffer buf2 = ByteBuffer.Buffer();
             buf2.Write<int>(1);
-            IByteBuffer buf3 = Unpooled.Buffer();
+            IByteBuffer buf3 = ByteBuffer.Buffer();
 
             Assert.Equal(1, buf.ReferenceCount);
             Assert.Equal(1, buf2.ReferenceCount);
@@ -791,12 +791,12 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void AddEmptyBufferInMiddle()
         {
-            CompositeByteBuffer cbuf = Unpooled.CompositeBuffer();
-            IByteBuffer buf1 = Unpooled.Buffer();
+            CompositeByteBuffer cbuf = ByteBuffer.CompositeBuffer();
+            IByteBuffer buf1 = ByteBuffer.Buffer();
             buf1.Write<byte>(1);
             cbuf.AddComponent(true, buf1);
-            cbuf.AddComponent(true, Unpooled.Empty);
-            IByteBuffer buf3 = Unpooled.Buffer();
+            cbuf.AddComponent(true, ByteBuffer.Empty);
+            IByteBuffer buf3 = ByteBuffer.Buffer();
             buf3.Write<byte>(2);
             cbuf.AddComponent(true, buf3);
 
@@ -804,8 +804,8 @@ namespace DotNetty.Buffers.Tests
             Assert.Equal((byte)1, cbuf.Read<byte>());
             Assert.Equal((byte)2, cbuf.Read<byte>());
 
-            Assert.Same(Unpooled.Empty, cbuf.InternalComponent(1));
-            Assert.NotSame(Unpooled.Empty, cbuf.InternalComponentAtOffset(1));
+            Assert.Same(ByteBuffer.Empty, cbuf.InternalComponent(1));
+            Assert.NotSame(ByteBuffer.Empty, cbuf.InternalComponentAtOffset(1));
             cbuf.Release();
         }
 
@@ -850,7 +850,7 @@ namespace DotNetty.Buffers.Tests
             // buffer.WriteZero(4);
             IByteBuffer copy = withIndexAndLength ? buffer.Copy(0, 4) : buffer.Copy();
             Assert.Equal(buffer, copy);
-            Assert.Same(Unpooled.Allocator, Unpooled.Allocator);
+            Assert.Same(ByteBuffer.Allocator, ByteBuffer.Allocator);
             buffer.Release();
             copy.Release();
         }

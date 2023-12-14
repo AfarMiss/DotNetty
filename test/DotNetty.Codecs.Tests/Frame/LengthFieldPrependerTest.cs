@@ -18,7 +18,7 @@ namespace DotNetty.Codecs.Tests.Frame
         {
             Encoding iso = Encoding.GetEncoding("ISO-8859-1");
             byte[] charBytes = iso.GetBytes("A");
-            this.msg = Unpooled.CopiedBuffer(charBytes);
+            this.msg = ByteBuffer.CopiedBuffer(charBytes);
         }
 
         [Fact]

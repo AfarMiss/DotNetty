@@ -31,7 +31,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             var payload = new byte[300];
             this.random.NextBytes(payload);
 
-            encoderChannel.WriteOutbound(Unpooled.WrappedBuffer(payload));
+            encoderChannel.WriteOutbound(ByteBuffer.WrappedBuffer(payload));
             var compressedPayload = encoderChannel.ReadOutbound<IByteBuffer>();
 
             var compressedFrame = new BinaryWebSocketFrame(true,
@@ -62,7 +62,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             this.random.NextBytes(payload);
 
             var frame = new BinaryWebSocketFrame(true,
-                WebSocketRsv.Rsv3, Unpooled.WrappedBuffer(payload));
+                WebSocketRsv.Rsv3, ByteBuffer.WrappedBuffer(payload));
 
             decoderChannel.WriteInbound(frame);
             var newFrame = decoderChannel.ReadInbound<BinaryWebSocketFrame>();
@@ -89,7 +89,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             var payload = new byte[300];
             this.random.NextBytes(payload);
 
-            encoderChannel.WriteOutbound(Unpooled.WrappedBuffer(payload));
+            encoderChannel.WriteOutbound(ByteBuffer.WrappedBuffer(payload));
             var compressedPayload = encoderChannel.ReadOutbound<IByteBuffer>();
             compressedPayload = compressedPayload.Slice(0, compressedPayload.ReadableBytes - 4);
 
@@ -117,7 +117,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             Assert.Equal(WebSocketRsv.Rsv3, uncompressedFrame2.Rsv);
             Assert.Equal(WebSocketRsv.Rsv3, uncompressedFrame3.Rsv);
 
-            IByteBuffer finalPayloadWrapped = Unpooled.WrappedBuffer(uncompressedFrame1.Content,
+            IByteBuffer finalPayloadWrapped = ByteBuffer.WrappedBuffer(uncompressedFrame1.Content,
                     uncompressedFrame2.Content, uncompressedFrame3.Content);
             Assert.Equal(300, finalPayloadWrapped.ReadableBytes);
 
@@ -139,14 +139,14 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets.Extensions.Compression
             var payload2 = new byte[100];
             this.random.NextBytes(payload2);
 
-            encoderChannel.WriteOutbound(Unpooled.WrappedBuffer(payload1));
+            encoderChannel.WriteOutbound(ByteBuffer.WrappedBuffer(payload1));
             var compressedPayload1 = encoderChannel.ReadOutbound<IByteBuffer>();
-            encoderChannel.WriteOutbound(Unpooled.WrappedBuffer(payload2));
+            encoderChannel.WriteOutbound(ByteBuffer.WrappedBuffer(payload2));
             var compressedPayload2 = encoderChannel.ReadOutbound<IByteBuffer>();
 
             var compressedFrame = new BinaryWebSocketFrame(true,
                 WebSocketRsv.Rsv1 | WebSocketRsv.Rsv3,
-                Unpooled.WrappedBuffer(
+                ByteBuffer.WrappedBuffer(
                     compressedPayload1,
                     compressedPayload2.Slice(0, compressedPayload2.ReadableBytes - 4)));
 

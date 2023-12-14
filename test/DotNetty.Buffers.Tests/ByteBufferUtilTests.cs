@@ -20,7 +20,7 @@ namespace DotNetty.Buffers.Tests
             int iB2 = iB1 + b1.Length;
             int length = b1.Length - iB1;
             Array.Copy(b1, iB1, b2, iB2, length);
-            Assert.True(ByteBufferUtil.Equals(Unpooled.WrappedBuffer(b1), iB1, Unpooled.WrappedBuffer(b2), iB2, length));
+            Assert.True(ByteBufferUtil.Equals(ByteBuffer.WrappedBuffer(b1), iB1, ByteBuffer.WrappedBuffer(b2), iB2, length));
         }
 
         static int GetRandom(Random r, int min, int max) =>  r.Next((max - min) + 1) + min;
@@ -42,7 +42,7 @@ namespace DotNetty.Buffers.Tests
             // the 2 arrays.
             int diffIndex = GetRandom(rand, iB1, iB1 + length - 1);
             ++b1[diffIndex];
-            Assert.False(ByteBufferUtil.Equals(Unpooled.WrappedBuffer(b1), iB1, Unpooled.WrappedBuffer(b2), iB2, length));
+            Assert.False(ByteBufferUtil.Equals(ByteBuffer.WrappedBuffer(b1), iB1, ByteBuffer.WrappedBuffer(b2), iB2, length));
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace DotNetty.Buffers.Tests
             int iB2 = iB1 + b1.Length;
             int length = b1.Length - iB1;
             Array.Copy(b1, iB1, b2, iB2, length - 1);
-            Assert.False(ByteBufferUtil.Equals(Unpooled.WrappedBuffer(b1), iB1, Unpooled.WrappedBuffer(b2), iB2,
+            Assert.False(ByteBufferUtil.Equals(ByteBuffer.WrappedBuffer(b1), iB1, ByteBuffer.WrappedBuffer(b2), iB2,
                 Math.Max(b1.Length, b2.Length) * 2));
         }
 
@@ -73,7 +73,7 @@ namespace DotNetty.Buffers.Tests
             int iB2 = iB1 + b1.Length;
             int length = b1.Length - iB1;
             Array.Copy(b1, iB1, b2, iB2, length - 1);
-            Assert.Throws<ArgumentException>(() => ByteBufferUtil.Equals(Unpooled.WrappedBuffer(b1), iB1, Unpooled.WrappedBuffer(b2), iB2, -1));
+            Assert.Throws<ArgumentException>(() => ByteBufferUtil.Equals(ByteBuffer.WrappedBuffer(b1), iB1, ByteBuffer.WrappedBuffer(b2), iB2, -1));
         }
     }
 }

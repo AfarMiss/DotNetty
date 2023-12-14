@@ -20,7 +20,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         {
             const int MaxTestdataLength = 100 * 1024;
 
-            this.binTestData = Unpooled.Buffer(MaxTestdataLength);
+            this.binTestData = ByteBuffer.Buffer(MaxTestdataLength);
             byte j = 0;
             for (int i = 0; i < MaxTestdataLength; i++)
             {

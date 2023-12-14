@@ -58,9 +58,9 @@ namespace DotNetty.Codecs.Http.Tests
             var channel = new EmbeddedChannel(new HttpResponseEncoder());
 
             // Test writing an empty buffer works when the encoder is at ST_INIT.
-            channel.WriteOutbound(Unpooled.Empty);
+            channel.WriteOutbound(ByteBuffer.Empty);
             var buffer = channel.ReadOutbound<IByteBuffer>();
-            Assert.Same(buffer, Unpooled.Empty);
+            Assert.Same(buffer, ByteBuffer.Empty);
 
             // Leave the ST_INIT state.
             IHttpResponse response = new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK);
@@ -70,9 +70,9 @@ namespace DotNetty.Codecs.Http.Tests
             buffer.Release();
 
             // Test writing an empty buffer works when the encoder is not at ST_INIT.
-            channel.WriteOutbound(Unpooled.Empty);
+            channel.WriteOutbound(ByteBuffer.Empty);
             buffer = channel.ReadOutbound<IByteBuffer>();
-            Assert.Same(buffer, Unpooled.Empty);
+            Assert.Same(buffer, ByteBuffer.Empty);
 
             Assert.False(channel.Finish());
         }
@@ -83,7 +83,7 @@ namespace DotNetty.Codecs.Http.Tests
         public void EmptyContent(bool chunked)
         {
             const string Content = "netty rocks";
-            IByteBuffer contentBuffer = Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes(Content));
+            IByteBuffer contentBuffer = ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes(Content));
             int length = contentBuffer.ReadableBytes;
 
             var channel = new EmbeddedChannel(new HttpResponseEncoder());
@@ -93,7 +93,7 @@ namespace DotNetty.Codecs.Http.Tests
                 HttpUtil.SetContentLength(response, length);
             }
             Assert.True(channel.WriteOutbound(response));
-            Assert.True(channel.WriteOutbound(new DefaultHttpContent(Unpooled.Empty)));
+            Assert.True(channel.WriteOutbound(new DefaultHttpContent(ByteBuffer.Empty)));
             Assert.True(channel.WriteOutbound(new DefaultLastHttpContent(contentBuffer)));
 
             var buffer = channel.ReadOutbound<IByteBuffer>();

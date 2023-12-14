@@ -46,7 +46,7 @@ namespace DotNetty.Codecs.Http.Multipart
                 throw new ArgumentException($"{nameof(inputStream)} is not readable");
             }
 
-            IByteBuffer buffer = Unpooled.Buffer();
+            IByteBuffer buffer = ByteBuffer.Buffer();
             var bytes = new byte[4096 * 4];
             int written = 0;
             while (true)
@@ -95,7 +95,7 @@ namespace DotNetty.Codecs.Http.Multipart
                 }
                 else
                 {
-                    CompositeByteBuffer compositeBuffer = Unpooled.CompositeBuffer(int.MaxValue);
+                    CompositeByteBuffer compositeBuffer = ByteBuffer.CompositeBuffer(int.MaxValue);
                     compositeBuffer.AddComponents(true, this.byteBuf, buffer);
                     compositeBuffer.SetWriterIndex((int)this.Size);
                     this.byteBuf = compositeBuffer;
@@ -127,7 +127,7 @@ namespace DotNetty.Codecs.Http.Multipart
         {
             if (this.byteBuf == null)
             {
-                return Unpooled.Empty.Array;
+                return ByteBuffer.Empty.Array;
             }
 
             var array = new byte[this.byteBuf.ReadableBytes];
@@ -157,13 +157,13 @@ namespace DotNetty.Codecs.Http.Multipart
             if (this.byteBuf == null || length == 0 || this.byteBuf.ReadableBytes == 0)
             {
                 this.chunkPosition = 0;
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
             int sizeLeft = this.byteBuf.ReadableBytes - this.chunkPosition;
             if (sizeLeft == 0)
             {
                 this.chunkPosition = 0;
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
             int sliceLength = length;
             if (sizeLeft < length)

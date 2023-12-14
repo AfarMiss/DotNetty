@@ -54,7 +54,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 PlatformDependent.CopyMemory(key3, 0, bytes + 8, 8);
             }
 
-            this.expectedChallengeResponseBytes = Unpooled.WrappedBuffer(WebSocketUtil.Md5(challenge));
+            this.expectedChallengeResponseBytes = ByteBuffer.WrappedBuffer(WebSocketUtil.Md5(challenge));
 
             // Get path
             Uri wsUrl = this.Uri;

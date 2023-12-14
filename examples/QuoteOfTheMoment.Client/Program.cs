@@ -39,7 +39,7 @@ namespace QuoteOfTheMoment.Client
 
                 // Broadcast the QOTM request to port.
                 byte[] bytes = Encoding.UTF8.GetBytes("QOTM?");
-                IByteBuffer buffer = Unpooled.WrappedBuffer(bytes);
+                IByteBuffer buffer = ByteBuffer.WrappedBuffer(bytes);
                 await clientChannel.WriteAndFlushAsync(
                     new DatagramPacket(
                         buffer,

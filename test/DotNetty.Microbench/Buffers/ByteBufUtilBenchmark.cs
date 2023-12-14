@@ -34,7 +34,7 @@ namespace DotNetty.Microbench.Buffers
 
             // Use buffer sizes that will also allow to write UTF-8 without grow the buffer
             this.buffer = allocator.Buffer(512);
-            this.wrapped = Unpooled.UnreleasableBuffer(allocator.Buffer(512));
+            this.wrapped = ByteBuffer.UnreleasableBuffer(allocator.Buffer(512));
             var asciiSequence = new StringBuilder(128);
             for (int i = 0; i < 128; i++)
             {

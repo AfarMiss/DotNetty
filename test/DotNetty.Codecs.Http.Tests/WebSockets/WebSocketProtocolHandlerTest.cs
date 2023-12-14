@@ -14,7 +14,7 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         [Fact]
         public void PingFrame()
         {
-            IByteBuffer pingData = Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes("Hello, world"));
+            IByteBuffer pingData = ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes("Hello, world"));
             var channel = new EmbeddedChannel(new Handler());
 
             var inputMessage = new PingWebSocketFrame(pingData);

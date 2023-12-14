@@ -13,7 +13,7 @@ namespace DotNetty.Handlers.Tests
     {
         public Task WriteToChannelAsync(IEmbeddedChannel channel, ArraySegment<byte> input)
         {
-            channel.WriteInbound(Unpooled.WrappedBuffer(input.Array, input.Offset, input.Count));
+            channel.WriteInbound(ByteBuffer.WrappedBuffer(input.Array, input.Offset, input.Count));
             return TaskEx.Completed;
         }
 

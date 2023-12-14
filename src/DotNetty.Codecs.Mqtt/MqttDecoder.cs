@@ -289,7 +289,7 @@ namespace DotNetty.Codecs.Mqtt
                 packet.WillTopicName = DecodeString(buffer, ref remainingLength);
                 int willMessageLength = DecodeUnsignedShort(buffer, ref remainingLength);
                 DecreaseRemainingLength(ref remainingLength, willMessageLength);
-                var byteBuffer = Unpooled.Allocator.Buffer(willMessageLength);
+                var byteBuffer = ByteBuffer.Allocator.Buffer(willMessageLength);
                 buffer.ReadBytes(byteBuffer, willMessageLength);
                 packet.WillMessage = byteBuffer;
             }
@@ -332,7 +332,7 @@ namespace DotNetty.Codecs.Mqtt
             }
             else
             {
-                payload = Unpooled.Empty;
+                payload = ByteBuffer.Empty;
             }
             packet.Payload = payload;
         }

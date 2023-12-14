@@ -51,7 +51,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
             if (willTopicName != null)
             {
                 packet.WillTopicName = willTopicName;
-                packet.WillMessage = Unpooled.WrappedBuffer(willMessage);
+                packet.WillMessage = ByteBuffer.WrappedBuffer(willMessage);
                 packet.WillQualityOfService = willQos ?? QualityOfService.AtMostOnce;
                 packet.WillRetain = willRetain;
             }
@@ -75,7 +75,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
             if (packet.HasWill)
             {
                 Assert.Equal(packet.WillTopicName, recoded.WillTopicName);
-                Assert.True(ByteBufferUtil.Equals(Unpooled.WrappedBuffer(willMessage), recoded.WillMessage));
+                Assert.True(ByteBufferUtil.Equals(ByteBuffer.WrappedBuffer(willMessage), recoded.WillMessage));
                 Assert.Equal(packet.WillQualityOfService, recoded.WillQualityOfService);
                 Assert.Equal(packet.WillRetain, recoded.WillRetain);
             }
@@ -159,7 +159,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
             {
                 packet.PacketId = packetId;
             }
-            packet.Payload = payload == null ? null : Unpooled.WrappedBuffer(payload);
+            packet.Payload = payload == null ? null : ByteBuffer.WrappedBuffer(payload);
 
             PublishPacket recoded = this.RecodePacket(packet, false, true);
 
@@ -169,7 +169,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
             {
                 Assert.Equal(packet.PacketId, recoded.PacketId);
             }
-            Assert.True(ByteBufferUtil.Equals(payload == null ? Unpooled.Empty : Unpooled.WrappedBuffer(payload), recoded.Payload));
+            Assert.True(ByteBufferUtil.Equals(payload == null ? ByteBuffer.Empty : ByteBuffer.WrappedBuffer(payload), recoded.Payload));
         }
 
         [Theory]
@@ -240,7 +240,7 @@ namespace DotNetty.Codecs.Mqtt.Tests
                 {
                     while (message.IsReadable())
                     {
-                        var byteBuffer = Unpooled.Allocator.Buffer(1);
+                        var byteBuffer = ByteBuffer.Allocator.Buffer(1);
                         message.ReadBytes(byteBuffer, 1);
                         IByteBuffer finalBuffer = byteBuffer;
                         mqttDecoder.ChannelRead(this.contextMock.Object, finalBuffer);

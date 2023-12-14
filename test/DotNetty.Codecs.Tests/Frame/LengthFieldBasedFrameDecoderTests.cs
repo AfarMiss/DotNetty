@@ -28,9 +28,9 @@ namespace DotNetty.Codecs.Tests.Frame
                 var writer = new BinaryWriter(memoryStream);
                 writer.Write(1);
                 writer.Write((byte)'A');
-                Assert.False(ch.WriteInbound(Unpooled.WrappedBuffer(bytes)));
-                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(Unpooled.WrappedBuffer(bytes1)));
-                ch.WriteInbound(Unpooled.WrappedBuffer(bytes2));
+                Assert.False(ch.WriteInbound(ByteBuffer.WrappedBuffer(bytes)));
+                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(ByteBuffer.WrappedBuffer(bytes1)));
+                ch.WriteInbound(ByteBuffer.WrappedBuffer(bytes2));
                 var buf = ch.ReadInbound<IByteBuffer>();
                 Assert.Equal("A", buf.ToString(Encoding.UTF8));
                 buf.Release();
@@ -44,16 +44,16 @@ namespace DotNetty.Codecs.Tests.Frame
 
             for (int i = 0; i < 2; i++)
             {
-                var directBuffer = Unpooled.Buffer(2);
+                var directBuffer = ByteBuffer.Buffer(2);
                 directBuffer.Write(2);
-                var directBuffer1 = Unpooled.Buffer(7);
+                var directBuffer1 = ByteBuffer.Buffer(7);
                 directBuffer1.Write((short)0);
                 directBuffer1.Write(1);
                 directBuffer1.Write((byte)'A');
                 
-                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(Unpooled.WrappedBuffer(directBuffer)));
+                Assert.Throws<TooLongFrameException>(() => ch.WriteInbound(ByteBuffer.WrappedBuffer(directBuffer)));
 
-                ch.WriteInbound(Unpooled.WrappedBuffer(directBuffer1));
+                ch.WriteInbound(ByteBuffer.WrappedBuffer(directBuffer1));
                 var buf = ch.ReadInbound<IByteBuffer>();
                 var s = buf.ToString(Encoding.UTF8);
                 Assert.Equal("A", s);

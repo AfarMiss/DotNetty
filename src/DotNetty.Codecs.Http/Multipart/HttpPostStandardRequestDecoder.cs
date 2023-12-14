@@ -75,7 +75,7 @@ namespace DotNetty.Codecs.Http.Multipart
             }
             else
             {
-                this.undecodedChunk = Unpooled.Buffer();
+                this.undecodedChunk = ByteBuffer.Buffer();
                 this.ParseBody();
             }
         }
@@ -336,7 +336,7 @@ namespace DotNetty.Codecs.Http.Multipart
                     }
                     else if (!this.currentAttribute.IsCompleted)
                     {
-                        this.SetFinalBuffer(Unpooled.Empty);
+                        this.SetFinalBuffer(ByteBuffer.Empty);
                     }
                     firstpos = currentpos;
                     this.currentStatus = MultiPartStatus.Epilogue;
@@ -492,7 +492,7 @@ namespace DotNetty.Codecs.Http.Multipart
                     }
                     else if (!this.currentAttribute.IsCompleted)
                     {
-                        this.SetFinalBuffer(Unpooled.Empty);
+                        this.SetFinalBuffer(ByteBuffer.Empty);
                     }
                     firstpos = currentpos;
                     this.currentStatus = MultiPartStatus.Epilogue;

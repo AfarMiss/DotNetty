@@ -9,7 +9,7 @@ namespace DotNetty.Buffers.Tests
     {
         protected override IByteBuffer NewBuffer(int length, int maxCapacity)
         {
-            IByteBuffer wrapped = Unpooled.Buffer(length, maxCapacity);
+            IByteBuffer wrapped = ByteBuffer.Buffer(length, maxCapacity);
             IByteBuffer buffer = new DuplicateByteBuffer((AbstractByteBuffer)wrapped);
             Assert.Equal(wrapped.WriterIndex, buffer.WriterIndex);
             Assert.Equal(wrapped.ReaderIndex, buffer.ReaderIndex);
@@ -33,7 +33,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void MarksInitialized()
         {
-            IByteBuffer wrapped = Unpooled.Buffer(8);
+            IByteBuffer wrapped = ByteBuffer.Buffer(8);
             try
             {
                 wrapped.SetWriterIndex(6);

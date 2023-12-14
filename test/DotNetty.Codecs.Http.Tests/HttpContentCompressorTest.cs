@@ -63,9 +63,9 @@ namespace DotNetty.Codecs.Http.Tests
             ch.WriteInbound(NewRequest());
 
             ch.WriteOutbound(new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("Hell"))));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("o, w"))));
-            ch.WriteOutbound(new DefaultLastHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("orld"))));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("Hell"))));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("o, w"))));
+            ch.WriteOutbound(new DefaultLastHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("orld"))));
 
             AssertEncodedResponse(ch);
 
@@ -106,9 +106,9 @@ namespace DotNetty.Codecs.Http.Tests
 
             AssertEncodedResponse(ch);
 
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("Hell"))));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("o, w"))));
-            ch.WriteOutbound(new DefaultLastHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("orld"))));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("Hell"))));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("o, w"))));
+            ch.WriteOutbound(new DefaultLastHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("orld"))));
 
             var chunk = ch.ReadOutbound<IHttpContent>();
             Assert.Equal("1f8b080000000000000bf248cdc901000000ffff", ByteBufferUtil.HexDump(chunk.Content));
@@ -147,9 +147,9 @@ namespace DotNetty.Codecs.Http.Tests
 
             AssertEncodedResponse(ch);
 
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("Hell"))));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("o, w"))));
-            var content = new DefaultLastHttpContent(Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("orld")));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("Hell"))));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("o, w"))));
+            var content = new DefaultLastHttpContent(ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("orld")));
             content.TrailingHeaders.Set((AsciiString)"X-Test", (AsciiString)"Netty");
             ch.WriteOutbound(content);
 
@@ -187,7 +187,7 @@ namespace DotNetty.Codecs.Http.Tests
             var fullRes = new DefaultFullHttpResponse(
                 HttpVersion.Http11,
                 HttpResponseStatus.OK,
-                Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("Hello, World")));
+                ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("Hello, World")));
             fullRes.Headers.Set(HttpHeaderNames.ContentLength, fullRes.Content.ReadableBytes);
             ch.WriteOutbound(fullRes);
 
@@ -227,7 +227,7 @@ namespace DotNetty.Codecs.Http.Tests
             ch.WriteInbound(NewRequest());
 
             var res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, 
-                Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("Hello, World")));
+                ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("Hello, World")));
             ch.WriteOutbound(res);
 
             AssertEncodedResponse(ch);
@@ -277,7 +277,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpContentCompressor());
             ch.WriteInbound(NewRequest());
 
-            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty);
+            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty);
             ch.WriteOutbound(res);
 
             res = ch.ReadOutbound<IFullHttpResponse>();
@@ -301,7 +301,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpContentCompressor());
             ch.WriteInbound(NewRequest());
 
-            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty);
+            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty);
             res.TrailingHeaders.Set((AsciiString)"X-Test", (AsciiString)"Netty");
             ch.WriteOutbound(res);
 
@@ -327,10 +327,10 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpContentCompressor());
             ch.WriteInbound(request);
 
-            var continueResponse = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.Continue, Unpooled.Empty);
+            var continueResponse = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.Continue, ByteBuffer.Empty);
             ch.WriteOutbound(continueResponse);
 
-            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty);
+            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty);
             res.TrailingHeaders.Set((AsciiString)"X-Test", (AsciiString)"Netty");
             ch.WriteOutbound(res);
 
@@ -359,11 +359,11 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpContentCompressor());
             ch.WriteInbound(NewRequest());
 
-            ch.WriteOutbound(new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty));
+            ch.WriteOutbound(new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty));
 
             try
             {
-                ch.WriteOutbound(new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty));
+                ch.WriteOutbound(new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty));
                 Assert.True(false, "Should not get here, expecting exception thrown");
             }
             catch (AggregateException e)
@@ -403,7 +403,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.True(ch.WriteInbound(NewRequest()));
 
             var res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, 
-                Unpooled.CopiedBuffer(Encoding.ASCII.GetBytes("Hello, World")));
+                ByteBuffer.CopiedBuffer(Encoding.ASCII.GetBytes("Hello, World")));
             int len = res.Content.ReadableBytes;
             res.Headers.Set(HttpHeaderNames.ContentLength, len);
             res.Headers.Set(HttpHeaderNames.ContentEncoding, HttpHeaderValues.Identity);

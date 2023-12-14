@@ -391,7 +391,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 object closeMessage;
                 if (this.receivedClosingHandshake)
                 {
-                    closeMessage = Unpooled.Empty;
+                    closeMessage = ByteBuffer.Empty;
                 }
                 else
                 {

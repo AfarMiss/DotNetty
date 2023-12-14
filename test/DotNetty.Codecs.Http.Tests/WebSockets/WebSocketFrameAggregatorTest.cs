@@ -30,12 +30,12 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         public void AggregationBinary()
         {
             var channel = new EmbeddedChannel(new WebSocketFrameAggregator(int.MaxValue));
-            channel.WriteInbound(new BinaryWebSocketFrame(true, 1, Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new BinaryWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content2)));
-            channel.WriteInbound(new PingWebSocketFrame(Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new PongWebSocketFrame(Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, Unpooled.WrappedBuffer(this.content3)));
+            channel.WriteInbound(new BinaryWebSocketFrame(true, 1, ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new BinaryWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content2)));
+            channel.WriteInbound(new PingWebSocketFrame(ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new PongWebSocketFrame(ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, ByteBuffer.WrappedBuffer(this.content3)));
 
             Assert.True(channel.Finish());
 
@@ -66,12 +66,12 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         public void AggregationText()
         {
             var channel = new EmbeddedChannel(new WebSocketFrameAggregator(int.MaxValue));
-            channel.WriteInbound(new TextWebSocketFrame(true, 1, Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new TextWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content2)));
-            channel.WriteInbound(new PingWebSocketFrame(Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new PongWebSocketFrame(Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, Unpooled.WrappedBuffer(this.content3)));
+            channel.WriteInbound(new TextWebSocketFrame(true, 1, ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new TextWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content2)));
+            channel.WriteInbound(new PingWebSocketFrame(ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new PongWebSocketFrame(ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, ByteBuffer.WrappedBuffer(this.content3)));
 
             Assert.True(channel.Finish());
 
@@ -102,21 +102,21 @@ namespace DotNetty.Codecs.Http.Tests.WebSockets
         public void TextFrameTooBig()
         {
             var channel = new EmbeddedChannel(new WebSocketFrameAggregator(8));
-            channel.WriteInbound(new BinaryWebSocketFrame(true, 1, Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new BinaryWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new BinaryWebSocketFrame(true, 1, ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new BinaryWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content1)));
             Assert.Throws<TooLongFrameException>(() => 
-                channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content2))));
+                channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content2))));
 
-            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content2)));
-            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, Unpooled.WrappedBuffer(this.content2)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content2)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, ByteBuffer.WrappedBuffer(this.content2)));
 
-            channel.WriteInbound(new BinaryWebSocketFrame(true, 1, Unpooled.WrappedBuffer(this.content1)));
-            channel.WriteInbound(new BinaryWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new BinaryWebSocketFrame(true, 1, ByteBuffer.WrappedBuffer(this.content1)));
+            channel.WriteInbound(new BinaryWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content1)));
             Assert.Throws<TooLongFrameException>(() => 
-                channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content2))));
+                channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content2))));
 
-            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, Unpooled.WrappedBuffer(this.content2)));
-            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, Unpooled.WrappedBuffer(this.content2)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(false, 0, ByteBuffer.WrappedBuffer(this.content2)));
+            channel.WriteInbound(new ContinuationWebSocketFrame(true, 0, ByteBuffer.WrappedBuffer(this.content2)));
             for (;;)
             {
                 var msg = channel.ReadInbound<object>();

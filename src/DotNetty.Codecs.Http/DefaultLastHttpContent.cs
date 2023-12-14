@@ -14,7 +14,7 @@ namespace DotNetty.Codecs.Http
         readonly HttpHeaders trailingHeaders;
         readonly bool validateHeaders;
 
-        public DefaultLastHttpContent() : this(Unpooled.Buffer(0), true)
+        public DefaultLastHttpContent() : this(ByteBuffer.Buffer(0), true)
         {
         }
 

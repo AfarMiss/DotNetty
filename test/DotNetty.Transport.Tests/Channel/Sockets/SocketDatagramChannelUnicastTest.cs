@@ -98,7 +98,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 {
                     foreach (bool bindClient in BindClientOption)
                     {
-                        var byteBuffer = Unpooled.Buffer();
+                        var byteBuffer = ByteBuffer.Buffer();
                         byteBuffer.WriteBytes(Data);
                         yield return new object[]
                         {
@@ -110,7 +110,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                                 1
                         };
 
-                        var buffer = Unpooled.Buffer();
+                        var buffer = ByteBuffer.Buffer();
                         buffer.WriteBytes(Data);
                         yield return new object[]
                         {
@@ -124,8 +124,8 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
                         yield return new object[]
                         {
-                               Unpooled.WrappedBuffer(
-                                   Unpooled.CopiedBuffer(Data, 0, 2), Unpooled.CopiedBuffer(Data, 2, 2)),
+                               ByteBuffer.WrappedBuffer(
+                                   ByteBuffer.CopiedBuffer(Data, 0, 2), ByteBuffer.CopiedBuffer(Data, 2, 2)),
                                 bindClient,
                                 allocator,
                                 addressFamily,
@@ -135,8 +135,8 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
                         yield return new object[]
                         {
-                                Unpooled.WrappedBuffer(
-                                    Unpooled.CopiedBuffer(Data, 0, 2), Unpooled.CopiedBuffer(Data, 2, 2)),
+                                ByteBuffer.WrappedBuffer(
+                                    ByteBuffer.CopiedBuffer(Data, 0, 2), ByteBuffer.CopiedBuffer(Data, 2, 2)),
                                 bindClient,
                                 allocator,
                                 addressFamily,
@@ -162,7 +162,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 var serverBootstrap = new Bootstrap();
                 serverBootstrap
                     .SetGroup(serverGroup)
-                    .ChannelFactory(() => new SocketDatagramChannel(addressFamily))
+                    .Channel(() => new SocketDatagramChannel(addressFamily))
                     .Option(ChannelOption.Allocator, allocator)
                     .Option(ChannelOption.SoBroadcast, true)
                     .Option(ChannelOption.IpMulticastLoopDisabled, false)
@@ -184,7 +184,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                 var clientBootstrap = new Bootstrap();
                 clientBootstrap
                     .SetGroup(clientGroup)
-                    .ChannelFactory(() => new SocketDatagramChannel(addressFamily))
+                    .Channel(() => new SocketDatagramChannel(addressFamily))
                     .Option(ChannelOption.Allocator, allocator)
                     .Option(ChannelOption.SoBroadcast, true)
                     .Option(ChannelOption.IpMulticastLoopDisabled, false)

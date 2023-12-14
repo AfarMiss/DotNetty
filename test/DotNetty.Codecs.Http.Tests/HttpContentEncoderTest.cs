@@ -36,9 +36,9 @@ namespace DotNetty.Codecs.Http.Tests
             ch.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/"));
 
             ch.WriteOutbound(new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(new byte[3])));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(new byte[2])));
-            ch.WriteOutbound(new DefaultLastHttpContent(Unpooled.WrappedBuffer(new byte[1])));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(new byte[3])));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(new byte[2])));
+            ch.WriteOutbound(new DefaultLastHttpContent(ByteBuffer.WrappedBuffer(new byte[1])));
 
             AssertEncodedResponse(ch);
 
@@ -75,9 +75,9 @@ namespace DotNetty.Codecs.Http.Tests
 
             AssertEncodedResponse(ch);
 
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(new byte[3])));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(new byte[2])));
-            ch.WriteOutbound(new DefaultLastHttpContent(Unpooled.WrappedBuffer(new byte[1])));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(new byte[3])));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(new byte[2])));
+            ch.WriteOutbound(new DefaultLastHttpContent(ByteBuffer.WrappedBuffer(new byte[1])));
 
             var chunk = ch.ReadOutbound<IHttpContent>();
             Assert.Equal("3", chunk.Content.ToString(Encoding.ASCII));
@@ -112,9 +112,9 @@ namespace DotNetty.Codecs.Http.Tests
 
             AssertEncodedResponse(ch);
 
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(new byte[3])));
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(new byte[2])));
-            var content = new DefaultLastHttpContent(Unpooled.WrappedBuffer(new byte[1]));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(new byte[3])));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(new byte[2])));
+            var content = new DefaultLastHttpContent(ByteBuffer.WrappedBuffer(new byte[1]));
             content.TrailingHeaders.Set((AsciiString)"X-Test", (AsciiString)"Netty");
             ch.WriteOutbound(content);
 
@@ -147,7 +147,7 @@ namespace DotNetty.Codecs.Http.Tests
             ch.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/"));
 
             var fullRes = new DefaultFullHttpResponse(
-                HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.WrappedBuffer(new byte[42]));
+                HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.WrappedBuffer(new byte[42]));
             fullRes.Headers.Set(HttpHeaderNames.ContentLength, 42);
             ch.WriteOutbound(fullRes);
 
@@ -178,7 +178,7 @@ namespace DotNetty.Codecs.Http.Tests
             ch.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/"));
 
             var res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK,
-                Unpooled.WrappedBuffer(new byte[42]));
+                ByteBuffer.WrappedBuffer(new byte[42]));
             ch.WriteOutbound(res);
 
             AssertEncodedResponse(ch);
@@ -231,7 +231,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new TestEncoder());
             ch.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/"));
 
-            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty);
+            IFullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty);
             ch.WriteOutbound(res);
 
             res = ch.ReadOutbound<IFullHttpResponse>();
@@ -255,7 +255,7 @@ namespace DotNetty.Codecs.Http.Tests
             ch.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/"));
 
             IFullHttpResponse res = new DefaultFullHttpResponse(
-                HttpVersion.Http11, HttpResponseStatus.OK, Unpooled.Empty);
+                HttpVersion.Http11, HttpResponseStatus.OK, ByteBuffer.Empty);
             res.TrailingHeaders.Set((AsciiString)"X-Test", (StringCharSequence)"Netty");
             ch.WriteOutbound(res);
 
@@ -331,7 +331,7 @@ namespace DotNetty.Codecs.Http.Tests
             var res = new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.MethodNotAllowed);
             res.Headers.Set(HttpHeaderNames.TransferEncoding, HttpHeaderValues.Chunked);
             ch.WriteOutbound(res);
-            ch.WriteOutbound(new DefaultHttpContent(Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(Content))));
+            ch.WriteOutbound(new DefaultHttpContent(ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(Content))));
             ch.WriteOutbound(EmptyLastHttpContent.Default);
 
             AssertEncodedResponse(ch);
@@ -392,7 +392,7 @@ namespace DotNetty.Codecs.Http.Tests
 
             Assert.True(channel.WriteInbound(new DefaultFullHttpRequest(HttpVersion.Http11, HttpMethod.Get, "/")));
             Assert.True(channel.WriteOutbound(new DefaultHttpResponse(HttpVersion.Http11, HttpResponseStatus.OK)));
-            var content = new DefaultHttpContent(Unpooled.Buffer(10));
+            var content = new DefaultHttpContent(ByteBuffer.Buffer(10));
             Assert.True(channel.WriteOutbound(content));
             Assert.Equal(1, content.ReferenceCount);
 

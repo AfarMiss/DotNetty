@@ -91,7 +91,7 @@ namespace DotNetty.Tests.End2End
                 string[] messages = { "message 1", string.Join(",", Enumerable.Range(1, 300)) };
                 foreach (string message in messages)
                 {
-                    await clientChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(message))).WithTimeout(DefaultTimeout);
+                    await clientChannel.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(message))).WithTimeout(DefaultTimeout);
 
                     var responseMessage = Assert.IsAssignableFrom<IByteBuffer>(await readListener.ReceiveAsync());
                     Assert.Equal(message, responseMessage.ToString(Encoding.UTF8));
@@ -187,7 +187,7 @@ namespace DotNetty.Tests.End2End
                 Username = "testuser",
                 Password = "notsafe",
                 WillTopicName = "last/word",
-                WillMessage = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("oops"))
+                WillMessage = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("oops"))
             });
 
             var connAckPacket = Assert.IsType<ConnAckPacket>(await readListener.ReceiveAsync());
@@ -217,15 +217,15 @@ namespace DotNetty.Tests.End2End
                 new PublishPacket(QualityOfService.AtMostOnce, false, false)
                 {
                     TopicName = PublishC2STopic,
-                    Payload = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(PublishC2SQos0Payload))
+                    Payload = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(PublishC2SQos0Payload))
                 },
                 new PublishPacket(QualityOfService.AtLeastOnce, false, false)
                 {
                     PacketId = publishQoS1PacketId,
                     TopicName = PublishC2SQos1Topic,
-                    Payload = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(PublishC2SQos1Payload))
+                    Payload = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(PublishC2SQos1Payload))
                 });
-            //new PublishPacket(QualityOfService.AtLeastOnce, false, false) { TopicName = "feedback/qos/One", Payload = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("QoS 1 test. Different data length.")) });
+            //new PublishPacket(QualityOfService.AtLeastOnce, false, false) { TopicName = "feedback/qos/One", Payload = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes("QoS 1 test. Different data length.")) });
 
             var pubAckPacket = Assert.IsType<PubAckPacket>(await readListener.ReceiveAsync());
             Assert.Equal(publishQoS1PacketId, pubAckPacket.PacketId);
@@ -274,7 +274,7 @@ namespace DotNetty.Tests.End2End
                 {
                     PacketId = publishQos1PacketId,
                     TopicName = PublishS2CQos1Topic,
-                    Payload = Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes(PublishS2CQos1Payload))
+                    Payload = ByteBuffer.WrappedBuffer(Encoding.UTF8.GetBytes(PublishS2CQos1Payload))
                 });
 
             var pubAckPacket = Assert.IsType<PubAckPacket>(await readListener.ReceiveAsync());

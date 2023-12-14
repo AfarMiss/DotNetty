@@ -63,7 +63,7 @@ namespace DotNetty.Codecs.Http.Multipart
 
                 byte[] bytes = this.Charset.GetBytes(value);
                 this.CheckSize(bytes.Length);
-                IByteBuffer buffer = Unpooled.WrappedBuffer(bytes);
+                IByteBuffer buffer = ByteBuffer.WrappedBuffer(bytes);
                 if (this.DefinedSize > 0)
                 {
                     this.DefinedSize = buffer.ReadableBytes;

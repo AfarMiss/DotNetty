@@ -134,7 +134,7 @@ namespace DotNetty.Transport.Tests.Performance.Sockets
             {
                 for (int i = 0; i < WriteCount; i++)
                 {
-                    this.clientChannel.WriteAsync(Unpooled.WrappedBuffer(this.message));
+                    this.clientChannel.WriteAsync(ByteBuffer.WrappedBuffer(this.message));
                     if (i % 10 == 0) // flush every 10 writes
                     {
                         this.clientChannel.Flush();

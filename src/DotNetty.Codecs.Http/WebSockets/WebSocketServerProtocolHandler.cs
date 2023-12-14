@@ -131,7 +131,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 }
                 else
                 {
-                    ctx.WriteAndFlushAsync(Unpooled.Empty)
+                    ctx.WriteAndFlushAsync(ByteBuffer.Empty)
                         .ContinueWith((t, c) => ((IChannelHandlerContext)c).CloseAsync(),
                             ctx, TaskContinuationOptions.ExecuteSynchronously);
                 }
@@ -147,7 +147,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             if (cause is WebSocketHandshakeException)
             {
                 var response = new DefaultFullHttpResponse(Http11, HttpResponseStatus.BadRequest,
-                    Unpooled.WrappedBuffer(Encoding.ASCII.GetBytes(cause.Message)));
+                    ByteBuffer.WrappedBuffer(Encoding.ASCII.GetBytes(cause.Message)));
                 ctx.Channel.WriteAndFlushAsync(response)
                     .ContinueWith((t, c) => ((IChannelHandlerContext)c).CloseAsync(),
                         ctx, TaskContinuationOptions.ExecuteSynchronously);

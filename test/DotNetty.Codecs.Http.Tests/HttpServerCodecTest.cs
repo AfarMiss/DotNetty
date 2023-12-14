@@ -19,7 +19,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(httpServerCodec);
 
             int totalContentLength = MaxChunkSize * 5;
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(
                     "PUT /test HTTP/1.1\r\n" +
                     "Content-Length: " + totalContentLength + "\r\n" +
                     "\r\n")));
@@ -56,7 +56,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpServerCodec(), new HttpObjectAggregator(1024));
 
             // Send the request headers.
-            ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(
+            ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(
                     "PUT /upload-large HTTP/1.1\r\n" +
                     "Expect: 100-continue\r\n" +
                     "Content-Length: 1\r\n\r\n")));
@@ -75,7 +75,7 @@ namespace DotNetty.Codecs.Http.Tests
             Assert.Null(next);
 
             // Send the content of the request.
-            ch.WriteInbound(Unpooled.WrappedBuffer(new byte[] { 42 }));
+            ch.WriteInbound(ByteBuffer.WrappedBuffer(new byte[] { 42 }));
 
             // Ensure the aggregator generates a full request.
             var req = ch.ReadInbound<IFullHttpRequest>();
@@ -108,7 +108,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpServerCodec());
 
             // Send the request headers.
-            Assert.True(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(
+            Assert.True(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(
                 "HEAD / HTTP/1.1\r\n\r\n"))));
 
             var request = ch.ReadInbound<IHttpRequest>();
@@ -140,7 +140,7 @@ namespace DotNetty.Codecs.Http.Tests
             var ch = new EmbeddedChannel(new HttpServerCodec());
 
             // Send the request headers.
-            Assert.True(ch.WriteInbound(Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(
+            Assert.True(ch.WriteInbound(ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(
                     "HEAD / HTTP/1.1\r\n\r\n"))));
 
             var request = ch.ReadInbound<IHttpRequest>();
@@ -169,7 +169,7 @@ namespace DotNetty.Codecs.Http.Tests
                 sb.Append('a');
             }
 
-            return Unpooled.CopiedBuffer(Encoding.UTF8.GetBytes(sb.ToString()));
+            return ByteBuffer.CopiedBuffer(Encoding.UTF8.GetBytes(sb.ToString()));
         }
     }
 }

@@ -1042,7 +1042,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1066,7 +1066,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1083,7 +1083,7 @@ namespace DotNetty.Buffers.Tests
         public void RandomHeapBufferTransfer1()
         {
             var valueContent = new byte[BlockSize];
-            IByteBuffer value = Unpooled.WrappedBuffer(valueContent);
+            IByteBuffer value = ByteBuffer.WrappedBuffer(valueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(valueContent);
@@ -1095,7 +1095,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1114,7 +1114,7 @@ namespace DotNetty.Buffers.Tests
         public void RandomHeapBufferTransfer2()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = Unpooled.WrappedBuffer(valueContent);
+            IByteBuffer value = ByteBuffer.WrappedBuffer(valueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(valueContent);
@@ -1123,7 +1123,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1140,7 +1140,7 @@ namespace DotNetty.Buffers.Tests
         public void RandomDirectBufferTransfer()
         {
             var tmp = new byte[BlockSize * 2];
-            IByteBuffer value = this.ReleaseLater(Unpooled.Buffer(BlockSize * 2));
+            IByteBuffer value = this.ReleaseLater(ByteBuffer.Buffer(BlockSize * 2));
             this.buffers.Enqueue(value);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
@@ -1150,7 +1150,7 @@ namespace DotNetty.Buffers.Tests
             }
 
             this.random = new Random(this.seed);
-            IByteBuffer expectedValue = this.ReleaseLater(Unpooled.Buffer(BlockSize * 2));
+            IByteBuffer expectedValue = this.ReleaseLater(ByteBuffer.Buffer(BlockSize * 2));
             this.buffers.Enqueue(expectedValue);
 
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
@@ -1252,7 +1252,7 @@ namespace DotNetty.Buffers.Tests
         public void SequentialHeapBufferTransfer1()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = Unpooled.WrappedBuffer(valueContent);
+            IByteBuffer value = ByteBuffer.WrappedBuffer(valueContent);
             this.buffer.SetWriterIndex(0);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
@@ -1266,7 +1266,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1287,7 +1287,7 @@ namespace DotNetty.Buffers.Tests
         public void SequentialHeapBufferTransfer2()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = Unpooled.WrappedBuffer(valueContent);
+            IByteBuffer value = ByteBuffer.WrappedBuffer(valueContent);
             this.buffer.SetWriterIndex(0);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
@@ -1304,7 +1304,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1327,7 +1327,7 @@ namespace DotNetty.Buffers.Tests
         public void SequentialDirectBufferTransfer1()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = this.ReleaseLater(Unpooled.Buffer(BlockSize * 2));
+            IByteBuffer value = this.ReleaseLater(ByteBuffer.Buffer(BlockSize * 2));
             this.buffer.SetWriterIndex(0);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
@@ -1342,7 +1342,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = this.ReleaseLater(Unpooled.WrappedBuffer(expectedValueContent));
+            IByteBuffer expectedValue = this.ReleaseLater(ByteBuffer.WrappedBuffer(expectedValueContent));
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1364,7 +1364,7 @@ namespace DotNetty.Buffers.Tests
         public void SequentialDirectBufferTransfer2()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = this.ReleaseLater(Unpooled.Buffer(BlockSize * 2));
+            IByteBuffer value = this.ReleaseLater(ByteBuffer.Buffer(BlockSize * 2));
             this.buffer.SetWriterIndex(0);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
@@ -1383,7 +1383,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = this.ReleaseLater(Unpooled.WrappedBuffer(expectedValueContent));
+            IByteBuffer expectedValue = this.ReleaseLater(ByteBuffer.WrappedBuffer(expectedValueContent));
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1407,7 +1407,7 @@ namespace DotNetty.Buffers.Tests
         public void SequentialByteBufferBackedHeapBufferTransfer1()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = Unpooled.WrappedBuffer(new byte[BlockSize * 2]);
+            IByteBuffer value = ByteBuffer.WrappedBuffer(new byte[BlockSize * 2]);
             value.SetWriterIndex(0);
             this.buffer.SetWriterIndex(0);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
@@ -1423,7 +1423,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1445,7 +1445,7 @@ namespace DotNetty.Buffers.Tests
         public void SequentialByteBufferBackedHeapBufferTransfer2()
         {
             var valueContent = new byte[BlockSize * 2];
-            IByteBuffer value = Unpooled.WrappedBuffer(new byte[BlockSize * 2]);
+            IByteBuffer value = ByteBuffer.WrappedBuffer(new byte[BlockSize * 2]);
             value.SetWriterIndex(0);
             this.buffer.SetWriterIndex(0);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
@@ -1465,7 +1465,7 @@ namespace DotNetty.Buffers.Tests
 
             this.random = new Random(this.seed);
             var expectedValueContent = new byte[BlockSize * 2];
-            IByteBuffer expectedValue = Unpooled.WrappedBuffer(expectedValueContent);
+            IByteBuffer expectedValue = ByteBuffer.WrappedBuffer(expectedValueContent);
             for (int i = 0; i < this.buffer.Capacity - BlockSize + 1; i += BlockSize)
             {
                 this.random.NextBytes(expectedValueContent);
@@ -1531,9 +1531,9 @@ namespace DotNetty.Buffers.Tests
                 this.random.NextBytes(expectedValue);
                 Assert.Equal(i, this.buffer.ReaderIndex);
                 Assert.Equal(Capacity, this.buffer.WriterIndex);
-                var actualValue = Unpooled.Allocator.Buffer(BlockSize);
+                var actualValue = ByteBuffer.Allocator.Buffer(BlockSize);
                 this.buffer.ReadBytes(actualValue, BlockSize);
-                Assert.Equal(Unpooled.WrappedBuffer(expectedValue), actualValue, EqualityComparer<IByteBuffer>.Default);
+                Assert.Equal(ByteBuffer.WrappedBuffer(expectedValue), actualValue, EqualityComparer<IByteBuffer>.Default);
 
                 // Make sure if it is a copied this.buffer.
                 actualValue.Set<byte>(0, (byte)(actualValue.Get<byte>(0) + 1));
@@ -1563,7 +1563,7 @@ namespace DotNetty.Buffers.Tests
                 Assert.Equal(i, this.buffer.ReaderIndex);
                 Assert.Equal(Capacity, this.buffer.WriterIndex);
                 IByteBuffer actualValue = this.buffer.ReadSlice(BlockSize);
-                Assert.Equal(Unpooled.WrappedBuffer(expectedValue), actualValue, EqualityComparer<IByteBuffer>.Default);
+                Assert.Equal(ByteBuffer.WrappedBuffer(expectedValue), actualValue, EqualityComparer<IByteBuffer>.Default);
 
                 // Make sure if it is a sliced this.buffer.
                 actualValue.Set<byte>(0, (byte)(actualValue.Get<byte>(0) + 1));
@@ -1607,7 +1607,7 @@ namespace DotNetty.Buffers.Tests
             {
                 this.buffer.Write<int>(i);
             }
-            IByteBuffer copy = Unpooled.CopiedBuffer(this.buffer);
+            IByteBuffer copy = ByteBuffer.CopiedBuffer(this.buffer);
 
             // Make sure there's no effect if called when readerIndex is 0.
             this.buffer.SetReaderIndex(Capacity / 4);
@@ -1666,7 +1666,7 @@ namespace DotNetty.Buffers.Tests
             {
                 this.buffer.Write<byte>((byte)i);
             }
-            IByteBuffer copy = this.ReleaseLater(Unpooled.CopiedBuffer(this.buffer));
+            IByteBuffer copy = this.ReleaseLater(ByteBuffer.CopiedBuffer(this.buffer));
 
             // Discard the first (CAPACITY / 2 - 1) bytes.
             this.buffer.SetIndex(Capacity / 2 - 1, Capacity - 1);
@@ -1795,10 +1795,10 @@ namespace DotNetty.Buffers.Tests
             this.random.NextBytes(value);
             this.buffer.SetBytes(0, value);
 
-            Assert.Equal(this.buffer, Unpooled.WrappedBuffer(value), EqualityComparer<IByteBuffer>.Default);
+            Assert.Equal(this.buffer, ByteBuffer.WrappedBuffer(value), EqualityComparer<IByteBuffer>.Default);
 
             value[0] ++;
-            Assert.False(this.buffer.Equals(Unpooled.WrappedBuffer(value)));
+            Assert.False(this.buffer.Equals(ByteBuffer.WrappedBuffer(value)));
         }
 
         [Fact]
@@ -1822,16 +1822,16 @@ namespace DotNetty.Buffers.Tests
             this.buffer.SetIndex(0, value.Length);
             this.buffer.SetBytes(0, value);
 
-            Assert.Equal(0, this.buffer.CompareTo(Unpooled.WrappedBuffer(value)));
+            Assert.Equal(0, this.buffer.CompareTo(ByteBuffer.WrappedBuffer(value)));
 
             value[0]++;
-            Assert.True(this.buffer.CompareTo(Unpooled.WrappedBuffer(value)) < 0);
+            Assert.True(this.buffer.CompareTo(ByteBuffer.WrappedBuffer(value)) < 0);
             value[0] -= 2;
-            Assert.True(this.buffer.CompareTo(Unpooled.WrappedBuffer(value)) > 0);
+            Assert.True(this.buffer.CompareTo(ByteBuffer.WrappedBuffer(value)) > 0);
             value[0]++;
 
-            Assert.True(this.buffer.CompareTo(Unpooled.WrappedBuffer(value, 0, 31)) > 0);
-            Assert.True(this.buffer.Slice(0, 31).CompareTo(Unpooled.WrappedBuffer(value)) < 0);
+            Assert.True(this.buffer.CompareTo(ByteBuffer.WrappedBuffer(value, 0, 31)) > 0);
+            Assert.True(this.buffer.Slice(0, 31).CompareTo(ByteBuffer.WrappedBuffer(value)) < 0);
         }
 
         [Fact]
@@ -1871,7 +1871,7 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void String()
         {
-            IByteBuffer copied = Unpooled.CopiedBuffer(Encoding.GetEncoding("ISO-8859-1").GetBytes("Hello, World!"));
+            IByteBuffer copied = ByteBuffer.CopiedBuffer(Encoding.GetEncoding("ISO-8859-1").GetBytes("Hello, World!"));
             this.buffer.ResetIndex();
             this.buffer.WriteBytes(copied);
             Assert.Equal("Hello, World!", this.buffer.ToString(Encoding.GetEncoding("ISO-8859-1")));
@@ -1888,10 +1888,10 @@ namespace DotNetty.Buffers.Tests
             this.buffer.Write<byte>(2);
             this.buffer.Write<byte>(1);
 
-            Assert.Equal(-1, ByteBufferEx.IndexOf(this.buffer, 1, 4, 1));
-            Assert.Equal(-1, ByteBufferEx.IndexOf(this.buffer, 4, 1, 1));
-            Assert.Equal(1, ByteBufferEx.IndexOf(this.buffer, 1, 4, 2));
-            Assert.Equal(3, ByteBufferEx.IndexOf(this.buffer, 4, 1, 2));
+            Assert.Equal(-1, ByteBufferUtil.IndexOf(this.buffer, 1, 4, 1));
+            Assert.Equal(-1, ByteBufferUtil.IndexOf(this.buffer, 4, 1, 1));
+            Assert.Equal(1, ByteBufferUtil.IndexOf(this.buffer, 1, 4, 2));
+            Assert.Equal(3, ByteBufferUtil.IndexOf(this.buffer, 4, 1, 2));
         }
 
         [Fact]
@@ -1957,8 +1957,8 @@ namespace DotNetty.Buffers.Tests
         [Fact]
         public void HashCode()
         {
-            IByteBuffer elemA = this.ReleaseLater(Unpooled.Buffer(15));
-            IByteBuffer elemB = this.ReleaseLater(Unpooled.Buffer(15));
+            IByteBuffer elemA = this.ReleaseLater(ByteBuffer.Buffer(15));
+            IByteBuffer elemB = this.ReleaseLater(ByteBuffer.Buffer(15));
             elemA.WriteBytes(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5 });
             elemB.WriteBytes(new byte[] { 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9 });
 
@@ -2008,7 +2008,7 @@ namespace DotNetty.Buffers.Tests
             this.buffer.SetIndex(Capacity / 4, Capacity * 3 / 4);
             int i1 = Capacity / 4;
             Assert.Equal(-1,
-                ByteBufferEx.ForEachByte(this.buffer, new ByteProcessor(
+                ByteBufferUtil.ForEachByte(this.buffer, new ByteProcessor(
                     value =>
                     {
                         Assert.Equal(value, (byte)(i1 + 1));
@@ -2031,7 +2031,7 @@ namespace DotNetty.Buffers.Tests
 
             int stop = Capacity / 2;
             int i1 = Capacity / 3;
-            Assert.Equal(stop, ByteBufferEx.ForEachByte(this.buffer, Capacity / 3, Capacity / 3, new ByteProcessor(value =>
+            Assert.Equal(stop, ByteBufferUtil.ForEachByte(this.buffer, Capacity / 3, Capacity / 3, new ByteProcessor(value =>
             {
                 Assert.Equal((byte)(i1 + 1), value);
                 if (i1 == stop)
@@ -2055,7 +2055,7 @@ namespace DotNetty.Buffers.Tests
 
             int lastIndex = 0;
             int i1 = Capacity * 3 / 4 - 1;
-            Assert.Equal(-1, ByteBufferEx.ForEachByteDesc(this.buffer, Capacity / 4, Capacity * 2 / 4, new ByteProcessor(value =>
+            Assert.Equal(-1, ByteBufferUtil.ForEachByteDesc(this.buffer, Capacity / 4, Capacity * 2 / 4, new ByteProcessor(value =>
             {
                 Assert.Equal((byte)(i1 + 1), value);
                 Volatile.Write(ref lastIndex, i1);
@@ -2209,13 +2209,13 @@ namespace DotNetty.Buffers.Tests
         public void GetDoubleAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().Get<double>(0));
 
         [Fact]
-        public void GetBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, this.ReleaseLater(Unpooled.Buffer(8))));
+        public void GetBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, this.ReleaseLater(ByteBuffer.Buffer(8))));
 
         [Fact]
-        public void GetBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, this.ReleaseLater(Unpooled.Buffer()), 1));
+        public void GetBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, this.ReleaseLater(ByteBuffer.Buffer()), 1));
 
         [Fact]
-        public void GetBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, this.ReleaseLater(Unpooled.Buffer()), 0, 1));
+        public void GetBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, this.ReleaseLater(ByteBuffer.Buffer()), 0, 1));
 
         [Fact]
         public void GetBytesAfterRelease4() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().GetBytes(0, new byte[8]));
@@ -2263,13 +2263,13 @@ namespace DotNetty.Buffers.Tests
         public void SetDoubleAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().Set<double>(0, 1));
 
         [Fact]
-        public void SetBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().SetBytes(0, this.ReleaseLater(Unpooled.Buffer())));
+        public void SetBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().SetBytes(0, this.ReleaseLater(ByteBuffer.Buffer())));
 
         [Fact]
-        public void SetBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().SetBytes(0, this.ReleaseLater(Unpooled.Buffer()), 1));
+        public void SetBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().SetBytes(0, this.ReleaseLater(ByteBuffer.Buffer()), 1));
 
         [Fact]
-        public void SetBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().SetBytes(0, this.ReleaseLater(Unpooled.Buffer()), 0, 1));
+        public void SetBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().SetBytes(0, this.ReleaseLater(ByteBuffer.Buffer()), 0, 1));
 
         // [Fact]
         // public void SetUsAsciiCharSequenceAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.SetCharSequenceAfterRelease0(Encoding.ASCII));
@@ -2366,18 +2366,18 @@ namespace DotNetty.Buffers.Tests
         public void ReadBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() =>
         {
             var releasedBuffer = this.ReleasedBuffer();
-            Unpooled.Allocator.Buffer(1);
+            ByteBuffer.Allocator.Buffer(1);
             releasedBuffer.ReadBytes(releasedBuffer, 1);
         });
 
         [Fact]
-        public void ReadBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(this.ReleaseLater(Unpooled.Buffer(8))));
+        public void ReadBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(this.ReleaseLater(ByteBuffer.Buffer(8))));
 
         [Fact]
-        public void ReadBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(this.ReleaseLater(Unpooled.Buffer(8))));
+        public void ReadBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(this.ReleaseLater(ByteBuffer.Buffer(8))));
 
         [Fact]
-        public void ReadBytesAfterRelease4() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(this.ReleaseLater(Unpooled.Buffer(8)), 0, 1));
+        public void ReadBytesAfterRelease4() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(this.ReleaseLater(ByteBuffer.Buffer(8)), 0, 1));
 
         [Fact]
         public void ReadBytesAfterRelease5() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().ReadBytes(new byte[8]));
@@ -2425,13 +2425,13 @@ namespace DotNetty.Buffers.Tests
         public void WriteDoubleAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().Write<double>(1));
 
         [Fact]
-        public void WriteBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(this.ReleaseLater(Unpooled.Buffer(8))));
+        public void WriteBytesAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(this.ReleaseLater(ByteBuffer.Buffer(8))));
 
         [Fact]
-        public void WriteBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(this.ReleaseLater(Unpooled.CopiedBuffer(new byte[8])), 1));
+        public void WriteBytesAfterRelease2() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(this.ReleaseLater(ByteBuffer.CopiedBuffer(new byte[8])), 1));
 
         [Fact]
-        public void WriteBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(this.ReleaseLater(Unpooled.Buffer(8)), 0, 1));
+        public void WriteBytesAfterRelease3() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(this.ReleaseLater(ByteBuffer.Buffer(8)), 0, 1));
 
         [Fact]
         public void WriteBytesAfterRelease4() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().WriteBytes(new byte[8]));
@@ -2468,16 +2468,16 @@ namespace DotNetty.Buffers.Tests
         void WriteStringAfterRelease0(Encoding encoding) => this.ReleasedBuffer().WriteString("x", encoding);
 
         [Fact]
-        public void ForEachByteAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByte(this.ReleasedBuffer(), new TestByteProcessor()));
+        public void ForEachByteAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferUtil.ForEachByte(this.ReleasedBuffer(), new TestByteProcessor()));
 
         [Fact]
-        public void ForEachByteAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByte(this.ReleasedBuffer(), 0, 1, new TestByteProcessor()));
+        public void ForEachByteAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferUtil.ForEachByte(this.ReleasedBuffer(), 0, 1, new TestByteProcessor()));
 
         [Fact]
-        public void ForEachByteDescAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByteDesc(this.ReleasedBuffer(), new TestByteProcessor()));
+        public void ForEachByteDescAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferUtil.ForEachByteDesc(this.ReleasedBuffer(), new TestByteProcessor()));
 
         [Fact]
-        public void ForEachByteDescAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferEx.ForEachByteDesc(this.ReleasedBuffer(), 0, 1, new TestByteProcessor()));
+        public void ForEachByteDescAfterRelease1() => Assert.Throws<IllegalReferenceCountException>(() => ByteBufferUtil.ForEachByteDesc(this.ReleasedBuffer(), 0, 1, new TestByteProcessor()));
 
         [Fact]
         public void CopyAfterRelease() => Assert.Throws<IllegalReferenceCountException>(() => this.ReleasedBuffer().Copy());
@@ -3323,9 +3323,9 @@ namespace DotNetty.Buffers.Tests
             IByteBuffer buf = this.NewBuffer(8);
             var bytes = new byte[8];
             buf.WriteBytes(bytes);
-            var buffer2 = Unpooled.Allocator.Buffer(4);
+            var buffer2 = ByteBuffer.Allocator.Buffer(4);
             buf.ReadBytes(buffer2, 4);
-            Assert.Same(Unpooled.Allocator, Unpooled.Allocator);
+            Assert.Same(ByteBuffer.Allocator, ByteBuffer.Allocator);
             Assert.Equal(4, buf.ReaderIndex);
             Assert.True(buf.Release());
             Assert.Equal(0, buf.ReferenceCount);
@@ -3343,7 +3343,7 @@ namespace DotNetty.Buffers.Tests
             {
                 buf.WriteBytes(expected);
                 var processor = new ForEachByteDesc2Processor(expected.Length);
-                int i = ByteBufferEx.ForEachByteDesc(buf, processor);
+                int i = ByteBufferUtil.ForEachByteDesc(buf, processor);
                 Assert.Equal(-1, i);
                 Assert.True(expected.SequenceEqual(processor.Bytes));
             }
@@ -3382,7 +3382,7 @@ namespace DotNetty.Buffers.Tests
             {
                 buf.WriteBytes(expected);
                 var processor = new ForEachByte2Processor(expected.Length);
-                int i = ByteBufferEx.ForEachByte(buf, processor);
+                int i = ByteBufferUtil.ForEachByte(buf, processor);
                 Assert.Equal(-1, i);
                 Assert.True(expected.SequenceEqual(processor.Bytes));
             }
