@@ -158,7 +158,7 @@ namespace DotNetty.Buffers
 
         #endregion
 
-        #region IByteBufferProvider
+        #region IByteBufferAccessor
 
         public override T Get<T>(int index)
         {

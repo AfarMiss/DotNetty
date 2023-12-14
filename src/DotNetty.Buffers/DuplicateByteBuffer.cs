@@ -46,7 +46,7 @@ namespace DotNetty.Buffers
 
         #endregion
 
-        #region IByteBufferProvider
+        #region IByteBufferAccessor
 
         protected internal override T _Get<T>(int index) => this.UnwrapCore()._Get<T>(index);
 

@@ -1054,7 +1054,7 @@ namespace DotNetty.Buffers
 
         #endregion
 
-        #region IByteBufferProvider
+        #region IByteBufferAccessor
 
         protected internal override unsafe T _Get<T>(int index)
         {

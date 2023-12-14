@@ -3,7 +3,7 @@ using System.Text;
 
 namespace DotNetty.Buffers
 {
-    public interface IByteBufferProvider
+    public interface IByteBufferAccessor
     {
         public T Get<T>(int index) where T : unmanaged;
         public void Set<T>(int index, T value) where T : unmanaged;

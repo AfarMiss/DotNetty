@@ -148,7 +148,7 @@ namespace DotNetty.Buffers
         
         #endregion
 
-        #region IByteBufferProvider
+        #region IByteBufferAccessor
 
         public virtual T Get<T>(int index) where T : unmanaged => this.Buf.Get<T>(index);
 

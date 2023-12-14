@@ -215,7 +215,7 @@ namespace DotNetty.Buffers
 
         #endregion
 
-        #region IByteBufferProvider
+        #region IByteBufferAccessor
 
         public T Get<T>(int index) where T : unmanaged => throw new NotImplementedException();
 

@@ -4,7 +4,7 @@ using DotNetty.Common;
 
 namespace DotNetty.Buffers
 {
-    public interface IByteBuffer : IByteBufferProvider, IReferenceCounted, IComparable<IByteBuffer>, IEquatable<IByteBuffer>
+    public interface IByteBuffer : IByteBufferAccessor, IReferenceCounted, IComparable<IByteBuffer>, IEquatable<IByteBuffer>
     {
         int Capacity { get; }
         int MaxCapacity { get; }

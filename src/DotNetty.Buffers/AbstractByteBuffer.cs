@@ -421,7 +421,7 @@ namespace DotNetty.Buffers
 
         #endregion
 
-        #region IByteBufferProvider
+        #region IByteBufferAccessor
 
         public virtual unsafe T Get<T>(int index) where T : unmanaged
         {
