@@ -21,7 +21,7 @@ namespace DotNetty.Codecs.Base64
 
         public static IByteBuffer Encode(IByteBuffer src, bool breakLines, Base64Dialect dialect) => Encode(src, src.ReaderIndex, src.ReadableBytes, breakLines, dialect);
 
-        public static IByteBuffer Encode(IByteBuffer src, int offset, int length, bool breakLines, Base64Dialect dialect) => Encode(src, offset, length, breakLines, dialect, Unpooled.Allocator);
+        public static IByteBuffer Encode(IByteBuffer src, int offset, int length, bool breakLines, Base64Dialect dialect) => Encode(src, offset, length, breakLines, dialect, ByteBuffer.Allocator);
 
         static unsafe int EncodeUsingPointer(byte* alphabet, IByteBuffer src, IByteBuffer dest, int offset, int length, bool breakLines)
         {
@@ -161,7 +161,7 @@ namespace DotNetty.Codecs.Base64
             }
             if (length <= 0)
             {
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
 
             int remainderLength = length % 3;
@@ -191,7 +191,7 @@ namespace DotNetty.Codecs.Base64
 
         public static IByteBuffer Decode(IByteBuffer src, Base64Dialect dialect) => Decode(src, src.ReaderIndex, src.ReadableBytes, dialect);
 
-        public static IByteBuffer Decode(IByteBuffer src, int offset, int length, Base64Dialect dialect) => Decode(src, offset, length, dialect, Unpooled.Allocator);
+        public static IByteBuffer Decode(IByteBuffer src, int offset, int length, Base64Dialect dialect) => Decode(src, offset, length, dialect, ByteBuffer.Allocator);
 
         static unsafe int DecodeUsingPointer(IByteBuffer src, IByteBuffer dest, sbyte* decodabet, int offset, int length)
         {
@@ -327,7 +327,7 @@ namespace DotNetty.Codecs.Base64
             Contract.Assert(dialect.decodabet.Length == 127, "decodabet.Length must be 127!");
             if (length <= 0)
             {
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
 
             int outLength = length * 3 / 4;

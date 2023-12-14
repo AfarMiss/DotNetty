@@ -17,7 +17,7 @@ namespace DotNetty.Codecs
         public bool SingleDecode { get; set; }
         
         protected int ActualReadableBytes => this.InternalBuffer.ReadableBytes;
-        protected IByteBuffer InternalBuffer => this.cumulation ?? Unpooled.Empty;
+        protected IByteBuffer InternalBuffer => this.cumulation ?? ByteBuffer.Empty;
 
         public delegate IByteBuffer CumulationFunc(IByteBufferAllocator alloc, IByteBuffer cumulation, IByteBuffer input);
 
@@ -187,7 +187,7 @@ namespace DotNetty.Codecs
                 }
                 else
                 {
-                    this.DecodeLast(ctx, Unpooled.Empty, output);
+                    this.DecodeLast(ctx, ByteBuffer.Empty, output);
                 }
             }
             catch (DecoderException e)

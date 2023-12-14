@@ -147,7 +147,7 @@ namespace DotNetty.Handlers.Tls
                         var output = ThreadLocalListPool.Acquire();
                         try
                         {
-                            self.Unwrap(self.capturedContext, Unpooled.Empty, 0, 0, new List<(int packetLength, byte packetContentType)>(0), output);
+                            self.Unwrap(self.capturedContext, ByteBuffer.Empty, 0, 0, new List<(int packetLength, byte packetContentType)>(0), output);
                             for (int i = 0; i < output.Count; i++)
                             {
                                 self.capturedContext.FireChannelRead(output[i]);
@@ -608,7 +608,7 @@ namespace DotNetty.Handlers.Tls
         {
             if (this.pendingUnencryptedWrites.IsEmpty)
             {
-                this.pendingUnencryptedWrites.Add(Unpooled.Empty);
+                this.pendingUnencryptedWrites.Add(ByteBuffer.Empty);
             }
 
             if (!this.EnsureAuthenticated())
@@ -687,7 +687,7 @@ namespace DotNetty.Handlers.Tls
             IByteBuffer output;
             if (count == 0)
             {
-                output = Unpooled.Empty;
+                output = ByteBuffer.Empty;
             }
             else
             {
@@ -700,7 +700,7 @@ namespace DotNetty.Handlers.Tls
 
         Task FinishWrapNonAppDataAsync(byte[] buffer, int offset, int count)
         {
-            var future = this.capturedContext.WriteAndFlushAsync(Unpooled.WrappedBuffer(buffer, offset, count));
+            var future = this.capturedContext.WriteAndFlushAsync(ByteBuffer.WrappedBuffer(buffer, offset, count));
             this.ReadIfNeeded(this.capturedContext);
             return future;
         }

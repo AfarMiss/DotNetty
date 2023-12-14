@@ -226,11 +226,11 @@ namespace DotNetty.Codecs.Compression
                 }
                 else if (this.z.next_out_index != 0)
                 {
-                    footer = Unpooled.WrappedBuffer(output, 0, this.z.next_out_index);
+                    footer = ByteBuffer.WrappedBuffer(output, 0, this.z.next_out_index);
                 }
                 else
                 {
-                    footer = Unpooled.Empty;
+                    footer = ByteBuffer.Empty;
                 }
             }
             finally 

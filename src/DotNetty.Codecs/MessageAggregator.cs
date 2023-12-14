@@ -161,7 +161,7 @@ namespace DotNetty.Codecs
                     }
                     else
                     {
-                        aggregated = this.BeginAggregation(m, Unpooled.Empty);
+                        aggregated = this.BeginAggregation(m, ByteBuffer.Empty);
                     }
                     this.FinishAggregation(aggregated);
                     output.Add(aggregated);

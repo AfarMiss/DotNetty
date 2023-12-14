@@ -95,7 +95,7 @@ namespace DotNetty.Codecs
         /// </param>
         /// <param name="lengthAdjustment">The compensation value to add to the value of the length field.</param>
         public LengthFieldPrepender(int lengthFieldLength, int lengthAdjustment, bool lengthFieldIncludesLengthFieldLength)
-            : this(ByteBufferEx.DefaultByteOrder, lengthFieldLength, lengthAdjustment, lengthFieldIncludesLengthFieldLength)
+            : this(ByteBuffer.DefaultByteOrder, lengthFieldLength, lengthAdjustment, lengthFieldIncludesLengthFieldLength)
         {
         }
 

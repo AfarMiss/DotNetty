@@ -805,7 +805,7 @@ namespace DotNetty.Transport.Channels
 
                     // release message and replace with an empty buffer
                     ReferenceCountUtil.SafeRelease(this.Message);
-                    this.Message = Unpooled.Empty;
+                    this.Message = ByteBuffer.Empty;
 
                     this.PendingSize = 0;
                     this.Buffers = null;

@@ -38,7 +38,7 @@ namespace DotNetty.Codecs
                     else
                     {
                         buffer.Release();
-                        result = context.WriteAsync(Unpooled.Empty);
+                        result = context.WriteAsync(ByteBuffer.Empty);
                     }
 
                     buffer = null;

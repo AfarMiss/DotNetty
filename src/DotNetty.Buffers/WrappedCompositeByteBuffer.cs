@@ -32,7 +32,7 @@ namespace DotNetty.Buffers
         public sealed override bool HasMemoryAddress => this.wrapped.HasMemoryAddress;
         public sealed override int MaxCapacity => this.wrapped.MaxCapacity;
         
-        internal WrappedCompositeByteBuffer(CompositeByteBuffer wrapped) : base(Unpooled.Allocator)
+        internal WrappedCompositeByteBuffer(CompositeByteBuffer wrapped) : base(ByteBuffer.Allocator)
         {
             this.wrapped = wrapped;
             this.SetMaxCapacity(this.wrapped.MaxCapacity);

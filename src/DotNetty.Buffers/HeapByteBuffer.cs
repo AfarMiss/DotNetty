@@ -145,7 +145,7 @@ namespace DotNetty.Buffers
             var copiedArray = new byte[length];
             PlatformDependent.CopyMemory(this.array, index, copiedArray, 0, length);
 
-            return new HeapByteBuffer(Unpooled.Allocator, copiedArray, this.MaxCapacity);
+            return new HeapByteBuffer(ByteBuffer.Allocator, copiedArray, this.MaxCapacity);
         }
 
         protected internal override void Deallocate()
@@ -165,7 +165,7 @@ namespace DotNetty.Buffers
             this.EnsureAccessible();
             return this._Get<T>(index);
         }
-        protected internal override T _Get<T>(int index) => ByteBufferEx.Read<T>(this.array, index);
+        protected internal override T _Get<T>(int index) => ByteBuffer.Read<T>(this.array, index);
 
         public override void Set<T>(int index, T value)
         {
@@ -174,7 +174,7 @@ namespace DotNetty.Buffers
         }
         protected internal override void _Set<T>(int index, T value)
         {
-            ByteBufferEx.Write<T>(this.array, index, value);
+            ByteBuffer.Write<T>(this.array, index, value);
         }
 
         public override void GetBytes(int index, IByteBuffer dst, int dstIndex, int length)

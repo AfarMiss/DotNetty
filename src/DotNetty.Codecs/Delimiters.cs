@@ -8,7 +8,7 @@ namespace DotNetty.Codecs
     public class Delimiters
     {
         /// <summary>Returns a null (0x00) delimiter, which could be used for Flash XML socket or any similar protocols</summary>
-        public static IByteBuffer[] NullDelimiter() => new[] { Unpooled.WrappedBuffer(new byte[] { 0 }) };
+        public static IByteBuffer[] NullDelimiter() => new[] { ByteBuffer.WrappedBuffer(new byte[] { 0 }) };
 
         /// <summary>
         ///     Returns {@code CR ('\r')} and {@code LF ('\n')} delimiters, which could
@@ -18,8 +18,8 @@ namespace DotNetty.Codecs
         {
             return new[]
             {
-                Unpooled.WrappedBuffer(new[] { (byte)'\r', (byte)'\n' }),
-                Unpooled.WrappedBuffer(new[] { (byte)'\n' }),
+                ByteBuffer.WrappedBuffer(new[] { (byte)'\r', (byte)'\n' }),
+                ByteBuffer.WrappedBuffer(new[] { (byte)'\n' }),
             };
         }
 

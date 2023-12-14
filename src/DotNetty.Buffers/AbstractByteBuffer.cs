@@ -201,7 +201,7 @@ namespace DotNetty.Buffers
             }
 
             // Normalize the current capacity to the power of 2.
-            int newCapacity = Unpooled.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
+            int newCapacity = ByteBuffer.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
 
             // Adjust to the new capacity.
             this.AdjustCapacity(newCapacity);
@@ -229,7 +229,7 @@ namespace DotNetty.Buffers
             }
 
             // Normalize the current capacity to the power of 2.
-            int newCapacity = Unpooled.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
+            int newCapacity = ByteBuffer.Allocator.CalculateNewCapacity(this.writerIndex + minWritableBytes, this.MaxCapacity);
 
             // Adjust to the new capacity.
             this.AdjustCapacity(newCapacity);

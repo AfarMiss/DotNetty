@@ -281,7 +281,7 @@ namespace DotNetty.Transport.Channels.Sockets
             if (readableBytes == 0)
             {
                 buffer.SafeRelease();
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
 
             // Composite
@@ -301,7 +301,7 @@ namespace DotNetty.Transport.Channels.Sockets
             if (readableBytes == 0)
             {
                 holder.SafeRelease();
-                return Unpooled.Empty;
+                return ByteBuffer.Empty;
             }
 
             // Composite

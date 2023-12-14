@@ -216,7 +216,7 @@ namespace DotNetty.Handlers.Streams
                     {
                         // If message is null write an empty ByteBuf.
                         // See https://github.com/netty/netty/issues/1671
-                        message = Unpooled.Empty;
+                        message = ByteBuffer.Empty;
                     }
 
                     Task future = context.WriteAsync(message);

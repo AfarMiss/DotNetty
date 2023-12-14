@@ -12,7 +12,7 @@ namespace DotNetty.Buffers
     /// <summary>
     ///     Utility class for managing and creating unpooled buffers
     /// </summary>
-    public static class Unpooled
+    public static partial class ByteBuffer
     {
         public static readonly ByteBufferAllocator Allocator = ByteBufferAllocator.Default;
 

@@ -232,7 +232,7 @@ namespace DotNetty.Codecs
         ///     Defaults to <c>true</c> in other overloads.
         /// </param>
         public LengthFieldBasedFrameDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength, int lengthAdjustment, int initialBytesToStrip, bool failFast)
-            : this(ByteBufferEx.DefaultByteOrder, maxFrameLength, lengthFieldOffset, lengthFieldLength, lengthAdjustment, initialBytesToStrip, failFast)
+            : this(ByteBuffer.DefaultByteOrder, maxFrameLength, lengthFieldOffset, lengthFieldLength, lengthAdjustment, initialBytesToStrip, failFast)
         {
         }
 

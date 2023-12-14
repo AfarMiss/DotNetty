@@ -35,7 +35,7 @@ namespace DotNetty.Buffers
             public void FreeIfNecessary() => this.Buffer.Release();
         }
 
-        private static readonly ArraySegment<byte> EmptyNioBuffer = Unpooled.Empty.GetIoBuffer();
+        private static readonly ArraySegment<byte> EmptyNioBuffer = ByteBuffer.Empty.GetIoBuffer();
 
         private readonly IByteBufferAllocator allocator;
         private readonly List<ComponentEntry> components;
@@ -1022,7 +1022,7 @@ namespace DotNetty.Buffers
             return this;
         }
 
-        private IByteBuffer AllocateBuffer(int capacity) => Unpooled.Allocator.Buffer(capacity);
+        private IByteBuffer AllocateBuffer(int capacity) => ByteBuffer.Allocator.Buffer(capacity);
 
         public override string ToString()
         {
