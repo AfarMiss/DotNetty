@@ -171,7 +171,7 @@ namespace DotNetty.Buffers
             }
 
             var newArray = new byte[array.Length];
-            PlatformDependent.CopyMemory(array, 0, newArray, 0, array.Length);
+            ByteBuffer.CopyMemory(array, 0, newArray, 0, array.Length);
 
             return WrappedBuffer(newArray);
         }
@@ -195,7 +195,7 @@ namespace DotNetty.Buffers
             }
 
             var copy = new byte[length];
-            PlatformDependent.CopyMemory(array, offset, copy, 0, length);
+            ByteBuffer.CopyMemory(array, offset, copy, 0, length);
             return WrappedBuffer(copy);
         }
 
@@ -258,7 +258,7 @@ namespace DotNetty.Buffers
             for (int i = 0, j = 0; i < arrays.Length; i++)
             {
                 byte[] a = arrays[i];
-                PlatformDependent.CopyMemory(a, 0, mergedArray, j, a.Length);
+                ByteBuffer.CopyMemory(a, 0, mergedArray, j, a.Length);
                 j += a.Length;
             }
 

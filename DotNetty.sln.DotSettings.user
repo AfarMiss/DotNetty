@@ -6,6 +6,7 @@
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProgram_0020Files_005CUnity_005CHub_005CEditor_005C2022_002E3_002E7f1_005CEditor_005CData_005CManaged_005CUnityEngine_005CUnity_002ECecil_002EPdb_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=25F7AD69_002D7836_002D46E8_002D9B29_002D0FBB3C128FFB_002Ff_003ADecoderException_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF4FF0D0_002DA5CE_002D471F_002DB946_002D538C28C21CBB_002Fd_003AInternal_002Fd_003ALogging_002Ff_003AGenericLogger_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF4FF0D0_002DA5CE_002D471F_002DB946_002D538C28C21CBB_002Fd_003AUtilities_002Ff_003AMathUtil_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\Administrator\.nuget\packages\microsoft.extensions.logging.abstractions\5.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Administrator\.nuget\packages\microsoft.extensions.logging\5.0.0\lib\netstandard2.1\Microsoft.Extensions.Logging.dll" /&gt;&#xD;

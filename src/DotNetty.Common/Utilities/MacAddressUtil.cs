@@ -5,8 +5,6 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
-using DotNetty.Common.Internal.Logging;
-using DotNetty.Common.Utilities;
 
 namespace DotNetty.Common.Internal
 {
@@ -14,11 +12,11 @@ namespace DotNetty.Common.Internal
     {
         /// Length of a valid MAC address.
         public const int MacAddressLength = 8;
-
+        
         private static readonly byte[] NotFound = { byte.MaxValue };
-
-        private static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance(typeof(MacAddressUtil));
-
+        //
+        // private static readonly IInternalLogger logger = InternalLoggerFactory.GetInstance(typeof(MacAddressUtil));
+        
         /// Obtains the best MAC address found on local network interfaces.
         /// Generally speaking, an active network interface used on public
         /// networks is better than a local network interface.
@@ -28,7 +26,7 @@ namespace DotNetty.Common.Internal
             // Find the best MAC address available.
             byte[] bestMacAddr = NotFound;
             IPAddress bestInetAddr = IPAddress.Loopback;
-
+        
             // Retrieve the list of available network interfaces.
             Dictionary<NetworkInterface, IPAddress> ifaces = new Dictionary<NetworkInterface, IPAddress>();
             try
@@ -49,9 +47,9 @@ namespace DotNetty.Common.Internal
             }
             catch (SocketException e)
             {
-                logger.Warn("Failed to retrieve the list of available network interfaces", e);
+                // logger.Warn("Failed to retrieve the list of available network interfaces", e);
             }
-
+        
             foreach (var entry in ifaces)
             {
                 NetworkInterface iface = entry.Key;
@@ -83,19 +81,19 @@ namespace DotNetty.Common.Internal
                         }
                     }
                 }
-
+        
                 if (replace)
                 {
                     bestMacAddr = macAddr;
                     bestInetAddr = inetAddr;
                 }
             }
-
+        
             if (bestMacAddr == NotFound)
             {
                 return null;
             }
-
+        
             switch (bestMacAddr.Length)
             {
                 case 6: // EUI-48 - convert to EUI-64
@@ -107,13 +105,13 @@ namespace DotNetty.Common.Internal
                     bestMacAddr = newAddr;
                     break;
                 default: // Unknown
-                    bestMacAddr = bestMacAddr.Slice(0, Math.Min(bestMacAddr.Length, MacAddressLength));
+                    bestMacAddr = bestMacAddr.AsSpan(0, Math.Min(bestMacAddr.Length, MacAddressLength)).ToArray();
                     break;
             }
-
+        
             return bestMacAddr;
         }
-
+        
         /// <param name="addr">byte array of a MAC address.</param>
         /// <returns>hex formatted MAC address.</returns>
         public static string FormatAddress(byte[] addr)
@@ -125,7 +123,7 @@ namespace DotNetty.Common.Internal
             }
             return buf.ToString(0, buf.Length - 1);
         }
-
+        
         /// <returns>positive - current is better, 0 - cannot tell from MAC addr, negative - candidate is better.</returns>
         static int CompareAddresses(byte[] current, byte[] candidate)
         {
@@ -133,13 +131,13 @@ namespace DotNetty.Common.Internal
             {
                 return 1;
             }
-
+        
             // Must be EUI-48 or longer.
             if (candidate.Length < 6)
             {
                 return 1;
             }
-
+        
             // Must not be filled with only 0 and 1.
             bool onlyZeroAndOne = true;
             foreach (byte b in candidate)
@@ -150,18 +148,18 @@ namespace DotNetty.Common.Internal
                     break;
                 }
             }
-
+        
             if (onlyZeroAndOne)
             {
                 return 1;
             }
-
+        
             // Must not be a multicast address
             if ((candidate[0] & 1) != 0)
             {
                 return 1;
             }
-
+        
             // Prefer globally unique address.
             if ((current[0] & 2) == 0)
             {
@@ -190,10 +188,10 @@ namespace DotNetty.Common.Internal
                 }
             }
         }
-
+        
         /// <returns>positive - current is better, 0 - cannot tell, negative - candidate is better</returns>
         static int CompareAddresses(IPAddress current, IPAddress candidate) => ScoreAddress(current) - ScoreAddress(candidate);
-
+        
         static int ScoreAddress(IPAddress addr)
         {
             if (IPAddress.IsLoopback(addr))
@@ -212,7 +210,7 @@ namespace DotNetty.Common.Internal
             {
                 return 3;
             }
-
+        
             return 4;
         }
     }

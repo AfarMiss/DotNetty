@@ -571,13 +571,13 @@ namespace DotNetty.Buffers
                 IntPtr ptr = this.AddressOfPinnedMemory();
                 if (ptr != IntPtr.Zero)
                 {
-                    return UnsafeByteBufferUtil.GetString((byte*)(ptr + index), length, encoding);
+                    return encoding.GetString((byte*)(ptr + index), length);
                 }
                 else 
                 {
                     fixed (byte* p = &this.GetPinnableMemoryAddress())
                     {
-                        return UnsafeByteBufferUtil.GetString(p + index, length, encoding);
+                        return encoding.GetString(p + index, length);
                     }
                 }
             }
