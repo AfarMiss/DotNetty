@@ -36,24 +36,27 @@ namespace DotNetty.Common.Utilities
             tcs.TrySetException(exception);
             return tcs.Task;
         }
-
-        static readonly Action<Task, object> LinkOutcomeContinuationAction = (t, tcs) =>
+        
+        private static class VoidLinkOutcomeActionHost
         {
-            switch (t.Status)
+            public static readonly Action<Task, object> Action = (t, tcs) =>
             {
-                case TaskStatus.RanToCompletion:
-                    ((TaskCompletionSource)tcs).TryComplete();
-                    break;
-                case TaskStatus.Canceled:
-                    ((TaskCompletionSource)tcs).TrySetCanceled();
-                    break;
-                case TaskStatus.Faulted:
-                    ((TaskCompletionSource)tcs).TryUnwrap(t.Exception);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        };
+                switch (t.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        ((TaskCompletionSource)tcs).TryComplete();
+                        break;
+                    case TaskStatus.Canceled:
+                        ((TaskCompletionSource)tcs).TrySetCanceled();
+                        break;
+                    case TaskStatus.Faulted:
+                        ((TaskCompletionSource)tcs).TryUnwrap(t.Exception);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
+        }
 
         public static void LinkOutcome(this Task task, TaskCompletionSource taskCompletionSource)
         {
@@ -69,34 +72,70 @@ namespace DotNetty.Common.Utilities
                     taskCompletionSource.TryUnwrap(task.Exception);
                     break;
                 default:
-                    task.ContinueWith(
-                        LinkOutcomeContinuationAction,
-                        taskCompletionSource,
-                        TaskContinuationOptions.ExecuteSynchronously);
+                    task.ContinueWith(VoidLinkOutcomeActionHost.Action, taskCompletionSource, TaskContinuationOptions.ExecuteSynchronously);
+                    break;
+            }
+        }
+        
+        private static class VoidLinkOutcomeActionHost<T>
+        {
+            public static readonly Action<Task, object> Action = (t, tcs) =>
+            {
+                switch (t.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        ((TaskCompletionSource<T>)tcs).TrySetResult(default(T));
+                        break;
+                    case TaskStatus.Canceled:
+                        ((TaskCompletionSource<T>)tcs).TrySetCanceled();
+                        break;
+                    case TaskStatus.Faulted:
+                        ((TaskCompletionSource<T>)tcs).TryUnwrap(t.Exception);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
+        }
+        
+        public static void LinkOutcome<T>(this Task task, TaskCompletionSource<T> taskCompletionSource)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    taskCompletionSource.TrySetResult(default(T));
+                    break;
+                case TaskStatus.Canceled:
+                    taskCompletionSource.TrySetCanceled();
+                    break;
+                case TaskStatus.Faulted:
+                    taskCompletionSource.TryUnwrap(task.Exception);
+                    break;
+                default:
+                    task.ContinueWith(VoidLinkOutcomeActionHost<T>.Action, taskCompletionSource, TaskContinuationOptions.ExecuteSynchronously);
                     break;
             }
         }
 
-        static class LinkOutcomeActionHost<T>
+        private static class TaskLinkOutcomeActionHost<T>
         {
-            public static readonly Action<Task<T>, object> Action =
-                (t, tcs) =>
+            public static readonly Action<Task<T>, object> Action = (t, tcs) =>
+            {
+                switch (t.Status)
                 {
-                    switch (t.Status)
-                    {
-                        case TaskStatus.RanToCompletion:
-                            ((TaskCompletionSource<T>)tcs).TrySetResult(t.Result);
-                            break;
-                        case TaskStatus.Canceled:
-                            ((TaskCompletionSource<T>)tcs).TrySetCanceled();
-                            break;
-                        case TaskStatus.Faulted:
-                            ((TaskCompletionSource<T>)tcs).TryUnwrap(t.Exception);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                };
+                    case TaskStatus.RanToCompletion:
+                        ((TaskCompletionSource<T>)tcs).TrySetResult(t.Result);
+                        break;
+                    case TaskStatus.Canceled:
+                        ((TaskCompletionSource<T>)tcs).TrySetCanceled();
+                        break;
+                    case TaskStatus.Faulted:
+                        ((TaskCompletionSource<T>)tcs).TryUnwrap(t.Exception);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
         }
 
         public static void LinkOutcome<T>(this Task<T> task, TaskCompletionSource<T> taskCompletionSource)
@@ -113,7 +152,7 @@ namespace DotNetty.Common.Utilities
                     taskCompletionSource.TryUnwrap(task.Exception);
                     break;
                 default:
-                    task.ContinueWith(LinkOutcomeActionHost<T>.Action, taskCompletionSource, TaskContinuationOptions.ExecuteSynchronously);
+                    task.ContinueWith(TaskLinkOutcomeActionHost<T>.Action, taskCompletionSource, TaskContinuationOptions.ExecuteSynchronously);
                     break;
             }
         }
