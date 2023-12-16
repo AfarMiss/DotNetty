@@ -10,8 +10,8 @@ namespace DotNetty.Codecs
 
     public class DecoderResult
     {
-        protected static readonly Signal SignalUnfinished = Signal.ValueOf(typeof(DecoderResult), "UNFINISHED");
-        protected static readonly Signal SignalSuccess = Signal.ValueOf(typeof(DecoderResult), "SUCCESS");
+        protected static readonly Signal SignalUnfinished = Signal.ValueOf($"{nameof(DecoderResult)}#{nameof(Unfinished)}");
+        protected static readonly Signal SignalSuccess = Signal.ValueOf($"{nameof(DecoderResult)}#{nameof(Success)}");
 
         public static readonly DecoderResult Unfinished = new DecoderResult(SignalUnfinished);
         public static readonly DecoderResult Success = new DecoderResult(SignalSuccess);

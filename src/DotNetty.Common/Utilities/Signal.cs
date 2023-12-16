@@ -13,8 +13,6 @@ namespace DotNetty.Common.Utilities
 
         public static Signal ValueOf(string name) => (Signal)Pool.ValueOf<Signal>(name);
 
-        public static Signal ValueOf(Type firstNameComponent, string secondNameComponent) => (Signal)Pool.ValueOf<Signal>(firstNameComponent, secondNameComponent);
-
         readonly SignalConstant constant;
 
         Signal(int id, string name)
