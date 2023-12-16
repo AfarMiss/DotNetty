@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Threading;
@@ -30,7 +31,7 @@ namespace DotNetty.Transport.Channels.Local
         private static readonly ClosedChannelException DoWriteClosedChannelException = new ClosedChannelException();
         private static readonly ClosedChannelException DoCloseClosedChannelException = new ClosedChannelException();
 
-        private readonly IQueue<object> inboundBuffer = PlatformDependent.NewMpscQueue<object>();
+        private readonly ConcurrentQueue<object> inboundBuffer = new ConcurrentQueue<object>();
 
         private volatile State state;
         private volatile LocalChannel peer;
@@ -263,7 +264,7 @@ namespace DotNetty.Transport.Channels.Local
             }
             
             IChannelPipeline pipeline = this.Pipeline;
-            IQueue<object> inboundBuffer = this.inboundBuffer;
+            var inboundBuffer = this.inboundBuffer;
             if (inboundBuffer.IsEmpty)
             {
                 this.readInProgress = true;
@@ -342,7 +343,7 @@ namespace DotNetty.Transport.Channels.Local
                         // simulate real socket behavior and ensure the write operation is failed.
                         if (peer.state == State.Connected)
                         {
-                            peer.inboundBuffer.TryEnqueue(ReferenceCountUtil.Retain(msg));
+                            peer.inboundBuffer.Enqueue(ReferenceCountUtil.Retain(msg));
                             buffer.Remove();
                         }
                         else

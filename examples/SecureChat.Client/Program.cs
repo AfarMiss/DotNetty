@@ -4,13 +4,8 @@
 namespace SecureChat.Client
 {
     using System;
-    using System.IO;
     using System.Net;
-    using System.Net.Security;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using DotNetty.Codecs;
-    using DotNetty.Handlers.Tls;
     using DotNetty.Transport.Bootstrapping;
     using DotNetty.Transport.Channels;
     using DotNetty.Transport.Channels.Sockets;
@@ -23,14 +18,6 @@ namespace SecureChat.Client
             ExampleHelper.SetConsoleLogger();
 
             var group = new MultiThreadEventLoopGroup();
-
-            X509Certificate2 cert = null;
-            string targetHost = null;
-            if (ClientSettings.IsSsl)
-            {
-                cert = new X509Certificate2(Path.Combine(ExampleHelper.ProcessDirectory, "dotnetty.com.pfx"), "password");
-                targetHost = cert.GetNameInfo(X509NameType.DnsName, false);
-            }
             try
             {
                 var bootstrap = new Bootstrap();
@@ -41,14 +28,7 @@ namespace SecureChat.Client
                     .SetHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
-
-                        if (cert != null)
-                        {
-                            pipeline.AddLast(new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true), new ClientTlsSettings(targetHost)));
-                        }
-
-                        pipeline.AddLast(new DelimiterBasedFrameDecoder(8192, Delimiters.LineDelimiter()));
-                        pipeline.AddLast(new StringEncoder(), new StringDecoder(), new SecureChatClientHandler());
+                        pipeline.AddLast(new SecureChatClientHandler());
                     }));
 
                 IChannel bootstrapChannel = await bootstrap.ConnectAsync(new IPEndPoint(ClientSettings.Host, ClientSettings.Port));

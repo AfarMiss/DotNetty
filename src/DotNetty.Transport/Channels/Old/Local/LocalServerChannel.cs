@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Net;
 using DotNetty.Common.Concurrency;
 using DotNetty.Common.Internal;
@@ -11,7 +12,7 @@ namespace DotNetty.Transport.Channels.Local
     /// </summary>
     public class LocalServerChannel : AbstractServerChannel
     {
-        private readonly IQueue<object> inboundBuffer = PlatformDependent.NewMpscQueue<object>();
+        private readonly ConcurrentQueue<object> inboundBuffer = new ConcurrentQueue<object>();
 
         private volatile int state; // 0 - open, 1 - active, 2 - closed
         private volatile LocalAddress localAddress;
@@ -73,7 +74,7 @@ namespace DotNetty.Transport.Channels.Local
                 return;
             }
 
-            IQueue<object> inboundBuffer = this.inboundBuffer;
+            var inboundBuffer = this.inboundBuffer;
 
             if (inboundBuffer.IsEmpty)
             {
@@ -118,7 +119,7 @@ namespace DotNetty.Transport.Channels.Local
 
         void Serve0(LocalChannel child)
         {
-            this.inboundBuffer.TryEnqueue(child);
+            this.inboundBuffer.Enqueue(child);
 
             if (this.acceptInProgress)
             {
