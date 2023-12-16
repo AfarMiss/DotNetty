@@ -27,16 +27,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\shared\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
-    <Compile Remove="Channels\Old\**" />
+    <Compile Include="Channels\Old\BatchingPendingWriteQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetty.Common\DotNetty.Common.csproj" />
     <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Channels\Old\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Channels\Old\**" />
   </ItemGroup>
 </Project>
