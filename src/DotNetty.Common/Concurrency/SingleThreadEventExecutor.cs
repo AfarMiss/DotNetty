@@ -225,7 +225,6 @@ namespace DotNetty.Common.Concurrency
 
             bool inEventLoop = this.InEventLoop;
             bool wakeup;
-            int oldState;
             while (true)
             {
                 if (this.IsShuttingDown)
@@ -234,7 +233,7 @@ namespace DotNetty.Common.Concurrency
                 }
                 int newState;
                 wakeup = true;
-                oldState = this.executionState;
+                var oldState = this.executionState;
                 if (inEventLoop)
                 {
                     newState = ST_SHUTTING_DOWN;
