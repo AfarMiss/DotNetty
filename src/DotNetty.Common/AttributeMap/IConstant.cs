@@ -6,10 +6,7 @@ namespace DotNetty.Common.Utilities
     /// </summary>
     public interface IConstant
     {
-        /// <summary>Returns the unique number assigned to this <see cref="IConstant" />.</summary>
         int Id { get; }
-
-        /// <summary>Returns the name of this <see cref="IConstant" />.</summary>
         string Name { get; }
     }
 }

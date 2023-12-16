@@ -5,33 +5,32 @@ namespace DotNetty.Common.Utilities
 {
     public abstract class AbstractConstant : IConstant
     {
-        private static long nextUniquifier;
-        private long volatileUniquifier;
+        private static long nextUniqueId;
+        private long volatileUniqueId;
 
+        public int Id { get; }
+        public string Name { get; }
+        
         protected AbstractConstant(int id, string name)
         {
             this.Id = id;
             this.Name = name;
         }
 
-        public int Id { get; }
-
-        public string Name { get; }
-
         public sealed override string ToString() => this.Name;
 
-        protected long Uniquifier
+        protected long UniqueId
         {
             get
             {
                 long result;
-                if ((result = Volatile.Read(ref this.volatileUniquifier)) == 0)
+                if ((result = Volatile.Read(ref this.volatileUniqueId)) == 0)
                 {
-                    result = Interlocked.Increment(ref nextUniquifier);
-                    long previousUniquifier = Interlocked.CompareExchange(ref this.volatileUniquifier, result, 0);
-                    if (previousUniquifier != 0)
+                    result = Interlocked.Increment(ref nextUniqueId);
+                    long previousUniqueId = Interlocked.CompareExchange(ref this.volatileUniqueId, result, 0);
+                    if (previousUniqueId != 0)
                     {
-                        result = previousUniquifier;
+                        result = previousUniqueId;
                     }
                 }
 
@@ -40,13 +39,9 @@ namespace DotNetty.Common.Utilities
         }
     }
 
-    /// <summary>Base implementation of <see cref="IConstant" />.</summary>
-    public abstract class AbstractConstant<T> : AbstractConstant, IComparable<T>, IEquatable<T>
-        where T : AbstractConstant<T>
+    public abstract class AbstractConstant<T> : AbstractConstant, IComparable<T>, IEquatable<T> where T : AbstractConstant<T>
     {
-        /// <summary>Creates a new instance.</summary>
-        protected AbstractConstant(int id, string name)
-            : base(id, name)
+        protected AbstractConstant(int id, string name) : base(id, name)
         {
         }
 
@@ -56,31 +51,17 @@ namespace DotNetty.Common.Utilities
 
         public bool Equals(T other) => ReferenceEquals(this, other);
 
-        public int CompareTo(T o)
+        public int CompareTo(T other)
         {
-            if (ReferenceEquals(this, o))
-            {
-                return 0;
-            }
+            if (ReferenceEquals(this, other)) return 0;
 
-            AbstractConstant<T> other = o;
-
-            int returnCode = this.GetHashCode() - other.GetHashCode();
+            var returnCode = this.GetHashCode() - other.GetHashCode();
             if (returnCode != 0)
-            {
                 return returnCode;
-            }
-
-            long thisUV = this.Uniquifier;
-            long otherUV = other.Uniquifier;
-            if (thisUV < otherUV)
-            {
+            if (this.UniqueId < other.UniqueId)
                 return -1;
-            }
-            if (thisUV > otherUV)
-            {
+            if (this.UniqueId > other.UniqueId)
                 return 1;
-            }
 
             throw new Exception("failed to compare two different constants");
         }

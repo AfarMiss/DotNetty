@@ -18,8 +18,6 @@ namespace DotNetty.Transport.Channels
 
         public static ChannelOption<T> ValueOf<T>(string name) => (ChannelOption<T>)Pool.ValueOf<T>(name);
 
-        public static ChannelOption<T> ValueOf<T>(Type firstNameComponent, string secondNameComponent) => (ChannelOption<T>)Pool.ValueOf<T>(firstNameComponent, secondNameComponent);
-        
         public static bool Exists(string name) => Pool.Exists(name);
 
         public static  ChannelOption<T> NewInstance<T>(string name) => (ChannelOption<T>)Pool.NewInstance<T>(name);
