@@ -22,7 +22,7 @@ namespace DotNetty.Transport.Channels
         protected readonly IChannel Channel;
 
         public DefaultChannelConfiguration(IChannel channel)
-            : this(channel, new AdaptiveRecvByteBufAllocator())
+            : this(channel, new FixedRecvByteBufAllocator(4 * 1024))
         {
         }
 
@@ -31,14 +31,7 @@ namespace DotNetty.Transport.Channels
             Contract.Requires(channel != null);
 
             this.Channel = channel;
-            if (allocator is IMaxMessagesRecvByteBufAllocator maxMessagesAllocator)
-            {
-                maxMessagesAllocator.MaxMessagesPerRead = channel.Metadata.DefaultMaxMessagesPerRead;
-            }
-            else if (allocator == null)
-            {
-                throw new ArgumentNullException(nameof(allocator));
-            }
+            allocator.MaxMessagesPerRead = channel.Metadata.DefaultMaxMessagesPerRead;
             this.RecvByteBufAllocator = allocator;
         }
 

@@ -5,7 +5,7 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    public class AdaptiveRecvByteBufAllocator : DefaultMaxMessagesRecvByteBufAllocator
+    public class AdaptiveRecvByteBufAllocator : AbstractRecvByteBufAllocator
     {
         private const int DefaultMinimum = 64;
         private const int DefaultInitial = 1024;
@@ -23,7 +23,7 @@ namespace DotNetty.Transport.Channels
             {
                 sizeTable.Add(i);
             }
-
+            // i<<1 => i*2
             for (int i = 512; i > 0; i <<= 1)
             {
                 sizeTable.Add(i);
@@ -75,8 +75,7 @@ namespace DotNetty.Transport.Channels
             private int nextReceiveBufferSize;
             private bool decreaseNow;
 
-            public HandleImpl(AdaptiveRecvByteBufAllocator owner, int minIndex, int maxIndex, int initial)
-                : base(owner)
+            public HandleImpl(AdaptiveRecvByteBufAllocator owner, int minIndex, int maxIndex, int initial) : base(owner)
             {
                 this.minIndex = minIndex;
                 this.maxIndex = maxIndex;

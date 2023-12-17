@@ -1,56 +1,42 @@
-using System.Diagnostics.Contracts;
 using DotNetty.Buffers;
 
 namespace DotNetty.Transport.Channels
 {
-    public abstract class DefaultMaxMessagesRecvByteBufAllocator : IMaxMessagesRecvByteBufAllocator
+    public abstract class AbstractRecvByteBufAllocator : IRecvByteBufAllocator
     {
         private volatile int maxMessagesPerRead;
 
-        protected DefaultMaxMessagesRecvByteBufAllocator()
-            : this(1)
-        {
-        }
-
-        protected DefaultMaxMessagesRecvByteBufAllocator(int maxMessagesPerRead)
-        {
-            this.MaxMessagesPerRead = maxMessagesPerRead;
-        }
-
         public int MaxMessagesPerRead
         {
-            get { return this.maxMessagesPerRead; }
-            set
-            {
-                Contract.Requires(value > 0);
-                this.maxMessagesPerRead = value;
-            }
+            get => this.maxMessagesPerRead;
+            set => this.maxMessagesPerRead = value;
         }
+        
+        protected AbstractRecvByteBufAllocator(int maxMessagesPerRead = 1) => this.MaxMessagesPerRead = maxMessagesPerRead;
 
         public abstract IRecvByteBufAllocatorHandle NewHandle();
 
-        /// <summary>Focuses on enforcing the maximum messages per read condition for <see cref="ContinueReading" />.</summary>
-        protected abstract class MaxMessageHandle<T> : IRecvByteBufAllocatorHandle where T : IMaxMessagesRecvByteBufAllocator
+        protected abstract class MaxMessageHandle<T> : IRecvByteBufAllocatorHandle where T : IRecvByteBufAllocator
         {
-            protected readonly T Owner;
+            private readonly T owner;
             private IChannelConfiguration config;
+            /// 每次读的最大消息数
             private int maxMessagePerRead;
+            /// 总共读了多少次消息
             private int totalMessages;
+            /// 总共读的字节数
             private int totalBytesRead;
+            /// 上一次读的字节数
             private int lastBytesRead;
 
-            protected MaxMessageHandle(T owner)
-            {
-                this.Owner = owner;
-            }
+            protected MaxMessageHandle(T owner) => this.owner = owner;
 
             public abstract int Guess();
 
-            /// <summary>Only <see cref="IChannelConfiguration.MaxMessagesPerRead" /> is used.</summary>
             public void Reset(IChannelConfiguration config)
             {
                 this.config = config;
-                this.maxMessagePerRead = this.Owner.MaxMessagesPerRead;
+                this.maxMessagePerRead = this.owner.MaxMessagesPerRead;
                 this.totalMessages = this.totalBytesRead = 0;
             }
 
@@ -60,12 +46,11 @@ namespace DotNetty.Transport.Channels
 
             public int LastBytesRead
             {
-                get { return this.lastBytesRead; }
+                get => this.lastBytesRead;
                 set
                 {
+                    // 记录上次读取的字节数
                     this.lastBytesRead = value;
-                    // Ignore if bytes is negative, the interface contract states it will be detected externally after call.
-                    // The value may be "invalid" after this point, but it doesn't matter because reading will be stopped.
                     this.totalBytesRead += value;
                     if (this.totalBytesRead < 0)
                     {
@@ -78,6 +63,7 @@ namespace DotNetty.Transport.Channels
             {
                 return this.config.AutoRead
                     && this.AttemptedBytesRead == this.lastBytesRead
+                    //没超过最大读取消息数
                     && this.totalMessages < this.maxMessagePerRead
                     && this.totalBytesRead < int.MaxValue;
             }

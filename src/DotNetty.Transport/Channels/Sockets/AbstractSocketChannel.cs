@@ -417,21 +417,13 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override void DoBeginRead()
         {
-            if (this.inputShutdown)
-            {
-                return;
-            }
-
-            if (!this.Open)
-            {
-                return;
-            }
+            if (this.inputShutdown || !this.Open) return;
 
             this.ReadPending = true;
 
             if (!this.IsInState(StateFlags.ReadScheduled))
             {
-                this.state |= StateFlags.ReadScheduled;
+                this.state = this.state | StateFlags.ReadScheduled;
                 this.ScheduleSocketRead();
             }
         }

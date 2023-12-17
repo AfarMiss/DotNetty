@@ -187,7 +187,7 @@ namespace DotNetty.Transport.Bootstrapping
                     // stop accept new connections for 1 second to allow the channel to recover
                     // See https://github.com/netty/netty/issues/1328
                     config.AutoRead = false;
-                    ctx.Channel.EventLoop.ScheduleAsync(c => { ((IChannelConfiguration)c).AutoRead = true; }, config, TimeSpan.FromSeconds(1));
+                    ctx.Channel.EventLoop.ScheduleAsync(c => ((IChannelConfiguration)c).AutoRead = true, config, TimeSpan.FromSeconds(1));
                 }
                 // still let the ExceptionCaught event flow through the pipeline to give the user
                 // a chance to do something with it
