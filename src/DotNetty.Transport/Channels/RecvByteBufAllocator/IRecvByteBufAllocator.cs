@@ -3,7 +3,7 @@
     public interface IRecvByteBufAllocator
     {
         /// <summary>
-        /// 单次读最多读取多少数据
+        /// 读循环 最大能读取的消息数量
         /// </summary>
         int MaxMessagesPerRead { get; set; }
         
