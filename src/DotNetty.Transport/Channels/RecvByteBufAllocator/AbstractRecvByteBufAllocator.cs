@@ -16,20 +16,20 @@ namespace DotNetty.Transport.Channels
 
         public abstract IRecvByteBufAllocatorHandle NewHandle();
 
-        protected abstract class MaxMessageHandle<T> : IRecvByteBufAllocatorHandle where T : IRecvByteBufAllocator
+        protected abstract class MaxMessageAllocatorHandle<T> : IRecvByteBufAllocatorHandle where T : IRecvByteBufAllocator
         {
             private readonly T owner;
             private IChannelConfiguration config;
-            /// 每次读的最大消息数
+            /// <inheritdoc cref="IRecvByteBufAllocator.MaxMessagesPerRead"/>
             private int maxMessagePerRead;
-            /// 总共读了多少次消息
+            // 已读的消息数量
             private int totalMessages;
-            /// 总共读的字节数
+            // 已读的消息字节数
             private int totalBytesRead;
-            /// 上一次读的字节数
+            /// <inheritdoc cref="IRecvByteBufAllocatorHandle.LastBytesRead"/>
             private int lastBytesRead;
 
-            protected MaxMessageHandle(T owner) => this.owner = owner;
+            protected MaxMessageAllocatorHandle(T owner) => this.owner = owner;
 
             public abstract int Guess();
 

@@ -67,7 +67,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        private sealed class HandleImpl : MaxMessageHandle<AdaptiveRecvByteBufAllocator>
+        private sealed class HandleImpl : MaxMessageAllocatorHandle<AdaptiveRecvByteBufAllocator>
         {
             private readonly int minIndex;
             private readonly int maxIndex;

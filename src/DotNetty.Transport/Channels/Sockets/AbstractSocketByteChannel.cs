@@ -37,8 +37,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            private void HandleReadException(IChannelPipeline pipeline, IByteBuffer byteBuf, Exception cause, bool close,
-                IRecvByteBufAllocatorHandle allocHandle)
+            private void HandleReadException(IChannelPipeline pipeline, IByteBuffer byteBuf, Exception cause, bool close, IRecvByteBufAllocatorHandle allocHandle)
             {
                 if (byteBuf != null)
                 {
