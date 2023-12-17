@@ -8,7 +8,7 @@ namespace DotNetty.Common.Utilities
 
         private sealed class AttributeConstantPool : ConstantPool
         {
-            protected override IConstant NewConstant<TValue>(int id, string name) => new AttributeKey<TValue>(id, name);
+            protected override IConstant NewConstant<TValue>(in int id, string name) => new AttributeKey<TValue>(id, name);
         }
     }
 

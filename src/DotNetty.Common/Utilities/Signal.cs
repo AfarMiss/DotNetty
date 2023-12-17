@@ -8,7 +8,7 @@ namespace DotNetty.Common.Utilities
 
         sealed class SignalConstantPool : ConstantPool
         {
-            protected override IConstant NewConstant<T>(int id, string name) => new Signal(id, name);
+            protected override IConstant NewConstant<T>(in int id, string name) => new Signal(id, name);
         };
 
         public static Signal ValueOf(string name) => (Signal)Pool.ValueOf<Signal>(name);

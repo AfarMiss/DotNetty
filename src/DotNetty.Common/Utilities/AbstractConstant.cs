@@ -6,7 +6,7 @@ namespace DotNetty.Common.Utilities
     public abstract class AbstractConstant : IConstant
     {
         private static long nextUniqueId;
-        private long volatileUniqueId;
+        private long uniqueId;
 
         public int Id { get; }
         public string Name { get; }
@@ -24,10 +24,10 @@ namespace DotNetty.Common.Utilities
             get
             {
                 long result;
-                if ((result = Volatile.Read(ref this.volatileUniqueId)) == 0)
+                if ((result = Volatile.Read(ref this.uniqueId)) == 0)
                 {
                     result = Interlocked.Increment(ref nextUniqueId);
-                    long previousUniqueId = Interlocked.CompareExchange(ref this.volatileUniqueId, result, 0);
+                    long previousUniqueId = Interlocked.CompareExchange(ref this.uniqueId, result, 0);
                     if (previousUniqueId != 0)
                     {
                         result = previousUniqueId;

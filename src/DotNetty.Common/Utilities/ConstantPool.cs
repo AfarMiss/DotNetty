@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 
 namespace DotNetty.Common.Utilities
@@ -38,6 +36,6 @@ namespace DotNetty.Common.Utilities
             return constant;
         }
 
-        protected abstract IConstant NewConstant<T>(int id, string name);
+        protected abstract IConstant NewConstant<T>(in int id, string name);
     }
 }
