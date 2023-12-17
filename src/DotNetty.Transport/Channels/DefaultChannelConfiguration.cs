@@ -31,14 +31,7 @@ namespace DotNetty.Transport.Channels
             Contract.Requires(channel != null);
 
             this.Channel = channel;
-            if (allocator is IMaxMessagesRecvByteBufAllocator maxMessagesAllocator)
-            {
-                maxMessagesAllocator.MaxMessagesPerRead = channel.Metadata.DefaultMaxMessagesPerRead;
-            }
-            else if (allocator == null)
-            {
-                throw new ArgumentNullException(nameof(allocator));
-            }
+            allocator.MaxMessagesPerRead = channel.Metadata.DefaultMaxMessagesPerRead;
             this.RecvByteBufAllocator = allocator;
         }
 
