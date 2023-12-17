@@ -22,7 +22,7 @@ namespace DotNetty.Transport.Channels
         protected readonly IChannel Channel;
 
         public DefaultChannelConfiguration(IChannel channel)
-            : this(channel, new AdaptiveRecvByteBufAllocator())
+            : this(channel, new FixedRecvByteBufAllocator(4 * 1024))
         {
         }
 

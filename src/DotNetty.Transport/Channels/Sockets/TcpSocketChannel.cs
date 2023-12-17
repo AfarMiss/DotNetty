@@ -154,33 +154,20 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override int DoReadBytes(IByteBuffer byteBuf)
         {
-            if (!byteBuf.HasArray)
-            {
-                throw new NotImplementedException("Only IByteBuffer implementations backed by array are supported.");
-            }
+            if (!byteBuf.HasArray) throw new NotImplementedException("Only IByteBuffer implementations backed by array are supported.");
 
-            if (!this.Socket.Connected)
-            {
-                // prevents ObjectDisposedException from being thrown in case connection has been lost in the meantime
-                return -1;
-            }
-
-            int received = this.Socket.Receive(byteBuf.Array, byteBuf.ArrayOffset + byteBuf.WriterIndex, byteBuf.WritableBytes, SocketFlags.None, out SocketError errorCode);
-
+            // prevents ObjectDisposedException from being thrown in case connection has been lost in the meantime
+            if (!this.Socket.Connected) return -1;
+            
+            int received = this.Socket.Receive(byteBuf.Array, byteBuf.ArrayOffset + byteBuf.WriterIndex, byteBuf.WritableBytes, SocketFlags.None, out var errorCode);
             switch (errorCode)
             {
                 case SocketError.Success:
-                    if (received == 0)
-                    {
-                        // indicate that socket was closed
-                        return -1;
-                    }
+                    // Socket已Close
+                    if (received == 0) return -1;
                     break;
                 case SocketError.WouldBlock:
-                    if (received == 0)
-                    {
-                        return 0;
-                    }
+                    if (received == 0) return 0;
                     break;
                 default:
                     throw new SocketException((int)errorCode);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Threading;
 using DotNetty.Buffers;
 using DotNetty.Common.Utilities;
 
@@ -64,15 +63,14 @@ namespace DotNetty.Transport.Channels.Sockets
 
             public override void FinishRead(SocketChannelAsyncOperation operation)
             {
-                var ch = this.Channel;
-                if ((ch.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
-                {
-                    return; // read was signaled as a result of channel closure
-                }
-                IChannelConfiguration config = ch.Configuration;
-                IChannelPipeline pipeline = ch.Pipeline;
-                IByteBufferAllocator allocator = config.Allocator;
-                IRecvByteBufAllocatorHandle allocHandle = this.RecvBufAllocHandle;
+                var channel = this.Channel;
+                // Channel已Close
+                if ((channel.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0) return;
+                
+                var config = channel.Configuration;
+                var pipeline = channel.Pipeline;
+                var allocator = config.Allocator;
+                var allocHandle = this.RecvBufAllocHandle;
                 allocHandle.Reset(config);
 
                 IByteBuffer byteBuf = null;
@@ -80,15 +78,12 @@ namespace DotNetty.Transport.Channels.Sockets
                 try
                 {
                     operation.Validate();
-
                     do
                     {
                         byteBuf = allocHandle.Allocate(allocator);
-                        //int writable = byteBuf.WritableBytes;
-                        allocHandle.LastBytesRead = ch.DoReadBytes(byteBuf);
+                        allocHandle.LastBytesRead = channel.DoReadBytes(byteBuf);
                         if (allocHandle.LastBytesRead <= 0)
                         {
-                            // nothing was read -> release the buffer.
                             byteBuf.Release();
                             byteBuf = null;
                             close = allocHandle.LastBytesRead < 0;
@@ -106,10 +101,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     allocHandle.ReadComplete();
                     pipeline.FireChannelReadComplete();
 
-                    if (close)
-                    {
-                        this.CloseOnRead();
-                    }
+                    if (close) this.CloseOnRead();
                 }
                 catch (Exception t)
                 {
@@ -117,19 +109,72 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
                 finally
                 {
-                    // Check if there is a readPending which was not processed yet.
-                    // This could be for two reasons:
-                    // /// The user called Channel.read() or ChannelHandlerContext.read() input channelRead(...) method
-                    // /// The user called Channel.read() or ChannelHandlerContext.read() input channelReadComplete(...) method
-                    //
-                    // See https://github.com/netty/netty/issues/2254
-                    if (!close && (ch.ReadPending || config.AutoRead))
+                    if (!close && (channel.ReadPending || config.AutoRead))
                     {
-                        ch.DoBeginRead();
+                        channel.DoBeginRead();
                     }
                 }
             }
         }
+        
+        //     public override void FinishRead(SocketChannelAsyncOperation operation)
+        //     {
+        //         var channel = this.Channel;
+        //         // Channel已Close
+        //         if ((channel.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
+        //         {
+        //             return;
+        //         }
+        //         
+        //         var config = channel.Configuration;
+        //         var pipeline = channel.Pipeline;
+        //         var allocator = config.Allocator;
+        //         var allocHandle = this.RecvBufAllocHandle;
+        //         allocHandle.Reset(config);
+        //
+        //         IByteBuffer byteBuf = null;
+        //         bool close = false;
+        //         try
+        //         {
+        //             operation.Validate();
+        //             do
+        //             {
+        //                 byteBuf = allocHandle.Allocate(allocator);
+        //                 allocHandle.LastBytesRead = channel.DoReadBytes(byteBuf);
+        //                 if (allocHandle.LastBytesRead <= 0)
+        //                 {
+        //                     byteBuf.Release();
+        //                     byteBuf = null;
+        //                     close = allocHandle.LastBytesRead < 0;
+        //                     break;
+        //                 }
+        //
+        //                 allocHandle.IncMessagesRead(1);
+        //                 this.Channel.ReadPending = false;
+        //
+        //                 pipeline.FireChannelRead(byteBuf);
+        //                 byteBuf = null;
+        //             }
+        //             while (allocHandle.ContinueReading());
+        //
+        //             allocHandle.ReadComplete();
+        //             pipeline.FireChannelReadComplete();
+        //
+        //             if (close) this.CloseOnRead();
+        //         }
+        //         catch (Exception t)
+        //         {
+        //             this.HandleReadException(pipeline, byteBuf, t, close, allocHandle);
+        //         }
+        //         finally
+        //         {
+        //             if (!close && (channel.ReadPending || config.AutoRead))
+        //             {
+        //                 channel.DoBeginRead();
+        //             }
+        //         }
+        //     }
+        // }
 
         protected override void ScheduleSocketRead()
         {

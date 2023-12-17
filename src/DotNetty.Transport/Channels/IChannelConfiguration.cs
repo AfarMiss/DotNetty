@@ -13,6 +13,7 @@ namespace DotNetty.Transport.Channels
         int WriteSpinCount { get; set; }
         IByteBufferAllocator Allocator { get; set; }
         IRecvByteBufAllocator RecvByteBufAllocator { get; set; }
+        /// 自动读取数据
         bool AutoRead { get; set; }
         int WriteBufferHighWaterMark { get; set; }
         int WriteBufferLowWaterMark { get; set; }
