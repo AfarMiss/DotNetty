@@ -24,39 +24,39 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             if (ChannelOption.SoBroadcast.Equals(option))
             {
-                return (T)(object)this.Broadcast;
+                return OptionAs<T>.As(this.Broadcast);
             }
             if (ChannelOption.SoRcvbuf.Equals(option))
             {
-                return (T)(object)this.ReceiveBufferSize;
+                return OptionAs<T>.As(this.ReceiveBufferSize);
             }
             if (ChannelOption.SoSndbuf.Equals(option))
             {
-                return (T)(object)this.SendBufferSize;
+                return OptionAs<T>.As(this.SendBufferSize);
             }
             if (ChannelOption.SoReuseaddr.Equals(option))
             {
-                return (T)(object)this.ReuseAddress;
+                return OptionAs<T>.As(this.ReuseAddress);
             }
             if (ChannelOption.IpMulticastLoopDisabled.Equals(option))
             {
-                return (T)(object)this.LoopbackModeDisabled;
+                return OptionAs<T>.As(this.LoopbackModeDisabled);
             }
             if (ChannelOption.IpMulticastTtl.Equals(option))
             {
-                return (T)(object)this.TimeToLive;
+                return OptionAs<T>.As(this.TimeToLive);
             }
             if (ChannelOption.IpMulticastAddr.Equals(option))
             {
-                return (T)(object)this.Interface;
+                return OptionAs<T>.As(this.Interface);
             }
             if (ChannelOption.IpMulticastIf.Equals(option))
             {
-                return (T)(object)this.NetworkInterface;
+                return OptionAs<T>.As(this.NetworkInterface);
             }
             if (ChannelOption.IpTos.Equals(option))
             {
-                return (T)(object)this.TrafficClass;
+                return OptionAs<T>.As(this.TrafficClass);
             }
 
             return base.GetOption(option);
@@ -71,39 +71,39 @@ namespace DotNetty.Transport.Channels.Sockets
 
             if (ChannelOption.SoBroadcast.Equals(option))
             {
-                this.Broadcast = (bool)(object)value;
+                this.Broadcast = OptionAs<bool>.As(ref value);
             }
             else if (ChannelOption.SoRcvbuf.Equals(option))
             {
-                this.ReceiveBufferSize = (int)(object)value;
+                this.ReceiveBufferSize = OptionAs<int>.As(ref value);
             }
             else if (ChannelOption.SoSndbuf.Equals(option))
             {
-                this.SendBufferSize = (int)(object)value;
+                this.SendBufferSize = OptionAs<int>.As(ref value);
             }
             else if (ChannelOption.SoReuseaddr.Equals(option))
             {
-                this.ReuseAddress = (bool)(object)value;
+                this.ReuseAddress = OptionAs<bool>.As(ref value);
             }
             else if (ChannelOption.IpMulticastLoopDisabled.Equals(option))
             {
-                this.LoopbackModeDisabled = (bool)(object)value;
+                this.LoopbackModeDisabled = OptionAs<bool>.As(ref value);
             }
             else if (ChannelOption.IpMulticastTtl.Equals(option))
             {
-                this.TimeToLive = (short)(object)value;
+                this.TimeToLive = OptionAs<short>.As(ref value);
             }
             else if (ChannelOption.IpMulticastAddr.Equals(option))
             {
-                this.Interface = (EndPoint)(object)value;
+                this.Interface = OptionAs<EndPoint>.As(ref value);
             }
             else if (ChannelOption.IpMulticastIf.Equals(option))
             {
-                this.NetworkInterface = (NetworkInterface)(object)value;
+                this.NetworkInterface = OptionAs<NetworkInterface>.As(ref value);
             }
             else if (ChannelOption.IpTos.Equals(option))
             {
-                this.TrafficClass = (int)(object)value;
+                this.TrafficClass = OptionAs<int>.As(ref value);
             }
             else
             {

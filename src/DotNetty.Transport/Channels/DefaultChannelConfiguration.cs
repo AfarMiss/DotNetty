@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using DotNetty.Buffers;
 
@@ -21,8 +22,7 @@ namespace DotNetty.Transport.Channels
 
         protected readonly IChannel Channel;
 
-        public DefaultChannelConfiguration(IChannel channel)
-            : this(channel, new FixedRecvByteBufAllocator(4 * 1024))
+        public DefaultChannelConfiguration(IChannel channel) : this(channel, new FixedRecvByteBufAllocator(4 * 1024))
         {
         }
 
@@ -35,17 +35,24 @@ namespace DotNetty.Transport.Channels
             this.RecvByteBufAllocator = allocator;
         }
 
+        protected static class OptionAs<TTo>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static TTo As<T>(T value) => Unsafe.As<T, TTo>(ref value);
+            public static TTo As<T>(ref T value) => Unsafe.As<T, TTo>(ref value);
+        }
+        
         public virtual T GetOption<T>(ChannelOption<T> option)
         {
             Contract.Requires(option != null);
 
             if (ChannelOption.ConnectTimeout.Equals(option))
             {
-                return (T)(object)this.ConnectTimeout; // no boxing will happen, compiler optimizes away such casts
+                return OptionAs<T>.As(this.ConnectTimeout);
             }
             if (ChannelOption.WriteSpinCount.Equals(option))
             {
-                return (T)(object)this.WriteSpinCount;
+                return OptionAs<T>.As(this.WriteSpinCount);
             }
             if (ChannelOption.Allocator.Equals(option))
             {
@@ -57,15 +64,15 @@ namespace DotNetty.Transport.Channels
             }
             if (ChannelOption.AutoRead.Equals(option))
             {
-                return (T)(object)this.AutoRead;
+                return OptionAs<T>.As(this.AutoRead);
             }
             if (ChannelOption.WriteBufferHighWaterMark.Equals(option))
             {
-                return (T)(object)this.WriteBufferHighWaterMark;
+                return OptionAs<T>.As(this.WriteBufferHighWaterMark);
             }
             if (ChannelOption.WriteBufferLowWaterMark.Equals(option))
             {
-                return (T)(object)this.WriteBufferLowWaterMark;
+                return OptionAs<T>.As(this.WriteBufferLowWaterMark);
             }
             if (ChannelOption.MessageSizeEstimator.Equals(option))
             {
@@ -74,19 +81,17 @@ namespace DotNetty.Transport.Channels
             return default(T);
         }
 
-        public bool SetOption(ChannelOption option, object value) => option.Set(this, value);
-
         public virtual bool SetOption<T>(ChannelOption<T> option, T value)
         {
             this.Validate(option, value);
 
             if (ChannelOption.ConnectTimeout.Equals(option))
             {
-                this.ConnectTimeout = (TimeSpan)(object)value;
+                this.ConnectTimeout = OptionAs<TimeSpan>.As(ref value);
             }
             else if (ChannelOption.WriteSpinCount.Equals(option))
             {
-                this.WriteSpinCount = (int)(object)value;
+                this.WriteSpinCount = OptionAs<int>.As(ref value);
             }
             else if (ChannelOption.Allocator.Equals(option))
             {
@@ -98,15 +103,15 @@ namespace DotNetty.Transport.Channels
             }
             else if (ChannelOption.AutoRead.Equals(option))
             {
-                this.AutoRead = (bool)(object)value;
+                this.AutoRead = OptionAs<bool>.As(ref value);
             }
             else if (ChannelOption.WriteBufferHighWaterMark.Equals(option))
             {
-                this.WriteBufferHighWaterMark = (int)(object)value;
+                this.WriteBufferHighWaterMark = OptionAs<int>.As(ref value);
             }
             else if (ChannelOption.WriteBufferLowWaterMark.Equals(option))
             {
-                this.WriteBufferLowWaterMark = (int)(object)value;
+                this.WriteBufferLowWaterMark = Unsafe.As<T, int>(ref value);
             }
             else if (ChannelOption.MessageSizeEstimator.Equals(option))
             {
@@ -128,7 +133,7 @@ namespace DotNetty.Transport.Channels
 
         public TimeSpan ConnectTimeout
         {
-            get { return new TimeSpan(Volatile.Read(ref this.connectTimeout)); }
+            get => new TimeSpan(Volatile.Read(ref this.connectTimeout));
             set
             {
                 Contract.Requires(value >= TimeSpan.Zero);
@@ -138,7 +143,7 @@ namespace DotNetty.Transport.Channels
 
         public IByteBufferAllocator Allocator
         {
-            get { return this.allocator; }
+            get => this.allocator;
             set
             {
                 Contract.Requires(value != null);
@@ -148,7 +153,7 @@ namespace DotNetty.Transport.Channels
 
         public IRecvByteBufAllocator RecvByteBufAllocator
         {
-            get { return this.recvByteBufAllocator; }
+            get => this.recvByteBufAllocator;
             set
             {
                 Contract.Requires(value != null);
@@ -158,7 +163,7 @@ namespace DotNetty.Transport.Channels
 
         public IMessageSizeEstimator MessageSizeEstimator
         {
-            get { return this.messageSizeEstimator; }
+            get => this.messageSizeEstimator;
             set
             {
                 Contract.Requires(value != null);
@@ -168,7 +173,7 @@ namespace DotNetty.Transport.Channels
 
         public bool AutoRead
         {
-            get { return this.autoRead == 1; }
+            get => this.autoRead == 1;
             set
             {
                 bool oldAutoRead = Interlocked.Exchange(ref this.autoRead, value ? 1 : 0) == 1;
@@ -189,7 +194,7 @@ namespace DotNetty.Transport.Channels
 
         public int WriteBufferHighWaterMark
         {
-            get { return this.writeBufferHighWaterMark; }
+            get => this.writeBufferHighWaterMark;
             set
             {
                 Contract.Requires(value >= 0);
@@ -201,7 +206,7 @@ namespace DotNetty.Transport.Channels
 
         public int WriteBufferLowWaterMark
         {
-            get { return this.writeBufferLowWaterMark; }
+            get => this.writeBufferLowWaterMark;
             set
             {
                 Contract.Requires(value >= 0);
@@ -213,7 +218,7 @@ namespace DotNetty.Transport.Channels
 
         public int WriteSpinCount
         {
-            get { return this.writeSpinCount; }
+            get => this.writeSpinCount;
             set
             {
                 Contract.Requires(value >= 1);

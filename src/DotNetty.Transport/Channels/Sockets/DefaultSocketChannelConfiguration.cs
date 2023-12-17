@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
@@ -32,35 +33,31 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             if (ChannelOption.SoRcvbuf.Equals(option))
             {
-                return (T)(object)this.ReceiveBufferSize;
+                return OptionAs<T>.As(this.ReceiveBufferSize);
             }
             if (ChannelOption.SoSndbuf.Equals(option))
             {
-                return (T)(object)this.SendBufferSize;
+                return OptionAs<T>.As(this.SendBufferSize);
             }
             if (ChannelOption.TcpNodelay.Equals(option))
             {
-                return (T)(object)this.TcpNoDelay;
+                return OptionAs<T>.As(this.TcpNoDelay);
             }
             if (ChannelOption.SoKeepalive.Equals(option))
             {
-                return (T)(object)this.KeepAlive;
+                return OptionAs<T>.As(this.KeepAlive);
             }
             if (ChannelOption.SoReuseaddr.Equals(option))
             {
-                return (T)(object)this.ReuseAddress;
+                return OptionAs<T>.As(this.ReuseAddress);
             }
             if (ChannelOption.SoLinger.Equals(option))
             {
-                return (T)(object)this.Linger;
+                return OptionAs<T>.As(this.Linger);
             }
-            //if (ChannelOption.IP_TOS.Equals(option))
-            //{
-            //    return (T)(object)this.TrafficClass;
-            //}
             if (ChannelOption.AllowHalfClosure.Equals(option))
             {
-                return (T)(object)this.AllowHalfClosure;
+                return OptionAs<T>.As(this.AllowHalfClosure);
             }
 
             return base.GetOption(option);
@@ -75,35 +72,31 @@ namespace DotNetty.Transport.Channels.Sockets
 
             if (ChannelOption.SoRcvbuf.Equals(option))
             {
-                this.ReceiveBufferSize = (int)(object)value;
+                this.ReceiveBufferSize = Unsafe.As<T, int>(ref value);
             }
             else if (ChannelOption.SoSndbuf.Equals(option))
             {
-                this.SendBufferSize = (int)(object)value;
+                this.SendBufferSize = Unsafe.As<T, int>(ref value);
             }
             else if (ChannelOption.TcpNodelay.Equals(option))
             {
-                this.TcpNoDelay = (bool)(object)value;
+                this.TcpNoDelay = Unsafe.As<T, bool>(ref value);
             }
             else if (ChannelOption.SoKeepalive.Equals(option))
             {
-                this.KeepAlive = (bool)(object)value;
+                this.KeepAlive = Unsafe.As<T, bool>(ref value);
             }
             else if (ChannelOption.SoReuseaddr.Equals(option))
             {
-                this.ReuseAddress = (bool)(object)value;
+                this.ReuseAddress = Unsafe.As<T, bool>(ref value);
             }
             else if (ChannelOption.SoLinger.Equals(option))
             {
-                this.Linger = (int)(object)value;
+                this.Linger = Unsafe.As<T, int>(ref value);
             }
-            //else if (option == IP_TOS)
-            //{
-            //    setTrafficClass((Integer)value);
-            //}
             else if (ChannelOption.AllowHalfClosure.Equals(option))
             {
-                this.allowHalfClosure = (bool)(object)value;
+                this.allowHalfClosure = Unsafe.As<T, bool>(ref value);
             }
             else
             {
