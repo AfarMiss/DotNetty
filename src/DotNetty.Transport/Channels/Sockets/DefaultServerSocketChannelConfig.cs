@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
@@ -27,15 +28,15 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             if (ChannelOption.SoRcvbuf.Equals(option))
             {
-                return (T)(object)this.ReceiveBufferSize;
+                return OptionAs<T>.As(this.ReceiveBufferSize);
             }
             if (ChannelOption.SoReuseaddr.Equals(option))
             {
-                return (T)(object)this.ReuseAddress;
+                return OptionAs<T>.As(this.ReuseAddress);
             }
             if (ChannelOption.SoBacklog.Equals(option))
             {
-                return (T)(object)this.Backlog;
+                return OptionAs<T>.As(this.Backlog);
             }
 
             return base.GetOption(option);
@@ -47,15 +48,15 @@ namespace DotNetty.Transport.Channels.Sockets
 
             if (ChannelOption.SoRcvbuf.Equals(option))
             {
-                this.ReceiveBufferSize = (int)(object)value;
+                this.ReceiveBufferSize = OptionAs<int>.As(ref value);
             }
             else if (ChannelOption.SoReuseaddr.Equals(option))
             {
-                this.ReuseAddress = (bool)(object)value;
+                this.ReuseAddress = OptionAs<bool>.As(ref value);
             }
             else if (ChannelOption.SoBacklog.Equals(option))
             {
-                this.Backlog = (int)(object)value;
+                this.Backlog = OptionAs<int>.As(ref value);
             }
             else
             {

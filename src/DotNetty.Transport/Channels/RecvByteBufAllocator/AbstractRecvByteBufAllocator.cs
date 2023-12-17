@@ -28,21 +28,8 @@ namespace DotNetty.Transport.Channels
             private int totalBytesRead;
             /// <inheritdoc cref="IRecvByteBufAllocatorHandle.LastBytesRead"/>
             private int lastBytesRead;
-
-            protected MaxMessageAllocatorHandle(T owner) => this.owner = owner;
-
-            public abstract int Guess();
-
-            public void Reset(IChannelConfiguration config)
-            {
-                this.config = config;
-                this.maxMessagePerRead = this.owner.MaxMessagesPerRead;
-                this.totalMessages = this.totalBytesRead = 0;
-            }
-
-            public IByteBuffer Allocate(IByteBufferAllocator alloc) => alloc.Buffer(this.Guess());
-
-            public void IncMessagesRead(int amt) => this.totalMessages += amt;
+            
+            protected int TotalBytesRead => this.totalBytesRead;
 
             public int LastBytesRead
             {
@@ -58,23 +45,37 @@ namespace DotNetty.Transport.Channels
                     }
                 }
             }
+            
+            public virtual int AttemptedBytesRead { get; set; }
+
+            public abstract int Guess();
+
+            protected MaxMessageAllocatorHandle(T owner) => this.owner = owner;
+
+            public void Reset(IChannelConfiguration config)
+            {
+                this.config = config;
+                this.maxMessagePerRead = this.owner.MaxMessagesPerRead;
+                this.totalMessages = this.totalBytesRead = 0;
+            }
+
+            public IByteBuffer Allocate(IByteBufferAllocator alloc) => alloc.Buffer(this.Guess());
+
+            public void IncMessagesRead(int amt) => this.totalMessages += amt;
 
             public virtual bool ContinueReading()
             {
-                return this.config.AutoRead
-                    && this.AttemptedBytesRead == this.lastBytesRead
-                    //没超过最大读取消息数
-                    && this.totalMessages < this.maxMessagePerRead
-                    && this.totalBytesRead < int.MaxValue;
+                return this.config.AutoRead 
+                       // 预测写入的大小==最后读取大小 表示可能还存在数据
+                       && this.AttemptedBytesRead == this.lastBytesRead
+                       // 没超过最大读取消息数
+                       && this.totalMessages < this.maxMessagePerRead
+                       && this.totalBytesRead < int.MaxValue;
             }
 
             public virtual void ReadComplete()
             {
             }
-
-            public virtual int AttemptedBytesRead { get; set; }
-
-            protected int TotalBytesRead() => this.totalBytesRead;
         }
     }
 }

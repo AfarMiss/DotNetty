@@ -109,7 +109,7 @@ namespace DotNetty.Transport.Channels
                 }
             }
 
-            public override void ReadComplete() => this.Record(this.TotalBytesRead());
+            public override void ReadComplete() => this.Record(this.TotalBytesRead);
         }
 
         private readonly int minIndex;

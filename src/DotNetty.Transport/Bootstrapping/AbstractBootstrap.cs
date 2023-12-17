@@ -284,7 +284,7 @@ namespace DotNetty.Transport.Bootstrapping
                 this.value = value;
             }
 
-            public override bool Set(IChannelConfiguration config) => config.SetOption(this.Option, this.value);
+            public override bool Set(IChannelConfiguration config) => config.SetOption((ChannelOption<T>)this.Option, this.value);
 
             public override string ToString() => this.value.ToString();
         }
