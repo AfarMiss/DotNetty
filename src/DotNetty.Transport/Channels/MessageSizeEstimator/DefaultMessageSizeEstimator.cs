@@ -31,10 +31,6 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="unknownSize">The size which is returned for unknown messages.</param>
         public DefaultMessageSizeEstimator(int unknownSize)
         {
             Contract.Requires(unknownSize >= 0);

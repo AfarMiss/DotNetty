@@ -26,11 +26,11 @@ namespace SecureChat.Client
 
             X509Certificate2 cert = null;
             string targetHost = null;
-            if (ClientSettings.IsSsl)
-            {
-                cert = new X509Certificate2(Path.Combine(ExampleHelper.ProcessDirectory, "dotnetty.com.pfx"), "password");
-                targetHost = cert.GetNameInfo(X509NameType.DnsName, false);
-            }
+            // if (ClientSettings.IsSsl)
+            // {
+            //     cert = new X509Certificate2(Path.Combine(ExampleHelper.ProcessDirectory, "dotnetty.com.pfx"), "password");
+            //     targetHost = cert.GetNameInfo(X509NameType.DnsName, false);
+            // }
             try
             {
                 var bootstrap = new Bootstrap();
@@ -42,10 +42,10 @@ namespace SecureChat.Client
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
 
-                        if (cert != null)
-                        {
-                            pipeline.AddLast(new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true), new ClientTlsSettings(targetHost)));
-                        }
+                        // if (cert != null)
+                        // {
+                        //     pipeline.AddLast(new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true), new ClientTlsSettings(targetHost)));
+                        // }
 
                         pipeline.AddLast(new DelimiterBasedFrameDecoder(8192, Delimiters.LineDelimiter()));
                         pipeline.AddLast(new StringEncoder(), new StringDecoder(), new SecureChatClientHandler());
