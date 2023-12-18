@@ -4,22 +4,21 @@ namespace DotNetty.Common.Utilities
 {
     public sealed class Signal : Exception, IConstant, IComparable, IComparable<Signal>
     {
-        static readonly SignalConstantPool Pool = new SignalConstantPool();
+        private static readonly SignalConstantPool Pool = new SignalConstantPool();
 
-        sealed class SignalConstantPool : ConstantPool
+        public static Signal ValueOf(string name) => (Signal)Pool.ValueOf(name);
+
+        private SignalConstant constant;
+
+        private sealed class SignalConstantPool : ConstantPool<Signal>
         {
-            protected override IConstant NewConstant<T>(in int id, string name) => new Signal(id, name);
-        };
-
-        public static Signal ValueOf(string name) => (Signal)Pool.ValueOf<Signal>(name);
-
-        readonly SignalConstant constant;
-
-        Signal(int id, string name)
-        {
-            this.constant = new SignalConstant(id, name);
+            protected override Signal GetInitialValue(in int id, string name)
+            {
+                var signal = new Signal();
+                signal.constant = SignalConstant.ValueOf(signal.Name);
+                return signal;
+            }
         }
-
         public void Expect(Signal signal)
         {
             if (!ReferenceEquals(this, signal))
@@ -31,7 +30,7 @@ namespace DotNetty.Common.Utilities
         public int Id => this.constant.Id;
 
         public string Name => this.constant.Name;
-
+        
         public override bool Equals(object obj) => ReferenceEquals(this, obj);
 
         public override int GetHashCode() => this.Id;
@@ -62,11 +61,9 @@ namespace DotNetty.Common.Utilities
 
         public override string ToString() => this.Name;
 
-        sealed class SignalConstant : AbstractConstant<SignalConstant>
+        private sealed class SignalConstant : AbstractConstant<SignalConstant>
         {
-            public SignalConstant(int id, string name) : base(id, name)
-            {
-            }
+
         }
     }
 }

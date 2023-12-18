@@ -14,14 +14,14 @@ namespace DotNetty.Transport.Bootstrapping
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
 
-        private readonly ConcurrentDictionary<ChannelOption, ChannelOptionValue> childOptions;
+        private readonly ConcurrentDictionary<IConstant, ChannelOptionValue> childOptions;
         private readonly ConcurrentDictionary<IConstant, AttributeValue> childAttrs;
         private volatile IEventLoopGroup childGroup;
         private volatile IChannelHandler childHandler;
 
         public ServerBootstrap()
         {
-            this.childOptions = new ConcurrentDictionary<ChannelOption, ChannelOptionValue>();
+            this.childOptions = new ConcurrentDictionary<IConstant, ChannelOptionValue>();
             this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>();
         }
 
@@ -29,7 +29,7 @@ namespace DotNetty.Transport.Bootstrapping
         {
             this.childGroup = bootstrap.childGroup;
             this.childHandler = bootstrap.childHandler;
-            this.childOptions = new ConcurrentDictionary<ChannelOption, ChannelOptionValue>(bootstrap.childOptions);
+            this.childOptions = new ConcurrentDictionary<IConstant, ChannelOptionValue>(bootstrap.childOptions);
             this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>(bootstrap.childAttrs);
         }
 
@@ -54,8 +54,7 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                ChannelOptionValue removed;
-                this.childOptions.TryRemove(childOption, out removed);
+                this.childOptions.TryRemove(childOption, out _);
             }
             else
             {
@@ -70,8 +69,7 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                AttributeValue removed;
-                this.childAttrs.TryRemove(childKey, out removed);
+                this.childAttrs.TryRemove(childKey, out _);
             }
             else
             {

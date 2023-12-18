@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Collections.Generic;
+using DotNetty.Common.Utilities;
+
 namespace SecureChat.Server
 {
     using System;
     using System.IO;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using DotNetty.Codecs;
     using DotNetty.Handlers.Logging;
@@ -15,10 +17,13 @@ namespace SecureChat.Server
     using DotNetty.Transport.Channels.Sockets;
     using Examples.Common;
 
+    
     class Program
     {
         static async Task RunServerAsync()
         {
+            var channelOption = ChannelOption<int>.ValueOf("www");
+            var channelOption1 = ChannelOption<bool>.ValueOf("www");
             ExampleHelper.SetConsoleLogger();
 
             var bossGroup = new MultiThreadEventLoopGroup(1);
