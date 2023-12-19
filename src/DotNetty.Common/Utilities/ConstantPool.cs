@@ -4,32 +4,43 @@ using System.Threading;
 
 namespace DotNetty.Common.Utilities
 {
-    public abstract class ConstantPool<T> where T : IConstant
+    internal interface IConstantPool
     {
-        private readonly ConcurrentDictionary<string, IConstant> constants = new ConcurrentDictionary<string, IConstant>();
+        internal T ValueOf<T>(string name) where T : Constant, new();
+        internal bool Exists(string name);
+        internal T NewInstance<T>(string name) where T : Constant, new();
+    }
+
+    public abstract class ConstantPool : IConstantPool
+    {
+        private readonly ConcurrentDictionary<string, object> constants = new ConcurrentDictionary<string, object>();
         private int nextId;
 
-        protected virtual T GetInitialValue(in int id, string name) => default;
-
-        public IConstant ValueOf(string name)
+        T IConstantPool.ValueOf<T>(string name)
         {
-            return this.constants.TryGetValue(name, out var constant) ? constant : this.NewInstance0(name);
+            return this.constants.TryGetValue(name, out var constant) ? (T)constant : this.NewInstance0<T>(name);
         }
 
-        public bool Exists(string name) => this.constants.ContainsKey(name);
+        bool IConstantPool.Exists(string name) => this.constants.ContainsKey(name);
 
-        public IConstant NewInstance(string name)
+        T IConstantPool.NewInstance<T>(string name)
         {
-            if (this.Exists(name)) throw new ArgumentException($"'{name}' is already in use");
-            return this.NewInstance0(name);
+            if (this.constants.ContainsKey(name)) throw new ArgumentException($"'{name}' is already in use");
+            return this.NewInstance0<T>(name);
         }
 
-        private IConstant NewInstance0(string name)
+        private T NewInstance0<T>(string name) where T : Constant, new()
         {
-            IConstant constant = this.GetInitialValue(this.nextId, name);
+            var constant = new T();
+            constant.Initialize(this.nextId, name);
             this.constants.TryAdd(name, constant);
             Interlocked.Increment(ref this.nextId);
             return constant;
         }
+    }
+
+    internal static class ConstantPool<T> where T : ConstantPool, new()
+    {
+        public static readonly T Pool = new T();
     }
 }

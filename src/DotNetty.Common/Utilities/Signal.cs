@@ -2,38 +2,16 @@
 
 namespace DotNetty.Common.Utilities
 {
-    public sealed class Signal : Exception, IConstant, IComparable, IComparable<Signal>
+    public sealed class Signal : Exception, IComparable, IComparable<Signal>
     {
-        private static readonly SignalConstantPool Pool = new SignalConstantPool();
+        public static Signal ValueOf(string name) => new Signal(name);
+        private readonly SignalConstant constant;
 
-        public static Signal ValueOf(string name) => (Signal)Pool.ValueOf(name);
+        private Signal(string name) => this.constant = SignalConstant.ValueOf(name);
 
-        private SignalConstant constant;
-
-        private sealed class SignalConstantPool : ConstantPool<Signal>
-        {
-            protected override Signal GetInitialValue(in int id, string name)
-            {
-                var signal = new Signal();
-                signal.constant = SignalConstant.ValueOf(signal.Name);
-                return signal;
-            }
-        }
-        public void Expect(Signal signal)
-        {
-            if (!ReferenceEquals(this, signal))
-            {
-                throw new InvalidOperationException($"unexpected signal: {signal}");
-            }
-        }
-
-        public int Id => this.constant.Id;
-
-        public string Name => this.constant.Name;
-        
         public override bool Equals(object obj) => ReferenceEquals(this, obj);
 
-        public override int GetHashCode() => this.Id;
+        public override int GetHashCode() => this.constant.Id;
 
         public int CompareTo(object obj)
         {
@@ -59,11 +37,16 @@ namespace DotNetty.Common.Utilities
             return this.constant.CompareTo(other.constant);
         }
 
-        public override string ToString() => this.Name;
+        public override string ToString() => this.constant.Name;
 
-        private sealed class SignalConstant : AbstractConstant<SignalConstant>
+        public class SignalConstantPool : ConstantPool
         {
 
+        }
+        
+        public class SignalConstant : AbstractConstant<SignalConstantPool, SignalConstant>
+        {
+            
         }
     }
 }

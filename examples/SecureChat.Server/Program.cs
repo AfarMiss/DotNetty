@@ -22,8 +22,17 @@ namespace SecureChat.Server
     {
         static async Task RunServerAsync()
         {
-            var channelOption = ChannelOption<int>.ValueOf("www");
-            var channelOption1 = ChannelOption<bool>.ValueOf("www");
+            var valueOf = (object)AttributeKey<int>.ValueOf("1");
+            var valueOf1 = (object)AttributeKey<string>.ValueOf("11");
+
+            if (valueOf == valueOf1)
+            {
+                
+            }
+            if (valueOf.Equals(valueOf1))
+            {
+                
+            }
             ExampleHelper.SetConsoleLogger();
 
             var bossGroup = new MultiThreadEventLoopGroup(1);

@@ -60,7 +60,12 @@ namespace DotNetty.Transport.Channels
         // public abstract bool Set<TV>(IChannelConfiguration configuration, TV value);
     }
 
-    public sealed class ChannelOption<T> : AbstractConstant<ChannelOption<T>>
+    public class dddd : ConstantPool
+    {
+        
+    }
+    
+    public sealed class ChannelOption<T> : AbstractConstant<dddd, ChannelOption<T>>
     {
         public void Validate(T value) => Contract.Requires(value != null);
 
