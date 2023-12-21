@@ -19,7 +19,7 @@ namespace DotNetty.Transport.Bootstrapping
         private volatile IEventLoopGroup group;
         private volatile Func<TChannel> channelFactory;
         private volatile EndPoint localAddress;
-        private readonly ConcurrentDictionary<ChannelOption, ChannelOptionValue> options;
+        private readonly ConcurrentDictionary<IConstant, ChannelOptionValue> options;
         private readonly ConcurrentDictionary<IConstant, AttributeValue> attrs;
         private volatile IChannelHandler handler;
 
@@ -34,7 +34,7 @@ namespace DotNetty.Transport.Bootstrapping
 
         protected internal AbstractBootstrap()
         {
-            this.options = new ConcurrentDictionary<ChannelOption, ChannelOptionValue>();
+            this.options = new ConcurrentDictionary<IConstant, ChannelOptionValue>();
             this.attrs = new ConcurrentDictionary<IConstant, AttributeValue>();
         }
 
@@ -44,7 +44,7 @@ namespace DotNetty.Transport.Bootstrapping
             this.channelFactory = bootstrap.channelFactory;
             this.handler = bootstrap.handler;
             this.localAddress = bootstrap.localAddress;
-            this.options = new ConcurrentDictionary<ChannelOption, ChannelOptionValue>(bootstrap.options);
+            this.options = new ConcurrentDictionary<IConstant, ChannelOptionValue>(bootstrap.options);
             this.attrs = new ConcurrentDictionary<IConstant, AttributeValue>(bootstrap.attrs);
         }
 
@@ -269,13 +269,13 @@ namespace DotNetty.Transport.Bootstrapping
 
         protected abstract class ChannelOptionValue
         {
-            public abstract ChannelOption Option { get; }
+            public abstract IConstant Option { get; }
             public abstract bool Set(IChannelConfiguration config);
         }
 
         protected sealed class ChannelOptionValue<T> : ChannelOptionValue
         {
-            public override ChannelOption Option { get; }
+            public override IConstant Option { get; }
             private readonly T value;
 
             public ChannelOptionValue(ChannelOption<T> option, T value)

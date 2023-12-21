@@ -1,43 +1,33 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Threading;
 
 namespace DotNetty.Common.Utilities
 {
-    public abstract class ConstantPool
+    internal sealed class ConstantPool
     {
-        private readonly ConcurrentDictionary<string, IConstant> constants = new ConcurrentDictionary<string, IConstant>();
-        private int nextId;
+        private readonly ConcurrentDictionary<string, object> constants = new ConcurrentDictionary<string, object>();
 
-        public IConstant ValueOf<T>(string name)
+        private static readonly ConcurrentDictionary<string, ConstantPool> Pools = new ConcurrentDictionary<string, ConstantPool>();
+        public static ConstantPool GetSharedPool<T>() => Pools.GetOrAdd(typeof(T).Name, new ConstantPool());
+        
+        internal T ValueOf<T>(string name) where T : new()
         {
-            return this.constants.TryGetValue(name, out var constant) ? constant : this.NewInstance0<T>(name);
+            return this.constants.TryGetValue(name, out var constant) ? (T)constant : this.NewInstance0<T>(name);
         }
 
-        public bool Exists(string name)
-        {
-            lock (this.constants)
-            {
-                return this.constants.ContainsKey(name);
-            }
-        }
+        internal bool Exists(string name) => this.constants.ContainsKey(name);
 
-        public IConstant NewInstance<T>(string name)
+        internal T NewInstance<T>(string name) where T : new()
         {
-            if (this.Exists(name)) throw new ArgumentException($"'{name}' is already in use");
+            if (this.constants.ContainsKey(name)) throw new ArgumentException($"'{name}' is already in use");
             return this.NewInstance0<T>(name);
         }
 
-        private IConstant NewInstance0<T>(string name)
+        private T NewInstance0<T>(string name) where T : new()
         {
-            var constant = this.NewConstant<T>(this.nextId, name);
+            var constant = new T();
             this.constants.TryAdd(name, constant);
-            Interlocked.Increment(ref this.nextId);
             return constant;
         }
-
-        protected abstract IConstant NewConstant<T>(int id, string name);
     }
 }
