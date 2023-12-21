@@ -1,6 +1,9 @@
 ﻿namespace DotNetty.Common.Utilities
 {
-    public interface IConstant { }
+    public interface IConstant
+    {
+        
+    }
     
     public abstract class AbstractConstant<TKey> : IConstant where TKey : AbstractConstant<TKey>, new()
     {
