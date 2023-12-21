@@ -5,14 +5,14 @@ namespace DotNetty.Common.Utilities
 {
     internal sealed class ConstantPool
     {
-        private readonly ConcurrentDictionary<string, object> constants = new ConcurrentDictionary<string, object>();
-
         private static readonly ConcurrentDictionary<string, ConstantPool> Pools = new ConcurrentDictionary<string, ConstantPool>();
         public static ConstantPool GetSharedPool<T>() => Pools.GetOrAdd(typeof(T).Name, new ConstantPool());
         
+        private readonly ConcurrentDictionary<string, object> constants = new ConcurrentDictionary<string, object>();
+
         internal T ValueOf<T>(string name) where T : new()
         {
-            return this.constants.TryGetValue(name, out var constant) ? (T)constant : this.NewInstance0<T>(name);
+            return (T)this.constants.GetOrAdd(name, this.NewInstance0<T>(name));
         }
 
         internal bool Exists(string name) => this.constants.ContainsKey(name);
