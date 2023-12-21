@@ -11,14 +11,7 @@ namespace DotNetty.Common.Utilities
 
         public override bool Equals(object obj) => ReferenceEquals(this, obj);
 
-
-
-        public class SignalConstantPool : ConstantPool
-        {
-
-        }
-        
-        public class SignalConstant : AbstractConstant<SignalConstantPool, SignalConstant>
+        public class SignalConstant : AbstractConstant<SignalConstant>
         {
             
         }
