@@ -23,16 +23,11 @@ namespace SecureChat.Server
         static async Task RunServerAsync()
         {
             var valueOf = (object)AttributeKey<int>.ValueOf("1");
-            var valueOf1 = (object)AttributeKey<string>.ValueOf("11");
+            // var valueOf1 = (object)AttributeKey<string>.ValueOf("1");
+            var valueOf2 = (object)ChannelOption<string>.ValueOf("1");
 
-            if (valueOf == valueOf1)
-            {
-                
-            }
-            if (valueOf.Equals(valueOf1))
-            {
-                
-            }
+            var dictionary = new Dictionary<object, bool>();
+            dictionary.TryAdd(valueOf, false);
             ExampleHelper.SetConsoleLogger();
 
             var bossGroup = new MultiThreadEventLoopGroup(1);
