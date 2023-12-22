@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
@@ -19,14 +18,10 @@ namespace DotNetty.Transport.Bootstrapping
         private volatile IEventLoopGroup group;
         private volatile Func<TChannel> channelFactory;
         private volatile EndPoint localAddress;
-        // private readonly ConcurrentDictionary<IConstant, ChannelOptionValue> options;
-        // private readonly ConcurrentDictionary<IConstant, AttributeValue> attrs;
-        private readonly DefaultAttributeMap options;
-        private readonly DefaultAttributeMap attrs;
+        protected readonly ConstantMap options;
+        protected readonly ConstantMap attrs;
         private volatile IChannelHandler handler;
 
-        protected ICollection<IConstantValue> Options => this.options.Values;
-        protected ICollection<IConstantValue> Attributes => this.attrs.Values;
         protected EndPoint LocalAddress() => this.localAddress;
         
         protected IChannelHandler Handler => this.handler;
@@ -36,10 +31,8 @@ namespace DotNetty.Transport.Bootstrapping
 
         protected internal AbstractBootstrap()
         {
-            // this.options = new ConcurrentDictionary<IConstant, ChannelOptionValue>();
-            // this.attrs = new ConcurrentDictionary<IConstant, AttributeValue>();
-            this.options = new DefaultAttributeMap();
-            this.attrs = new DefaultAttributeMap();
+            this.options = new ConstantMap();
+            this.attrs = new ConstantMap();
         }
 
         protected internal AbstractBootstrap(AbstractBootstrap<TBootstrap, TChannel> bootstrap)
@@ -48,10 +41,8 @@ namespace DotNetty.Transport.Bootstrapping
             this.channelFactory = bootstrap.channelFactory;
             this.handler = bootstrap.handler;
             this.localAddress = bootstrap.localAddress;
-            // this.options = new ConcurrentDictionary<IConstant, ChannelOptionValue>(bootstrap.options);
-            // this.attrs = new ConcurrentDictionary<IConstant, AttributeValue>(bootstrap.attrs);
-            this.options = new DefaultAttributeMap(bootstrap.options);
-            this.attrs = new DefaultAttributeMap(bootstrap.attrs);
+            this.options = new ConstantMap(bootstrap.options);
+            this.attrs = new ConstantMap(bootstrap.attrs);
         }
 
         /// <summary> 指定<see cref="IEventLoopGroup"/>处理<see cref="IChannel"/>事件 </summary>
@@ -96,11 +87,11 @@ namespace DotNetty.Transport.Bootstrapping
         {
             if (value == null)
             {
-                this.options.DelAttribute(option);
+                this.options.DelConstant(option);
             }
             else
             {
-                this.options.SetAttribute(option, value);
+                this.options.SetConstant(option, value);
             }
             return (TBootstrap)this;
         }
@@ -111,11 +102,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.attrs.DelAttribute(key);
+                this.attrs.DelConstant(key);
             }
             else
             {
-                this.attrs.SetAttribute(key, value);
+                this.attrs.SetConstant(key, value);
             }
         }
 
@@ -242,7 +233,7 @@ namespace DotNetty.Transport.Bootstrapping
             return promise.Task;
         }
 
-        protected static void SetChannelOptions(IChannel channel, ICollection<IConstantValue> options, IInternalLogger logger)
+        protected static void SetChannelOptions(IChannel channel, ICollection<IConstantAccessor> options, IInternalLogger logger)
         {
             foreach (var e in options)
             {
@@ -250,15 +241,15 @@ namespace DotNetty.Transport.Bootstrapping
             }
         }
 
-        protected static void SetChannelOptions(IChannel channel, DefaultAttributeMap options, IInternalLogger logger)
+        protected static void SetChannelOptions(IChannel channel, ConstantMap options, IInternalLogger logger)
         {
-            foreach (var e in options.attributes.Values)
+            foreach (var (_, accessor) in options)
             {
-                SetChannelOption(channel, (IConstantValue)e, logger);
+                SetChannelOption(channel, accessor, logger);
             }
         }
 
-        protected static void SetChannelOption(IChannel channel, IConstantValue option, IInternalLogger logger)
+        protected static void SetChannelOption(IChannel channel, IConstantAccessor option, IInternalLogger logger)
         {
             try
             {

@@ -67,10 +67,7 @@ namespace DotNetty.Transport.Channels
 
         public string Name { get; }
 
-        public DefaultAttributeMap AttributeMap => this.Channel.AttributeMap;
-        // public IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class => this.Channel.GetAttribute(key);
-        //
-        // public bool HasAttribute<T>(AttributeKey<T> key) where T : class => this.Channel.HasAttribute(key);
+        public ConstantMap ConstantMap => this.Channel.ConstantMap;
 
         public void FireChannelRegistered() => InvokeChannelRegistered(this.FindContextInbound());
 

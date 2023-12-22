@@ -228,9 +228,9 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public bool ConstantSet<T>(IConstant constant, T value)
+        bool IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
         {
-            throw new NotImplementedException();
+            return this.SetOption((ChannelOption<T>)constant, value);
         }
     }
 }

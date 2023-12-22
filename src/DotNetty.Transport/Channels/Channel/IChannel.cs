@@ -1,12 +1,11 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using DotNetty.Buffers;
 using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    public interface IChannel : IConstantAccessor, IAttributeMap, IComparable<IChannel>
+    public interface IChannel : IAttributeMap, IConstantTransfer, IComparable<IChannel>
     {
         IChannelId Id { get; }
         IEventLoop EventLoop { get; }

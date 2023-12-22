@@ -159,9 +159,9 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
         }
 
-        internal static WebSocketServerHandshaker GetHandshaker(IChannel channel) => channel.GetAttribute(HandshakerAttrKey).Get();
+        internal static WebSocketServerHandshaker GetHandshaker(IChannel channel) => channel.ConstantMap.GetConstant(HandshakerAttrKey);
 
-        internal static void SetHandshaker(IChannel channel, WebSocketServerHandshaker handshaker) => channel.GetAttribute(HandshakerAttrKey).Set(handshaker);
+        internal static void SetHandshaker(IChannel channel, WebSocketServerHandshaker handshaker) => channel.ConstantMap.SetConstant(HandshakerAttrKey, handshaker);
 
         internal static IChannelHandler ForbiddenHttpRequestResponder() => new ForbiddenResponseHandler();
 

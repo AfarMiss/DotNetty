@@ -14,27 +14,23 @@ namespace DotNetty.Transport.Bootstrapping
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
 
-        // private readonly ConcurrentDictionary<IConstant, ChannelOptionValue> childOptions;
-        // private readonly ConcurrentDictionary<IConstant, AttributeValue> childAttrs;
-        private readonly DefaultAttributeMap childOptions;
-        private readonly DefaultAttributeMap childAttrs;
+        private readonly ConstantMap childOptions;
+        private readonly ConstantMap childAttrs;
         private volatile IEventLoopGroup childGroup;
         private volatile IChannelHandler childHandler;
 
         public ServerBootstrap()
         {
-            // this.childOptions = new ConcurrentDictionary<IConstant, ChannelOptionValue>();
-            // this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>();
-            this.childOptions = new DefaultAttributeMap();
-            this.childAttrs = new DefaultAttributeMap();
+           this.childOptions = new ConstantMap();
+            this.childAttrs = new ConstantMap();
         }
 
         private ServerBootstrap(ServerBootstrap bootstrap) : base(bootstrap)
         {
             this.childGroup = bootstrap.childGroup;
             this.childHandler = bootstrap.childHandler;
-            this.childOptions = new DefaultAttributeMap(bootstrap.childOptions);
-            this.childAttrs = new DefaultAttributeMap(bootstrap.childAttrs);
+            this.childOptions = new ConstantMap(bootstrap.childOptions);
+            this.childAttrs = new ConstantMap(bootstrap.childAttrs);
         }
 
         public override ServerBootstrap SetGroup(IEventLoopGroup group) => this.SetGroup(group, group);
@@ -58,13 +54,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                // this.childOptions.TryRemove(childOption, out _);
-                this.childOptions.DelAttribute(childOption);
+                this.childOptions.DelConstant(childOption);
             }
             else
             {
-                // this.childOptions[childOption] = new ChannelOptionValue<T>(childOption, value);
-                this.childOptions.SetAttribute(childOption, value);
+                this.childOptions.SetConstant(childOption, value);
             }
             return this;
         }
@@ -75,13 +69,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                // this.childAttrs.TryRemove(childKey, out _);
-                this.childAttrs.DelAttribute(childKey);
+                this.childAttrs.DelConstant(childKey);
             }
             else
             {
-                this.childAttrs.SetAttribute(childKey, value);
-                // this.childAttrs[childKey] = new AttributeValue<T>(childKey, value);
+                this.childAttrs.SetConstant(childKey, value);
             }
             return this;
         }
@@ -98,12 +90,11 @@ namespace DotNetty.Transport.Bootstrapping
 
         protected override void Init(IChannel channel)
         {
-            SetChannelOptions(channel, this.Options, Logger);
+            SetChannelOptions(channel, this.options, Logger);
 
-            foreach (var e in this.Attributes)
+            foreach (var (_, accessor) in this.attrs)
             {
-                // e.Set(channel);
-                e.TransferSet(channel);
+                accessor.TransferSet(channel);
             }
 
             IChannelPipeline p = channel.Pipeline;
@@ -142,10 +133,10 @@ namespace DotNetty.Transport.Bootstrapping
         {
             private readonly IEventLoopGroup childGroup;
             private readonly IChannelHandler childHandler;
-            private readonly IConstantValue[] childOptions;
-            private readonly IConstantValue[] childAttrs;
+            private readonly IConstantAccessor[] childOptions;
+            private readonly IConstantAccessor[] childAttrs;
 
-            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler,IConstantValue[] childOptions, IConstantValue[] childAttrs)
+            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler,IConstantAccessor[] childOptions, IConstantAccessor[] childAttrs)
             {
                 this.childGroup = childGroup;
                 this.childHandler = childHandler;
@@ -161,10 +152,9 @@ namespace DotNetty.Transport.Bootstrapping
 
                 SetChannelOptions(child, this.childOptions, Logger);
 
-                foreach (var attr in this.childAttrs)
+                foreach (var accessor in this.childAttrs)
                 {
-                    attr.TransferSet(child);
-                    // attr.Set(child);
+                    accessor.TransferSet(child);
                 }
 
                 // todo: async/await instead?

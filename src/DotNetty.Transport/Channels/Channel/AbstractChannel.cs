@@ -11,7 +11,7 @@ using TaskCompletionSource = DotNetty.Common.Concurrency.TaskCompletionSource;
 
 namespace DotNetty.Transport.Channels
 {
-    public abstract class AbstractChannel : DefaultAttributeMap, IChannel
+    public abstract class AbstractChannel : ConstantMap, IChannel
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractChannel>();
 
@@ -30,7 +30,7 @@ namespace DotNetty.Transport.Channels
         private bool strValActive;
 
         private string strVal;
-        public DefaultAttributeMap AttributeMap { get; }
+        public ConstantMap ConstantMap => this;
 
         protected AbstractChannel(IChannel parent)
         {
@@ -211,9 +211,10 @@ namespace DotNetty.Transport.Channels
             return this.strVal;
         }
 
-        public bool ConstantSet<T>(IConstant constant, T value)
+        bool IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
         {
-            return this.SetAttribute(constant, value);
+            this.ConstantMap.SetConstant(constant, value);
+            return true;
         }
 
         protected abstract class AbstractUnsafe : IChannelUnsafe

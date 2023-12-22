@@ -4,7 +4,7 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    public interface IChannelConfiguration : IConstantAccessor
+    public interface IChannelConfiguration : IConstantTransfer
     {
         T GetOption<T>(ChannelOption<T> option);
         bool SetOption<T>(ChannelOption<T> option, T value);

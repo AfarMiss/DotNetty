@@ -4,6 +4,6 @@
     /// <remarks>实现必须是线程安全</remarks>
     public interface IAttributeMap
     {
-        DefaultAttributeMap AttributeMap { get; }
+        ConstantMap ConstantMap { get; }
     }
 }
