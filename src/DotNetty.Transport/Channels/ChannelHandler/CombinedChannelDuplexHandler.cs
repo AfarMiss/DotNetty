@@ -452,9 +452,11 @@ namespace DotNetty.Transport.Channels
 
             public Task WriteAndFlushAsync(object message) => this.ctx.WriteAndFlushAsync(message);
 
-            public IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class => this.ctx.GetAttribute(key);
+            public DefaultAttributeMap AttributeMap => this.ctx.AttributeMap;
 
-            public bool HasAttribute<T>(AttributeKey<T> key) where T : class => this.ctx.HasAttribute(key);
+            // public IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class => this.ctx.GetAttribute(key);
+            //
+            // public bool HasAttribute<T>(AttributeKey<T> key) where T : class => this.ctx.HasAttribute(key);
 
             internal void Remove()
             {

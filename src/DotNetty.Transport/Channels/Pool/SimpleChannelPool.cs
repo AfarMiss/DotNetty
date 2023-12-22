@@ -107,7 +107,8 @@ namespace DotNetty.Transport.Channels.Pool
                 {
                     try
                     {
-                        channel.GetAttribute(PoolKey).Set(this);
+                        channel.ConstantSet(PoolKey, this);
+                        // channel.GetAttribute(PoolKey).Set(this);
                         this.Handler.ChannelAcquired(channel);
                         return channel;
                     }
@@ -174,6 +175,8 @@ namespace DotNetty.Transport.Channels.Pool
         {
             Contract.Assert(channel.EventLoop.InEventLoop);
 
+            var constantValue = channel.AttributeMap.GetAttribute(PoolKey);
+            
             // Remove the POOL_KEY attribute from the Channel and check if it was acquired from this pool, if not fail.
             if (channel.GetAttribute(PoolKey).GetAndSet(null) != this)
             {
@@ -234,7 +237,8 @@ namespace DotNetty.Transport.Channels.Pool
 
         private static void CloseChannel(IChannel channel)
         {
-            channel.GetAttribute(PoolKey).GetAndSet(null);
+            channel.ConstantSet(PoolKey, default(SimpleChannelPool));
+            // channel.GetAttribute(PoolKey).GetAndSet(null);
             channel.CloseAsync();
         }
 

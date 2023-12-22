@@ -6,7 +6,7 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    public interface IChannel : IAttributeMap, IComparable<IChannel>
+    public interface IChannel : IConstantAccessor, IAttributeMap, IComparable<IChannel>
     {
         IChannelId Id { get; }
         IEventLoop EventLoop { get; }

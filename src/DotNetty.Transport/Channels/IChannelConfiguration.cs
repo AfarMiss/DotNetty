@@ -1,9 +1,10 @@
 using System;
 using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    public interface IChannelConfiguration
+    public interface IChannelConfiguration : IConstantAccessor
     {
         T GetOption<T>(ChannelOption<T> option);
         bool SetOption<T>(ChannelOption<T> option, T value);

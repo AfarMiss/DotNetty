@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
@@ -225,6 +226,11 @@ namespace DotNetty.Transport.Channels
 
                 this.writeSpinCount = value;
             }
+        }
+
+        public bool ConstantSet<T>(IConstant constant, T value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -30,6 +30,7 @@ namespace DotNetty.Transport.Channels
         private bool strValActive;
 
         private string strVal;
+        public DefaultAttributeMap AttributeMap { get; }
 
         protected AbstractChannel(IChannel parent)
         {
@@ -208,6 +209,11 @@ namespace DotNetty.Transport.Channels
 
             this.strValActive = active;
             return this.strVal;
+        }
+
+        public bool ConstantSet<T>(IConstant constant, T value)
+        {
+            return this.SetAttribute(constant, value);
         }
 
         protected abstract class AbstractUnsafe : IChannelUnsafe

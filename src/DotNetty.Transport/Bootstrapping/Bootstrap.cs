@@ -155,7 +155,7 @@ namespace DotNetty.Transport.Bootstrapping
             var attrs = this.Attributes;
             foreach (var attr in attrs)
             {
-                attr.Set(channel);
+                attr.TransferSet(channel);
             }
         }
 
