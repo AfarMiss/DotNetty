@@ -213,7 +213,7 @@ namespace DotNetty.Transport.Channels
 
         bool IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
         {
-            this.ConstantMap.SetConstant(constant, value);
+            this.ConstantMap.Set(constant, value);
             return true;
         }
 

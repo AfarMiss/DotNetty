@@ -54,11 +54,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.childOptions.DelConstant(childOption);
+                this.childOptions.Remove(childOption);
             }
             else
             {
-                this.childOptions.SetConstant(childOption, value);
+                this.childOptions.Set(childOption, value);
             }
             return this;
         }
@@ -69,11 +69,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.childAttrs.DelConstant(childKey);
+                this.childAttrs.Remove(childKey);
             }
             else
             {
-                this.childAttrs.SetConstant(childKey, value);
+                this.childAttrs.Set(childKey, value);
             }
             return this;
         }

@@ -87,11 +87,11 @@ namespace DotNetty.Transport.Bootstrapping
         {
             if (value == null)
             {
-                this.options.DelConstant(option);
+                this.options.Remove(option);
             }
             else
             {
-                this.options.SetConstant(option, value);
+                this.options.Set(option, value);
             }
             return (TBootstrap)this;
         }
@@ -102,11 +102,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.attrs.DelConstant(key);
+                this.attrs.Remove(key);
             }
             else
             {
-                this.attrs.SetConstant(key, value);
+                this.attrs.Set(key, value);
             }
         }
 

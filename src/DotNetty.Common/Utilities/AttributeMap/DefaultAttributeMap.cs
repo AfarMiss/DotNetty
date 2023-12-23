@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace DotNetty.Common.Utilities
 {
@@ -14,64 +17,84 @@ namespace DotNetty.Common.Utilities
         public bool TransferSet(IConstantTransfer transfer);
     }
 
-    internal sealed class ConstantAccessor<T> : IConstantAccessor
-    {
-        private readonly IConstant<T> key;
-        internal T Value;
-
-        public ConstantAccessor(IConstant key, T value = default)
-        {
-            this.key = (IConstant<T>)key;
-            this.Value = value;
-        }
-
-        public bool TransferSet(IConstantTransfer transfer) => transfer.TransferSet(this.key, this.Value);
-    }
-
     public class ConstantMap : IEnumerable<KeyValuePair<IConstant, IConstantAccessor>>
     {
-        private readonly ConcurrentDictionary<IConstant, IConstantAccessor> attributes;
+        private readonly ConcurrentDictionary<IConstant, Lazy<IConstantAccessor>> attributes;
 
+        private class Atomic<T> : IConstantAccessor
+        {
+            private readonly IConstant<T> key;
+            internal T Value;
+
+            public Atomic(IConstant key, T value = default)
+            {
+                this.key = (IConstant<T>)key;
+                this.Value = value;
+            }
+            
+            public static implicit operator T(Atomic<T> atomic) => atomic.Value;
+            
+            public bool TransferSet(IConstantTransfer transfer) => transfer.TransferSet(this.key, this.Value);
+        }
+        
         public ConstantMap()
         {
-            this.attributes = new ConcurrentDictionary<IConstant, IConstantAccessor>();
+            this.attributes = new ConcurrentDictionary<IConstant, Lazy<IConstantAccessor>>();
         }
-
+        
         public ConstantMap(ConstantMap attributeMap)
         {
-            this.attributes = new ConcurrentDictionary<IConstant, IConstantAccessor>(attributeMap.attributes);
+            this.attributes = new ConcurrentDictionary<IConstant, Lazy<IConstantAccessor>>(attributeMap.attributes);
         }
-
-        public T GetConstant<T>(IConstant<T> key)
+        
+        public T Get<T>(IConstant<T> key)
         {
-            var accessor = (ConstantAccessor<T>)this.attributes.GetOrAdd(key, constant => new ConstantAccessor<T>(key));
-            return accessor.Value;
+            if (this.attributes.TryGetValue(key, out var lazy))
+            {
+                return (Atomic<T>)lazy.Value;
+            }
+
+            throw new Exception($"NotFind {key}");
         }
 
-        public bool HasConstant<T>(IConstant<T> key)
+        public bool HasKey<T>(IConstant<T> key)
         {
             return this.attributes.ContainsKey(key);
         }
 
-        public bool DelConstant<T>(IConstant<T> key)
+        public bool Remove<T>(IConstant<T> key)
         {
             return this.attributes.TryRemove(key, out _);
         }
 
-        public void SetConstant<T>(IConstant<T> key, T value)
+        public void Set<T>(IConstant<T> key, T value)
         {
-            this.attributes.AddOrUpdate(key, (constant, arg) => new ConstantAccessor<T>(constant, arg),
-                (constant, accessor, arg) =>
+            this.attributes.AddOrUpdate(key, new Lazy<IConstantAccessor>(() => new Atomic<T>(key, value)),
+                (_, oldLazy) => new Lazy<IConstantAccessor>(() =>
                 {
-                    ((ConstantAccessor<T>)accessor).Value = arg;
-                    return accessor;
-                }, value);
+                    var atomic = (Atomic<T>)oldLazy.Value;
+                    atomic.Value = value;
+                    return oldLazy.Value;
+                }));
+        }
+        
+        public T Update<T>(IConstant<T> key, Func<T, T> updateFactory)
+        {
+            var lazy = this.attributes.AddOrUpdate(key, new Lazy<IConstantAccessor>(() => new Atomic<T>(key)), 
+                (_, oldLazy) => new Lazy<IConstantAccessor>(() =>
+                {
+                    var atomic = (Atomic<T>)oldLazy.Value;
+                    atomic.Value = updateFactory(atomic.Value);
+                    return oldLazy.Value;
+                }));
+            return (Atomic<T>)lazy.Value;
         }
 
-        public IEnumerator<KeyValuePair<IConstant, IConstantAccessor>> GetEnumerator() => this.attributes.GetEnumerator();
+        public ICollection<IConstantAccessor> Values => this.attributes.Values.Select(lazy => lazy.Value).ToList();
+
+        public IEnumerator<KeyValuePair<IConstant, IConstantAccessor>> GetEnumerator() => 
+            this.attributes.Select(pair => new KeyValuePair<IConstant, IConstantAccessor>(pair.Key, pair.Value.Value)).GetEnumerator(); 
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        public ICollection<IConstantAccessor> Values => this.attributes.Values;
     }
 }
