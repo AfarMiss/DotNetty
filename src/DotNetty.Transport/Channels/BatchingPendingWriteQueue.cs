@@ -30,7 +30,6 @@ namespace DotNetty.Transport.Channels
             this.estimatorHandle = ctx.Channel.Configuration.MessageSizeEstimator.NewHandle();
         }
 
-        /// <summary>Returns <c>true</c> if there are no pending write operations left in this queue.</summary>
         public bool IsEmpty
         {
             get
@@ -41,7 +40,6 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        /// <summary>Returns the number of pending write operations.</summary>
         public int Size
         {
             get
@@ -203,9 +201,6 @@ namespace DotNetty.Transport.Channels
             return promise;
         }
 
-        /// <summary>
-        ///     Return the current message or <c>null</c> if empty.
-        /// </summary>
         public List<object> Current
         {
             get
@@ -234,8 +229,8 @@ namespace DotNetty.Transport.Channels
 
         private void Recycle(PendingWrite write, bool update)
         {
-            PendingWrite next = write.Next;
-            long writeSize = write.Size;
+            var next = write.Next;
+            var writeSize = write.Size;
 
             if (update)
             {

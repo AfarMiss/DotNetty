@@ -752,13 +752,15 @@ namespace DotNetty.Transport.Channels
 
         public override string ToString() => $"{nameof(IChannelHandlerContext)} ({this.Name}, {this.Channel})";
 
-
-        private abstract class AbstractWriteTask<T> : IRunnable , IRecycle where T : AbstractWriteTask<T>, new()
+        private abstract class AbstractWriteTask
+        {
+            protected static readonly bool EstimateTaskSizeOnSubmit = SystemPropertyUtil.GetBoolean("io.netty.transport.estimateSizeOnSubmit", true);
+            // Assuming a 64-bit .NET VM, 16 bytes object header, 4 reference fields and 2 int field
+            protected static readonly int WriteTaskOverhead = SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 56);
+        }
+        private abstract class AbstractWriteTask<T> : AbstractWriteTask, IRunnable , IRecycle where T : AbstractWriteTask<T>, new()
         {
             private static readonly ThreadLocalPool<T> Pool = new ThreadLocalPool<T>(() => new T());
-            private static readonly bool EstimateTaskSizeOnSubmit = SystemPropertyUtil.GetBoolean("io.netty.transport.estimateSizeOnSubmit", true);
-            // Assuming a 64-bit .NET VM, 16 bytes object header, 4 reference fields and 2 int field
-            private static readonly int WriteTaskOverhead = SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 56);
             
             private AbstractChannelHandlerContext ctx;
             private TaskCompletionSource promise;
@@ -785,9 +787,7 @@ namespace DotNetty.Transport.Channels
                 
                 if (EstimateTaskSizeOnSubmit)
                 {
-                    ChannelOutboundBuffer buffer = ctx.Channel.Unsafe.OutboundBuffer;
-
-                    // Check for null as it may be set to null if the channel is closed already
+                    var buffer = ctx.Channel.Unsafe.OutboundBuffer;
                     if (buffer != null)
                     {
                         task.size = ctx.pipeline.EstimatorHandle.Size(msg) + WriteTaskOverhead;
@@ -809,17 +809,18 @@ namespace DotNetty.Transport.Channels
             {
                 try
                 {
-                    var buffer = this.ctx.Channel.Unsafe.OutboundBuffer;
-                    // Check for null as it may be set to null if the channel is closed already
                     if (EstimateTaskSizeOnSubmit)
                     {
-                        buffer?.DecrementPendingOutboundBytes(this.size);
+                        var buffer = this.ctx.Channel.Unsafe.OutboundBuffer;
+                        if (buffer != null)
+                        {
+                            buffer.DecrementPendingOutboundBytes(this.size);
+                        }
                     }
                     this.WriteAsync(this.ctx, this.msg).LinkOutcome(this.promise);
                 }
                 finally
                 {
-                    // Set to null so the GC can collect them directly
                     this.ctx = null;
                     this.msg = null;
                     this.promise = null;

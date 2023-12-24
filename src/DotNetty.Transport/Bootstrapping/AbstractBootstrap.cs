@@ -18,8 +18,8 @@ namespace DotNetty.Transport.Bootstrapping
         private volatile IEventLoopGroup group;
         private volatile Func<TChannel> channelFactory;
         private volatile EndPoint localAddress;
-        protected readonly ConstantMap options;
-        protected readonly ConstantMap attrs;
+        protected readonly ConstantMap Options;
+        protected readonly ConstantMap Attrs;
         private volatile IChannelHandler handler;
 
         protected EndPoint LocalAddress() => this.localAddress;
@@ -31,8 +31,8 @@ namespace DotNetty.Transport.Bootstrapping
 
         protected internal AbstractBootstrap()
         {
-            this.options = new ConstantMap();
-            this.attrs = new ConstantMap();
+            this.Options = new ConstantMap();
+            this.Attrs = new ConstantMap();
         }
 
         protected internal AbstractBootstrap(AbstractBootstrap<TBootstrap, TChannel> bootstrap)
@@ -41,8 +41,8 @@ namespace DotNetty.Transport.Bootstrapping
             this.channelFactory = bootstrap.channelFactory;
             this.handler = bootstrap.handler;
             this.localAddress = bootstrap.localAddress;
-            this.options = new ConstantMap(bootstrap.options);
-            this.attrs = new ConstantMap(bootstrap.attrs);
+            this.Options = new ConstantMap(bootstrap.Options);
+            this.Attrs = new ConstantMap(bootstrap.Attrs);
         }
 
         /// <summary> 指定<see cref="IEventLoopGroup"/>处理<see cref="IChannel"/>事件 </summary>
@@ -87,11 +87,11 @@ namespace DotNetty.Transport.Bootstrapping
         {
             if (value == null)
             {
-                this.options.Remove(option);
+                this.Options.Remove(option);
             }
             else
             {
-                this.options.Set(option, value);
+                this.Options.Set(option, value);
             }
             return (TBootstrap)this;
         }
@@ -102,11 +102,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.attrs.Remove(key);
+                this.Attrs.Remove(key);
             }
             else
             {
-                this.attrs.Set(key, value);
+                this.Attrs.Set(key, value);
             }
         }
 
@@ -173,7 +173,6 @@ namespace DotNetty.Transport.Bootstrapping
             catch (Exception)
             {
                 channel.Unsafe.CloseForcibly();
-                // as the Channel is not registered yet we need to force the usage of the GlobalEventExecutor
                 throw;
             }
 
@@ -215,8 +214,6 @@ namespace DotNetty.Transport.Bootstrapping
 
         private static Task DoBind0Async(IChannel channel, EndPoint localAddress)
         {
-            // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
-            // the pipeline in its channelRegistered() implementation.
             var promise = new TaskCompletionSource();
             channel.EventLoop.Execute(() =>
             {
@@ -263,46 +260,5 @@ namespace DotNetty.Transport.Bootstrapping
                 // logger.Warn("Failed to set channel option '{}' with value '{}' for channel '{}'", option.Option, option, channel, ex);
             }
         }
-
-        // protected abstract class ChannelOptionValue
-        // {
-        //     public abstract IConstant Option { get; }
-        //     public abstract bool Set(IChannelConfiguration config);
-        // }
-        //
-        // protected sealed class ChannelOptionValue<T> : ChannelOptionValue
-        // {
-        //     public override IConstant Option { get; }
-        //     private readonly T value;
-        //
-        //     public ChannelOptionValue(ChannelOption<T> option, T value)
-        //     {
-        //         this.Option = option;
-        //         this.value = value;
-        //     }
-        //
-        //     public override bool Set(IChannelConfiguration config) => config.SetOption((ChannelOption<T>)this.Option, this.value);
-        //
-        //     public override string ToString() => this.value.ToString();
-        // }
-        //
-        // protected abstract class AttributeValue
-        // {
-        //     public abstract void Set(IAttributeMap map);
-        // }
-        //
-        // protected sealed class AttributeValue<T> : AttributeValue where T : class
-        // {
-        //     private readonly AttributeKey<T> key;
-        //     private readonly T value;
-        //
-        //     public AttributeValue(AttributeKey<T> key, T value)
-        //     {
-        //         this.key = key;
-        //         this.value = value;
-        //     }
-        //
-        //     public override void Set(IAttributeMap config) => config.GetAttribute(this.key).Set(this.value);
-        // }
     }
 }

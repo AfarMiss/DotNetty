@@ -16,7 +16,6 @@ namespace DotNetty.Transport.Channels
         private const int MachineIdLen = 8;
         private const int ProcessIdLen = 4;
         // Maximal value for 64bit systems is 2^22.  See man 5 proc.
-        // See https://github.com/netty/netty/issues/2706
         private const int MaxProcessId = 4194304;
         private const int SequenceLen = 4;
         private const int TimestampLen = 8;

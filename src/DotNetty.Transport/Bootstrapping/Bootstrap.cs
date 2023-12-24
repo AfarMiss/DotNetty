@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Threading.Tasks;
@@ -53,7 +52,7 @@ namespace DotNetty.Transport.Bootstrapping
         public Task<IChannel> ConnectAsync()
         {
             this.Validate();
-            EndPoint remoteAddress = this.remoteAddress;
+            var remoteAddress = this.remoteAddress;
             if (remoteAddress == null)
             {
                 throw new InvalidOperationException("remoteAddress not set");
@@ -89,7 +88,6 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (this.resolver.IsResolved(remoteAddress))
             {
-                // Resolver has no idea about what to do with the specified remote address or it's resolved already.
                 await DoConnectAsync(channel, remoteAddress, localAddress);
                 return channel;
             }
@@ -119,8 +117,6 @@ namespace DotNetty.Transport.Bootstrapping
 
         private static Task DoConnectAsync(IChannel channel, EndPoint remoteAddress, EndPoint localAddress)
         {
-            // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
-            // the pipeline in its channelRegistered() implementation.
             var promise = new TaskCompletionSource();
             channel.EventLoop.Execute(() =>
             {
@@ -149,9 +145,9 @@ namespace DotNetty.Transport.Bootstrapping
             var pipeline = channel.Pipeline;
             pipeline.AddLast(null, (string)null, this.Handler);
 
-            SetChannelOptions(channel, this.options, Logger);
+            SetChannelOptions(channel, this.Options, Logger);
 
-            foreach (var (_, accessor) in this.attrs)
+            foreach (var (_, accessor) in this.Attrs)
             {
                 accessor.TransferSet(channel);
             }

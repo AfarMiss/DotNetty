@@ -42,10 +42,7 @@ namespace DotNetty.Transport.Channels.Pool
             // Clone the original Bootstrap as we want to set our own handler
             this.Bootstrap = bootstrap.Clone();
             this.Bootstrap.SetHandler(new ActionChannelInitializer<IChannel>(this.OnChannelInitializing));
-            this.store =
-                lastRecentUsed
-                    ? (IQueue<IChannel>)new CompatibleConcurrentStack<IChannel>()
-                    : new CompatibleConcurrentQueue<IChannel>();
+            this.store =  lastRecentUsed ? (IQueue<IChannel>)new CompatibleConcurrentStack<IChannel>() : new CompatibleConcurrentQueue<IChannel>();
         }
 
         private void OnChannelInitializing(IChannel channel)
@@ -71,7 +68,7 @@ namespace DotNetty.Transport.Channels.Pool
                 return new ValueTask<IChannel>(this.ConnectChannel(clone));
             }
             
-            IEventLoop eventLoop = channel.EventLoop;
+            var eventLoop = channel.EventLoop;
             if (eventLoop.InEventLoop)
             {
                 return this.DoHealthCheck(channel);
@@ -246,7 +243,7 @@ namespace DotNetty.Transport.Channels.Pool
 
         public virtual void Dispose()
         {
-            while (this.TryPollChannel(out IChannel channel))
+            while (this.TryPollChannel(out var channel))
             {
                 channel.CloseAsync();
             }

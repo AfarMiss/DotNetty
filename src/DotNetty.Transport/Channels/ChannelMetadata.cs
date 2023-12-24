@@ -7,7 +7,7 @@ namespace DotNetty.Transport.Channels
     {
         /// <summary> 通道具备<see cref="IChannel.DisconnectAsync()"/>且允许用户断开链接并重新<see cref="IChannel.ConnectAsync(System.Net.EndPoint)"/> </summary>
         public bool HasDisconnect { get; }
-        /// <summary> <see cref="IMaxMessagesRecvByteBufAllocator.MaxMessagesPerRead"/> </summary>
+        /// <summary> <see cref="IRecvByteBufAllocator.MaxMessagesPerRead"/> </summary>
         public int DefaultMaxMessagesPerRead { get; }
         
         /// <param name="hasDisconnect"> <see cref="HasDisconnect"/> </param>

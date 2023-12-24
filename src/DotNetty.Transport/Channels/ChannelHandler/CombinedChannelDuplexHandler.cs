@@ -112,8 +112,6 @@ namespace DotNetty.Transport.Channels
                     }
                 });
 
-            // The inboundCtx and outboundCtx were created and set now it's safe to call removeInboundHandler() and
-            // removeOutboundHandler().
             this.handlerAdded = true;
 
             try

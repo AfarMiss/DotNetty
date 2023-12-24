@@ -14,11 +14,8 @@ namespace DotNetty.Transport.Channels
     public abstract class AbstractChannel : ConstantMap, IChannel
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<AbstractChannel>();
-
         private static readonly NotYetConnectedException NotYetConnectedException = new NotYetConnectedException();
-
         private readonly IChannelUnsafe channelUnsafe;
-
         private readonly DefaultChannelPipeline pipeline;
         private readonly TaskCompletionSource closeFuture = new TaskCompletionSource();
 
@@ -93,7 +90,7 @@ namespace DotNetty.Transport.Channels
         protected abstract EndPoint RemoteAddressInternal { get; }
 
         /// <summary>
-        /// Resets the stored <see cref="RemoteAddress"/>.
+        /// 重置缓存的<see cref="RemoteAddress"/>.
         /// </summary>
         protected void InvalidateRemoteAddress() => this.remoteAddress = null;
 
@@ -224,7 +221,7 @@ namespace DotNetty.Transport.Channels
             private IRecvByteBufAllocatorHandle recvHandle;
             private bool inFlush0;
 
-            /// <summary> true if the channel has never been registered, false otherwise /// </summary>
+            /// <summary> 通道是否从未注册 </summary>
             private bool neverRegistered = true;
 
             public IRecvByteBufAllocatorHandle RecvBufAllocHandle => this.recvHandle ??= this.channel.Configuration.RecvByteBufAllocator.NewHandle();
@@ -297,8 +294,8 @@ namespace DotNetty.Transport.Channels
 
                     Util.SafeSetSuccess(promise, Logger);
                     this.channel.pipeline.FireChannelRegistered();
-                    // Only fire a channelActive if the channel has never been registered. This prevents firing
-                    // multiple channel actives if the channel is deregistered and re-registered.
+
+                    // 仅当通道从未注册时
                     if (this.channel.Active)
                     {
                         if (firstRegistration)
@@ -317,7 +314,6 @@ namespace DotNetty.Transport.Channels
                 }
                 catch (Exception t)
                 {
-                    // Close the channel directly to avoid FD leak.
                     this.CloseForcibly();
                     this.channel.closeFuture.Complete();
                     Util.SafeSetFailure(promise, t, Logger);
@@ -333,20 +329,6 @@ namespace DotNetty.Transport.Channels
                 {
                     return this.CreateClosedChannelExceptionTask();
                 }
-
-                //// See: https://github.com/netty/netty/issues/576
-                //if (bool.TrueString.Equals(this.channel.Configuration.getOption(ChannelOption.SO_BROADCAST)) &&
-                //    localAddress is IPEndPoint &&
-                //    !((IPEndPoint)localAddress).Address.getAddress().isAnyLocalAddress() &&
-                //    !Environment.OSVersion.Platform == PlatformID.Win32NT && !Environment.isRoot())
-                //{
-                //    // Warn a user about the fact that a non-root user can't receive a
-                //    // broadcast packet on *nix if the socket is bound on non-wildcard address.
-                //    logger.Warn(
-                //        "A non-root user can't receive a broadcast packet if the socket " +
-                //            "is not bound to a wildcard address; binding to a non-wildcard " +
-                //            "address (" + localAddress + ") anyway as requested.");
-                //}
 
                 bool wasActive = this.channel.Active;
                 try

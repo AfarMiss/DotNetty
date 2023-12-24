@@ -4,10 +4,6 @@ using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// <see cref="IEventExecutorGroup" /> specialized for handling <see cref="IEventLoop" />s.
-    /// </summary>
     public interface IEventLoopGroup : IEventExecutorGroup
     {
         /// <inheritdoc cref="IEventExecutorGroup.Items"/>
