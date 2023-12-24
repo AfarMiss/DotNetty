@@ -146,7 +146,7 @@ namespace DotNetty.Transport.Channels.Pool
                 }
                 else
                 {
-                    promise = promise ?? new TaskCompletionSource<IChannel>();
+                    promise ??= new TaskCompletionSource<IChannel>();
                     var task = new AcquireTask(this, promise);
                     this.pendingAcquireQueue.Enqueue(task);
                     ++this.pendingAcquireCount;
@@ -393,7 +393,7 @@ namespace DotNetty.Transport.Channels.Pool
                 }
 
                 //at this point 'future' is a real Task
-                promise = promise ?? new TaskCompletionSource<IChannel>();
+                promise ??= new TaskCompletionSource<IChannel>();
                 future.AsTask().ContinueWith(
                     t =>
                     {

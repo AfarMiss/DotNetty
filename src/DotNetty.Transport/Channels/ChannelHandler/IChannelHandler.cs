@@ -7,16 +7,8 @@ namespace DotNetty.Transport.Channels
     /// <summary> 出入站事件操作拦截和处理 </summary>
     public interface IChannelHandler
     {
-        /// <summary>
-        /// The <see cref="IChannel"/> of the <see cref="IChannelHandlerContext"/> was registered with its
-        /// <see cref="IEventLoop"/>.
-        /// </summary>
         void ChannelRegistered(IChannelHandlerContext context);
 
-        /// <summary>
-        /// The <see cref="IChannel"/> of the <see cref="IChannelHandlerContext"/> was unregistered from its
-        /// <see cref="IEventLoop"/>.
-        /// </summary>
         void ChannelUnregistered(IChannelHandlerContext context);
 
         void ChannelActive(IChannelHandlerContext context);
@@ -27,10 +19,6 @@ namespace DotNetty.Transport.Channels
 
         void ChannelReadComplete(IChannelHandlerContext context);
 
-        /// <summary>
-        /// Gets called once the writable state of a <see cref="IChannel"/> changed. You can check the state with
-        /// <see cref="IChannel.IsWritable"/>.
-        /// </summary>
         void ChannelWritabilityChanged(IChannelHandlerContext context);
 
         void HandlerAdded(IChannelHandlerContext context);
@@ -41,34 +29,10 @@ namespace DotNetty.Transport.Channels
 
         void Flush(IChannelHandlerContext context);
 
-        /// <summary>
-        /// Called once a bind operation is made.
-        /// </summary>
-        /// <param name="context">
-        /// The <see cref="IChannelHandlerContext"/> for which the bind operation is made.
-        /// </param>
-        /// <param name="localAddress">The <see cref="EndPoint"/> to which it should bind.</param>
-        /// <returns>An await-able task.</returns>
         Task BindAsync(IChannelHandlerContext context, EndPoint localAddress);
 
-        /// <summary>
-        /// Called once a connect operation is made.
-        /// </summary>
-        /// <param name="context">
-        /// The <see cref="IChannelHandlerContext"/> for which the connect operation is made.
-        /// </param>
-        /// <param name="remoteAddress">The <see cref="EndPoint"/> to which it should connect.</param>
-        /// <param name="localAddress">The <see cref="EndPoint"/> which is used as source on connect.</param>
-        /// <returns>An await-able task.</returns>
         Task ConnectAsync(IChannelHandlerContext context, EndPoint remoteAddress, EndPoint localAddress);
 
-        /// <summary>
-        /// Called once a disconnect operation is made.
-        /// </summary>
-        /// <param name="context">
-        /// The <see cref="IChannelHandlerContext"/> for which the disconnect operation is made.
-        /// </param>
-        /// <returns>An await-able task.</returns>
         Task DisconnectAsync(IChannelHandlerContext context);
 
         Task CloseAsync(IChannelHandlerContext context);

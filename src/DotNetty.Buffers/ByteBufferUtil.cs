@@ -531,7 +531,7 @@ namespace DotNetty.Buffers
                         emptyByteBuffer.CheckIndex(toIndex);
                         return -1;
                     case AbstractByteBuffer _:
-                        return ByteBufferUtil.IndexOf(buffer, fromIndex, toIndex, value);
+                        return IndexOf0(buffer, fromIndex, toIndex, value);
                 }
 
                 throw new InvalidOperationException();

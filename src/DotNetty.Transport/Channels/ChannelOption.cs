@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
 using DotNetty.Buffers;
 using DotNetty.Common.Utilities;
 
@@ -10,19 +9,6 @@ namespace DotNetty.Transport.Channels
 {
     public static class ChannelOption
     {
-        // private static readonly ChannelOptionPool Pool = new ChannelOptionPool();
-        //
-        // private class ChannelOptionPool : ConstantPool
-        // {
-        //     protected override IConstant NewConstant<T>(in int id, string name) => new ChannelOption<T>(id, name);
-        // }
-        //
-        // public static ChannelOption<T> ValueOf<T>(string name) => (ChannelOption<T>)Pool.ValueOf<T>(name);
-        //
-        // public static bool Exists(string name) => Pool.Exists(name);
-        //
-        // public static  ChannelOption<T> NewInstance<T>(string name) => (ChannelOption<T>)Pool.NewInstance<T>(name);
-
         public static readonly ChannelOption<IByteBufferAllocator> Allocator = ChannelOption<IByteBufferAllocator>.ValueOf(nameof(Allocator));
         public static readonly ChannelOption<IRecvByteBufAllocator> RcvbufAllocator = ChannelOption<IRecvByteBufAllocator>.ValueOf(nameof(RcvbufAllocator));
         public static readonly ChannelOption<IMessageSizeEstimator> MessageSizeEstimator = ChannelOption<IMessageSizeEstimator>.ValueOf(nameof(MessageSizeEstimator));
@@ -52,21 +38,10 @@ namespace DotNetty.Transport.Channels
         public static readonly ChannelOption<bool> IpMulticastLoopDisabled = ChannelOption<bool>.ValueOf(nameof(IpMulticastLoopDisabled));
 
         public static readonly ChannelOption<bool> TcpNodelay = ChannelOption<bool>.ValueOf(nameof(TcpNodelay));
-        //
-        // internal ChannelOption(int id, string name) : base(id, name)
-        // {
-        // }
-        //
-        // public abstract bool Set<TV>(IChannelConfiguration configuration, TV value);
     }
 
-    public sealed class ChannelOption<T> : AbstractConstant<ChannelOption<T>>
+    public sealed class ChannelOption<T> : AbstractConstant<ChannelOption<T>, T>
     {
         public void Validate(T value) => Contract.Requires(value != null);
-
-        // public override bool Set<TV>(IChannelConfiguration configuration, TV value)
-        // {
-        //     return configuration.SetOption(this, Unsafe.As<TV, T>(ref value));
-        // }
     }
 }

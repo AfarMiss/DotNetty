@@ -5,9 +5,6 @@ using DotNetty.Common.Concurrency;
 
 namespace DotNetty.Transport.Channels
 {
-    /// <summary>
-    /// <see cref="IEventLoopGroup"/> that works as a wrapper for another <see cref="IEventLoopGroup"/> providing affinity on <see cref="GetNext"/> call.
-    /// </summary>
     public class AffinitizedEventLoopGroup : AbstractEventExecutorGroup, IEventLoopGroup
     {
         private readonly IEventLoopGroup innerGroup;
@@ -29,10 +26,6 @@ namespace DotNetty.Transport.Channels
             this.innerGroup = innerGroup;
         }
 
-        /// <summary>
-        /// If running in a context of an existing <see cref="IEventLoop"/>, this <see cref="IEventLoop"/> is returned.
-        /// Otherwise, <see cref="IEventLoop"/> is retrieved from underlying <see cref="IEventLoopGroup"/>.
-        /// </summary>
         public override IEventExecutor GetNext()
         {
             if (ExecutionEnvironment.TryGetCurrentExecutor(out var executor))

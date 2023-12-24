@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,23 +13,23 @@ namespace DotNetty.Transport.Bootstrapping
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
 
-        private readonly ConcurrentDictionary<IConstant, ChannelOptionValue> childOptions;
-        private readonly ConcurrentDictionary<IConstant, AttributeValue> childAttrs;
+        private readonly ConstantMap childOptions;
+        private readonly ConstantMap childAttrs;
         private volatile IEventLoopGroup childGroup;
         private volatile IChannelHandler childHandler;
 
         public ServerBootstrap()
         {
-            this.childOptions = new ConcurrentDictionary<IConstant, ChannelOptionValue>();
-            this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>();
+           this.childOptions = new ConstantMap();
+            this.childAttrs = new ConstantMap();
         }
 
         private ServerBootstrap(ServerBootstrap bootstrap) : base(bootstrap)
         {
             this.childGroup = bootstrap.childGroup;
             this.childHandler = bootstrap.childHandler;
-            this.childOptions = new ConcurrentDictionary<IConstant, ChannelOptionValue>(bootstrap.childOptions);
-            this.childAttrs = new ConcurrentDictionary<IConstant, AttributeValue>(bootstrap.childAttrs);
+            this.childOptions = new ConstantMap(bootstrap.childOptions);
+            this.childAttrs = new ConstantMap(bootstrap.childAttrs);
         }
 
         public override ServerBootstrap SetGroup(IEventLoopGroup group) => this.SetGroup(group, group);
@@ -54,11 +53,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.childOptions.TryRemove(childOption, out _);
+                this.childOptions.Remove(childOption);
             }
             else
             {
-                this.childOptions[childOption] = new ChannelOptionValue<T>(childOption, value);
+                this.childOptions.Set(childOption, value);
             }
             return this;
         }
@@ -69,11 +68,11 @@ namespace DotNetty.Transport.Bootstrapping
 
             if (value == null)
             {
-                this.childAttrs.TryRemove(childKey, out _);
+                this.childAttrs.Remove(childKey);
             }
             else
             {
-                this.childAttrs[childKey] = new AttributeValue<T>(childKey, value);
+                this.childAttrs.Set(childKey, value);
             }
             return this;
         }
@@ -92,16 +91,16 @@ namespace DotNetty.Transport.Bootstrapping
         {
             SetChannelOptions(channel, this.Options, Logger);
 
-            foreach (AttributeValue e in this.Attributes)
+            foreach (var (_, accessor) in this.Attrs)
             {
-                e.Set(channel);
+                accessor.TransferSet(channel);
             }
 
-            IChannelPipeline p = channel.Pipeline;
-            IChannelHandler channelHandler = this.Handler;
+            var pipeline = channel.Pipeline;
+            var channelHandler = this.Handler;
             if (channelHandler != null)
             {
-                p.AddLast((string)null, channelHandler);
+                pipeline.AddLast((string)null, channelHandler);
             }
 
             var currentChildGroup = this.childGroup;
@@ -109,7 +108,7 @@ namespace DotNetty.Transport.Bootstrapping
             var currentChildOptions = this.childOptions.Values.ToArray();
             var currentChildAttrs = this.childAttrs.Values.ToArray();
 
-            p.AddLast(new ActionChannelInitializer<IChannel>(ch =>
+            pipeline.AddLast(new ActionChannelInitializer<IChannel>(ch =>
             {
                 ch.Pipeline.AddLast(new ServerBootstrapAcceptor(currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
             }));
@@ -129,14 +128,14 @@ namespace DotNetty.Transport.Bootstrapping
             }
         }
 
-        private class ServerBootstrapAcceptor : ChannelHandlerAdapter
+        private sealed class ServerBootstrapAcceptor : ChannelHandlerAdapter
         {
             private readonly IEventLoopGroup childGroup;
             private readonly IChannelHandler childHandler;
-            private readonly ChannelOptionValue[] childOptions;
-            private readonly AttributeValue[] childAttrs;
+            private readonly IConstantAccessor[] childOptions;
+            private readonly IConstantAccessor[] childAttrs;
 
-            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler,ChannelOptionValue[] childOptions, AttributeValue[] childAttrs)
+            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler,IConstantAccessor[] childOptions, IConstantAccessor[] childAttrs)
             {
                 this.childGroup = childGroup;
                 this.childHandler = childHandler;
@@ -152,17 +151,16 @@ namespace DotNetty.Transport.Bootstrapping
 
                 SetChannelOptions(child, this.childOptions, Logger);
 
-                foreach (AttributeValue attr in this.childAttrs)
+                foreach (var accessor in this.childAttrs)
                 {
-                    attr.Set(child);
+                    accessor.TransferSet(child);
                 }
 
                 // todo: async/await instead?
                 try
                 {
                     this.childGroup.RegisterAsync(child).ContinueWith(
-                        (future, state) => ForceClose((IChannel)state, future.Exception),
-                        child,
+                        (future, state) => ForceClose((IChannel)state, future.Exception), child,
                         TaskContinuationOptions.NotOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
                 }
                 catch (Exception ex)
@@ -182,13 +180,12 @@ namespace DotNetty.Transport.Bootstrapping
                 IChannelConfiguration config = ctx.Channel.Configuration;
                 if (config.AutoRead)
                 {
-                    // stop accept new connections for 1 second to allow the channel to recover
+                    // 停止接受新连接1秒以允许通道恢复
                     // See https://github.com/netty/netty/issues/1328
                     config.AutoRead = false;
                     ctx.Channel.EventLoop.ScheduleAsync(c => ((IChannelConfiguration)c).AutoRead = true, config, TimeSpan.FromSeconds(1));
                 }
-                // still let the ExceptionCaught event flow through the pipeline to give the user
-                // a chance to do something with it
+
                 ctx.FireExceptionCaught(cause);
             }
         }

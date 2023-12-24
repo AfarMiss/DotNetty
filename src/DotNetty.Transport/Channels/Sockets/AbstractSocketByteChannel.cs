@@ -115,65 +115,6 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
         }
-        
-        //     public override void FinishRead(SocketChannelAsyncOperation operation)
-        //     {
-        //         var channel = this.Channel;
-        //         // Channel已Close
-        //         if ((channel.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
-        //         {
-        //             return;
-        //         }
-        //         
-        //         var config = channel.Configuration;
-        //         var pipeline = channel.Pipeline;
-        //         var allocator = config.Allocator;
-        //         var allocHandle = this.RecvBufAllocHandle;
-        //         allocHandle.Reset(config);
-        //
-        //         IByteBuffer byteBuf = null;
-        //         bool close = false;
-        //         try
-        //         {
-        //             operation.Validate();
-        //             do
-        //             {
-        //                 byteBuf = allocHandle.Allocate(allocator);
-        //                 allocHandle.LastBytesRead = channel.DoReadBytes(byteBuf);
-        //                 if (allocHandle.LastBytesRead <= 0)
-        //                 {
-        //                     byteBuf.Release();
-        //                     byteBuf = null;
-        //                     close = allocHandle.LastBytesRead < 0;
-        //                     break;
-        //                 }
-        //
-        //                 allocHandle.IncMessagesRead(1);
-        //                 this.Channel.ReadPending = false;
-        //
-        //                 pipeline.FireChannelRead(byteBuf);
-        //                 byteBuf = null;
-        //             }
-        //             while (allocHandle.ContinueReading());
-        //
-        //             allocHandle.ReadComplete();
-        //             pipeline.FireChannelReadComplete();
-        //
-        //             if (close) this.CloseOnRead();
-        //         }
-        //         catch (Exception t)
-        //         {
-        //             this.HandleReadException(pipeline, byteBuf, t, close, allocHandle);
-        //         }
-        //         finally
-        //         {
-        //             if (!close && (channel.ReadPending || config.AutoRead))
-        //             {
-        //                 channel.DoBeginRead();
-        //             }
-        //         }
-        //     }
-        // }
 
         protected override void ScheduleSocketRead()
         {
@@ -286,18 +227,9 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        /// <summary>
-        /// Reads bytes into the given <see cref="IByteBuffer"/> and returns the number of bytes that were read.
-        /// </summary>
-        /// <param name="buf">The <see cref="IByteBuffer"/> to read bytes into.</param>
-        /// <returns>The number of bytes that were read into the buffer.</returns>
+
         protected abstract int DoReadBytes(IByteBuffer buf);
 
-        /// <summary>
-        /// Writes bytes from the given <see cref="IByteBuffer"/> to the underlying <see cref="IChannel"/>.
-        /// </summary>
-        /// <param name="buf">The <see cref="IByteBuffer"/> from which the bytes should be written.</param>
-        /// <returns>The number of bytes that were written from the buffer.</returns>
         protected abstract int DoWriteBytes(IByteBuffer buf);
     }
 }

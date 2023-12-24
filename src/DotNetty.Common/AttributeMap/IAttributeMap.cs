@@ -4,7 +4,6 @@
     /// <remarks>实现必须是线程安全</remarks>
     public interface IAttributeMap
     {
-        IAttribute<T> GetAttribute<T>(AttributeKey<T> key) where T : class;
-        bool HasAttribute<T>(AttributeKey<T> key) where T : class;
+        ConstantMap ConstantMap { get; }
     }
 }

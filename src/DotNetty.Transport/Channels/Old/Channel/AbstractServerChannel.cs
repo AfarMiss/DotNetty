@@ -26,11 +26,11 @@ namespace DotNetty.Transport.Channels
 
         private sealed class DefaultServerUnsafe : AbstractUnsafe
         {
-            private readonly Task err = TaskEx.FromException(new NotSupportedException());
+            private readonly Task error = TaskEx.FromException(new NotSupportedException());
 
             public DefaultServerUnsafe(AbstractChannel channel) : base(channel) { }
 
-            public override Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress) => this.err;
+            public override Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress) => this.error;
         }
     }
 }

@@ -8,7 +8,6 @@ using DotNetty.Common;
 using DotNetty.Common.Concurrency;
 using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
-using DotNetty.Transport.Channels.Sockets;
 
 namespace DotNetty.Transport.Channels
 {
@@ -35,7 +34,7 @@ namespace DotNetty.Transport.Channels
 
         public void AddMessage(object msg, int size, TaskCompletionSource promise)
         {
-            Entry entry = Entry.Acquire(msg, size, promise);
+            var entry = Entry.Acquire(msg, size, promise);
             if (this.tailEntry == null)
             {
                 this.flushedEntry = null;
@@ -52,8 +51,6 @@ namespace DotNetty.Transport.Channels
                 this.unflushedEntry = entry;
             }
 
-            // increment pending bytes after adding message to the unflushed arrays.
-            // See https://github.com/netty/netty/issues/1619
             this.IncrementPendingOutboundBytes(size, false);
         }
 
@@ -63,7 +60,7 @@ namespace DotNetty.Transport.Channels
             // where added in the meantime.
             //
             // See https://github.com/netty/netty/issues/2577
-            Entry entry = this.unflushedEntry;
+            var entry = this.unflushedEntry;
             if (entry != null)
             {
                 if (this.flushedEntry == null)
@@ -133,29 +130,28 @@ namespace DotNetty.Transport.Channels
 
         public bool Remove()
         {
-            Entry e = this.flushedEntry;
-            if (e == null)
+            var entry = this.flushedEntry;
+            if (entry == null)
             {
                 this.ClearNioBuffers();
                 return false;
             }
-            object msg = e.Message;
 
-            TaskCompletionSource promise = e.Promise;
-            int size = e.PendingSize;
+            var promise = entry.Promise;
+            int size = entry.PendingSize;
 
-            this.RemoveEntry(e);
+            this.RemoveEntry(entry);
 
-            if (!e.Cancelled)
+            if (!entry.Cancelled)
             {
                 // only release message, notify and decrement if it was not canceled before.
-                ReferenceCountUtil.SafeRelease(msg);
+                ReferenceCountUtil.SafeRelease(entry.Message);
                 SafeSuccess(promise);
                 this.DecrementPendingOutboundBytes(size, false, true);
             }
 
             // recycle the entry
-            Entry.Recycle(e);
+            Entry.Recycle(entry);
 
             return true;
         }
@@ -164,29 +160,28 @@ namespace DotNetty.Transport.Channels
 
         private bool Remove0(Exception cause, bool notifyWritability)
         {
-            Entry e = this.flushedEntry;
-            if (e == null)
+            var entry = this.flushedEntry;
+            if (entry == null)
             {
                 this.ClearNioBuffers();
                 return false;
             }
-            object msg = e.Message;
 
-            TaskCompletionSource promise = e.Promise;
-            int size = e.PendingSize;
+            var promise = entry.Promise;
+            int size = entry.PendingSize;
 
-            this.RemoveEntry(e);
+            this.RemoveEntry(entry);
 
-            if (!e.Cancelled)
+            if (!entry.Cancelled)
             {
                 // only release message, fail and decrement if it was not canceled before.
-                ReferenceCountUtil.SafeRelease(msg);
+                ReferenceCountUtil.SafeRelease(entry.Message);
                 SafeFail(promise, cause);
                 this.DecrementPendingOutboundBytes(size, false, notifyWritability);
             }
 
             // recycle the entry
-            Entry.Recycle(e);
+            Entry.Recycle(entry);
 
             return true;
         }
@@ -213,8 +208,7 @@ namespace DotNetty.Transport.Channels
         {
             while (true)
             {
-                object msg = this.Current;
-                if (!(msg is IByteBuffer buf))
+                if (!(this.Current is IByteBuffer buf))
                 {
                     Contract.Assert(writtenBytes == 0);
                     break;

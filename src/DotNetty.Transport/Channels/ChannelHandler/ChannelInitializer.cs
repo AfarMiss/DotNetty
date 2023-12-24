@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using DotNetty.Common.Internal.Logging;
-using DotNetty.Transport.Bootstrapping;
 
 namespace DotNetty.Transport.Channels
 {
@@ -48,7 +47,7 @@ namespace DotNetty.Transport.Channels
 
         private bool InitChannel(IChannelHandlerContext ctx)
         {
-            if (initMap.TryAdd(ctx, true))
+            if (this.initMap.TryAdd(ctx, true))
             {
                 try
                 {
@@ -79,7 +78,7 @@ namespace DotNetty.Transport.Channels
             }
             finally
             {
-                initMap.TryRemove(ctx, out _);
+                this.initMap.TryRemove(ctx, out _);
             }
         }
     }
