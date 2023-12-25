@@ -6,6 +6,7 @@ namespace DotNetty.Transport.Channels
     public interface IChannelUnsafe
     {
         IRecvByteBufAllocatorHandle RecvBufAllocHandle { get; }
+        ChannelOutboundBuffer OutboundBuffer { get; }
 
         Task RegisterAsync(IEventLoop eventLoop);
         Task DeregisterAsync();
@@ -17,7 +18,5 @@ namespace DotNetty.Transport.Channels
         void BeginRead();
         Task WriteAsync(object message);
         void Flush();
-
-        ChannelOutboundBuffer OutboundBuffer { get; }
     }
 }

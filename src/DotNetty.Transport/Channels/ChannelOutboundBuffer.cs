@@ -56,24 +56,17 @@ namespace DotNetty.Transport.Channels
 
         public void AddFlush()
         {
-            // There is no need to process all entries if there was already a flush before and no new messages
-            // where added in the meantime.
-            //
-            // See https://github.com/netty/netty/issues/2577
             var entry = this.unflushedEntry;
             if (entry != null)
             {
-                if (this.flushedEntry == null)
-                {
-                    // there is no flushedEntry yet, so start with the entry
-                    this.flushedEntry = entry;
-                }
+                this.flushedEntry ??= entry;
+                
                 do
                 {
                     this.flushed++;
                     if (!entry.Promise.SetUncancellable())
                     {
-                        // Was cancelled so make sure we free up memory and notify about the freed bytes
+                        //已取消，确保释放内存并通知释放的字节
                         int pending = entry.Cancel();
                         this.DecrementPendingOutboundBytes(pending, false, true);
                     }
@@ -81,7 +74,7 @@ namespace DotNetty.Transport.Channels
                 }
                 while (entry != null);
 
-                // All flushed so reset unflushedEntry
+                // 完成 重置
                 this.unflushedEntry = null;
             }
         }
@@ -95,7 +88,7 @@ namespace DotNetty.Transport.Channels
                 return;
             }
 
-            long newWriteBufferSize = Interlocked.Add(ref this.totalPendingSize, size);
+            var newWriteBufferSize = Interlocked.Add(ref this.totalPendingSize, size);
             if (newWriteBufferSize >= this.channel.Configuration.WriteBufferHighWaterMark)
             {
                 this.SetUnwritable(invokeLater);
@@ -111,7 +104,7 @@ namespace DotNetty.Transport.Channels
                 return;
             }
 
-            long newWriteBufferSize = Interlocked.Add(ref this.totalPendingSize, -size);
+            var newWriteBufferSize = Interlocked.Add(ref this.totalPendingSize, -size);
             if (notifyWritability && (newWriteBufferSize == 0
                 || newWriteBufferSize <= this.channel.Configuration.WriteBufferLowWaterMark))
             {
@@ -133,7 +126,7 @@ namespace DotNetty.Transport.Channels
             var entry = this.flushedEntry;
             if (entry == null)
             {
-                this.ClearNioBuffers();
+                ClearNioBuffers();
                 return false;
             }
 
@@ -150,7 +143,6 @@ namespace DotNetty.Transport.Channels
                 this.DecrementPendingOutboundBytes(size, false, true);
             }
 
-            // recycle the entry
             Entry.Recycle(entry);
 
             return true;
@@ -163,7 +155,7 @@ namespace DotNetty.Transport.Channels
             var entry = this.flushedEntry;
             if (entry == null)
             {
-                this.ClearNioBuffers();
+                ClearNioBuffers();
                 return false;
             }
 
@@ -180,7 +172,6 @@ namespace DotNetty.Transport.Channels
                 this.DecrementPendingOutboundBytes(size, false, notifyWritability);
             }
 
-            // recycle the entry
             Entry.Recycle(entry);
 
             return true;
@@ -241,14 +232,10 @@ namespace DotNetty.Transport.Channels
                     break;
                 }
             }
-            this.ClearNioBuffers();
+            ClearNioBuffers();
         }
 
-        /// <summary>
-        /// Clears all ByteBuffer from the array so these can be GC'ed.
-        /// See https://github.com/netty/netty/issues/3837
-        /// </summary>
-        private void ClearNioBuffers() => NioBuffers.Value.Clear();
+        private static void ClearNioBuffers() => NioBuffers.Value.Clear();
 
         public List<ArraySegment<byte>> GetSharedBufferList() => this.GetSharedBufferList(int.MaxValue, int.MaxValue);
 
@@ -539,7 +526,7 @@ namespace DotNetty.Transport.Channels
             {
                 this.inFail = false;
             }
-            this.ClearNioBuffers();
+            ClearNioBuffers();
         }
 
         internal void Close(ClosedChannelException cause) => this.Close(cause, false);
