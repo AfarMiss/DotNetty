@@ -17,7 +17,6 @@ namespace DotNetty.Transport.Channels
         private readonly ChannelOutboundBuffer buffer;
         private readonly IMessageSizeEstimatorHandle estimatorHandle;
 
-        // head and tail pointers for the linked-list structure. If empty head and tail are null.
         private PendingWrite head;
         private PendingWrite tail;
         private int size;
@@ -31,9 +30,6 @@ namespace DotNetty.Transport.Channels
             this.estimatorHandle = ctx.Channel.Configuration.MessageSizeEstimator.NewHandle();
         }
 
-        /// <summary>
-        /// Returns <c>true</c> if there are no pending write operations left in this queue.
-        /// </summary>
         public bool IsEmpty
         {
             get
@@ -44,9 +40,6 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        /// <summary>
-        /// Returns the number of pending write operations.
-        /// </summary>
         public int Size
         {
             get
@@ -57,22 +50,14 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        /// <summary>
-        /// Adds the given message to this <see cref="PendingWriteQueue"/>.
-        /// </summary>
-        /// <param name="msg">The message to add to the <see cref="PendingWriteQueue"/>.</param>
-        /// <returns>An await-able task.</returns>
         public Task Add(object msg)
         {
             Contract.Assert(this.ctx.Executor.InEventLoop);
             Contract.Requires(msg != null);
 
             int messageSize = this.estimatorHandle.Size(msg);
-            if (messageSize < 0)
-            {
-                // Size may be unknow so just use 0
-                messageSize = 0;
-            }
+            if (messageSize < 0) messageSize = 0;
+            
             var promise = new TaskCompletionSource();
             PendingWrite write = PendingWrite.Acquire(msg, messageSize, promise);
             PendingWrite currentTail = this.tail;

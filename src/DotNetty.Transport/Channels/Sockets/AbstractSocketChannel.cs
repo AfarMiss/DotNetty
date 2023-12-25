@@ -88,9 +88,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
             else
             {
-                // Best effort if we are not registered yet clear ReadPending. This happens during channel initialization.
-                // NB: We only set the boolean field instead of calling ClearReadPending0(), because the SelectionKey is
-                // not set yet so it would produce an assertion failure.
+                // 如果尚未注册,尽量保证清除ReadPending
                 this.ReadPending = false;
             }
         }
@@ -101,11 +99,11 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected void ShutdownInput() => this.inputShutdown = true;
 
-        protected void SetState(StateFlags stateToSet) => this.state |= stateToSet;
+        protected void SetState(StateFlags stateToSet) => this.state = this.state | stateToSet;
 
         protected StateFlags ResetState(StateFlags stateToReset)
         {
-            StateFlags oldState = this.state;
+            var oldState = this.state;
             if ((oldState & stateToReset) != 0)
             {
                 this.state = oldState & ~stateToReset;
@@ -115,7 +113,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected bool TryResetState(StateFlags stateToReset)
         {
-            StateFlags oldState = this.state;
+            var oldState = this.state;
             if ((oldState & stateToReset) != 0)
             {
                 this.state = oldState & ~stateToReset;
@@ -160,7 +158,6 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        /// <remarks>PORT NOTE: matches behavior of NioEventLoop.processSelectedKey</remarks>
         private static void OnIoCompleted(object sender, SocketAsyncEventArgs args)
         {
             var operation = (SocketChannelAsyncOperation)args;
@@ -262,37 +259,32 @@ namespace DotNetty.Transport.Channels.Sockets
                         ch.connectPromise = new TaskCompletionSource(remoteAddress);
 
                         // Schedule connect timeout.
-                        TimeSpan connectTimeout = ch.Configuration.ConnectTimeout;
+                        var connectTimeout = ch.Configuration.ConnectTimeout;
                         if (connectTimeout > TimeSpan.Zero)
                         {
-                            ch.connectCancellationTask = ch.EventLoop.Schedule(
-                                (c, a) =>
+                            ch.connectCancellationTask = ch.EventLoop.Schedule((socketChannel, address) =>
                                 {
                                     // todo: make static / cache delegate?..
-                                    var self = (AbstractSocketChannel)c;
+                                    var self = (AbstractSocketChannel)socketChannel;
                                     // todo: call Socket.CancelConnectAsync(...)
                                     var promise = self.connectPromise;
-                                    var cause = new ConnectTimeoutException("connection timed out: " + a.ToString());
+                                    var cause = new ConnectTimeoutException("connection timed out: " + address);
                                     if (promise != null && promise.TrySetException(cause))
                                     {
                                         self.CloseSafe();
                                     }
                                 },
-                                this.channel,
-                                remoteAddress,
-                                connectTimeout);
+                                this.channel, remoteAddress, connectTimeout);
                         }
 
-                        ch.connectPromise.Task.ContinueWith(
-                            (t, s) =>
+                        ch.connectPromise.Task.ContinueWith((task, socketChannel) =>
                             {
-                                var c = (AbstractSocketChannel)s;
+                                var c = (AbstractSocketChannel)socketChannel;
                                 c.connectCancellationTask?.Cancel();
                                 c.connectPromise = null;
                                 c.CloseSafe();
                             },
-                            ch,
-                            TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.ExecuteSynchronously);
+                            ch, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.ExecuteSynchronously);
 
                         return ch.connectPromise.Task;
                     }
@@ -306,39 +298,24 @@ namespace DotNetty.Transport.Channels.Sockets
 
             private void FulfillConnectPromise(bool wasActive)
             {
-                // Regardless if the connection attempt was cancelled, channelActive() event should be triggered,
-                // because what happened is what happened.
+                // 无论是否尝试连接被取消 都应ChannelActive()
                 if (!wasActive && this.channel.Active)
                 {
                     this.channel.Pipeline.FireChannelActive();
                 }
 
                 var promise = this.Channel.connectPromise;
-                // If promise is null, then it the channel was Closed via cancellation and the promise has been notified already.
-                if (promise != null)
+                if (promise != null && !promise.TryComplete())
                 {
-                    // trySuccess() will return false if a user cancelled the connection attempt.
-                    bool promiseSet = promise.TryComplete();
-
-                    // If a user cancelled the connection attempt, close the channel, which is followed by channelInactive().
-                    if (!promiseSet)
-                    {
-                        this.CloseSafe();
-                    }
-
+                    this.CloseSafe();
                 }
             }
 
             private void FulfillConnectPromise(Exception cause)
             {
                 var promise = this.Channel.connectPromise;
-                if (promise == null)
-                {
-                    // Closed via cancellation and the promise has been notified already.
-                    return;
-                }
+                if (promise == null) return;
 
-                // Use tryFailure() instead of setFailure() to avoid the race against cancel().
                 promise.TrySetException(cause);
                 this.CloseIfClosed();
             }
@@ -350,7 +327,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 var socketChannel = this.Channel;
                 try
                 {
-                    bool wasActive = socketChannel.Active;
+                    var wasActive = socketChannel.Active;
                     socketChannel.DoFinishConnect(operation);
                     this.FulfillConnectPromise(wasActive);
                 }
@@ -362,8 +339,6 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
                 finally
                 {
-                    // Check for null as the connectTimeoutFuture is only created if a connectTimeoutMillis > 0 is used
-                    // See https://github.com/netty/netty/issues/1770
                     socketChannel.connectCancellationTask?.Cancel();
                     socketChannel.connectPromise = null;
                 }
@@ -373,19 +348,12 @@ namespace DotNetty.Transport.Channels.Sockets
 
             protected sealed override void Flush0()
             {
-                // Flush immediately only when there's no pending flush.
-                // If there's a pending flush operation, event loop will call FinishWrite() later,
-                // and thus there's no need to call it now.
-                if (this.IsFlushPending())
-                {
-                    return;
-                }
-                base.Flush0();
+                if (!this.IsFlushPending()) base.Flush0();
             }
 
             public void FinishWrite(SocketChannelAsyncOperation operation)
             {
-                bool resetWritePending = this.Channel.TryResetState(StateFlags.WriteScheduled);
+                var resetWritePending = this.Channel.TryResetState(StateFlags.WriteScheduled);
 
                 Contract.Assert(resetWritePending);
 
@@ -393,7 +361,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 try
                 {
                     operation.Validate();
-                    int sent = operation.BytesTransferred;
+                    var sent = operation.BytesTransferred;
                     this.Channel.ResetWriteOperation();
                     if (sent > 0)
                     {
@@ -404,10 +372,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 {
                     Util.CompleteChannelCloseTaskSafely(this.channel, this.CloseAsync(new ClosedChannelException("Failed to write", ex), false));
                 }
-
-                // Double check if there's no pending flush
-                // See https://github.com/Azure/DotNetty/issues/218
-                this.Flush0(); // todo: does it make sense now that we've actually written out everything that was flushed previously? concurrent flush handling?
+                this.Flush0();
             }
 
             private bool IsFlushPending() => this.Channel.IsInState(StateFlags.WriteScheduled);
@@ -430,14 +395,8 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected abstract void ScheduleSocketRead();
 
-        /// <summary>
-        ///     Connect to the remote peer
-        /// </summary>
         protected abstract bool DoConnect(EndPoint remoteAddress, EndPoint localAddress);
 
-        /// <summary>
-        ///     Finish the connect
-        /// </summary>
         protected abstract void DoFinishConnect(SocketChannelAsyncOperation operation);
 
         protected override void DoClose()
@@ -445,7 +404,6 @@ namespace DotNetty.Transport.Channels.Sockets
             var promise = this.connectPromise;
             if (promise != null)
             {
-                // Use TrySetException() instead of SetException() to avoid the race against cancellation due to timeout.
                 promise.TrySetException(new ClosedChannelException());
                 this.connectPromise = null;
             }

@@ -5,9 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    /// <summary>
-    /// The default <see cref="ISocketChannelConfiguration"/> implementation.
-    /// </summary>
     public class DefaultSocketChannelConfiguration : DefaultChannelConfiguration, ISocketChannelConfiguration
     {
         protected readonly Socket Socket;
@@ -19,13 +16,14 @@ namespace DotNetty.Transport.Channels.Sockets
             Contract.Requires(socket != null);
             this.Socket = socket;
 
-            // Enable TCP_NODELAY by default if possible.
+            // 默认开启TCP_NODELAY
             try
             {
                 this.TcpNoDelay = true;
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -108,8 +106,8 @@ namespace DotNetty.Transport.Channels.Sockets
 
         public bool AllowHalfClosure
         {
-            get { return this.allowHalfClosure; }
-            set { this.allowHalfClosure = value; }
+            get => this.allowHalfClosure;
+            set => this.allowHalfClosure = value;
         }
 
         public int ReceiveBufferSize
@@ -186,7 +184,7 @@ namespace DotNetty.Transport.Channels.Sockets
             {
                 try
                 {
-                    LingerOption lingerState = this.Socket.LingerState;
+                    var lingerState = this.Socket.LingerState;
                     return lingerState.Enabled ? lingerState.LingerTime : -1;
                 }
                 catch (ObjectDisposedException ex)

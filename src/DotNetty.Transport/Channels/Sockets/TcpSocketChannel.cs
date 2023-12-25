@@ -44,11 +44,6 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override EndPoint RemoteAddressInternal => this.Socket.RemoteEndPoint;
 
-        public bool IsOutputShutdown
-        {
-            get { throw new NotImplementedException(); } // todo: impl with stateflags
-        }
-
         public Task ShutdownOutputAsync()
         {
             var tcs = new TaskCompletionSource();
@@ -62,7 +57,6 @@ namespace DotNetty.Transport.Channels.Sockets
             {
                 loop.Execute(promise => this.ShutdownOutput0((TaskCompletionSource)promise), tcs);
             }
-            //}
             return tcs.Task;
         }
 
@@ -208,11 +202,8 @@ namespace DotNetty.Transport.Channels.Sockets
                 while (true)
                 {
                     int size = input.Size;
-                    if (size == 0)
-                    {
-                        // All written
-                        break;
-                    }
+                    if (size == 0) break;
+                    
                     long writtenBytes = 0;
                     bool done = false;
 
@@ -224,8 +215,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     Socket socket = this.Socket;
 
                     List<ArraySegment<byte>> bufferList = sharedBufferList;
-                    // Always us nioBuffers() to workaround data-corruption.
-                    // See https://github.com/netty/netty/issues/2761
+    
                     switch (nioBufferCnt)
                     {
                         case 0:
@@ -263,7 +253,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                     if (writtenBytes > 0)
                     {
-                        // Release the fully written buffers, and update the indexes of the partially written buffer
+                        // 释放完全写入的缓冲区，并更新写入部分缓冲区的索引
                         input.RemoveBytes(writtenBytes);
                     }
 
@@ -274,9 +264,9 @@ namespace DotNetty.Transport.Channels.Sockets
                         {
                             asyncBufferList = sharedBufferList.ToArray(); // move out of shared list that will be reused which could corrupt buffers still pending update
                         }
-                        SocketChannelAsyncOperation asyncOperation = this.PrepareWriteOperation(asyncBufferList);
-
+                        
                         // Not all buffers were written out completely
+                        var asyncOperation = this.PrepareWriteOperation(asyncBufferList);
                         if (this.IncompleteWrite(true, asyncOperation))
                         {
                             break;
@@ -303,7 +293,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     {
                         int offset = buffer.Offset + (int)localWrittenBytes;
                         int count = -(int)leftBytes;
-                        adjusted.Add(new ArraySegment<byte>(buffer.Array, offset, count));
+                        adjusted.Add(new ArraySegment<byte>(buffer.Array!, offset, count));
                         localWrittenBytes = 0;
                     }
                     else

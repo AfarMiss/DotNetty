@@ -428,13 +428,10 @@ namespace DotNetty.Transport.Channels.Sockets
 
                 try
                 {
-                    int index = this.GetNetworkInterfaceIndex(value);
+                    int index = GetNetworkInterfaceIndex(value);
                     if (index >= 0)
                     {
-                        this.socket.SetSocketOption(
-                            this.AddressFamilyOptionLevel,
-                            SocketOptionName.MulticastInterface,
-                            index);
+                        this.socket.SetSocketOption(this.AddressFamilyOptionLevel, SocketOptionName.MulticastInterface, index);
                     }
                 }
                 catch (ObjectDisposedException ex)
@@ -466,20 +463,12 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        internal int GetNetworkInterfaceIndex(NetworkInterface networkInterface)
+        internal static int GetNetworkInterfaceIndex(NetworkInterface networkInterface)
         {
             Contract.Requires(networkInterface != null);
 
-            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            for (int index = 0; index < interfaces.Length; index++)
-            {
-                if (interfaces[index].Id == networkInterface.Id)
-                {
-                    return index;
-                }
-            }
-
-            return -1;
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            return Array.FindIndex(interfaces, @interface => @interface.Id == networkInterface.Id);
         }
     }
 }

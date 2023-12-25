@@ -10,7 +10,7 @@ namespace DotNetty.Transport.Channels.Sockets
         private static readonly string ExpectedTypes = $" (expected: {StringUtil.SimpleClassName<IByteBuffer>()})"; //+ ", " +
 
         private static readonly Action<object> FlushAction = o => ((AbstractSocketByteChannel)o).Flush();
-        private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
+        private static readonly Action<object, object> ReadCompletedSyncAction = OnReadCompletedSync;
 
         protected AbstractSocketByteChannel(IChannel parent, Socket socket)
             : base(parent, socket)
@@ -26,7 +26,7 @@ namespace DotNetty.Transport.Channels.Sockets
             {
             }
 
-            new AbstractSocketByteChannel Channel => (AbstractSocketByteChannel)this.channel;
+            private new AbstractSocketByteChannel Channel => (AbstractSocketByteChannel)this.channel;
 
             private void CloseOnRead()
             {
@@ -124,7 +124,7 @@ namespace DotNetty.Transport.Channels.Sockets
             if (!pending)
             {
                 // todo: potential allocation / non-static field?
-                this.EventLoop.Execute(ReadCompletedSyncCallback, this.Unsafe, operation);
+                this.EventLoop.Execute(ReadCompletedSyncAction, this.Unsafe, operation);
             }
         }
 
@@ -137,15 +137,11 @@ namespace DotNetty.Transport.Channels.Sockets
             while (true)
             {
                 object msg = input.Current;
-                if (msg == null)
-                {
-                    // Wrote all messages.
-                    break;
-                }
+                if (msg == null) break;
 
                 if (msg is IByteBuffer buf)
                 {
-                    int readableBytes = buf.ReadableBytes;
+                    var readableBytes = buf.ReadableBytes;
                     if (readableBytes == 0)
                     {
                         input.Remove();
@@ -189,7 +185,6 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
                 else
                 {
-                    // Should not reach here.
                     throw new InvalidOperationException();
                 }
             }
@@ -204,13 +199,11 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected bool IncompleteWrite(bool scheduleAsync, SocketChannelAsyncOperation operation)
         {
-            // Did not write completely.
             if (scheduleAsync)
             {
                 this.SetState(StateFlags.WriteScheduled);
 
                 var pending = this.Socket.SendAsync(operation);
-
                 if (!pending)
                 {
                     ((ISocketChannelUnsafe)this.Unsafe).FinishWrite(operation);
@@ -220,9 +213,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
             else
             {
-                // Schedule flush again later so other tasks can be picked up input the meantime
                 this.EventLoop.Execute(FlushAction, this);
-
                 return true;
             }
         }

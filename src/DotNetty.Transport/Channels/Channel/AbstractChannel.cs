@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
 using DotNetty.Common.Internal.Logging;
@@ -24,9 +23,6 @@ namespace DotNetty.Transport.Channels
         private volatile IEventLoop eventLoop;
         private volatile bool registered;
 
-        private bool strValActive;
-
-        private string strVal;
         public ConstantMap ConstantMap => this;
 
         protected AbstractChannel(IChannel parent)
@@ -145,69 +141,6 @@ namespace DotNetty.Transport.Channels
 
         public int CompareTo(IChannel o) => ReferenceEquals(this, o) ? 0 : this.Id.CompareTo(o.Id);
 
-        /// <summary>
-        /// Returns the string representation of this channel. The returned string contains a hex dump of the
-        /// <see cref="IChannelId"/>, the <see cref="LocalAddress"/>, and the <see cref="RemoteAddress"/> of this
-        /// channel for easier identification.
-        /// </summary>
-        public override string ToString()
-        {
-            bool active = this.Active;
-            if (this.strValActive == active && this.strVal != null)
-            {
-                return this.strVal;
-            }
-
-            var remoteAddr = this.RemoteAddress;
-            EndPoint localAddr = this.LocalAddress;
-            if (remoteAddr != null)
-            {
-                EndPoint srcAddr;
-                EndPoint dstAddr;
-                if (this.Parent == null)
-                {
-                    srcAddr = localAddr;
-                    dstAddr = remoteAddr;
-                }
-                else
-                {
-                    srcAddr = remoteAddr;
-                    dstAddr = localAddr;
-                }
-
-                StringBuilder buf = new StringBuilder(96)
-                    .Append("[id: 0x")
-                    .Append(this.Id.AsShortText())
-                    .Append(", ")
-                    .Append(srcAddr)
-                    .Append(active ? " => " : " :> ")
-                    .Append(dstAddr)
-                    .Append(']');
-                this.strVal = buf.ToString();
-            }
-            else if (localAddr != null)
-            {
-                StringBuilder buf = new StringBuilder(64)
-                    .Append("[id: 0x")
-                    .Append(this.Id.AsShortText())
-                    .Append(", ")
-                    .Append(localAddr)
-                    .Append(']');
-                this.strVal = buf.ToString();
-            }
-            else
-            {
-                StringBuilder buf = new StringBuilder(16)
-                    .Append("[id: 0x")
-                    .Append(this.Id.AsShortText())
-                    .Append(']');
-                this.strVal = buf.ToString();
-            }
-
-            this.strValActive = active;
-            return this.strVal;
-        }
-
         bool IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
         {
             this.ConstantMap.Set(constant, value);
@@ -223,6 +156,8 @@ namespace DotNetty.Transport.Channels
 
             /// <summary> 通道是否从未注册 </summary>
             private bool neverRegistered = true;
+            
+            public ChannelOutboundBuffer OutboundBuffer => this.outboundBuffer;
 
             public IRecvByteBufAllocatorHandle RecvBufAllocHandle => this.recvHandle ??= this.channel.Configuration.RecvByteBufAllocator.NewHandle();
 
@@ -232,22 +167,18 @@ namespace DotNetty.Transport.Channels
                 this.outboundBuffer = new ChannelOutboundBuffer(channel);
             }
 
-            public ChannelOutboundBuffer OutboundBuffer => this.outboundBuffer;
-
             private void AssertEventLoop() => Contract.Assert(!this.channel.registered || this.channel.eventLoop.InEventLoop);
 
             public Task RegisterAsync(IEventLoop eventLoop)
             {
-                Contract.Requires(eventLoop != null);
-
                 if (this.channel.Registered)
                 {
-                    return TaskEx.FromException(new InvalidOperationException("registered to an event loop already"));
+                    return TaskEx.FromException(new InvalidOperationException($"已注册到{nameof(IEventLoop)}"));
                 }
 
                 if (!this.channel.IsCompatible(eventLoop))
                 {
-                    return TaskEx.FromException(new InvalidOperationException("incompatible event loop type: " + eventLoop.GetType().Name));
+                    return TaskEx.FromException(new InvalidOperationException($"{eventLoop.GetType().Name}不匹配"));
                 }
 
                 this.channel.eventLoop = eventLoop;
@@ -262,11 +193,12 @@ namespace DotNetty.Transport.Channels
                 {
                     try
                     {
-                        eventLoop.Execute((u, p) => ((AbstractUnsafe)u).Register0((TaskCompletionSource)p), this, promise);
+                        void Register0Action(object u, object p) => ((AbstractUnsafe)u).Register0((TaskCompletionSource)p);
+                        eventLoop.Execute(Register0Action, this, promise);
                     }
                     catch (Exception ex)
                     {
-                        Logger.Warn("Force-closing a channel whose registration task was not accepted by an event loop: {}", this.channel, ex);
+                        Logger.Warn("RegisterAsync Exception: {}", this.channel, ex);
                         this.CloseForcibly();
                         this.channel.closeFuture.Complete();
                         Util.SafeSetFailure(promise, ex, Logger);
@@ -280,14 +212,13 @@ namespace DotNetty.Transport.Channels
             {
                 try
                 {
-                    // check if the channel is still open as it could be closed input the mean time when the register
-                    // call was outside of the eventLoop
                     if (!promise.SetUncancellable() || !this.EnsureOpen(promise))
                     {
                         Util.SafeSetFailure(promise, new ClosedChannelException(), Logger);
                         return;
                     }
-                    bool firstRegistration = this.neverRegistered;
+                    
+                    var firstRegistration = this.neverRegistered;
                     this.channel.DoRegister();
                     this.neverRegistered = false;
                     this.channel.registered = true;
@@ -304,10 +235,6 @@ namespace DotNetty.Transport.Channels
                         }
                         else if (this.channel.Configuration.AutoRead)
                         {
-                            // This channel was registered before and autoRead() is set. This means we need to begin read
-                            // again so that we process inbound data.
-                            //
-                            // See https://github.com/netty/netty/issues/4805
                             this.BeginRead();
                         }
                     }
@@ -330,7 +257,7 @@ namespace DotNetty.Transport.Channels
                     return this.CreateClosedChannelExceptionTask();
                 }
 
-                bool wasActive = this.channel.Active;
+                var wasActive = this.channel.Active;
                 try
                 {
                     this.channel.DoBind(localAddress);
@@ -355,15 +282,15 @@ namespace DotNetty.Transport.Channels
             {
                 this.AssertEventLoop();
 
-                bool wasActive = this.channel.Active;
+                var wasActive = this.channel.Active;
                 try
                 {
                     this.channel.DoDisconnect();
                 }
-                catch (Exception t)
+                catch (Exception ex)
                 {
                     this.CloseIfClosed();
-                    return TaskEx.FromException(t);
+                    return TaskEx.FromException(ex);
                 }
 
                 if (wasActive && !this.channel.Active)
@@ -371,12 +298,12 @@ namespace DotNetty.Transport.Channels
                     this.InvokeLater(() => this.channel.pipeline.FireChannelInactive());
                 }
 
-                this.CloseIfClosed(); // doDisconnect() might have closed the channel
+                this.CloseIfClosed();
 
                 return TaskEx.Completed;
             }
 
-            public Task CloseAsync() /*CancellationToken cancellationToken) */
+            public Task CloseAsync()
             {
                 this.AssertEventLoop();
 
@@ -391,13 +318,12 @@ namespace DotNetty.Transport.Channels
                     return promise.Task;
                 }
 
-                ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
+                var outboundBuffer = this.outboundBuffer;
                 if (outboundBuffer == null)
                 {
-                    // Only needed if no VoidChannelPromise.
+                    // tcs尚未完成则返回,且已调用close().则返回closeFuture.Task
                     if (promise != TaskCompletionSource.Void)
                     {
-                        // This means close() was called before so we just register a listener and return
                         return this.channel.closeFuture.Task;
                     }
                     return promise.Task;
@@ -405,13 +331,12 @@ namespace DotNetty.Transport.Channels
 
                 if (this.channel.closeFuture.Task.IsCompleted)
                 {
-                    // Closed already.
                     Util.SafeSetSuccess(promise, Logger);
                     return promise.Task;
                 }
 
                 bool wasActive = this.channel.Active;
-                this.outboundBuffer = null; // Disallow adding any messages and flushes to outboundBuffer.
+                this.outboundBuffer = null;
                 try
                 {
                     // Close the channel and fail the queued messages input all cases.
@@ -467,11 +392,7 @@ namespace DotNetty.Transport.Channels
             }
 
             /// <summary>
-            /// This method must NEVER be called directly, but be executed as an
-            /// extra task with a clean call stack instead. The reason for this
-            /// is that this method calls <see cref="IChannelPipeline.FireChannelUnregistered"/>
-            /// directly, which might lead to an unfortunate nesting of independent inbound/outbound
-            /// events. See the comments input <see cref="InvokeLater"/> for more details.
+            /// 不要直接调用,inbound/outbound 可能导致嵌套
             /// </summary>
             public Task DeregisterAsync()
             {
@@ -482,11 +403,6 @@ namespace DotNetty.Transport.Channels
 
             private Task DeregisterAsync(bool fireChannelInactive)
             {
-                //if (!promise.setUncancellable())
-                //{
-                //    return;
-                //}
-
                 if (!this.channel.registered)
                 {
                     return TaskEx.Completed;
@@ -494,24 +410,18 @@ namespace DotNetty.Transport.Channels
 
                 var promise = new TaskCompletionSource();
 
-                // As a user may call deregister() from within any method while doing processing in the ChannelPipeline,
-                // we need to ensure we do the actual deregister operation later. This is needed as for example,
-                // we may be in the ByteToMessageDecoder.callDecode(...) method and so still try to do processing in
-                // the old EventLoop while the user already registered the Channel to a new EventLoop. Without delay,
-                // the deregister operation this could lead to have a handler invoked by different EventLoop and so
-                // threads.
-                //
-                // See:
-                // https://github.com/netty/netty/issues/4435
+                // ChannelPipeline进行处理时,可以从任何方法中调用Deregister().
+                // 为防止正在进行处理时Deregister(),将Channel注册到新EventLoop,导致多少个EventLoop处理同一个Channel
+                // 所以需要延迟执行实际的Deregister()
                 this.InvokeLater(() =>
                 {
                     try
                     {
                         this.channel.DoDeregister();
                     }
-                    catch (Exception t)
+                    catch (Exception ex)
                     {
-                        Logger.Warn("Unexpected exception occurred while deregistering a channel.", t);
+                        Logger.Warn($"Ex: {nameof(DoDeregister)}", ex);
                     }
                     finally
                     {
@@ -539,19 +449,17 @@ namespace DotNetty.Transport.Channels
             {
                 this.AssertEventLoop();
 
-                if (!this.channel.Active)
+                if (this.channel.Active)
                 {
-                    return;
-                }
-
-                try
-                {
-                    this.channel.DoBeginRead();
-                }
-                catch (Exception e)
-                {
-                    this.InvokeLater(() => this.channel.pipeline.FireExceptionCaught(e));
-                    this.CloseSafe();
+                    try
+                    {
+                        this.channel.DoBeginRead();
+                    }
+                    catch (Exception e)
+                    {
+                        this.InvokeLater(() => this.channel.pipeline.FireExceptionCaught(e));
+                        this.CloseSafe();
+                    }
                 }
             }
 
@@ -560,14 +468,10 @@ namespace DotNetty.Transport.Channels
                 this.AssertEventLoop();
 
                 var outboundBuffer = this.outboundBuffer;
+                
+                // outboundBuffer == null 即Channel已关闭,则应立即失败
                 if (outboundBuffer == null)
                 {
-                    // If the outboundBuffer is null we know the channel was closed and so
-                    // need to fail the future right away. If it is not null the handling of the rest
-                    // will be done input flush0()
-                    // See https://github.com/netty/netty/issues/2362
-
-                    // release message now to prevent resource-leak
                     ReferenceCountUtil.Release(msg);
                     return TaskEx.FromException(new ClosedChannelException());
                 }
@@ -577,16 +481,12 @@ namespace DotNetty.Transport.Channels
                 {
                     msg = this.channel.FilterOutboundMessage(msg);
                     size = this.channel.pipeline.EstimatorHandle.Size(msg);
-                    if (size < 0)
-                    {
-                        size = 0;
-                    }
+                    if (size < 0) size = 0;
                 }
-                catch (Exception t)
+                catch (Exception ex)
                 {
                     ReferenceCountUtil.Release(msg);
-
-                    return TaskEx.FromException(t);
+                    return TaskEx.FromException(ex);
                 }
 
                 var promise = new TaskCompletionSource();
@@ -599,32 +499,22 @@ namespace DotNetty.Transport.Channels
                 this.AssertEventLoop();
 
                 var outboundBuffer = this.outboundBuffer;
-                if (outboundBuffer == null)
+                if (outboundBuffer != null)
                 {
-                    return;
+                    outboundBuffer.AddFlush();
+                    this.Flush0();
                 }
-
-                outboundBuffer.AddFlush();
-                this.Flush0();
             }
 
             protected virtual void Flush0()
             {
-                if (this.inFlush0)
-                {
-                    // Avoid re-entrance
-                    return;
-                }
+                if (this.inFlush0) return;
 
                 var outboundBuffer = this.outboundBuffer;
-                if (outboundBuffer == null || outboundBuffer.IsEmpty)
-                {
-                    return;
-                }
+                if (outboundBuffer == null || outboundBuffer.IsEmpty) return;
 
                 this.inFlush0 = true;
 
-                // Mark all pending write requests as failure if the channel is inactive.
                 if (!this.CanWrite)
                 {
                     try
@@ -635,7 +525,6 @@ namespace DotNetty.Transport.Channels
                         }
                         else
                         {
-                            // Do not trigger channelWritabilityChanged because the channel is closed already.
                             outboundBuffer.FailFlushed(new ClosedChannelException(), false);
                         }
                     }
@@ -643,20 +532,21 @@ namespace DotNetty.Transport.Channels
                     {
                         this.inFlush0 = false;
                     }
-                    return;
                 }
-
-                try
+                else
                 {
-                    this.channel.DoWrite(outboundBuffer);
-                }
-                catch (Exception ex)
-                {
-                    Util.CompleteChannelCloseTaskSafely(this.channel, this.CloseAsync(new ClosedChannelException("Failed to write", ex), false));
-                }
-                finally
-                {
-                    this.inFlush0 = false;
+                    try
+                    {
+                        this.channel.DoWrite(outboundBuffer);
+                    }
+                    catch (Exception ex)
+                    {
+                        Util.CompleteChannelCloseTaskSafely(this.channel, this.CloseAsync(new ClosedChannelException("Failed to write", ex), false));
+                    }
+                    finally
+                    {
+                        this.inFlush0 = false;
+                    }
                 }
             }
 
@@ -664,24 +554,16 @@ namespace DotNetty.Transport.Channels
 
             protected bool EnsureOpen(TaskCompletionSource promise)
             {
-                if (this.channel.Open)
-                {
-                    return true;
-                }
-
-                Util.SafeSetFailure(promise, new ClosedChannelException(), Logger);
-                return false;
+                var channelOpen = this.channel.Open;
+                if (!channelOpen) Util.SafeSetFailure(promise, new ClosedChannelException(), Logger);
+                return channelOpen;
             }
 
             protected Task CreateClosedChannelExceptionTask() => TaskEx.FromException(new ClosedChannelException());
 
             protected void CloseIfClosed()
             {
-                if (this.channel.Open)
-                {
-                    return;
-                }
-                this.CloseSafe();
+                if (!this.channel.Open) this.CloseSafe();
             }
 
             private void InvokeLater(Action task)
@@ -703,7 +585,7 @@ namespace DotNetty.Transport.Channels
                 }
                 catch (RejectedExecutionException e)
                 {
-                    Logger.Warn("Can't invoke task later as EventLoop rejected it", e);
+                    Logger.Warn($"{nameof(EventLoop)}拒绝任务", e);
                 }
             }
 
@@ -716,77 +598,31 @@ namespace DotNetty.Transport.Channels
 
                 return exception;
             }
-
-            /// <summary>
-            /// Prepares to close the <see cref="IChannel"/>. If this method returns an <see cref="IEventExecutor"/>, the
-            /// caller must call the <see cref="IEventExecutor.Execute(DotNetty.Common.Concurrency.IRunnable)"/> method with a task that calls
-            /// <see cref="AbstractChannel.DoClose"/> on the returned <see cref="IEventExecutor"/>. If this method returns <c>null</c>,
-            /// <see cref="AbstractChannel.DoClose"/> must be called from the caller thread. (i.e. <see cref="IEventLoop"/>)
-            /// </summary>
-            protected virtual IEventExecutor PrepareToClose() => null;
         }
 
         /// <summary>
-        /// Checks whether a given <see cref="IEventLoop"/> is compatible with the <see cref="AbstractChannel"/>.
+        /// <see cref="IEventLoop"/>是否为<see cref="AbstractChannel"/>需求的
         /// </summary>
-        /// <param name="eventLoop">The <see cref="IEventLoop"/> to check compatibility.</param>
-        /// <returns>
-        /// <c>true</c> if the given <see cref="IEventLoop"/> is compatible with this <see cref="AbstractChannel"/>
-        /// instance, otherwise <c>false</c>.
-        /// </returns>
         protected abstract bool IsCompatible(IEventLoop eventLoop);
 
-        /// <summary>
-        /// Is called after the <see cref="IChannel"/> is registered with its <see cref="IEventLoop"/> as part of the
-        /// register process. Sub-classes may override this method.
-        /// </summary>
         protected virtual void DoRegister()
         {
-            // NOOP
         }
 
-        /// <summary>
-        /// Binds the <see cref="IChannel"/> to the <see cref="EndPoint"/>.
-        /// </summary>
-        /// <param name="localAddress">The <see cref="EndPoint"/> to bind.</param>
         protected abstract void DoBind(EndPoint localAddress);
 
-        /// <summary>
-        /// Disconnects this <see cref="IChannel"/> from its remote peer.
-        /// </summary>
         protected abstract void DoDisconnect();
 
-        /// <summary>
-        /// Closes the <see cref="IChannel"/>.
-        /// </summary>
         protected abstract void DoClose();
 
-        /// <summary>
-        /// Deregisters the <see cref="IChannel"/> from its <see cref="IEventLoop"/>. Sub-classes may override this
-        /// method.
-        /// </summary>
         protected virtual void DoDeregister()
         {
-            // NOOP
         }
 
-        /// <summary>
-        /// ScheduleAsync a read operation.
-        /// </summary>
         protected abstract void DoBeginRead();
 
-        /// <summary>
-        /// Flush the content of the given buffer to the remote peer.
-        /// </summary>
         protected abstract void DoWrite(ChannelOutboundBuffer input);
 
-        /// <summary>
-        /// Invoked when a new message is added to a <see cref="ChannelOutboundBuffer"/> of this
-        /// <see cref="AbstractChannel"/>, so that the <see cref="IChannel"/> implementation converts the message to
-        /// another. (e.g. heap buffer -> direct buffer).
-        /// </summary>
-        /// <param name="msg">The message to be filtered.</param>
-        /// <returns>The filtered message.</returns>
         protected virtual object FilterOutboundMessage(object msg) => msg;
     }
 }

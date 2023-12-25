@@ -4,6 +4,9 @@ namespace DotNetty.Common.Concurrency
 {
     public sealed class TaskCompletionSource : TaskCompletionSource<int>
     {
+        /// <summary>
+        /// Completed
+        /// </summary>
         public static readonly TaskCompletionSource Void = CreateVoidTcs();
 
         public TaskCompletionSource(object state) : base(state)

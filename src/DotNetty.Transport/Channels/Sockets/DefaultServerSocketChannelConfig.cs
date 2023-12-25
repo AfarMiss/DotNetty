@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
-    /// <summary>
-    /// The default <see cref="IServerSocketChannelConfiguration"/> implementation.
-    /// </summary>
     public class DefaultServerSocketChannelConfig : DefaultChannelConfiguration, IServerSocketChannelConfiguration
     {
         protected readonly Socket Socket;
-        private volatile int backlog = 200; //todo: NetUtil.SOMAXCONN;
+        private volatile int backlog = 200;
 
-        /// <summary>
-        ///     Creates a new instance.
-        /// </summary>
         public DefaultServerSocketChannelConfig(IServerSocketChannel channel, Socket socket)
             : base(channel)
         {

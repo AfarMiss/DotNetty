@@ -11,7 +11,7 @@ namespace DotNetty.Transport.Channels.Sockets
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<TcpServerSocketChannel>();
         private static readonly ChannelMetadata METADATA = new ChannelMetadata(false);
 
-        private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
+        private static readonly Action<object, object> ReadCompletedSyncAction = OnReadCompletedSync;
 
         private readonly IServerSocketChannelConfiguration config;
 
@@ -72,7 +72,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     bool pending = this.Socket.AcceptAsync(operation);
                     if (!pending)
                     {
-                        this.EventLoop.Execute(ReadCompletedSyncCallback, this.Unsafe, operation);
+                        this.EventLoop.Execute(ReadCompletedSyncAction, this.Unsafe, operation);
                     }
                     return;
                 }
@@ -82,8 +82,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
                 catch (SocketException ex)
                 {
-                    // socket exceptions here are internal to channel's operation and should not go through the pipeline
-                    // especially as they have no effect on overall channel's operation
+                    // Socket异常无需抛出
                     Logger.Info("Exception on accept.", ex);
                 }
                 catch (ObjectDisposedException)
@@ -104,30 +103,15 @@ namespace DotNetty.Transport.Channels.Sockets
 
         private static void OnReadCompletedSync(object u, object p) => ((ISocketChannelUnsafe)u).FinishRead((SocketChannelAsyncOperation)p);
 
-        protected override bool DoConnect(EndPoint remoteAddress, EndPoint localAddress)
-        {
-            throw new NotSupportedException();
-        }
+        protected override bool DoConnect(EndPoint remoteAddress, EndPoint localAddress) => throw new NotSupportedException();
 
-        protected override void DoFinishConnect(SocketChannelAsyncOperation operation)
-        {
-            throw new NotSupportedException();
-        }
+        protected override void DoFinishConnect(SocketChannelAsyncOperation operation) => throw new NotSupportedException();
 
-        protected override void DoDisconnect()
-        {
-            throw new NotSupportedException();
-        }
+        protected override void DoDisconnect() => throw new NotSupportedException();
 
-        protected override void DoWrite(ChannelOutboundBuffer input)
-        {
-            throw new NotSupportedException();
-        }
+        protected override void DoWrite(ChannelOutboundBuffer input) => throw new NotSupportedException();
 
-        protected sealed override object FilterOutboundMessage(object msg)
-        {
-            throw new NotSupportedException();
-        }
+        protected sealed override object FilterOutboundMessage(object msg) => throw new NotSupportedException();
 
         private sealed class TcpServerSocketChannelUnsafe : AbstractSocketUnsafe
         {
@@ -142,10 +126,13 @@ namespace DotNetty.Transport.Channels.Sockets
                 Contract.Assert(this.channel.EventLoop.InEventLoop);
 
                 var ch = this.Channel;
+                
+                // read was signaled as a result of channel closure
                 if ((ch.ResetState(StateFlags.ReadScheduled) & StateFlags.Active) == 0)
                 {
-                    return; // read was signaled as a result of channel closure
+                    return;
                 }
+                
                 var config = ch.Configuration;
                 var pipeline = ch.Pipeline;
                 var allocHandle = this.Channel.Unsafe.RecvBufAllocHandle;
@@ -194,8 +181,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     }
                     catch (SocketException ex)
                     {
-                        // socket exceptions here are internal to channel's operation and should not go through the pipeline
-                        // especially as they have no effect on overall channel's operation
+                        // Socket异常无需抛出
                         Logger.Info("Exception on accept.", ex);
                     }
                     catch (ObjectDisposedException)
@@ -212,9 +198,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                     if (exception != null)
                     {
-                        // ServerChannel should not be closed even on SocketException because it can often continue
-                        // accepting incoming connections. (e.g. too many open files)
-
+                        // ServerChannel即使SocketException也不应该Close
                         pipeline.FireExceptionCaught(exception);
                     }
 
@@ -225,7 +209,6 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
                 finally
                 {
-                    // Check if there is a readPending which was not processed yet.
                     if (!closed && (ch.ReadPending || config.AutoRead))
                     {
                         ch.DoBeginRead();

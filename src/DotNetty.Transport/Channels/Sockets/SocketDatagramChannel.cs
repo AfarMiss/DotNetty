@@ -429,7 +429,7 @@ namespace DotNetty.Transport.Channels.Sockets
             int interfaceIndex = -1;
             if (networkInterface != null)
             {
-                int index = this.config.GetNetworkInterfaceIndex(networkInterface);
+                int index = DefaultDatagramChannelConfig.GetNetworkInterfaceIndex(networkInterface);
                 if (index >= 0)
                 {
                     interfaceIndex = index;
