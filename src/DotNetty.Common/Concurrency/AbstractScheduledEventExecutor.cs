@@ -30,25 +30,22 @@ namespace DotNetty.Common.Concurrency
         }
 
         /// <summary>
-        ///     Cancel all scheduled tasks
-        ///     This method MUST be called only when <see cref="IEventExecutor.InEventLoop" /> is <c>true</c>.
+        /// 仅当<see cref="IEventExecutor.InEventLoop"/>为True时可取消所有计划任务
         /// </summary>
         protected virtual void CancelScheduledTasks()
         {
             Contract.Assert(this.InEventLoop);
             var scheduledTaskQueue = this.ScheduledTaskQueue;
-            if (IsNullOrEmpty(scheduledTaskQueue))
+            if (!IsNullOrEmpty(scheduledTaskQueue))
             {
-                return;
-            }
+                var tasks = scheduledTaskQueue.ToArray();
+                foreach (var runnable in tasks)
+                {
+                    runnable.Cancel();
+                }
 
-            var tasks = scheduledTaskQueue.ToArray();
-            foreach (var runnable in tasks)
-            {
-                runnable.Cancel();
+                this.ScheduledTaskQueue.Clear();
             }
-
-            this.ScheduledTaskQueue.Clear();
         }
 
         protected IScheduledRunnable PollScheduledTask() => this.PollScheduledTask(GetNanos());
@@ -58,16 +55,12 @@ namespace DotNetty.Common.Concurrency
             Contract.Assert(this.InEventLoop);
 
             var scheduledTask = this.ScheduledTaskQueue.Peek();
-            if (scheduledTask == null)
-            {
-                return null;
-            }
-
-            if (scheduledTask.Deadline <= nanoTime)
+            if (scheduledTask != null && scheduledTask.Deadline <= nanoTime)
             {
                 this.ScheduledTaskQueue.Dequeue();
                 return scheduledTask;
             }
+
             return null;
         }
 

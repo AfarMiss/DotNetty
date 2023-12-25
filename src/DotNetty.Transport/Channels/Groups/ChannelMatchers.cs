@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace DotNetty.Transport.Channels.Groups
 {
@@ -44,7 +45,7 @@ namespace DotNetty.Transport.Channels.Groups
 
         private sealed class CompositeMatcher : IChannelMatcher
         {
-            readonly IChannelMatcher[] matchers;
+            private readonly IChannelMatcher[] matchers;
 
             public CompositeMatcher(params IChannelMatcher[] matchers)
             {
@@ -53,14 +54,7 @@ namespace DotNetty.Transport.Channels.Groups
 
             public bool Matches(IChannel channel)
             {
-                foreach (IChannelMatcher m in this.matchers)
-                {
-                    if (!m.Matches(channel))
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return this.matchers.All(matcher => matcher.Matches(channel));
             }
         }
 

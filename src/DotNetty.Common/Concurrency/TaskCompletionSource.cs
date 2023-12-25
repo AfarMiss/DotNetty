@@ -2,8 +2,10 @@
 
 namespace DotNetty.Common.Concurrency
 {
-    public sealed class TaskCompletionSource : TaskCompletionSource<int>
+    public sealed class TaskCompletionSource : TaskCompletionSource<TaskCompletionSource.VoidResult>
     {
+        public readonly struct VoidResult { }
+
         /// <summary>
         /// Completed
         /// </summary>
@@ -17,14 +19,12 @@ namespace DotNetty.Common.Concurrency
         {
         }
 
-        public bool TryComplete() => this.TrySetResult(0);
+        public bool TryComplete() => this.TrySetResult(default);
 
-        public void Complete() => this.SetResult(0);
+        public void Complete() => this.SetResult(default);
 
         // todo: support cancellation token where used
         public bool SetUncancellable() => true;
-
-        public override string ToString() => "TaskCompletionSource[status: " + this.Task.Status.ToString() + "]";
 
         private static TaskCompletionSource CreateVoidTcs()
         {
