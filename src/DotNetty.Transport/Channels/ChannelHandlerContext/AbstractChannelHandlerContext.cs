@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Net;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
 using DotNetty.Common;
@@ -402,65 +400,50 @@ namespace DotNetty.Transport.Channels
         public Task BindAsync(EndPoint localAddress)
         {
             Contract.Requires(localAddress != null);
-            // todo: check for cancellation
-            //if (!validatePromise(ctx, promise, false)) {
-            //    // promise cancelled
-            //    return;
-            //}
 
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            IEventExecutor nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop 
-                ? next.InvokeBindAsync(localAddress) 
-                : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeBindAsync(localAddress));
+            var next = this.FindContextOutbound();
+            var nextExecutor = next.Executor;
+            return nextExecutor.InEventLoop ? next.InvokeBindAsync(localAddress) : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeBindAsync(localAddress));
         }
 
         private Task InvokeBindAsync(EndPoint localAddress)
         {
-            if (this.Added)
+            if (!this.Added) return this.BindAsync(localAddress);
+            
+            try
             {
-                try
-                {
-                    return this.Handler.BindAsync(this, localAddress);
-                }
-                catch (Exception ex)
-                {
-                    return ComposeExceptionTask(ex);
-                }
+                return this.Handler.BindAsync(this, localAddress);
             }
-
-            return this.BindAsync(localAddress);
+            catch (Exception ex)
+            {
+                return ComposeExceptionTask(ex);
+            }
         }
 
         public Task ConnectAsync(EndPoint remoteAddress) => this.ConnectAsync(remoteAddress, null);
 
         public Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
+            var next = this.FindContextOutbound();
             Contract.Requires(remoteAddress != null);
             // todo: check for cancellation
 
-            IEventExecutor nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop
-                ? next.InvokeConnectAsync(remoteAddress, localAddress)
-                : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeConnectAsync(remoteAddress, localAddress));
+            var nextExecutor = next.Executor;
+            return nextExecutor.InEventLoop ? next.InvokeConnectAsync(remoteAddress, localAddress) : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeConnectAsync(remoteAddress, localAddress));
         }
 
         private Task InvokeConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
-            if (this.Added)
+            if (!this.Added) return this.ConnectAsync(remoteAddress, localAddress);
+            
+            try
             {
-                try
-                {
-                    return this.Handler.ConnectAsync(this, remoteAddress, localAddress);
-                }
-                catch (Exception ex)
-                {
-                    return ComposeExceptionTask(ex);
-                }
+                return this.Handler.ConnectAsync(this, remoteAddress, localAddress);
             }
-
-            return this.ConnectAsync(remoteAddress, localAddress);
+            catch (Exception ex)
+            {
+                return ComposeExceptionTask(ex);
+            }
         }
 
         public Task DisconnectAsync()
@@ -471,79 +454,67 @@ namespace DotNetty.Transport.Channels
             }
 
             // todo: check for cancellation
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            IEventExecutor nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop
-                ? next.InvokeDisconnectAsync()
-                : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDisconnectAsync());
+            var next = this.FindContextOutbound();
+            var nextExecutor = next.Executor;
+            return nextExecutor.InEventLoop ? next.InvokeDisconnectAsync() : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDisconnectAsync());
         }
 
         private Task InvokeDisconnectAsync()
         {
-            if (this.Added)
+            if (!this.Added) return this.DisconnectAsync();
+            
+            try
             {
-                try
-                {
-                    return this.Handler.DisconnectAsync(this);
-                }
-                catch (Exception ex)
-                {
-                    return ComposeExceptionTask(ex);
-                }
+                return this.Handler.DisconnectAsync(this);
             }
-            return this.DisconnectAsync();
+            catch (Exception ex)
+            {
+                return ComposeExceptionTask(ex);
+            }
         }
 
         public Task CloseAsync()
         {
             // todo: check for cancellation
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            IEventExecutor nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop
-                ? next.InvokeCloseAsync()
-                : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeCloseAsync());
+            var next = this.FindContextOutbound();
+            var nextExecutor = next.Executor;
+            return nextExecutor.InEventLoop ? next.InvokeCloseAsync() : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeCloseAsync());
         }
 
         private Task InvokeCloseAsync()
         {
-            if (this.Added)
+            if (!this.Added) return this.CloseAsync();
+            
+            try
             {
-                try
-                {
-                    return this.Handler.CloseAsync(this);
-                }
-                catch (Exception ex)
-                {
-                    return ComposeExceptionTask(ex);
-                }
+                return this.Handler.CloseAsync(this);
             }
-            return this.CloseAsync();
+            catch (Exception ex)
+            {
+                return ComposeExceptionTask(ex);
+            }
         }
 
         public Task DeregisterAsync()
         {
             // todo: check for cancellation
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            IEventExecutor nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop
-                ? next.InvokeDeregisterAsync()
-                : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDeregisterAsync());
+            var next = this.FindContextOutbound();
+            var nextExecutor = next.Executor;
+            return nextExecutor.InEventLoop ? next.InvokeDeregisterAsync() : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDeregisterAsync());
         }
 
         private Task InvokeDeregisterAsync()
         {
-            if (this.Added)
+            if (!this.Added) return this.DeregisterAsync();
+            
+            try
             {
-                try
-                {
-                    return this.Handler.DeregisterAsync(this);
-                }
-                catch (Exception ex)
-                {
-                    return ComposeExceptionTask(ex);
-                }
+                return this.Handler.DeregisterAsync(this);
             }
-            return this.DeregisterAsync();
+            catch (Exception ex)
+            {
+                return ComposeExceptionTask(ex);
+            }
         }
 
         public void Read()
@@ -603,8 +574,8 @@ namespace DotNetty.Transport.Channels
 
         public void Flush()
         {
-            AbstractChannelHandlerContext next = this.FindContextOutbound();
-            IEventExecutor nextExecutor = next.Executor;
+            var next = this.FindContextOutbound();
+            var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
                 next.InvokeFlush();
@@ -649,13 +620,11 @@ namespace DotNetty.Transport.Channels
 
         private Task InvokeWriteAndFlushAsync(object msg)
         {
-            if (this.Added)
-            {
-                Task task = this.InvokeWriteAsync0(msg);
-                this.InvokeFlush0();
-                return task;
-            }
-            return this.WriteAndFlushAsync(msg);
+            if (!this.Added) return this.WriteAndFlushAsync(msg);
+            
+            var task = this.InvokeWriteAsync0(msg);
+            this.InvokeFlush0();
+            return task;
         }
 
         private Task WriteAsync(object msg, bool flush)

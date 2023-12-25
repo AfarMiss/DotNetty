@@ -19,15 +19,12 @@ namespace DotNetty.Transport.Channels
 
             public int Size(object msg)
             {
-                switch (msg)
+                return msg switch
                 {
-                    case IByteBuffer buffer:
-                        return buffer.ReadableBytes;
-                    case IByteBufferHolder holder:
-                        return holder.Content.ReadableBytes;
-                    default:
-                        return this.unknownSize;
-                }
+                    IByteBuffer buffer => buffer.ReadableBytes,
+                    IByteBufferHolder holder => holder.Content.ReadableBytes,
+                    _ => this.unknownSize
+                };
             }
         }
 

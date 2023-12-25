@@ -36,11 +36,7 @@ namespace DotNetty.Common.Concurrency
             this.SubmitAsync(func, context, state, CancellationToken.None);
 
         /// <inheritdoc cref="IExecutorService"/>
-        public Task<T> SubmitAsync<T>(
-            Func<object, object, T> func,
-            object context,
-            object state,
-            CancellationToken cancellationToken)
+        public Task<T> SubmitAsync<T>(Func<object, object, T> func, object context, object state, CancellationToken cancellationToken)
         {
             var node = new StateFuncWithContextSubmitQueueNode<T>(func, context, state, cancellationToken);
             this.Execute(node);
@@ -170,11 +166,7 @@ namespace DotNetty.Common.Concurrency
             private readonly Func<object, object, T> func;
             private readonly object context;
 
-            public StateFuncWithContextSubmitQueueNode(
-                Func<object, object, T> func,
-                object context,
-                object state,
-                CancellationToken cancellationToken)
+            public StateFuncWithContextSubmitQueueNode(Func<object, object, T> func, object context, object state, CancellationToken cancellationToken)
                 : base(new TaskCompletionSource<T>(state), cancellationToken)
             {
                 this.func = func;

@@ -2,20 +2,16 @@
 
 namespace DotNetty.Transport.Channels
 {
-    public abstract class SimpleChannelInboundHandler<I> : ChannelHandlerAdapter
+    public abstract class SimpleChannelInboundHandler<T> : ChannelHandlerAdapter
     {
         private readonly bool autoRelease;
 
-        protected SimpleChannelInboundHandler() : this(true)
-        {
-        }
-
-        protected SimpleChannelInboundHandler(bool autoRelease)
+        protected SimpleChannelInboundHandler(bool autoRelease = true)
         {
             this.autoRelease = autoRelease;
         }
 
-        public bool AcceptInboundMessage(object msg) => msg is I;
+        public bool AcceptInboundMessage(object msg) => msg is T;
 
         public override void ChannelRead(IChannelHandlerContext ctx, object msg)
         {
@@ -24,7 +20,7 @@ namespace DotNetty.Transport.Channels
             {
                 if (this.AcceptInboundMessage(msg))
                 {
-                    this.ChannelRead0(ctx, (I)msg);
+                    this.ChannelRead0(ctx, (T)msg);
                 }
                 else
                 {
@@ -41,6 +37,6 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        protected abstract void ChannelRead0(IChannelHandlerContext ctx, I msg);
+        protected abstract void ChannelRead0(IChannelHandlerContext ctx, T msg);
     }
 }

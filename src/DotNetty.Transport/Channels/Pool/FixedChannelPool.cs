@@ -79,17 +79,12 @@ namespace DotNetty.Transport.Channels.Pool
             }
             else
             {
-                switch (action)
+                this.timeoutTask = action switch
                 {
-                    case AcquireTimeoutAction.Fail:
-                        this.timeoutTask = new TimeoutTask(this, OnTimeoutFail);
-                        break;
-                    case AcquireTimeoutAction.New:
-                        this.timeoutTask = new TimeoutTask(this, OnTimeoutNew);
-                        break;
-                    default:
-                        throw new ArgumentException("action");
-                }
+                    AcquireTimeoutAction.Fail => new TimeoutTask(this, OnTimeoutFail),
+                    AcquireTimeoutAction.New => new TimeoutTask(this, OnTimeoutNew),
+                    _ => throw new ArgumentException("action")
+                };
             }
 
             this.executor = bootstrap.Group.GetNext();

@@ -62,9 +62,9 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        AbstractChannelHandlerContext NewContext(IEventExecutorGroup group, string name, IChannelHandler handler) => new DefaultChannelHandlerContext(this, this.GetChildExecutor(group), name, handler);
+        private AbstractChannelHandlerContext NewContext(IEventExecutorGroup group, string name, IChannelHandler handler) => new DefaultChannelHandlerContext(this, this.GetChildExecutor(group), name, handler);
 
-        AbstractChannelHandlerContext NewContext(IEventExecutor executor, string name, IChannelHandler handler) => new DefaultChannelHandlerContext(this, executor, name, handler);
+        private AbstractChannelHandlerContext NewContext(IEventExecutor executor, string name, IChannelHandler handler) => new DefaultChannelHandlerContext(this, executor, name, handler);
 
         private IEventExecutor GetChildExecutor(IEventExecutorGroup group)
         {
@@ -135,7 +135,7 @@ namespace DotNetty.Transport.Channels
                 CheckMultiplicity(handler);
 
                 newCtx = this.NewContext(group, this.FilterName(name, handler), handler);
-                IEventExecutor executor = this.ExecutorSafe(newCtx.executor);
+                var executor = this.ExecutorSafe(newCtx.executor);
 
                 this.AddLast0(newCtx);
 
@@ -574,40 +574,6 @@ namespace DotNetty.Transport.Channels
                 }
                 ctx = ctx.Next;
             }
-        }
-
-        /// <summary>
-        /// Returns the string representation of this pipeline.
-        /// </summary>
-        public sealed override string ToString()
-        {
-            StringBuilder buf = new StringBuilder()
-                .Append(this.GetType().Name)
-                .Append('{');
-            AbstractChannelHandlerContext ctx = this.head.Next;
-            while (true)
-            {
-                if (ctx == this.tail)
-                {
-                    break;
-                }
-
-                buf.Append('(')
-                    .Append(ctx.Name)
-                    .Append(" = ")
-                    .Append(ctx.Handler.GetType().Name)
-                    .Append(')');
-
-                ctx = ctx.Next;
-                if (ctx == this.tail)
-                {
-                    break;
-                }
-
-                buf.Append(", ");
-            }
-            buf.Append('}');
-            return buf.ToString();
         }
 
         public IChannelPipeline FireChannelRegistered()

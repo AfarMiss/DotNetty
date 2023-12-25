@@ -18,8 +18,6 @@ namespace DotNetty.Common.Concurrency
             }
             else
             {
-                // hack: enables this executor to be seen as default on Executor's worker thread.
-                // This is a special case for SingleThreadEventExecutor.Loop initiated task.
                 this.started = true;
                 this.TryExecuteTask(task);
             }
@@ -39,10 +37,10 @@ namespace DotNetty.Common.Concurrency
 
         protected override bool TryDequeue(Task task) => false;
 
-        sealed class TaskQueueNode : IRunnable
+        private sealed class TaskQueueNode : IRunnable
         {
-            readonly ExecutorTaskScheduler scheduler;
-            readonly Task task;
+            private readonly ExecutorTaskScheduler scheduler;
+            private readonly Task task;
 
             public TaskQueueNode(ExecutorTaskScheduler scheduler, Task task)
             {

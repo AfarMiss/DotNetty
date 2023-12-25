@@ -70,22 +70,22 @@ namespace DotNetty.Common.Concurrency
         }
 
         /// <summary>
-        ///     Task Scheduler that will post work to this executor's queue.
+        /// 线程计划任务队列
         /// </summary>
         public TaskScheduler Scheduler => this.scheduler;
 
         /// <summary>
-        ///     Allows to track whether executor is progressing through its backlog. Useful for diagnosing / mitigating stalls due to blocking calls in conjunction with IsBacklogEmpty property.
+        /// 跟踪执行器是否正在处理积压工作 与IsBacklogEmpty一起可以用于诊断/减轻 阻塞调用而导致的暂停
         /// </summary>
         public long Progress => Volatile.Read(ref this.progress);
 
         /// <summary>
-        ///     Indicates whether executor's backlog is empty. Useful for diagnosing / mitigating stalls due to blocking calls in conjunction with Progress property.
+        /// 执行器的积压工作是否为空 与Progress一起可以用于诊断/减轻 阻塞调用而导致的暂停
         /// </summary>
         public bool IsBacklogEmpty => this.taskQueue.IsEmpty;
 
         /// <summary>
-        ///     Gets length of backlog of tasks queued for immediate execution.
+        /// 排队等待立即执行的任务积压的长度
         /// </summary>
         public int BacklogLength => this.taskQueue.Count;
 
@@ -144,9 +144,8 @@ namespace DotNetty.Common.Concurrency
         }
 
         /// <summary>
-        /// Adds an <see cref="Action"/> which will be executed on shutdown of this instance.
+        /// 添加将在关闭此实例时执行的回调
         /// </summary>
-        /// <param name="action">The <see cref="Action"/> to run on shutdown.</param>
         public void AddShutdownHook(Action action)
         {
             if (this.InEventLoop)
@@ -160,10 +159,8 @@ namespace DotNetty.Common.Concurrency
         }
 
         /// <summary>
-        /// Removes a previously added <see cref="Action"/> from the collection of <see cref="Action"/>s which will be
-        /// executed on shutdown of this instance.
+        /// 移除将在关闭此实例时执行的回调
         /// </summary>
-        /// <param name="action">The <see cref="Action"/> to remove.</param>
         public void RemoveShutdownHook(Action action)
         {
             if (this.InEventLoop)
@@ -212,7 +209,6 @@ namespace DotNetty.Common.Concurrency
         }
 
 
-        /// <inheritdoc cref="IEventExecutor"/>
         public override Task ShutdownGracefullyAsync(TimeSpan quietPeriod, TimeSpan timeout)
         {
             Contract.Requires(quietPeriod >= TimeSpan.Zero);
@@ -384,7 +380,7 @@ namespace DotNetty.Common.Concurrency
         protected bool RunAllTasks()
         {
             this.FetchFromScheduledTaskQueue();
-            IRunnable task = this.PollTask();
+            var task = this.PollTask();
             if (task == null)
             {
                 return false;
@@ -465,19 +461,18 @@ namespace DotNetty.Common.Concurrency
         {
             Contract.Assert(this.InEventLoop);
 
-            IRunnable task;
-            if (!this.taskQueue.TryDequeue(out task))
+            if (!this.taskQueue.TryDequeue(out var task))
             {
                 this.emptyEvent.Reset();
                 if (!this.taskQueue.TryDequeue(out task) && !this.IsShuttingDown) // revisit queue as producer might have put a task in meanwhile
                 {
-                    IScheduledRunnable nextScheduledTask = this.ScheduledTaskQueue.Peek();
+                    var nextScheduledTask = this.ScheduledTaskQueue.Peek();
                     if (nextScheduledTask != null)
                     {
-                        PreciseTimeSpan wakeupTimeout = nextScheduledTask.Deadline - PreciseTimeSpan.FromStart;
+                        var wakeupTimeout = nextScheduledTask.Deadline - PreciseTimeSpan.FromStart;
                         if (wakeupTimeout.Ticks > 0)
                         {
-                            double timeout = wakeupTimeout.ToTimeSpan().TotalMilliseconds;
+                            var timeout = wakeupTimeout.ToTimeSpan().TotalMilliseconds;
                             this.emptyEvent.Wait((int)Math.Min(timeout, int.MaxValue - 1));
                         }
                     }
@@ -492,7 +487,7 @@ namespace DotNetty.Common.Concurrency
             return task;
         }
 
-        sealed class NoOpRunnable : IRunnable
+        private sealed class NoOpRunnable : IRunnable
         {
             public void Run()
             {
