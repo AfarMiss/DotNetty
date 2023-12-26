@@ -531,23 +531,24 @@ namespace DotNetty.Transport.Channels
             private readonly bool isAdd;
             internal PendingHandlerCallback Next;
             
-            private readonly Action pendingHandlerAction;
+            private readonly Action<AbstractChannelHandlerContext> pendingHandlerAction;
 
             public PendingHandlerCallback(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx, bool isAdd)
             {
                 this.ctx = ctx;
                 this.isAdd = isAdd;
-                this.pendingHandlerAction = this.isAdd ? () => pipeline.CallHandlerAdded0(this.ctx) : () => pipeline.CallHandlerRemoved0(this.ctx);
+                this.pendingHandlerAction = isAdd ? (Action<AbstractChannelHandlerContext>)pipeline.CallHandlerAdded0 : pipeline.CallHandlerRemoved0;
+
             }
 
-            public void Run() => this.pendingHandlerAction();
+            public void Run() => this.pendingHandlerAction(this.ctx);
 
             internal void Execute()
             {
                 var executor = this.ctx.Executor;
                 if (executor.InEventLoop)
                 {
-                    this.pendingHandlerAction();
+                    this.pendingHandlerAction(this.ctx);
                 }
                 else
                 {
