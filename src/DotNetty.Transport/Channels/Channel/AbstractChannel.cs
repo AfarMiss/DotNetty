@@ -47,18 +47,7 @@ namespace DotNetty.Transport.Channels
         public IChannelPipeline Pipeline => this.pipeline;
         public abstract IChannelConfiguration Configuration { get; }
 
-        public IEventLoop EventLoop
-        {
-            get
-            {
-                var eventLoop = this.eventLoop;
-                if (eventLoop == null)
-                {
-                    throw new InvalidOperationException("channel not registered to an event loop");
-                }
-                return eventLoop;
-            }
-        }
+        public IEventLoop EventLoop => this.eventLoop;
 
         public EndPoint LocalAddress => this.localAddress ?? this.CacheLocalAddress();
         public EndPoint RemoteAddress => this.remoteAddress ?? this.CacheRemoteAddress();

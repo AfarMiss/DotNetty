@@ -4,6 +4,13 @@ namespace DotNetty.Transport.Channels
 {
     public interface IChannelPipelineCollection
     {
+        IChannelHandlerContext FirstContext();
+        IChannelHandlerContext LastContext();
+
+        IChannelHandlerContext Context(IChannelHandler handler);
+        IChannelHandlerContext Context(string name);
+        IChannelHandlerContext Context<T>() where T : class, IChannelHandler;
+        
         void AddFirst(string name, IChannelHandler handler);
         /// <summary>
         /// group为null则默认为通道执行组

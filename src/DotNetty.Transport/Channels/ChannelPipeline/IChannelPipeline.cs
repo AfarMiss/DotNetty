@@ -78,59 +78,52 @@ namespace DotNetty.Transport.Channels
     /// </summary>
     public interface IChannelPipeline : IChannelPipelineCollection, IEnumerable<IChannelHandler>
     {
-        IChannelHandlerContext FirstContext();
-        IChannelHandlerContext LastContext();
-
-        IChannelHandlerContext Context(IChannelHandler handler);
-        IChannelHandlerContext Context(string name);
-        IChannelHandlerContext Context<T>() where T : class, IChannelHandler;
-
         IChannel Channel { get; }
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelRegistered"/>
         /// </summary>
-        IChannelPipeline FireChannelRegistered();
+        void FireChannelRegistered();
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelUnregistered"/>
         /// </summary>
-        IChannelPipeline FireChannelUnregistered();
+        void FireChannelUnregistered();
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelActive"/>
         /// </summary>
-        IChannelPipeline FireChannelActive();
+        void FireChannelActive();
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelInactive"/>
         /// </summary>
-        IChannelPipeline FireChannelInactive();
+        void FireChannelInactive();
 
         /// <summary>
         /// <see cref="IChannelHandler.ExceptionCaught"/>
         /// </summary>
-        IChannelPipeline FireExceptionCaught(Exception cause);
+        void FireExceptionCaught(Exception cause);
 
         /// <summary>
         /// <see cref="IChannelHandler.UserEventTriggered"/>
         /// </summary>
-        IChannelPipeline FireUserEventTriggered(object evt);
+        void FireUserEventTriggered(object evt);
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelRead"/>
         /// </summary>
-        IChannelPipeline FireChannelRead(object msg);
+        void FireChannelRead(object msg);
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelReadComplete"/>
         /// </summary>
-        IChannelPipeline FireChannelReadComplete();
+        void FireChannelReadComplete();
 
         /// <summary>
         /// <see cref="IChannelHandler.ChannelWritabilityChanged"/>
         /// </summary>
-        IChannelPipeline FireChannelWritabilityChanged();
+        void FireChannelWritabilityChanged();
 
         /// <summary>
         /// <see cref="IChannelHandler.BindAsync"/>

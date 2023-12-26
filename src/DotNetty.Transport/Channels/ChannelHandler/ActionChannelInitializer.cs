@@ -10,7 +10,6 @@ namespace DotNetty.Transport.Channels
 
         public ActionChannelInitializer(Action<T> initializationAction)
         {
-            Contract.Requires(initializationAction != null);
             this.initializationAction = initializationAction;
         }
 
