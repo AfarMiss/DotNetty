@@ -42,14 +42,11 @@ namespace DotNetty.Transport.Channels
             }
             else
             {
-                Entry tail = this.tailEntry;
+                var tail = this.tailEntry;
                 tail.Next = entry;
                 this.tailEntry = entry;
             }
-            if (this.unflushedEntry == null)
-            {
-                this.unflushedEntry = entry;
-            }
+            this.unflushedEntry ??= entry;
 
             this.IncrementPendingOutboundBytes(size, false);
         }
@@ -66,7 +63,7 @@ namespace DotNetty.Transport.Channels
                     this.flushed++;
                     if (!entry.Promise.SetUncancellable())
                     {
-                        //已取消，确保释放内存并通知释放的字节
+                        //已取消,确保释放内存并通知释放的字节
                         int pending = entry.Cancel();
                         this.DecrementPendingOutboundBytes(pending, false, true);
                     }
@@ -114,10 +111,7 @@ namespace DotNetty.Transport.Channels
 
         public object Current => this.flushedEntry?.Message;
 
-        /// <summary>
-        /// Notify the <see cref="TaskCompletionSource"/> of the current message about writing progress.
-        /// </summary>
-        public static void Progress(long amount)
+        public void Progress(long amount)
         {
         }
 
@@ -181,7 +175,6 @@ namespace DotNetty.Transport.Channels
         {
             if (--this.flushed == 0)
             {
-                // processed everything
                 this.flushedEntry = null;
                 if (e == this.tailEntry)
                 {
@@ -279,7 +272,7 @@ namespace DotNetty.Transport.Channels
                         }
                         if (count == 1)
                         {
-                            ArraySegment<byte> nioBuf = entry.Buffer;
+                            var nioBuf = entry.Buffer;
                             if (nioBuf.Array == null)
                             {
                                 // cache ByteBuffer as it may need to create a new ByteBuffer instance if its a
@@ -291,7 +284,7 @@ namespace DotNetty.Transport.Channels
                         }
                         else
                         {
-                            ArraySegment<byte>[] nioBufs = entry.Buffers;
+                            var nioBufs = entry.Buffers;
                             if (nioBufs == null)
                             {
                                 // cached ByteBuffers as they may be expensive to create in terms

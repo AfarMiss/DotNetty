@@ -7,8 +7,6 @@ namespace DotNetty.Transport.Channels.Sockets
 {
     public abstract class AbstractSocketByteChannel : AbstractSocketChannel
     {
-        private static readonly string ExpectedTypes = $" (expected: {nameof(IByteBuffer)})"; //+ ", " +
-
         private static readonly Action<object> FlushAction = o => ((AbstractSocketByteChannel)o).Flush();
         private static readonly Action<object, object> ReadCompletedSyncAction = OnReadCompletedSync;
 
@@ -172,7 +170,7 @@ namespace DotNetty.Transport.Channels.Sockets
                         }
                     }
 
-                    ChannelOutboundBuffer.Progress(flushedAmount);
+                    input.Progress(flushedAmount);
 
                     if (done)
                     {
@@ -194,7 +192,7 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             if (msg is IByteBuffer) return msg;
 
-            throw new NotSupportedException("unsupported message type: " + msg.GetType().Name + ExpectedTypes);
+            throw new NotSupportedException("Message Type: " + msg.GetType().Name);
         }
 
         protected bool IncompleteWrite(bool scheduleAsync, SocketChannelAsyncOperation operation)

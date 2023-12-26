@@ -15,22 +15,21 @@ namespace DotNetty.Transport.Channels
 
         public override void ChannelRead(IChannelHandlerContext ctx, object msg)
         {
-            bool release = true;
+            var isInboundMsg = this.AcceptInboundMessage(msg);
             try
             {
-                if (this.AcceptInboundMessage(msg))
+                if (isInboundMsg)
                 {
                     this.ChannelRead0(ctx, (T)msg);
                 }
                 else
                 {
-                    release = false;
                     ctx.FireChannelRead(msg);
                 }
             }
             finally
             {
-                if (autoRelease && release)
+                if (this.autoRelease && isInboundMsg)
                 {
                     ReferenceCountUtil.Release(msg);
                 }

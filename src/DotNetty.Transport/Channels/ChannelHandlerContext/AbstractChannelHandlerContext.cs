@@ -781,18 +781,12 @@ namespace DotNetty.Transport.Channels
                     if (EstimateTaskSizeOnSubmit)
                     {
                         var buffer = this.ctx.Channel.Unsafe.OutboundBuffer;
-                        if (buffer != null)
-                        {
-                            buffer.DecrementPendingOutboundBytes(this.size);
-                        }
+                        buffer?.DecrementPendingOutboundBytes(this.size);
                     }
                     this.WriteAsync(this.ctx, this.msg).LinkOutcome(this.promise);
                 }
                 finally
                 {
-                    this.ctx = null;
-                    this.msg = null;
-                    this.promise = null;
                     Pool.Recycle(this.handle);
                 }
             }
