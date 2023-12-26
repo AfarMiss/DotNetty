@@ -2,10 +2,8 @@
 
 namespace DotNetty.Common.Concurrency
 {
-    public sealed class TaskCompletionSource : TaskCompletionSource<TaskCompletionSource.VoidResult>
+    public sealed class TaskCompletionSource : TaskCompletionSource<int>
     {
-        public readonly struct VoidResult { }
-
         /// <summary>
         /// Completed
         /// </summary>
@@ -19,9 +17,9 @@ namespace DotNetty.Common.Concurrency
         {
         }
 
-        public bool TryComplete() => this.TrySetResult(default);
+        public bool TryComplete() => this.TrySetResult(0);
 
-        public void Complete() => this.SetResult(default);
+        public void Complete() => this.SetResult(0);
 
         // todo: support cancellation token where used
         public bool SetUncancellable() => true;

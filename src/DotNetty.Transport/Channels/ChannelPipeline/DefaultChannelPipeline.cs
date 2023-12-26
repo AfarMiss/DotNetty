@@ -193,7 +193,6 @@ namespace DotNetty.Transport.Channels
 
         private void DestroyDown(Thread currentThread, AbstractChannelHandlerContext ctx, bool inEventLoop)
         {
-            // We have reached at tail; now traverse backwards.
             while (true)
             {
                 if (ctx == this.head) break;
@@ -294,9 +293,6 @@ namespace DotNetty.Transport.Channels
                 this.pendingHandlerCallbackHead = null;
             }
 
-            // This must happen outside of the synchronized(...) block as otherwise handlerAdded(...) may be called while
-            // holding the lock and so produce a deadlock if handlerAdded(...) will try to add another handler from outside
-            // the EventLoop.
             var task = pendingHandlerCallbackHead;
             while (task != null)
             {
@@ -309,7 +305,7 @@ namespace DotNetty.Transport.Channels
         {
             Contract.Assert(!this.registered);
 
-            var task = added ? (PendingHandlerCallback)new PendingHandlerAddedTask(this, ctx) : new PendingHandlerRemovedTask(this, ctx);
+            var task = new PendingHandlerCallback(this, ctx, added);
             var pending = this.pendingHandlerCallbackHead;
             if (pending == null)
             {
@@ -529,38 +525,29 @@ namespace DotNetty.Transport.Channels
             public void ChannelWritabilityChanged(IChannelHandlerContext context) => context.FireChannelWritabilityChanged();
         }
 
-        private abstract class PendingHandlerCallback : IRunnable
+        private class PendingHandlerCallback : IRunnable
         {
-            protected readonly DefaultChannelPipeline Pipeline;
-            protected readonly AbstractChannelHandlerContext Ctx;
+            private readonly AbstractChannelHandlerContext ctx;
+            private readonly bool isAdd;
             internal PendingHandlerCallback Next;
+            
+            private readonly Action pendingHandlerAction;
 
-            protected PendingHandlerCallback(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx)
+            public PendingHandlerCallback(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx, bool isAdd)
             {
-                this.Pipeline = pipeline;
-                this.Ctx = ctx;
+                this.ctx = ctx;
+                this.isAdd = isAdd;
+                this.pendingHandlerAction = this.isAdd ? () => pipeline.CallHandlerAdded0(this.ctx) : () => pipeline.CallHandlerRemoved0(this.ctx);
             }
 
-            public abstract void Run();
+            public void Run() => this.pendingHandlerAction();
 
-            internal abstract void Execute();
-        }
-
-        private sealed class PendingHandlerAddedTask : PendingHandlerCallback
-        {
-            public PendingHandlerAddedTask(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx)
-                : base(pipeline, ctx)
+            internal void Execute()
             {
-            }
-
-            public override void Run() => this.Pipeline.CallHandlerAdded0(this.Ctx);
-
-            internal override void Execute()
-            {
-                var executor = this.Ctx.Executor;
+                var executor = this.ctx.Executor;
                 if (executor.InEventLoop)
                 {
-                    this.Pipeline.CallHandlerAdded0(this.Ctx);
+                    this.pendingHandlerAction();
                 }
                 else
                 {
@@ -572,49 +559,14 @@ namespace DotNetty.Transport.Channels
                     {
                         if (Logger.WarnEnabled)
                         {
-                            Logger.Warn(
-                                "Can't invoke HandlerAdded() as the IEventExecutor {} rejected it, removing handler {}.",
-                                executor, this.Ctx.Name, e);
+                            Logger.Warn("IEventExecutor {} rejected it, handler {}.", executor, this.ctx.Name, e);
                         }
-                        Remove0(this.Ctx);
-                        this.Ctx.SetRemoved();
-                    }
-                }
-            }
-        }
 
-        private sealed class PendingHandlerRemovedTask : PendingHandlerCallback
-        {
-            public PendingHandlerRemovedTask(DefaultChannelPipeline pipeline, AbstractChannelHandlerContext ctx)
-                : base(pipeline, ctx)
-            {
-            }
-
-            public override void Run() => this.Pipeline.CallHandlerRemoved0(this.Ctx);
-
-            internal override void Execute()
-            {
-                var executor = this.Ctx.Executor;
-                if (executor.InEventLoop)
-                {
-                    this.Pipeline.CallHandlerRemoved0(this.Ctx);
-                }
-                else
-                {
-                    try
-                    {
-                        executor.Execute(this);
-                    }
-                    catch (RejectedExecutionException e)
-                    {
-                        if (Logger.WarnEnabled)
+                        if (this.isAdd)
                         {
-                            Logger.Warn(
-                                "Can't invoke HandlerRemoved() as the IEventExecutor {} rejected it," +
-                                    " removing handler {}.", executor, this.Ctx.Name, e);
+                            Remove0(this.ctx);
                         }
-                        // remove0(...) was call before so just call AbstractChannelHandlerContext.setRemoved().
-                        this.Ctx.SetRemoved();
+                        this.ctx.SetRemoved();
                     }
                 }
             }
