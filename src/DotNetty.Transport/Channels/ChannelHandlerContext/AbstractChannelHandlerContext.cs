@@ -217,56 +217,14 @@ namespace DotNetty.Transport.Channels
             InvokeExceptionCaught(this.FindContextInbound(), cause);
         }
 
+        private static readonly CacheLambda<Exception> ExceptionCaught = new CacheLambda<Exception>
+        (
+            (context, arg) => context.Handler.ExceptionCaught(context, arg),
+            (context, arg) => context.FireExceptionCaught(arg)
+        );
         internal static void InvokeExceptionCaught(AbstractChannelHandlerContext next, Exception cause)
         {
-            Contract.Requires(cause != null);
-
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeExceptionCaught(cause);
-            }
-            else
-            {
-                try
-                {
-                    nextExecutor.Execute((context, e) => context.InvokeExceptionCaught(e), next, cause);
-                }
-                catch (Exception t)
-                {
-                    if (DefaultChannelPipeline.Logger.WarnEnabled)
-                    {
-                        DefaultChannelPipeline.Logger.Warn("Failed to submit an ExceptionCaught() event.", t);
-                        DefaultChannelPipeline.Logger.Warn("The ExceptionCaught() event that was failed to submit was:",
-                            cause);
-                    }
-                }
-            }
-        }
-
-        private void InvokeExceptionCaught(Exception cause)
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.ExceptionCaught(this, cause);
-                }
-                catch (Exception t)
-                {
-                    if (DefaultChannelPipeline.Logger.WarnEnabled)
-                    {
-                        DefaultChannelPipeline.Logger.Warn("Failed to submit an ExceptionCaught() event.", t);
-                        DefaultChannelPipeline.Logger.Warn(
-                            "An exception was thrown by a user handler's " +
-                            "ExceptionCaught() method while handling the following exception:", cause);
-                    }
-                }
-            }
-            else
-            {
-                this.FireExceptionCaught(cause);
-            }
+            InvokeIfInEventLoop(ExceptionCaught.InvokeAction, next, cause);
         }
 
         public void FireUserEventTriggered(object evt) => InvokeUserEventTriggered(this.FindContextInbound(), evt);
@@ -428,7 +386,7 @@ namespace DotNetty.Transport.Channels
         {
             var next = this.FindContextOutbound();
             var size = !next.Executor.InEventLoop ? IncrementPendingOutboundByte(next, message) : 0;
-
+            
             return InvokeIfInEventLoop(CacheWriteAndFlushAsync.InvokeAction, next, (message, size));
         }
 
@@ -444,7 +402,7 @@ namespace DotNetty.Transport.Channels
                 return;
             }
 
-            this.InvokeExceptionCaught(cause);
+            InvokeExceptionCaught(this, cause);
         }
 
         private static bool InExceptionCaught(Exception cause) => cause.StackTrace.IndexOf("." + nameof(IChannelHandler.ExceptionCaught) + "(", StringComparison.Ordinal) >= 0;
