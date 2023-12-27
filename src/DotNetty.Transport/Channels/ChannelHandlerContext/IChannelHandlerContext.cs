@@ -24,41 +24,24 @@ namespace DotNetty.Transport.Channels
         bool Removed { get; }
 
         void FireChannelRegistered();
-
         void FireChannelUnregistered();
-
         void FireChannelActive();
-
         void FireChannelInactive();
-
         void FireChannelRead(object message);
-
         void FireChannelReadComplete();
-
         void FireChannelWritabilityChanged();
-
         void FireExceptionCaught(Exception ex);
-
         void FireUserEventTriggered(object evt);
 
         void Read();
-
         Task WriteAsync(object message); // todo: optimize: add flag saying if handler is interested in task, do not produce task if it isn't needed
-
         void Flush();
-
         Task WriteAndFlushAsync(object message);
-
         Task BindAsync(EndPoint localAddress);
-
         Task ConnectAsync(EndPoint remoteAddress);
-
         Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress);
-
         Task DisconnectAsync();
-
         Task CloseAsync();
-
         Task DeregisterAsync();
     }
 }

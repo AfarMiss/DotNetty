@@ -80,21 +80,21 @@ namespace SecureChat.Server
     {
         static async Task RunServerAsync()
         {
-            ThreadTest_V0 testV0 = new ThreadTest_V0();
-            Thread th1 = new Thread(testV0.Add1);
-            Thread th2 = new Thread(testV0.Add2);
-            Thread th3 = new Thread(testV0.Add3);
-
-            th1.Start();
-            th2.Start();
-            th3.Start();
-            th1.Join();
-            th2.Join();
-            th3.Join();
-            Console.ReadLine();
-
-            // Console.WriteLine($"V0：count = {testV0.count}");
-            return;
+            // ThreadTest_V0 testV0 = new ThreadTest_V0();
+            // Thread th1 = new Thread(testV0.Add1);
+            // Thread th2 = new Thread(testV0.Add2);
+            // Thread th3 = new Thread(testV0.Add3);
+            //
+            // th1.Start();
+            // th2.Start();
+            // th3.Start();
+            // th1.Join();
+            // th2.Join();
+            // th3.Join();
+            // Console.ReadLine();
+            //
+            // // Console.WriteLine($"V0：count = {testV0.count}");
+            // return;
             ExampleHelper.SetConsoleLogger();
 
             var bossGroup = new MultiThreadEventLoopGroup(1);
