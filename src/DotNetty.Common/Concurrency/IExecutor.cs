@@ -11,6 +11,6 @@ namespace DotNetty.Common.Concurrency
         void Execute(IRunnable task);
         void Execute(Action<object> action, object state);
         void Execute(Action action);
-        void Execute(Action<object, object> action, object context, object state);
+        void Execute<T, T1>(Action<T, T1> action, T context, T1 state);
     }
 }

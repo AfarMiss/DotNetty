@@ -26,7 +26,7 @@ namespace DotNetty.Common.Concurrency
 
         public void Execute(Action action) => this.GetNext().Execute(action);
 
-        public void Execute(Action<object, object> action, object context, object state) => this.GetNext().Execute(action, context, state);
+        public void Execute<T, T1>(Action<T, T1> action, T context, T1 state) => this.GetNext().Execute(action, context, state);
 
         public Task<T> SubmitAsync<T>(Func<T> func) => this.GetNext().SubmitAsync(func);
 
