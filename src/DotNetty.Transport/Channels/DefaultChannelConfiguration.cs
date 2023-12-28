@@ -228,9 +228,9 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        bool IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
+        void IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
         {
-            return this.SetOption((ChannelOption<T>)constant, value);
+            this.SetOption((ChannelOption<T>)constant, value);
         }
     }
 }

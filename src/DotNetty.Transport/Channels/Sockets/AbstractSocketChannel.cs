@@ -22,7 +22,6 @@ namespace DotNetty.Transport.Channels.Sockets
             ReadScheduled = 1 << 1,
             WriteScheduled = 1 << 2,
             Active = 1 << 3
-            // todo: add input shutdown and read pending here as well?
         }
 
         internal static readonly EventHandler<SocketAsyncEventArgs> IoCompletedCallback = OnIoCompleted;
@@ -40,8 +39,7 @@ namespace DotNetty.Transport.Channels.Sockets
         private TaskCompletionSource connectPromise;
         private IScheduledTask connectCancellationTask;
 
-        protected AbstractSocketChannel(IChannel parent, Socket socket)
-            : base(parent)
+        protected AbstractSocketChannel(IChannel parent, Socket socket) : base(parent)
         {
             this.Socket = socket;
             this.state = StateFlags.Open;

@@ -250,14 +250,11 @@ namespace DotNetty.Transport.Bootstrapping
         {
             try
             {
-                if (!option.TransferSet(channel.Configuration))
-                {
-                    // logger.Warn("Unknown channel option '{}' for channel '{}'", option.Option, channel);
-                }
+                option.TransferSet(channel.Configuration);
             }
             catch (Exception ex)
             {
-                // logger.Warn("Failed to set channel option '{}' with value '{}' for channel '{}'", option.Option, option, channel, ex);
+                logger.Warn("Failed to set channel option ", ex);
             }
         }
     }

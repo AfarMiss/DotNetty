@@ -10,8 +10,7 @@ namespace DotNetty.Transport.Channels.Sockets
         private static readonly Action<object> FlushAction = o => ((AbstractSocketByteChannel)o).Flush();
         private static readonly Action<object, object> ReadCompletedSyncAction = OnReadCompletedSync;
 
-        protected AbstractSocketByteChannel(IChannel parent, Socket socket)
-            : base(parent, socket)
+        protected AbstractSocketByteChannel(IChannel parent, Socket socket) : base(parent, socket)
         {
         }
 
@@ -19,8 +18,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected class SocketByteChannelUnsafe : AbstractSocketUnsafe
         {
-            public SocketByteChannelUnsafe(AbstractSocketByteChannel channel)
-                : base(channel)
+            public SocketByteChannelUnsafe(AbstractSocketByteChannel channel) : base(channel)
             {
             }
 

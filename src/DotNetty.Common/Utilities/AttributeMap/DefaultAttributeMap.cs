@@ -8,12 +8,12 @@ namespace DotNetty.Common.Utilities
 {
     public interface IConstantTransfer
     {
-        protected internal bool TransferSet<T>(IConstant<T> constant, T value);
+        protected internal void TransferSet<T>(IConstant<T> constant, T value);
     }
 
     public interface IConstantAccessor
     {
-        public bool TransferSet(IConstantTransfer transfer);
+        public void TransferSet(IConstantTransfer transfer);
     }
 
     public class ConstantMap : IEnumerable<KeyValuePair<IConstant, IConstantAccessor>>
@@ -33,7 +33,7 @@ namespace DotNetty.Common.Utilities
             
             public static implicit operator T(Atomic<T> atomic) => atomic.Value;
             
-            public bool TransferSet(IConstantTransfer transfer) => transfer.TransferSet(this.key, this.Value);
+            public void TransferSet(IConstantTransfer transfer) => transfer.TransferSet(this.key, this.Value);
         }
         
         public ConstantMap()
