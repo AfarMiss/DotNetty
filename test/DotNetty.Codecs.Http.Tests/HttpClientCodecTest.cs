@@ -140,7 +140,7 @@ namespace DotNetty.Codecs.Http.Tests
                 IChannel serverChannel = task.Result;
                 int port = ((IPEndPoint)serverChannel.LocalAddress).Port;
 
-                task = cb.ConnectAsync(IPAddress.Loopback, port);
+                task = cb.ConnectAsync(new IPEndPoint(IPAddress.Loopback, port));
                 task.Wait(TimeSpan.FromSeconds(5));
                 Assert.True(task.Status == TaskStatus.RanToCompletion);
                 IChannel clientChannel = task.Result;

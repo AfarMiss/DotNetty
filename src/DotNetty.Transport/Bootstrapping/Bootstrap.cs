@@ -37,18 +37,6 @@ namespace DotNetty.Transport.Bootstrapping
             return this;
         }
 
-        public Bootstrap RemoteAddress(string inetHost, int inetPort)
-        {
-            this.remoteAddress = new DnsEndPoint(inetHost, inetPort);
-            return this;
-        }
-
-        public Bootstrap RemoteAddress(IPAddress inetHost, int inetPort)
-        {
-            this.remoteAddress = new IPEndPoint(inetHost, inetPort);
-            return this;
-        }
-
         public Task<IChannel> ConnectAsync()
         {
             this.Validate();
@@ -60,10 +48,6 @@ namespace DotNetty.Transport.Bootstrapping
 
             return this.DoResolveAndConnectAsync(remoteAddress, this.LocalAddress());
         }
-
-        public Task<IChannel> ConnectAsync(string inetHost, int inetPort) => this.ConnectAsync(new DnsEndPoint(inetHost, inetPort));
-
-        public Task<IChannel> ConnectAsync(IPAddress inetHost, int inetPort) => this.ConnectAsync(new IPEndPoint(inetHost, inetPort));
 
         public Task<IChannel> ConnectAsync(EndPoint remoteAddress)
         {
@@ -84,7 +68,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// </summary>
         private async Task<IChannel> DoResolveAndConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
-            IChannel channel = await this.InitAndRegisterAsync();
+            var channel = await this.InitAndRegisterAsync();
 
             if (this.resolver.IsResolved(remoteAddress))
             {
@@ -160,7 +144,7 @@ namespace DotNetty.Transport.Bootstrapping
             base.Validate();
             if (this.Handler == null)
             {
-                throw new InvalidOperationException("handler not set");
+                throw new InvalidOperationException($"{this.Handler}未设置!");
             }
         }
 

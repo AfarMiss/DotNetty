@@ -18,6 +18,8 @@ namespace DotNetty.Transport.Bootstrapping
         private volatile IEventLoopGroup childGroup;
         private volatile IChannelHandler childHandler;
 
+        public IEventLoopGroup ChildGroup() => this.childGroup;
+
         public ServerBootstrap()
         {
            this.childOptions = new ConstantMap();
@@ -41,7 +43,7 @@ namespace DotNetty.Transport.Bootstrapping
             base.SetGroup(parentGroup);
             if (this.childGroup != null)
             {
-                throw new InvalidOperationException("childGroup set already");
+                throw new InvalidOperationException($"{nameof(this.childGroup)}已设置!");
             }
             this.childGroup = childGroup;
             return this;
@@ -49,8 +51,6 @@ namespace DotNetty.Transport.Bootstrapping
 
         public ServerBootstrap ChildOption<T>(ChannelOption<T> childOption, T value)
         {
-            Contract.Requires(childOption != null);
-
             if (value == null)
             {
                 this.childOptions.Remove(childOption);
@@ -62,10 +62,8 @@ namespace DotNetty.Transport.Bootstrapping
             return this;
         }
 
-        public ServerBootstrap ChildAttribute<T>(AttributeKey<T> childKey, T value) where T : class
+        public ServerBootstrap ChildAttribute<T>(AttributeKey<T> childKey, T value)
         {
-            Contract.Requires(childKey != null);
-
             if (value == null)
             {
                 this.childAttrs.Remove(childKey);
@@ -79,14 +77,10 @@ namespace DotNetty.Transport.Bootstrapping
 
         public ServerBootstrap ChildHandler(IChannelHandler childHandler)
         {
-            Contract.Requires(childHandler != null);
-
             this.childHandler = childHandler;
             return this;
         }
-
-        public IEventLoopGroup ChildGroup() => this.childGroup;
-
+        
         protected override void Init(IChannel channel)
         {
             foreach (var (_, accessor) in this.Options)
@@ -105,14 +99,9 @@ namespace DotNetty.Transport.Bootstrapping
                 pipeline.AddLast((string)null, channelHandler);
             }
 
-            var currentChildGroup = this.childGroup;
-            var currentChildHandler = this.childHandler;
-            var currentChildOptions = this.childOptions;
-            var currentChildAttrs = this.childAttrs;
-
             pipeline.AddLast(new ActionChannelInitializer<IChannel>(ch =>
             {
-                ch.Pipeline.AddLast(new ServerBootstrapAcceptor(currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
+                ch.Pipeline.AddLast(new ServerBootstrapAcceptor(this.childGroup, this.childHandler, this.childOptions, this.childAttrs));
             }));
         }
 
@@ -121,11 +110,11 @@ namespace DotNetty.Transport.Bootstrapping
             base.Validate();
             if (this.childHandler == null)
             {
-                throw new InvalidOperationException("childHandler not set");
+                throw new InvalidOperationException($"{nameof(this.childHandler)}未设置");
             }
             if (this.childGroup == null)
             {
-                Logger.Warn("childGroup is not set. Using parentGroup instead.");
+                Logger.Warn($"{nameof(this.childGroup)}未设置. 使用基类{nameof(this.Group)}");
                 this.childGroup = this.Group;
             }
         }
@@ -160,11 +149,10 @@ namespace DotNetty.Transport.Bootstrapping
                     accessor.TransferSet(child);
                 }
 
-                // todo: async/await instead?
                 try
                 {
                     this.childGroup.RegisterAsync(child).ContinueWith(
-                        (future, state) => ForceClose((IChannel)state, future.Exception), child,
+                        (task, state) => ForceClose((IChannel)state, task.Exception), child,
                         TaskContinuationOptions.NotOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
                 }
                 catch (Exception ex)

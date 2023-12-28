@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Threading.Tasks;
@@ -78,10 +77,6 @@ namespace DotNetty.Transport.Bootstrapping
             this.localAddress = localAddress;
             return (TBootstrap)this;
         }
-
-        public TBootstrap LocalAddress(int inetPort) => this.LocalAddress(new IPEndPoint(IPAddress.Any, inetPort));
-        public TBootstrap LocalAddress(string inetHost, int inetPort) => this.LocalAddress(new DnsEndPoint(inetHost, inetPort));
-        public TBootstrap LocalAddress(IPAddress inetHost, int inetPort) => this.LocalAddress(new IPEndPoint(inetHost, inetPort));
 
         public TBootstrap Option<T>(ChannelOption<T> option, T value)
         {
