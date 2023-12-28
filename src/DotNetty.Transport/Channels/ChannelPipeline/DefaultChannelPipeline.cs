@@ -115,24 +115,23 @@ namespace DotNetty.Transport.Channels
                 {
                     if (Logger.WarnEnabled)
                     {
-                        Logger.Warn($"Failed to remove a handler: {ctx.Name}", ex2);
+                        Logger.Warn($"无法移除Handler: {ctx.Name}", ex2);
                     }
                 }
 
                 if (removed)
                 {
-                    this.FireExceptionCaught(new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerAdded() has thrown an exception; removed.", ex));
+                    this.FireExceptionCaught(new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerAdded() 异常, 已移除", ex));
                 }
                 else
                 {
-                    this.FireExceptionCaught(new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerAdded() has thrown an exception; also failed to remove.", ex));
+                    this.FireExceptionCaught(new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerAdded() 异常", ex));
                 }
             }
         }
 
         private void CallHandlerRemoved0(AbstractChannelHandlerContext ctx)
         {
-            // Notify the complete removal.
             try
             {
                 try
@@ -146,7 +145,7 @@ namespace DotNetty.Transport.Channels
             }
             catch (Exception ex)
             {
-                this.FireExceptionCaught(new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerRemoved() has thrown an exception.", ex));
+                this.FireExceptionCaught(new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerRemoved() 异常", ex));
             }
         }
 
@@ -359,43 +358,27 @@ namespace DotNetty.Transport.Channels
 
             public override IChannelHandler Handler => this;
 
-            public void ChannelRegistered(IChannelHandlerContext context)
-            {
-            }
+            public void ChannelRegistered(IChannelHandlerContext context) { }
 
-            public void ChannelUnregistered(IChannelHandlerContext context)
-            {
-            }
+            public void ChannelUnregistered(IChannelHandlerContext context) { }
 
-            public void ChannelActive(IChannelHandlerContext context)
-            {
-            }
+            public void ChannelActive(IChannelHandlerContext context) { }
 
-            public void ChannelInactive(IChannelHandlerContext context)
-            {
-            }
+            public void ChannelInactive(IChannelHandlerContext context) { }
 
             public void ExceptionCaught(IChannelHandlerContext context, Exception exception) => this.pipeline.OnUnhandledInboundException(exception);
 
             public void ChannelRead(IChannelHandlerContext context, object message) => this.pipeline.OnUnhandledInboundMessage(message);
 
-            public void ChannelReadComplete(IChannelHandlerContext context)
-            {
-            }
+            public void ChannelReadComplete(IChannelHandlerContext context) { }
 
-            public void ChannelWritabilityChanged(IChannelHandlerContext context)
-            {
-            }
+            public void ChannelWritabilityChanged(IChannelHandlerContext context) { }
 
             [Skip]
-            public void HandlerAdded(IChannelHandlerContext context)
-            {
-            }
+            public void HandlerAdded(IChannelHandlerContext context) { }
 
             [Skip]
-            public void HandlerRemoved(IChannelHandlerContext context)
-            {
-            }
+            public void HandlerRemoved(IChannelHandlerContext context) { }
 
             [Skip]
             public Task DeregisterAsync(IChannelHandlerContext context) => context.DeregisterAsync();
@@ -457,14 +440,10 @@ namespace DotNetty.Transport.Channels
             public Task WriteAsync(IChannelHandlerContext context, object message) => this.channelUnsafe.WriteAsync(message);
 
             [Skip]
-            public void HandlerAdded(IChannelHandlerContext context)
-            {
-            }
+            public void HandlerAdded(IChannelHandlerContext context) { }
 
             [Skip]
-            public void HandlerRemoved(IChannelHandlerContext context)
-            {
-            }
+            public void HandlerRemoved(IChannelHandlerContext context) { }
 
             [Skip]
             public void ExceptionCaught(IChannelHandlerContext ctx, Exception exception) => ctx.FireExceptionCaught(exception);

@@ -129,7 +129,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         public int Backlog
         {
-            get { return this.backlog; }
+            get => this.backlog;
             set
             {
                 Contract.Requires(value >= 0);

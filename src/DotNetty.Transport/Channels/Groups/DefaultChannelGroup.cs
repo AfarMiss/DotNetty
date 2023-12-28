@@ -38,12 +38,11 @@ namespace DotNetty.Transport.Channels.Groups
             return channel;
         }
 
-        public Task WriteAsync(object message) => this.WriteAsync(message, ChannelMatchers.All());
-
-        public Task WriteAsync(object message, IChannelMatcher matcher)
+        public Task WriteAsync(object message, IChannelMatcher matcher = null)
         {
             Contract.Requires(message != null);
-            Contract.Requires(matcher != null);
+
+            matcher ??= ChannelMatchers.All();
             var futures = new List<Task>();
             foreach (var channel in this.channels.Values)
             {
@@ -61,10 +60,10 @@ namespace DotNetty.Transport.Channels.Groups
             return new DefaultChannelGroupCompletionSource(this, futures).Task;
         }
 
-        public void Flush() => this.Flush(ChannelMatchers.All());
-
-        public void Flush(IChannelMatcher matcher)
+        public void Flush(IChannelMatcher matcher = null)
         {
+            matcher ??= ChannelMatchers.All();
+
             foreach (var channel in this.channels.Values)
             {
                 if (matcher.Matches(channel))
@@ -74,12 +73,12 @@ namespace DotNetty.Transport.Channels.Groups
             }
         }
 
-        public Task WriteAndFlushAsync(object message) => this.WriteAndFlushAsync(message, ChannelMatchers.All());
-
-        public Task WriteAndFlushAsync(object message, IChannelMatcher matcher)
+        public Task WriteAndFlushAsync(object message, IChannelMatcher matcher = null)
         {
             Contract.Requires(message != null);
-            Contract.Requires(matcher != null);
+
+            matcher ??= ChannelMatchers.All();
+
             var futures = new List<Task>();
             foreach (var channel in this.channels.Values)
             {
@@ -96,11 +95,10 @@ namespace DotNetty.Transport.Channels.Groups
             return new DefaultChannelGroupCompletionSource(this, futures).Task;
         }
 
-        public Task DisconnectAsync() => this.DisconnectAsync(ChannelMatchers.All());
-
-        public Task DisconnectAsync(IChannelMatcher matcher)
+        public Task DisconnectAsync(IChannelMatcher matcher = null)
         {
-            Contract.Requires(matcher != null);
+            matcher ??= ChannelMatchers.All();
+
             var futures = new List<Task>();
             foreach (var channel in this.channels.Values)
             {
@@ -113,11 +111,10 @@ namespace DotNetty.Transport.Channels.Groups
             return new DefaultChannelGroupCompletionSource(this, futures).Task;
         }
 
-        public Task CloseAsync() => this.CloseAsync(ChannelMatchers.All());
-
         public Task CloseAsync(IChannelMatcher matcher)
         {
-            Contract.Requires(matcher != null);
+            matcher ??= ChannelMatchers.All();
+
             var futures = new List<Task>();
             foreach (var channel in this.channels.Values)
             {
@@ -130,11 +127,10 @@ namespace DotNetty.Transport.Channels.Groups
             return new DefaultChannelGroupCompletionSource(this, futures).Task;
         }
 
-        public Task DeregisterAsync() => this.DeregisterAsync(ChannelMatchers.All());
-
         public Task DeregisterAsync(IChannelMatcher matcher)
         {
-            Contract.Requires(matcher != null);
+            matcher ??= ChannelMatchers.All();
+
             var futures = new List<Task>();
             foreach (var channel in this.channels.Values)
             {
@@ -147,11 +143,10 @@ namespace DotNetty.Transport.Channels.Groups
             return new DefaultChannelGroupCompletionSource(this, futures).Task;
         }
 
-        public Task NewCloseFuture() => this.NewCloseFuture(ChannelMatchers.All());
-
         public Task NewCloseFuture(IChannelMatcher matcher)
         {
-            Contract.Requires(matcher != null);
+            matcher ??= ChannelMatchers.All();
+
             var futures = new List<Task>();
             foreach (var channel in this.channels.Values)
             {

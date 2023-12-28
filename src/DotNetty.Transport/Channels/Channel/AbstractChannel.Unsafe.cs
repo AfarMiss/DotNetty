@@ -196,12 +196,10 @@ namespace DotNetty.Transport.Channels
                 this.outboundBuffer = null;
                 try
                 {
-                    // Close the channel and fail the queued messages input all cases.
                     this.DoClose0(promise);
                 }
                 finally
                 {
-                    // Fail all the queued messages.
                     outboundBuffer.FailFlushed(cause, notify);
                     outboundBuffer.Close(new ClosedChannelException());
                 }
@@ -244,7 +242,7 @@ namespace DotNetty.Transport.Channels
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn("Failed to close a channel.", e);
+                    Logger.Warn("无法关闭channel", e);
                 }
             }
 
@@ -286,10 +284,6 @@ namespace DotNetty.Transport.Channels
                         {
                             this.channel.pipeline.FireChannelInactive();
                         }
-                        // Some transports like local and AIO does not allow the deregistration of
-                        // an open channel.  Their doDeregister() calls close(). Consequently,
-                        // close() calls deregister() again - no need to fire channelUnregistered, so check
-                        // if it was registered.
                         if (this.channel.registered)
                         {
                             this.channel.registered = false;
@@ -398,7 +392,7 @@ namespace DotNetty.Transport.Channels
                     }
                     catch (Exception ex)
                     {
-                        Util.CompleteChannelCloseTaskSafely(this.channel, this.CloseAsync(new ClosedChannelException("Failed to write", ex), false));
+                        Util.CompleteChannelCloseTaskSafely(this.channel, this.CloseAsync(new ClosedChannelException("写入失败", ex), false));
                     }
                     finally
                     {
@@ -439,7 +433,7 @@ namespace DotNetty.Transport.Channels
             {
                 if (exception is SocketException)
                 {
-                    return new ConnectException("LogError connecting to " + remoteAddress, exception);
+                    return new ConnectException("无法连接到:" + remoteAddress, exception);
                 }
 
                 return exception;

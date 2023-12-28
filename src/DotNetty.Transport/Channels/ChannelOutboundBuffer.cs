@@ -74,10 +74,7 @@ namespace DotNetty.Transport.Channels
 
         private void IncrementPendingOutboundBytes(long size, bool invokeLater)
         {
-            if (size == 0)
-            {
-                return;
-            }
+            if (size == 0) return;
 
             var newWriteBufferSize = Interlocked.Add(ref this.totalPendingSize, size);
             if (newWriteBufferSize >= this.channel.Configuration.WriteBufferHighWaterMark)
@@ -90,14 +87,10 @@ namespace DotNetty.Transport.Channels
 
         private void DecrementPendingOutboundBytes(long size, bool invokeLater, bool notifyWritability)
         {
-            if (size == 0)
-            {
-                return;
-            }
+            if (size == 0) return;
 
             var newWriteBufferSize = Interlocked.Add(ref this.totalPendingSize, -size);
-            if (notifyWritability && (newWriteBufferSize == 0
-                || newWriteBufferSize <= this.channel.Configuration.WriteBufferLowWaterMark))
+            if (notifyWritability && (newWriteBufferSize == 0 || newWriteBufferSize <= this.channel.Configuration.WriteBufferLowWaterMark))
             {
                 this.SetWritable(invokeLater);
             }
@@ -125,7 +118,6 @@ namespace DotNetty.Transport.Channels
 
             if (!entry.Cancelled)
             {
-                // only release message, notify and decrement if it was not canceled before.
                 ReferenceCountUtil.SafeRelease(entry.Message);
                 SafeSuccess(promise);
                 this.DecrementPendingOutboundBytes(size, false, true);
@@ -154,7 +146,6 @@ namespace DotNetty.Transport.Channels
 
             if (!entry.Cancelled)
             {
-                // only release message, fail and decrement if it was not canceled before.
                 ReferenceCountUtil.SafeRelease(entry.Message);
                 SafeFail(promise, cause);
                 this.DecrementPendingOutboundBytes(size, false, notifyWritability);
@@ -246,16 +237,6 @@ namespace DotNetty.Transport.Channels
                     {
                         if (maxBytes - readableBytes < ioBufferSize && nioBufferCount != 0)
                         {
-                            // If the nioBufferSize + readableBytes will overflow an Integer we stop populate the
-                            // ByteBuffer array. This is done as bsd/osx don't allow to write more bytes then
-                            // Integer.MAX_VALUE with one writev(...) call and so will return 'EINVAL', which will
-                            // raise an IOException. On Linux it may work depending on the
-                            // architecture and kernel but to be safe we also enforce the limit here.
-                            // This said writing more the Integer.MAX_VALUE is not a good idea anyway.
-                            //
-                            // See also:
-                            // - https://www.freebsd.org/cgi/man.cgi?query=write&sektion=2
-                            // - http://linux.die.net/man/2/writev
                             break;
                         }
                         ioBufferSize += readableBytes;
@@ -269,8 +250,6 @@ namespace DotNetty.Transport.Channels
                             var nioBuf = entry.Buffer;
                             if (nioBuf.Array == null)
                             {
-                                // cache ByteBuffer as it may need to create a new ByteBuffer instance if its a
-                                // derived buffer
                                 entry.Buffer = nioBuf = buffer.GetIoBuffer(readerIndex, readableBytes);
                             }
                             nioBuffers.Add(nioBuf);
@@ -281,8 +260,6 @@ namespace DotNetty.Transport.Channels
                             var nioBufs = entry.Buffers;
                             if (nioBufs == null)
                             {
-                                // cached ByteBuffers as they may be expensive to create in terms
-                                // of Object allocation
                                 entry.Buffers = nioBufs = buffer.GetIoBuffers();
                             }
                             for (int i = 0; i < nioBufs.Length && nioBufferCount < maxCount; i++)
@@ -431,11 +408,6 @@ namespace DotNetty.Transport.Channels
 
         public void FailFlushed(Exception cause, bool notify)
         {
-            // Make sure that this method does not reenter.  A listener added to the current promise can be notified by the
-            // current thread in the tryFailure() call of the loop below, and the listener can trigger another fail() call
-            // indirectly (usually by closing the channel.)
-            //
-            // See https://github.com/netty/netty/issues/1501
             if (this.inFail) return;
 
             try
@@ -491,13 +463,11 @@ namespace DotNetty.Transport.Channels
                 throw new InvalidOperationException("close() must be invoked after all flushed writes are handled.");
             }
 
-            // Release all unflushed messages.
             try
             {
-                Entry e = this.unflushedEntry;
+                var e = this.unflushedEntry;
                 while (e != null)
                 {
-                    // Just decrease; do not trigger any events via DecrementPendingOutboundBytes()
                     int size = e.PendingSize;
                     Interlocked.Add(ref this.totalPendingSize, -size);
 
@@ -520,17 +490,11 @@ namespace DotNetty.Transport.Channels
 
         private static void SafeSuccess(TaskCompletionSource promise)
         {
-            // TODO:ChannelPromise
-            // Only log if the given promise is not of type VoidChannelPromise as trySuccess(...) is expected to return
-            // false.
             Util.SafeSetSuccess(promise, Logger);
         }
 
         private static void SafeFail(TaskCompletionSource promise, Exception cause)
         {
-            // TODO:ChannelPromise
-            // Only log if the given promise is not of type VoidChannelPromise as tryFailure(...) is expected to return
-            // false.
             Util.SafeSetFailure(promise, cause, Logger);
         }
 
@@ -539,38 +503,21 @@ namespace DotNetty.Transport.Channels
         public long BytesBeforeUnwritable()
         {
             long bytes = this.channel.Configuration.WriteBufferHighWaterMark - this.totalPendingSize;
-            // If bytes is negative we know we are not writable, but if bytes is non-negative we have to check writability.
-            // Note that totalPendingSize and isWritable() use different volatile variables that are not synchronized
-            // together. totalPendingSize will be updated before isWritable().
-            if (bytes > 0)
-            {
-                return this.IsWritable ? bytes : 0;
-            }
-            return 0;
+            return bytes > 0 ? this.IsWritable ? bytes : 0 : 0;
         }
 
         public long BytesBeforeWritable()
         {
             long bytes = this.totalPendingSize - this.channel.Configuration.WriteBufferLowWaterMark;
-            // If bytes is negative we know we are writable, but if bytes is non-negative we have to check writability.
-            // Note that totalPendingSize and isWritable() use different volatile variables that are not synchronized
-            // together. totalPendingSize will be updated before isWritable().
-            if (bytes > 0)
-            {
-                return this.IsWritable ? 0 : bytes;
-            }
-            return 0;
+            return bytes > 0 ? this.IsWritable ? 0 : bytes : 0;
         }
 
         public void ForEachFlushedMessage(IMessageProcessor processor)
         {
             Contract.Requires(processor != null);
 
-            Entry entry = this.flushedEntry;
-            if (entry == null)
-            {
-                return;
-            }
+            var entry = this.flushedEntry;
+            if (entry == null) return;
 
             do
             {
@@ -628,7 +575,6 @@ namespace DotNetty.Transport.Channels
                     this.Cancelled = true;
                     int pSize = this.PendingSize;
 
-                    // release message and replace with an empty buffer
                     ReferenceCountUtil.SafeRelease(this.Message);
                     this.Message = ByteBuffer.Empty;
 

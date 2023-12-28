@@ -17,8 +17,7 @@ namespace DotNetty.Transport.Channels
             {
                 if (!adapter.IsSharable && adapter.Added)
                 {
-                    throw new ChannelPipelineException(
-                        adapter.GetType().Name + " is not a @Sharable handler, so can't be added or removed multiple times.");
+                    throw new ChannelPipelineException(adapter.GetType().Name + "非@Sharable Handler,无法多次添加或删除");
                 }
                 adapter.Added = true;
             }
@@ -297,9 +296,6 @@ namespace DotNetty.Transport.Channels
 
                 AddAfter0(ctx, newCtx);
 
-                // If the executor is null it means that the channel was not registered on an eventloop yet.
-                // In this case we remove the context from the pipeline and add a task that will call
-                // ChannelHandler.handlerRemoved(...) once the channel is registered.
                 if (executor == null)
                 {
                     this.CallHandlerCallbackLater(newCtx, true);
@@ -372,7 +368,7 @@ namespace DotNetty.Transport.Channels
                 }
                 if (!executor.InEventLoop)
                 {
-                    executor.Execute((s, c) => ((DefaultChannelPipeline)s).CallHandlerRemoved0((AbstractChannelHandlerContext)c), this, ctx);
+                    executor.Execute((pipeline, context) => pipeline.CallHandlerRemoved0(context), this, ctx);
                     return ctx;
                 }
             }
@@ -392,7 +388,7 @@ namespace DotNetty.Transport.Channels
         {
             if (this.head.Next == this.tail)
             {
-                throw new InvalidOperationException("Pipeline is empty.");
+                throw new InvalidOperationException("Handlers为空");
             }
             return this.Remove(this.head.Next).Handler;
         }
@@ -401,7 +397,7 @@ namespace DotNetty.Transport.Channels
         {
             if (this.head.Next == this.tail)
             {
-                throw new InvalidOperationException("Pipeline is empty.");
+                throw new InvalidOperationException("Handlers为空");
             }
             return this.Remove(this.tail.Prev).Handler;
         }
@@ -437,10 +433,6 @@ namespace DotNetty.Transport.Channels
 
                 Replace0(ctx, newCtx);
 
-                // If the executor is null it means that the channel was not registered on an event loop yet.
-                // In this case we replace the context in the pipeline
-                // and add a task that will signal handler it was added or removed
-                // once the channel is registered.
                 if (executor == null)
                 {
                     this.CallHandlerCallbackLater(newCtx, true);
@@ -452,18 +444,13 @@ namespace DotNetty.Transport.Channels
                 {
                     executor.Execute(() =>
                     {
-                        // Indicate new handler was added first (i.e. before old handler removed)
-                        // because "removed" will trigger ChannelRead() or Flush() on newHandler and
-                        // those event handlers must be called after handler was signaled "added".
                         this.CallHandlerAdded0(newCtx);
                         this.CallHandlerRemoved0(ctx);
                     });
                     return ctx.Handler;
                 }
             }
-            // Indicate new handler was added first (i.e. before old handler removed)
-            // because "removed" will trigger ChannelRead() or Flush() on newHandler and
-            // those event handlers must be called after handler was signaled "added".
+
             this.CallHandlerAdded0(newCtx);
             this.CallHandlerRemoved0(ctx);
             return ctx.Handler;
@@ -476,14 +463,9 @@ namespace DotNetty.Transport.Channels
             newCtx.Prev = prev;
             newCtx.Next = next;
 
-            // Finish the replacement of oldCtx with newCtx in the linked list.
-            // Note that this doesn't mean events will be sent to the new handler immediately
-            // because we are currently at the event handler thread and no more than one handler methods can be invoked
-            // at the same time (we ensured that in replace().)
             prev.Next = newCtx;
             next.Prev = newCtx;
 
-            // update the reference to the replacement so forward of buffered content will work correctly
             oldCtx.Prev = newCtx;
             oldCtx.Next = newCtx;
         }
