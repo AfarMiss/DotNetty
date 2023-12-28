@@ -134,7 +134,7 @@ namespace DotNetty.Codecs.Http.Tests
                                 ch.Pipeline.AddLast(clientHandler);
                             }));
 
-                Task<IChannel> task = sb.BindAsync(IPAddress.Loopback, IPEndPoint.MinPort);
+                Task<IChannel> task = sb.BindAsync(new IPEndPoint(IPAddress.Loopback, IPEndPoint.MinPort));
                 task.Wait(TimeSpan.FromSeconds(5));
                 Assert.True(task.Status == TaskStatus.RanToCompletion);
                 IChannel serverChannel = task.Result;

@@ -89,8 +89,10 @@ namespace DotNetty.Transport.Bootstrapping
 
         protected override void Init(IChannel channel)
         {
-            SetChannelOptions(channel, this.Options, Logger);
-
+            foreach (var (_, accessor) in this.Options)
+            {
+                accessor.TransferSet(channel.Configuration);
+            }
             foreach (var (_, accessor) in this.Attrs)
             {
                 accessor.TransferSet(channel);
@@ -105,8 +107,8 @@ namespace DotNetty.Transport.Bootstrapping
 
             var currentChildGroup = this.childGroup;
             var currentChildHandler = this.childHandler;
-            var currentChildOptions = this.childOptions.Values.ToArray();
-            var currentChildAttrs = this.childAttrs.Values.ToArray();
+            var currentChildOptions = this.childOptions;
+            var currentChildAttrs = this.childAttrs;
 
             pipeline.AddLast(new ActionChannelInitializer<IChannel>(ch =>
             {
@@ -132,10 +134,10 @@ namespace DotNetty.Transport.Bootstrapping
         {
             private readonly IEventLoopGroup childGroup;
             private readonly IChannelHandler childHandler;
-            private readonly IConstantAccessor[] childOptions;
-            private readonly IConstantAccessor[] childAttrs;
+            private readonly ConstantMap childOptions;
+            private readonly ConstantMap childAttrs;
 
-            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler,IConstantAccessor[] childOptions, IConstantAccessor[] childAttrs)
+            public ServerBootstrapAcceptor(IEventLoopGroup childGroup, IChannelHandler childHandler, ConstantMap childOptions, ConstantMap childAttrs)
             {
                 this.childGroup = childGroup;
                 this.childHandler = childHandler;
@@ -149,9 +151,11 @@ namespace DotNetty.Transport.Bootstrapping
 
                 child.Pipeline.AddLast((string)null, this.childHandler);
 
-                SetChannelOptions(child, this.childOptions, Logger);
-
-                foreach (var accessor in this.childAttrs)
+                foreach (var (_, accessor) in this.childOptions)
+                {
+                    accessor.TransferSet(child.Configuration);
+                }
+                foreach (var (_, accessor) in this.childAttrs)
                 {
                     accessor.TransferSet(child);
                 }

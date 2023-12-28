@@ -173,7 +173,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
                 IPAddress address = NetUtil.GetLoopbackAddress(addressFamily);
                 this.Output.WriteLine($"Unicast server binding to:({addressFamily}){address}");
-                Task<IChannel> task = serverBootstrap.BindAsync(address, IPEndPoint.MinPort);
+                Task<IChannel> task = serverBootstrap.BindAsync(new IPEndPoint(address, IPEndPoint.MinPort));
 
                 Assert.True(task.Wait(TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds * 5)),
                     $"Unicast server binding to:({addressFamily}){address} timed out!");

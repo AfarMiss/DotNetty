@@ -127,25 +127,7 @@ namespace DotNetty.Transport.Bootstrapping
         }
 
         /// <inheritdoc cref="BindAsync(EndPoint)"/>
-        public Task<IChannel> BindAsync()
-        {
-            this.Validate();
-            var address = this.localAddress;
-            if (address == null)
-            {
-                throw new InvalidOperationException("localAddress must be set beforehand.");
-            }
-            return this.DoBindAsync(address);
-        }
-
-        /// <inheritdoc cref="BindAsync(EndPoint)"/>
         public Task<IChannel> BindAsync(int inetPort) => this.BindAsync(new IPEndPoint(IPAddress.Any, inetPort));
-
-        /// <inheritdoc cref="BindAsync(EndPoint)"/>
-        public Task<IChannel> BindAsync(string inetHost, int inetPort) => this.BindAsync(new DnsEndPoint(inetHost, inetPort));
-
-        /// <inheritdoc cref="BindAsync(EndPoint)"/>
-        public Task<IChannel> BindAsync(IPAddress inetHost, int inetPort) => this.BindAsync(new IPEndPoint(inetHost, inetPort));
 
         /// <summary>
         /// 参考<see cref="RegisterAsync"/> 并绑定到指定EndPoint
@@ -200,15 +182,6 @@ namespace DotNetty.Transport.Bootstrapping
                 throw;
             }
 
-            // If we are here and the promise is not failed, it's one of the following cases:
-            // 1) If we attempted registration from the event loop, the registration has been completed at this point.
-            //    i.e. It's safe to attempt bind() or connect() now because the channel has been registered.
-            // 2) If we attempted registration from the other thread, the registration request has been successfully
-            //    added to the event loop's task queue for later execution.
-            //    i.e. It's safe to attempt bind() or connect() now:
-            //         because bind() or connect() will be executed *after* the scheduled registration task is executed
-            //         because register(), bind(), and connect() are all bound to the same thread.
-
             return channel;
         }
 
@@ -228,34 +201,6 @@ namespace DotNetty.Transport.Bootstrapping
                 }
             });
             return promise.Task;
-        }
-
-        protected static void SetChannelOptions(IChannel channel, ICollection<IConstantAccessor> options, IInternalLogger logger)
-        {
-            foreach (var e in options)
-            {
-                SetChannelOption(channel, e, logger);
-            }
-        }
-
-        protected static void SetChannelOptions(IChannel channel, ConstantMap options, IInternalLogger logger)
-        {
-            foreach (var (_, accessor) in options)
-            {
-                SetChannelOption(channel, accessor, logger);
-            }
-        }
-
-        protected static void SetChannelOption(IChannel channel, IConstantAccessor option, IInternalLogger logger)
-        {
-            try
-            {
-                option.TransferSet(channel.Configuration);
-            }
-            catch (Exception ex)
-            {
-                logger.Warn("Failed to set channel option ", ex);
-            }
         }
     }
 }

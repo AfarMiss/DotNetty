@@ -121,7 +121,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
                     ? IPAddress.Loopback : IPAddress.IPv6Loopback;
 
                 this.Output.WriteLine($"Multicast server binding to:({addressFamily}){address}");
-                Task<IChannel> task = serverBootstrap.BindAsync(address, IPEndPoint.MinPort);
+                Task<IChannel> task = serverBootstrap.BindAsync(new IPEndPoint(address, IPEndPoint.MinPort));
                 Assert.True(task.Wait(TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds * 5)),
                     $"Multicast server binding to:({addressFamily}){address} timed out!");
 
@@ -142,7 +142,7 @@ namespace DotNetty.Transport.Tests.Channel.Sockets
 
                 this.Output.WriteLine($"Multicast client binding to:({addressFamily}){address}");
 
-                task = clientBootstrap.BindAsync(address, IPEndPoint.MinPort);
+                task = clientBootstrap.BindAsync(new IPEndPoint(address, IPEndPoint.MinPort));
                 Assert.True(task.Wait(TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds * 5)),
                     $"Multicast client binding to:({addressFamily}){address} timed out!");
 

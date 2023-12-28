@@ -89,8 +89,6 @@ namespace DotNetty.Common.Utilities
             return (Atomic<T>)lazy.Value;
         }
 
-        public ICollection<IConstantAccessor> Values => this.attributes.Values.Select(lazy => lazy.Value).ToList();
-
         public IEnumerator<KeyValuePair<IConstant, IConstantAccessor>> GetEnumerator() => 
             this.attributes.Select(pair => new KeyValuePair<IConstant, IConstantAccessor>(pair.Key, pair.Value.Value)).GetEnumerator(); 
 

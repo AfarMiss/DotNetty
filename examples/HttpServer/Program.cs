@@ -75,7 +75,7 @@ namespace HttpServer
                         pipeline.AddLast("handler", new HelloServerHandler());
                     }));
 
-                IChannel bootstrapChannel = await bootstrap.BindAsync(IPAddress.IPv6Any, ServerSettings.Port);
+                IChannel bootstrapChannel = await bootstrap.BindAsync(new IPEndPoint(IPAddress.IPv6Any, ServerSettings.Port));
 
                 Console.WriteLine($"Httpd started. Listening on {bootstrapChannel.LocalAddress}");
                 Console.ReadLine();

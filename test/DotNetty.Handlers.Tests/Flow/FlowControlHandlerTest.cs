@@ -53,7 +53,7 @@ namespace DotNetty.Handlers.Tests.Flow
                             pipeline.AddLast(handlers);
                         }));
 
-            return serverBootstrap.BindAsync(IPAddress.Loopback, 0);
+            return serverBootstrap.BindAsync(new IPEndPoint(IPAddress.Loopback, 0));
         }
 
         Task<IChannel> NewClient(EndPoint server)

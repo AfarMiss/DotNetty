@@ -145,8 +145,10 @@ namespace DotNetty.Transport.Bootstrapping
             var pipeline = channel.Pipeline;
             pipeline.AddLast(null, (string)null, this.Handler);
 
-            SetChannelOptions(channel, this.Options, Logger);
-
+            foreach (var (_, accessor) in this.Options)
+            {
+                accessor.TransferSet(channel.Configuration);
+            }
             foreach (var (_, accessor) in this.Attrs)
             {
                 accessor.TransferSet(channel);
