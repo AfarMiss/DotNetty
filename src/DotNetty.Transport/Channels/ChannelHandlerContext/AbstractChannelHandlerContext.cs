@@ -1,9 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
-using DotNetty.Common;
 using DotNetty.Common.Concurrency;
 using DotNetty.Common.Internal;
 using DotNetty.Common.Utilities;
@@ -13,16 +13,8 @@ namespace DotNetty.Transport.Channels
 {
     internal abstract class AbstractChannelHandlerContext : IChannelHandlerContext
     {
-        private static readonly Action<object> InvokeChannelReadCompleteAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelReadComplete();
-        private static readonly Action<object> InvokeReadAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeRead();
-        private static readonly Action<object> InvokeChannelWritabilityChangedAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeChannelWritabilityChanged();
-        private static readonly Action<object> InvokeFlushAction = ctx => ((AbstractChannelHandlerContext)ctx).InvokeFlush();
-        private static readonly Action<object, object> InvokeUserEventTriggeredAction = (ctx, evt) => ((AbstractChannelHandlerContext)ctx).InvokeUserEventTriggered(evt);
-        private static readonly Action<object, object> InvokeChannelReadAction = (ctx, msg) => ((AbstractChannelHandlerContext)ctx).InvokeChannelRead(msg);
-        
         internal volatile AbstractChannelHandlerContext Next;
         internal volatile AbstractChannelHandlerContext Prev;
-
         internal readonly SkipFlags SkipPropagationFlags;
 
         private enum HandlerState
@@ -67,28 +59,26 @@ namespace DotNetty.Transport.Channels
 
         public ConstantMap ConstantMap => this.Channel.ConstantMap;
 
-        public void FireChannelRegistered() => InvokeChannelRegistered(this.FindContextInbound());
-
-        internal static void InvokeChannelRegistered(AbstractChannelHandlerContext next)
+        private static void InvokeIfInEventLoop<T, T1>(Action<T, T1> executorAction, T next, T1 arg) where T : IChannelHandlerContext
         {
             var nextExecutor = next.Executor;
             if (nextExecutor.InEventLoop)
             {
-                next.InvokeChannelRegistered();
+                executorAction(next, arg);
             }
             else
             {
-                nextExecutor.Execute(c => ((AbstractChannelHandlerContext)c).InvokeChannelRegistered(), next);
+                nextExecutor.Execute(executorAction, next, arg);
             }
         }
 
-        private void InvokeChannelRegistered()
+        private void FireIfException<T>(Action<AbstractChannelHandlerContext, T> handlerFireAction, Action<IChannelHandlerContext, T> fireAction, T arg)
         {
             if (this.Added)
             {
                 try
                 {
-                    this.Handler.ChannelRegistered(this);
+                    handlerFireAction(this, arg);
                 }
                 catch (Exception ex)
                 {
@@ -97,549 +87,307 @@ namespace DotNetty.Transport.Channels
             }
             else
             {
-                this.FireChannelRegistered();
+                fireAction(this, arg);
             }
+        }
+
+        private static Task InvokeIfInEventLoop<T, T1>(Func<T, T1, Task> executorAction, T next, T1 arg) where T : IChannelHandlerContext
+        {
+            var nextExecutor = next.Executor;
+            if (nextExecutor.InEventLoop)
+            {
+                return executorAction(next, arg);
+            }
+            else
+            {
+                return SafeExecuteOutboundAsync(nextExecutor, () => executorAction(next, arg));
+            }
+        }
+
+        private Task FireIfException<T>(Func<AbstractChannelHandlerContext, T, Task> handlerFireAction, Func<IChannelHandlerContext, T, Task> fireAction, T arg)
+        {
+            if (this.Added)
+            {
+                try
+                {
+                    return handlerFireAction(this, arg);
+                }
+                catch (Exception ex)
+                {
+                    return TaskEx.FromException(ex);
+                }
+            }
+            else
+            {
+                return fireAction(this, arg);
+            }
+        }
+
+        [SuppressMessage("ReSharper", "PrivateFieldCanBeConvertedToLocalVariable")]
+        private sealed class CacheLambda<T>
+        {
+            private readonly Action<IChannelHandlerContext, T> action1;
+            private readonly Action<IChannelHandlerContext, T> action2;
+            internal readonly Action<AbstractChannelHandlerContext, T> InvokeAction;
+
+            public CacheLambda(Action<IChannelHandlerContext, T> action1, Action<IChannelHandlerContext, T> action2)
+            {
+                this.action1 = action1;
+                this.action2 = action2;
+                this.InvokeAction = (context, arg) => context.FireIfException(this.action1, this.action2, arg);
+            }
+        }
+
+        [SuppressMessage("ReSharper", "PrivateFieldCanBeConvertedToLocalVariable")]
+        private sealed class CacheTaskLambda<T>
+        {
+            private readonly Func<AbstractChannelHandlerContext, T, Task> action1;
+            private readonly Func<IChannelHandlerContext, T, Task> action2;
+            internal readonly Func<AbstractChannelHandlerContext, T, Task> InvokeAction;
+
+            public CacheTaskLambda(Func<AbstractChannelHandlerContext, T, Task> action1, Func<IChannelHandlerContext, T, Task> action2, Action<AbstractChannelHandlerContext, T> action3 = null)
+            {
+                this.action1 = action1;
+                this.action2 = action2;
+                if (action3 == null)
+                {
+                    this.InvokeAction = (context, arg) => context.FireIfException(this.action1, this.action2, arg);
+                }
+                else
+                {
+                    this.InvokeAction = (context, arg) =>
+                    {
+                        action3(context, arg);
+                        return context.FireIfException(this.action1, this.action2, arg);
+                    };
+                }
+            }
+        }
+
+        public void FireChannelRegistered() => InvokeChannelRegistered(this.FindContextInbound());
+
+        private static readonly CacheLambda<object> ChannelRegistered = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.ChannelRegistered(context),
+            (context, _) => context.FireChannelRegistered()
+        );
+        internal static void InvokeChannelRegistered(AbstractChannelHandlerContext next)
+        {
+            InvokeIfInEventLoop(ChannelRegistered.InvokeAction, next, default);
         }
 
         public void FireChannelUnregistered() => InvokeChannelUnregistered(this.FindContextInbound());
 
+        private static readonly CacheLambda<object> ChannelUnregistered = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.ChannelUnregistered(context),
+            (context, _) => context.FireChannelUnregistered()
+        );
         internal static void InvokeChannelUnregistered(AbstractChannelHandlerContext next)
         {
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeChannelUnregistered();
-            }
-            else
-            {
-                nextExecutor.Execute(c => ((AbstractChannelHandlerContext)c).InvokeChannelUnregistered(), next);
-            }
-        }
-
-        private void InvokeChannelUnregistered()
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.ChannelUnregistered(this);
-                }
-                catch (Exception t)
-                {
-                    this.NotifyHandlerException(t);
-                }
-            }
-            else
-            {
-                this.FireChannelUnregistered();
-            }
+            InvokeIfInEventLoop(ChannelUnregistered.InvokeAction, next, default);
         }
 
         public void FireChannelActive() => InvokeChannelActive(this.FindContextInbound());
 
+        private static readonly CacheLambda<object> ChannelActive = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.ChannelActive(context),
+            (context, _) => context.FireChannelActive()
+        );
         internal static void InvokeChannelActive(AbstractChannelHandlerContext next)
         {
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeChannelActive();
-            }
-            else
-            {
-                nextExecutor.Execute(c => ((AbstractChannelHandlerContext)c).InvokeChannelActive(), next);
-            }
-        }
-
-        private void InvokeChannelActive()
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    (this.Handler).ChannelActive(this);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.FireChannelActive();
-            }
+            InvokeIfInEventLoop(ChannelActive.InvokeAction, next, default);
         }
 
         public void FireChannelInactive() => InvokeChannelInactive(this.FindContextInbound());
 
+        private static readonly CacheLambda<object> ChannelInactive = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.ChannelInactive(context),
+            (context, _) => context.FireChannelInactive()
+        );
         internal static void InvokeChannelInactive(AbstractChannelHandlerContext next)
         {
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeChannelInactive();
-            }
-            else
-            {
-                nextExecutor.Execute(c => ((AbstractChannelHandlerContext)c).InvokeChannelInactive(), next);
-            }
+            InvokeIfInEventLoop(ChannelInactive.InvokeAction, next, default);
         }
 
-        private void InvokeChannelInactive()
+        public virtual void FireExceptionCaught(Exception cause)
         {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.ChannelInactive(this);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.FireChannelInactive();
-            }
+            InvokeExceptionCaught(this.FindContextInbound(), cause);
         }
 
-        public virtual void FireExceptionCaught(Exception cause) => InvokeExceptionCaught(this.FindContextInbound(), cause);
-
+        private static readonly CacheLambda<Exception> ExceptionCaught = new CacheLambda<Exception>
+        (
+            (context, arg) => context.Handler.ExceptionCaught(context, arg),
+            (context, arg) => context.FireExceptionCaught(arg)
+        );
         internal static void InvokeExceptionCaught(AbstractChannelHandlerContext next, Exception cause)
         {
-            Contract.Requires(cause != null);
-
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeExceptionCaught(cause);
-            }
-            else
-            {
-                try
-                {
-                    nextExecutor.Execute((c, e) => ((AbstractChannelHandlerContext)c).InvokeExceptionCaught((Exception)e), next, cause);
-                }
-                catch (Exception t)
-                {
-                    if (DefaultChannelPipeline.Logger.WarnEnabled)
-                    {
-                        DefaultChannelPipeline.Logger.Warn("Failed to submit an ExceptionCaught() event.", t);
-                        DefaultChannelPipeline.Logger.Warn("The ExceptionCaught() event that was failed to submit was:", cause);
-                    }
-                }
-            }
-        }
-
-        private void InvokeExceptionCaught(Exception cause)
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.ExceptionCaught(this, cause);
-                }
-                catch (Exception t)
-                {
-                    if (DefaultChannelPipeline.Logger.WarnEnabled)
-                    {
-                        DefaultChannelPipeline.Logger.Warn("Failed to submit an ExceptionCaught() event.", t);
-                        DefaultChannelPipeline.Logger.Warn(
-                                "An exception was thrown by a user handler's " +
-                                        "ExceptionCaught() method while handling the following exception:", cause);
-                    }
-                }
-            }
-            else
-            {
-                this.FireExceptionCaught(cause);
-            }
+            InvokeIfInEventLoop(ExceptionCaught.InvokeAction, next, cause);
         }
 
         public void FireUserEventTriggered(object evt) => InvokeUserEventTriggered(this.FindContextInbound(), evt);
 
+        private static readonly CacheLambda<object> UserEventTriggered = new CacheLambda<object>
+        (
+            (context, arg) => context.Handler.UserEventTriggered(context, arg),
+            (context, arg) => context.FireUserEventTriggered(arg)
+        );
         internal static void InvokeUserEventTriggered(AbstractChannelHandlerContext next, object evt)
         {
-            Contract.Requires(evt != null);
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeUserEventTriggered(evt);
-            }
-            else
-            {
-                nextExecutor.Execute(InvokeUserEventTriggeredAction, next, evt);
-            }
-        }
-
-        private void InvokeUserEventTriggered(object evt)
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.UserEventTriggered(this, evt);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.FireUserEventTriggered(evt);
-            }
+            InvokeIfInEventLoop(UserEventTriggered.InvokeAction, next, evt);
         }
 
         public void FireChannelRead(object msg) => InvokeChannelRead(this.FindContextInbound(), msg);
 
+        private static readonly CacheLambda<object> ChannelRead = new CacheLambda<object>
+        (
+            (context, arg) => context.Handler.ChannelRead(context, arg),
+            (context, arg) => context.FireChannelRead(arg)
+        );
         internal static void InvokeChannelRead(AbstractChannelHandlerContext next, object msg)
         {
-            Contract.Requires(msg != null);
-
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeChannelRead(msg);
-            }
-            else
-            {
-                nextExecutor.Execute(InvokeChannelReadAction, next, msg);
-            }
-        }
-
-        private void InvokeChannelRead(object msg)
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.ChannelRead(this, msg);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.FireChannelRead(msg);
-            }
+            InvokeIfInEventLoop(ChannelRead.InvokeAction, next, msg);
         }
 
         public void FireChannelReadComplete() => InvokeChannelReadComplete(this.FindContextInbound());
 
-        internal static void InvokeChannelReadComplete(AbstractChannelHandlerContext next) 
+        private static readonly CacheLambda<object> ChannelReadComplete = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.ChannelReadComplete(context),
+            (context, _) => context.FireChannelReadComplete()
+        );
+        internal static void InvokeChannelReadComplete(AbstractChannelHandlerContext next)
         {
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeChannelReadComplete();
-            }
-            else
-            {
-                // todo: consider caching task
-                nextExecutor.Execute(InvokeChannelReadCompleteAction, next);
-            }
-        }
-
-        private void InvokeChannelReadComplete()
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    (this.Handler).ChannelReadComplete(this);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.FireChannelReadComplete();
-            }
+            InvokeIfInEventLoop(ChannelReadComplete.InvokeAction, next, default);
         }
 
         public void FireChannelWritabilityChanged() => InvokeChannelWritabilityChanged(this.FindContextInbound());
 
+        private static readonly CacheLambda<object> ChannelWritabilityChanged = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.ChannelWritabilityChanged(context),
+            (context, arg) => context.FireChannelWritabilityChanged()
+        );
         internal static void InvokeChannelWritabilityChanged(AbstractChannelHandlerContext next)
         {
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeChannelWritabilityChanged();
-            }
-            else
-            {
-                // todo: consider caching task
-                nextExecutor.Execute(InvokeChannelWritabilityChangedAction, next);
-            }
+            InvokeIfInEventLoop(ChannelWritabilityChanged.InvokeAction, next, default);
         }
 
-        private void InvokeChannelWritabilityChanged()
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.ChannelWritabilityChanged(this);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.FireChannelWritabilityChanged();
-            }
-        }
-
+        private static readonly CacheTaskLambda<EndPoint> CacheBindAsync = new CacheTaskLambda<EndPoint>
+        (
+            (context, arg) => context.Handler.BindAsync(context, arg),
+            (context, arg) => context.BindAsync(arg)
+        );
         public Task BindAsync(EndPoint localAddress)
         {
-            Contract.Requires(localAddress != null);
-
             var next = this.FindContextOutbound();
-            var nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop ? next.InvokeBindAsync(localAddress) : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeBindAsync(localAddress));
-        }
-
-        private Task InvokeBindAsync(EndPoint localAddress)
-        {
-            if (!this.Added) return this.BindAsync(localAddress);
-            
-            try
-            {
-                return this.Handler.BindAsync(this, localAddress);
-            }
-            catch (Exception ex)
-            {
-                return ComposeExceptionTask(ex);
-            }
+            return InvokeIfInEventLoop(CacheBindAsync.InvokeAction, next, localAddress);
         }
 
         public Task ConnectAsync(EndPoint remoteAddress) => this.ConnectAsync(remoteAddress, null);
 
+        private static readonly CacheTaskLambda<(EndPoint, EndPoint)> CacheConnectAsync = new CacheTaskLambda<(EndPoint, EndPoint)>
+        (
+            (context, arg) => context.Handler.ConnectAsync(context, arg.Item1, arg.Item2),
+            (context, arg) => context.ConnectAsync(arg.Item1, arg.Item2)
+        );
         public Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
             var next = this.FindContextOutbound();
-            Contract.Requires(remoteAddress != null);
-            // todo: check for cancellation
-
-            var nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop ? next.InvokeConnectAsync(remoteAddress, localAddress) : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeConnectAsync(remoteAddress, localAddress));
+            return InvokeIfInEventLoop(CacheConnectAsync.InvokeAction, next, (remoteAddress, localAddress));
         }
 
-        private Task InvokeConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
-        {
-            if (!this.Added) return this.ConnectAsync(remoteAddress, localAddress);
-            
-            try
-            {
-                return this.Handler.ConnectAsync(this, remoteAddress, localAddress);
-            }
-            catch (Exception ex)
-            {
-                return ComposeExceptionTask(ex);
-            }
-        }
-
+        private static readonly CacheTaskLambda<object> CacheDisconnectAsync = new CacheTaskLambda<object>
+        (
+            (context, _) => context.Handler.DisconnectAsync(context),
+            (context, arg) => context.DisconnectAsync()
+        );
         public Task DisconnectAsync()
         {
-            if (!this.Channel.Metadata.HasDisconnect)
-            {
-                return this.CloseAsync();
-            }
+            if (!this.Channel.Metadata.HasDisconnect) return this.CloseAsync();
 
-            // todo: check for cancellation
             var next = this.FindContextOutbound();
-            var nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop ? next.InvokeDisconnectAsync() : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDisconnectAsync());
+            return InvokeIfInEventLoop(CacheDisconnectAsync.InvokeAction, next, default);
         }
 
-        private Task InvokeDisconnectAsync()
-        {
-            if (!this.Added) return this.DisconnectAsync();
-            
-            try
-            {
-                return this.Handler.DisconnectAsync(this);
-            }
-            catch (Exception ex)
-            {
-                return ComposeExceptionTask(ex);
-            }
-        }
-
+        private static readonly CacheTaskLambda<object> CacheCloseAsync = new CacheTaskLambda<object>
+        (
+            (context, _) => context.Handler.CloseAsync(context),
+            (context, arg) => context.CloseAsync()
+        );
         public Task CloseAsync()
         {
-            // todo: check for cancellation
             var next = this.FindContextOutbound();
-            var nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop ? next.InvokeCloseAsync() : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeCloseAsync());
+            return InvokeIfInEventLoop(CacheCloseAsync.InvokeAction, next, default);
         }
 
-        private Task InvokeCloseAsync()
-        {
-            if (!this.Added) return this.CloseAsync();
-            
-            try
-            {
-                return this.Handler.CloseAsync(this);
-            }
-            catch (Exception ex)
-            {
-                return ComposeExceptionTask(ex);
-            }
-        }
-
+        private static readonly CacheTaskLambda<object> CacheDeregisterAsync = new CacheTaskLambda<object>
+        (
+            (context, _) => context.Handler.DeregisterAsync(context),
+            (context, arg) => context.DeregisterAsync()
+        );
         public Task DeregisterAsync()
         {
-            // todo: check for cancellation
             var next = this.FindContextOutbound();
-            var nextExecutor = next.Executor;
-            return nextExecutor.InEventLoop ? next.InvokeDeregisterAsync() : SafeExecuteOutboundAsync(nextExecutor, () => next.InvokeDeregisterAsync());
+            return InvokeIfInEventLoop(CacheDeregisterAsync.InvokeAction, next, default);
         }
 
-        private Task InvokeDeregisterAsync()
-        {
-            if (!this.Added) return this.DeregisterAsync();
-            
-            try
-            {
-                return this.Handler.DeregisterAsync(this);
-            }
-            catch (Exception ex)
-            {
-                return ComposeExceptionTask(ex);
-            }
-        }
-
+        private static readonly CacheLambda<object> CacheRead = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.Read(context),
+            (context, arg) => context.Read()
+        );
         public void Read()
         {
             var next = this.FindContextOutbound();
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeRead();
-            }
-            else
-            {
-                // todo: consider caching task
-                nextExecutor.Execute(InvokeReadAction, next);
-            }
+            InvokeIfInEventLoop(CacheRead.InvokeAction, next, default);
         }
 
-        private void InvokeRead()
-        {
-            if (this.Added)
-            {
-                try
-                {
-                    this.Handler.Read(this);
-                }
-                catch (Exception ex)
-                {
-                    this.NotifyHandlerException(ex);
-                }
-            }
-            else
-            {
-                this.Read();
-            }
-        }
-
+        private static readonly CacheTaskLambda<(object, int)> CacheWriteAsync = new CacheTaskLambda<(object, int)>
+        (
+            (context, arg) => context.Handler.WriteAsync(context, arg.Item1),
+            (context, arg) => context.WriteAsync(arg.Item1),
+            (context, arg) => DecrementPendingOutboundByte(context, arg.Item2)
+        );
         public Task WriteAsync(object msg)
         {
-            Contract.Requires(msg != null);
-            // todo: check for cancellation
-            return this.WriteAsync(msg, false);
-        }
-
-        private Task InvokeWriteAsync(object msg) => this.Added ? this.InvokeWriteAsync0(msg) : this.WriteAsync(msg);
-
-        private Task InvokeWriteAsync0(object msg)
-        {
-            try
-            {
-                return this.Handler.WriteAsync(this, msg);
-            }
-            catch (Exception ex)
-            {
-                return ComposeExceptionTask(ex);
-            }
-        }
-
-        public void Flush()
-        {
             var next = this.FindContextOutbound();
-            var nextExecutor = next.Executor;
-            if (nextExecutor.InEventLoop)
-            {
-                next.InvokeFlush();
-            }
-            else
-            {
-                nextExecutor.Execute(InvokeFlushAction, next);
-            }
+            var size = !next.Executor.InEventLoop ? IncrementPendingOutboundByte(next, msg) : 0;
+
+            return InvokeIfInEventLoop(CacheWriteAsync.InvokeAction, next, (msg, size));
         }
 
-        private void InvokeFlush()
+        public void Flush() => InvokeChannelFlush(this.FindContextOutbound());
+
+        private static readonly CacheLambda<object> CacheFlush = new CacheLambda<object>
+        (
+            (context, _) => context.Handler.Flush(context),
+            (context, arg) => context.Flush()
+        );
+        internal static void InvokeChannelFlush(AbstractChannelHandlerContext next)
         {
-            if (this.Added)
-            {
-                this.InvokeFlush0();
-            }
-            else
-            {
-                this.Flush();
-            }
+            InvokeIfInEventLoop(CacheFlush.InvokeAction, next, default);
         }
 
-        private void InvokeFlush0()
-        {
-            try
+        private static readonly CacheTaskLambda<(object, int)> CacheWriteAndFlushAsync = new CacheTaskLambda<(object, int)>
+        (
+            (context, arg) =>
             {
-                this.Handler.Flush(this);
-            }
-            catch (Exception ex)
-            {
-                this.NotifyHandlerException(ex);
-            }
-        }
-
+                var task = context.Handler.WriteAsync(context, arg.Item1);
+                InvokeChannelFlush(context);
+                return task;
+            },
+            (context, arg) => context.WriteAndFlushAsync(arg.Item1),
+            (context, arg) => DecrementPendingOutboundByte(context, arg.Item2)
+        );
         public Task WriteAndFlushAsync(object message)
         {
-            Contract.Requires(message != null);
-            // todo: check for cancellation
-
-            return this.WriteAsync(message, true);
-        }
-
-        private Task InvokeWriteAndFlushAsync(object msg)
-        {
-            if (!this.Added) return this.WriteAndFlushAsync(msg);
+            var next = this.FindContextOutbound();
+            var size = !next.Executor.InEventLoop ? IncrementPendingOutboundByte(next, message) : 0;
             
-            var task = this.InvokeWriteAsync0(msg);
-            this.InvokeFlush0();
-            return task;
-        }
-
-        private Task WriteAsync(object msg, bool flush)
-        {
-            var outbound = this.FindContextOutbound();
-            var eventExecutor = outbound.Executor;
-            if (eventExecutor.InEventLoop)
-            {
-                return flush ? outbound.InvokeWriteAndFlushAsync(msg) : outbound.InvokeWriteAsync(msg);
-            }
-
-            var promise = new TaskCompletionSource();
-            var task = flush ? WriteAndFlushTask.Create(outbound, msg, promise) : (IRunnable)WriteTask.Create(outbound, msg, promise);
-            SafeExecuteOutbound(eventExecutor, task, promise, msg);
-            return promise.Task;
+            return InvokeIfInEventLoop(CacheWriteAndFlushAsync.InvokeAction, next, (message, size));
         }
 
         private void NotifyHandlerException(Exception cause)
@@ -648,42 +396,37 @@ namespace DotNetty.Transport.Channels
             {
                 if (DefaultChannelPipeline.Logger.WarnEnabled)
                 {
-                    DefaultChannelPipeline.Logger.Warn(
-                        "An exception was thrown by a user handler " +
-                            "while handling an exceptionCaught event", cause);
+                    DefaultChannelPipeline.Logger.Warn("Handler Exception", cause);
                 }
+
                 return;
             }
 
-            this.InvokeExceptionCaught(cause);
+            InvokeExceptionCaught(this, cause);
         }
 
-        private static Task ComposeExceptionTask(Exception cause) => TaskEx.FromException(cause);
-
-        private const string ExceptionCaughtMethodName = nameof(IChannelHandler.ExceptionCaught);
-
-        private static bool InExceptionCaught(Exception cause) => cause.StackTrace.IndexOf("." + ExceptionCaughtMethodName + "(", StringComparison.Ordinal) >= 0;
+        private static bool InExceptionCaught(Exception cause) => cause.StackTrace.IndexOf("." + nameof(IChannelHandler.ExceptionCaught) + "(", StringComparison.Ordinal) >= 0;
 
         private AbstractChannelHandlerContext FindContextInbound()
         {
-            var ctx = this;
+            var context = this;
             do
             {
-                ctx = ctx.Next;
-            }
-            while ((ctx.SkipPropagationFlags & SkipFlags.Inbound) == SkipFlags.Inbound);
-            return ctx;
+                context = context.Next;
+            } while ((context.SkipPropagationFlags & SkipFlags.Inbound) == SkipFlags.Inbound);
+
+            return context;
         }
 
         private AbstractChannelHandlerContext FindContextOutbound()
         {
-            var ctx = this;
+            var context = this;
             do
             {
-                ctx = ctx.Prev;
-            }
-            while ((ctx.SkipPropagationFlags & SkipFlags.Outbound) == SkipFlags.Outbound);
-            return ctx;
+                context = context.Prev;
+            } while ((context.SkipPropagationFlags & SkipFlags.Outbound) == SkipFlags.Outbound);
+
+            return context;
         }
 
         private static Task SafeExecuteOutboundAsync(IEventExecutor executor, Func<Task> function)
@@ -691,115 +434,47 @@ namespace DotNetty.Transport.Channels
             var promise = new TaskCompletionSource();
             try
             {
-                executor.Execute((p, func) => ((Func<Task>)func)().LinkOutcome((TaskCompletionSource)p), promise, function);
+                executor.Execute((tcs, func) => func().LinkOutcome(tcs), promise, function);
             }
             catch (Exception cause)
             {
                 promise.TrySetException(cause);
             }
+
             return promise.Task;
         }
 
-        private static void SafeExecuteOutbound(IEventExecutor executor, IRunnable task, TaskCompletionSource promise, object msg)
+        private static int IncrementPendingOutboundByte(AbstractChannelHandlerContext ctx, object msg)
         {
-            try
+            var size = 0;
+            if (AbstractWriteTask.EstimateTaskSizeOnSubmit)
             {
-                executor.Execute(task);
-            }
-            catch (Exception cause)
-            {
-                try
+                var buffer = ctx.Channel.Unsafe.OutboundBuffer;
+                if (buffer != null)
                 {
-                    promise.TrySetException(cause);
-                }
-                finally
-                {
-                    ReferenceCountUtil.Release(msg);
+                    size = ctx.pipeline.EstimatorHandle.Size(msg) + AbstractWriteTask.WriteTaskOverhead;
+                    buffer.IncrementPendingOutboundBytes(size);
                 }
             }
+
+            return size;
         }
 
-        public override string ToString() => $"{nameof(IChannelHandlerContext)} ({this.Name}, {this.Channel})";
+        private static void DecrementPendingOutboundByte(AbstractChannelHandlerContext ctx, int size)
+        {
+            if (size != 0 && AbstractWriteTask.EstimateTaskSizeOnSubmit)
+            {
+                var buffer = ctx.Channel.Unsafe.OutboundBuffer;
+                buffer?.DecrementPendingOutboundBytes(size);
+            }
+        }
 
         private abstract class AbstractWriteTask
         {
-            protected static readonly bool EstimateTaskSizeOnSubmit = true;
+            protected internal static readonly bool EstimateTaskSizeOnSubmit = true;
+
             // Assuming a 64-bit .NET VM, 16 bytes object header, 4 reference fields and 2 int field
-            protected static readonly int WriteTaskOverhead = 56;
-        }
-        private abstract class AbstractWriteTask<T> : AbstractWriteTask, IRunnable , IRecycle where T : AbstractWriteTask<T>, new()
-        {
-            private static readonly ThreadLocalPool<T> Pool = new ThreadLocalPool<T>(() => new T());
-            
-            private AbstractChannelHandlerContext ctx;
-            private TaskCompletionSource promise;
-            private IRecycleHandle<T> handle;
-            private object msg;
-            private int size;
-            
-            protected abstract Task WriteAsync(AbstractChannelHandlerContext ctx, object msg);
-
-            void IRecycle.Recycle()
-            {
-                this.ctx = null;
-                this.msg = null;
-                this.promise = null;
-            }
-
-            public static T Create(AbstractChannelHandlerContext ctx, object msg, TaskCompletionSource promise)
-            {
-                var task = Pool.Acquire(out var handle);
-                task.ctx = ctx;
-                task.msg = msg;
-                task.promise = promise;
-                task.handle = handle;
-                
-                if (EstimateTaskSizeOnSubmit)
-                {
-                    var buffer = ctx.Channel.Unsafe.OutboundBuffer;
-                    if (buffer != null)
-                    {
-                        task.size = ctx.pipeline.EstimatorHandle.Size(msg) + WriteTaskOverhead;
-                        buffer.IncrementPendingOutboundBytes(task.size);
-                    }
-                    else
-                    {
-                        task.size = 0;
-                    }
-                }
-                else
-                {
-                    task.size = 0;
-                }
-                return task;
-            }
-            
-            void IRunnable.Run()
-            {
-                try
-                {
-                    if (EstimateTaskSizeOnSubmit)
-                    {
-                        var buffer = this.ctx.Channel.Unsafe.OutboundBuffer;
-                        buffer?.DecrementPendingOutboundBytes(this.size);
-                    }
-                    this.WriteAsync(this.ctx, this.msg).LinkOutcome(this.promise);
-                }
-                finally
-                {
-                    Pool.Recycle(this.handle);
-                }
-            }
-        }
-
-        private sealed class WriteTask : AbstractWriteTask<WriteTask>
-        {
-            protected override Task WriteAsync(AbstractChannelHandlerContext ctx, object msg) => ctx.InvokeWriteAsync(msg);
-        }
-
-        private sealed class WriteAndFlushTask : AbstractWriteTask<WriteAndFlushTask>
-        {
-            protected override Task WriteAsync(AbstractChannelHandlerContext ctx, object msg) => ctx.InvokeWriteAndFlushAsync(msg);
+            protected internal static readonly int WriteTaskOverhead = 56;
         }
     }
 }

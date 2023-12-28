@@ -50,7 +50,7 @@ namespace DotNetty.Common.Concurrency
         public void Execute(Action<object> action, object state) => this.Execute(new StateActionTaskQueueNode(action, state));
 
         /// <inheritdoc cref="IExecutor"/>
-        public void Execute(Action<object, object> action, object context, object state) => this.Execute(new StateActionWithContextTaskQueueNode(action, context, state));
+        public void Execute<T, T1>(Action<T, T1> action, T context, T1 state) => this.Execute(new StateActionWithContextTaskQueueNode<T, T1>(action, context, state));
 
         /// <inheritdoc cref="IExecutor"/>
         public void Execute(Action action) => this.Execute(new ActionTaskQueueNode(action));
@@ -83,13 +83,13 @@ namespace DotNetty.Common.Concurrency
             public void Run() => this.action(this.state);
         }
 
-        private sealed class StateActionWithContextTaskQueueNode : IRunnable
+        private sealed class StateActionWithContextTaskQueueNode<T, T1> : IRunnable
         {
-            private readonly Action<object, object> action;
-            private readonly object context;
-            private readonly object state;
+            private readonly Action<T, T1> action;
+            private readonly T context;
+            private readonly T1 state;
 
-            public StateActionWithContextTaskQueueNode(Action<object, object> action, object context, object state)
+            public StateActionWithContextTaskQueueNode(Action<T, T1> action, T context, T1 state)
             {
                 this.action = action;
                 this.context = context;

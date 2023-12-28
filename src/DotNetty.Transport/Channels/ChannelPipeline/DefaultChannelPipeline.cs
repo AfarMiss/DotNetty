@@ -538,7 +538,6 @@ namespace DotNetty.Transport.Channels
                 this.ctx = ctx;
                 this.isAdd = isAdd;
                 this.pendingHandlerAction = isAdd ? (Action<AbstractChannelHandlerContext>)pipeline.CallHandlerAdded0 : pipeline.CallHandlerRemoved0;
-
             }
 
             public void Run() => this.pendingHandlerAction(this.ctx);
