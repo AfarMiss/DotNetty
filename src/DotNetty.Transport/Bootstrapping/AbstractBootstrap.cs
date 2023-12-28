@@ -79,10 +79,6 @@ namespace DotNetty.Transport.Bootstrapping
             return (TBootstrap)this;
         }
 
-        public TBootstrap LocalAddress(int inetPort) => this.LocalAddress(new IPEndPoint(IPAddress.Any, inetPort));
-        public TBootstrap LocalAddress(string inetHost, int inetPort) => this.LocalAddress(new DnsEndPoint(inetHost, inetPort));
-        public TBootstrap LocalAddress(IPAddress inetHost, int inetPort) => this.LocalAddress(new IPEndPoint(inetHost, inetPort));
-
         public TBootstrap Option<T>(ChannelOption<T> option, T value)
         {
             if (value == null)
@@ -96,10 +92,8 @@ namespace DotNetty.Transport.Bootstrapping
             return (TBootstrap)this;
         }
 
-        public void Attribute<T>(AttributeKey<T> key, T value) where T : class
+        public void Attribute<T>(AttributeKey<T> key, T value)
         {
-            Contract.Requires(key != null);
-
             if (value == null)
             {
                 this.Attrs.Remove(key);
