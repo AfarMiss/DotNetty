@@ -86,11 +86,7 @@ namespace DotNetty.Transport.Channels
         public override bool Equals(object o) => this == o;
         public int CompareTo(IChannel o) => ReferenceEquals(this, o) ? 0 : this.Id.CompareTo(o.Id);
 
-        bool IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value)
-        {
-            this.ConstantMap.Set(constant, value);
-            return true;
-        }
+        void IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value) => this.ConstantMap.Set(constant, value);
 
         protected abstract bool IsCompatible(IEventLoop eventLoop);
         protected virtual void DoRegister() { }

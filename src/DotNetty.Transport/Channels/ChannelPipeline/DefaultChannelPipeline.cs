@@ -182,7 +182,7 @@ namespace DotNetty.Transport.Channels
                 var executor = ctx.Executor;
                 if (!inEventLoop && !executor.IsInEventLoop(currentThread))
                 {
-                    executor.Execute((self, c) => ((DefaultChannelPipeline)self).DestroyUp((AbstractChannelHandlerContext)c, true), this, ctx);
+                    executor.Execute((pipeline, context) => pipeline.DestroyUp(context, true), this, ctx);
                     break;
                 }
 
@@ -208,7 +208,7 @@ namespace DotNetty.Transport.Channels
                 }
                 else
                 {
-                    executor.Execute((self, c) => ((DefaultChannelPipeline)self).DestroyDown(Thread.CurrentThread, (AbstractChannelHandlerContext)c, true), this, ctx);
+                    executor.Execute((pipeline, context) => pipeline.DestroyDown(Thread.CurrentThread, context, true), this, ctx);
                     break;
                 }
 
