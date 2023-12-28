@@ -21,9 +21,6 @@ namespace DotNetty.Common.Concurrency
 
         public void Complete() => this.SetResult(0);
 
-        // todo: support cancellation token where used
-        public bool SetUncancellable() => true;
-
         private static TaskCompletionSource CreateVoidTcs()
         {
             var tcs = new TaskCompletionSource();

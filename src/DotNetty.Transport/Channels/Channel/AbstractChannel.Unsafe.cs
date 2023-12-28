@@ -56,8 +56,7 @@ namespace DotNetty.Transport.Channels
                 {
                     try
                     {
-                        void Register0Action(object u, object p) => ((AbstractUnsafe)u).Register0((TaskCompletionSource)p);
-                        eventLoop.Execute(Register0Action, this, promise);
+                        eventLoop.Execute((@unsafe, tcs) => @unsafe.Register0(tcs), this, promise);
                     }
                     catch (Exception ex)
                     {
@@ -75,7 +74,7 @@ namespace DotNetty.Transport.Channels
             {
                 try
                 {
-                    if (!promise.SetUncancellable() || !this.EnsureOpen(promise))
+                    if (!this.EnsureOpen(promise))
                     {
                         Util.SafeSetFailure(promise, new ClosedChannelException(), Logger);
                         return;
@@ -114,8 +113,7 @@ namespace DotNetty.Transport.Channels
             {
                 this.AssertEventLoop();
 
-                // todo: cancellation support
-                if ( /*!promise.setUncancellable() || */!this.channel.Open)
+                if (!this.channel.Open)
                 {
                     return this.CreateClosedChannelExceptionTask();
                 }
@@ -176,10 +174,6 @@ namespace DotNetty.Transport.Channels
             protected Task CloseAsync(Exception cause, bool notify)
             {
                 var promise = new TaskCompletionSource();
-                if (!promise.SetUncancellable())
-                {
-                    return promise.Task;
-                }
 
                 var outboundBuffer = this.outboundBuffer;
                 if (outboundBuffer == null)

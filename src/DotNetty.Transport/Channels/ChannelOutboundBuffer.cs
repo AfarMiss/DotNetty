@@ -61,12 +61,6 @@ namespace DotNetty.Transport.Channels
                 do
                 {
                     this.flushed++;
-                    if (!entry.Promise.SetUncancellable())
-                    {
-                        //已取消,确保释放内存并通知释放的字节
-                        int pending = entry.Cancel();
-                        this.DecrementPendingOutboundBytes(pending, false, true);
-                    }
                     entry = entry.Next;
                 }
                 while (entry != null);
