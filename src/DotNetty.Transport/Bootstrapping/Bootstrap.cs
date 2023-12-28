@@ -17,14 +17,6 @@ namespace DotNetty.Transport.Bootstrapping
         private volatile INameResolver resolver = DefaultResolver;
         private volatile EndPoint remoteAddress;
 
-        public Bootstrap() { }
-
-        private Bootstrap(Bootstrap bootstrap) : base(bootstrap)
-        {
-            this.resolver = bootstrap.resolver;
-            this.remoteAddress = bootstrap.remoteAddress;
-        }
-
         public void Resolver(INameResolver resolver)
         {
             Contract.Requires(resolver != null);
@@ -63,7 +55,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// </summary>
         private async Task<IChannel> DoResolveAndConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
         {
-            IChannel channel = await this.InitAndRegisterAsync();
+            var channel = await this.InitAndRegisterAsync();
 
             if (this.resolver.IsResolved(remoteAddress))
             {
@@ -139,15 +131,6 @@ namespace DotNetty.Transport.Bootstrapping
             {
                 throw new InvalidOperationException("handler not set");
             }
-        }
-
-        public override Bootstrap Clone() => new Bootstrap(this);
-
-        public Bootstrap Clone(IEventLoopGroup group)
-        {
-            var bs = new Bootstrap(this);
-            bs.SetGroup(group);
-            return bs;
         }
     }
 }

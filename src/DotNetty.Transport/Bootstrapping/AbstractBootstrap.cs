@@ -110,9 +110,6 @@ namespace DotNetty.Transport.Bootstrapping
             if (this.channelFactory == null) throw new InvalidOperationException("Channel 未设置");
         }
 
-        /// <summary> 非全克隆 </summary>
-        public abstract TBootstrap Clone();
-
         /// <summary> 创建<see cref="IChannel"/>并注册到<see cref="IEventLoop"/> </summary>
         public Task RegisterAsync()
         {
@@ -134,12 +131,6 @@ namespace DotNetty.Transport.Bootstrapping
 
         /// <inheritdoc cref="BindAsync(EndPoint)"/>
         public Task<IChannel> BindAsync(int inetPort) => this.BindAsync(new IPEndPoint(IPAddress.Any, inetPort));
-
-        /// <inheritdoc cref="BindAsync(EndPoint)"/>
-        public Task<IChannel> BindAsync(string inetHost, int inetPort) => this.BindAsync(new DnsEndPoint(inetHost, inetPort));
-
-        /// <inheritdoc cref="BindAsync(EndPoint)"/>
-        public Task<IChannel> BindAsync(IPAddress inetHost, int inetPort) => this.BindAsync(new IPEndPoint(inetHost, inetPort));
 
         /// <summary>
         /// 参考<see cref="RegisterAsync"/> 并绑定到指定EndPoint
@@ -193,15 +184,6 @@ namespace DotNetty.Transport.Bootstrapping
                 }
                 throw;
             }
-
-            // If we are here and the promise is not failed, it's one of the following cases:
-            // 1) If we attempted registration from the event loop, the registration has been completed at this point.
-            //    i.e. It's safe to attempt bind() or connect() now because the channel has been registered.
-            // 2) If we attempted registration from the other thread, the registration request has been successfully
-            //    added to the event loop's task queue for later execution.
-            //    i.e. It's safe to attempt bind() or connect() now:
-            //         because bind() or connect() will be executed *after* the scheduled registration task is executed
-            //         because register(), bind(), and connect() are all bound to the same thread.
 
             return channel;
         }

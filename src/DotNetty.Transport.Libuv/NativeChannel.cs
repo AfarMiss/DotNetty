@@ -34,7 +34,7 @@ namespace DotNetty.Transport.Libuv
         TaskCompletionSource connectPromise;
         IScheduledTask connectCancellationTask;
 
-        protected NativeChannel(IChannel parent) : base(parent)
+        protected NativeChannel(IChannel parent) : base()
         {
             this.state = StateFlags.Open;
         }

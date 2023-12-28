@@ -21,25 +21,15 @@ namespace DotNetty.Transport.Channels
 
         public ConstantMap ConstantMap => this;
 
-        protected AbstractChannel(IChannel parent)
+        protected AbstractChannel()
         {
-            this.Parent = parent;
             this.Id = this.NewChannelId();
             this.channelUnsafe = this.NewUnsafe();
-            this.pipeline = this.NewChannelPipeline();
-        }
-
-        protected AbstractChannel(IChannel parent, IChannelId id)
-        {
-            this.Parent = parent;
-            this.Id = id;
-            this.channelUnsafe = this.NewUnsafe();
-            this.pipeline = this.NewChannelPipeline();
+            this.pipeline = new DefaultChannelPipeline(this);
         }
 
         public IChannelId Id { get; }
         public IEventLoop EventLoop => this.eventLoop;
-        public IChannel Parent { get; }
         public abstract bool Open { get; }
         public abstract bool Active { get; }
         public bool Registered => this.registered;
@@ -57,17 +47,14 @@ namespace DotNetty.Transport.Channels
         protected abstract EndPoint LocalAddressInternal { get; }
         protected abstract EndPoint RemoteAddressInternal { get; }
 
-        protected void InvalidateLocalAddress() => this.localAddress = null;
-
         protected EndPoint CacheLocalAddress() => this.localAddress = this.LocalAddressInternal;
-
-        protected void InvalidateRemoteAddress() => this.remoteAddress = null;
 
         protected EndPoint CacheRemoteAddress() => this.remoteAddress = this.RemoteAddressInternal;
 
+        protected abstract IChannelUnsafe NewUnsafe();
         protected virtual IChannelId NewChannelId() => DefaultChannelId.NewInstance();
 
-        protected virtual DefaultChannelPipeline NewChannelPipeline() => new DefaultChannelPipeline(this);
+        void IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value) => this.ConstantMap.Set(constant, value);
 
         public virtual Task BindAsync(EndPoint localAddress) => this.pipeline.BindAsync(localAddress);
         public virtual Task ConnectAsync(EndPoint remoteAddress) => this.pipeline.ConnectAsync(remoteAddress);
@@ -80,14 +67,6 @@ namespace DotNetty.Transport.Channels
         public Task WriteAsync(object msg) => this.pipeline.WriteAsync(msg);
         public Task WriteAndFlushAsync(object message) => this.pipeline.WriteAndFlushAsync(message);
         
-        protected abstract IChannelUnsafe NewUnsafe();
-
-        public override int GetHashCode() => this.Id.GetHashCode();
-        public override bool Equals(object o) => this == o;
-        public int CompareTo(IChannel o) => ReferenceEquals(this, o) ? 0 : this.Id.CompareTo(o.Id);
-
-        void IConstantTransfer.TransferSet<T>(IConstant<T> constant, T value) => this.ConstantMap.Set(constant, value);
-
         protected abstract bool IsCompatible(IEventLoop eventLoop);
         protected virtual void DoRegister() { }
         protected abstract void DoBind(EndPoint localAddress);

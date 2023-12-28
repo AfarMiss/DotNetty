@@ -81,7 +81,7 @@ namespace DotNetty.Transport.Channels.Embedded
         { }
 
         public SingleThreadedEmbeddedChannel(IChannelId id, bool hasDisconnect, bool register, IEventLoop eventLoop = null, params IChannelHandler[] handlers)
-            : base(null, id)
+            : base(id)
         {
             if (eventLoop != null)
             {
@@ -95,7 +95,7 @@ namespace DotNetty.Transport.Channels.Embedded
 
         public SingleThreadedEmbeddedChannel(IChannelId id, bool hasDisconnect, IChannelConfiguration config, IEventLoop eventLoop = null,
             params IChannelHandler[] handlers)
-            : base(null, id)
+            : base(id)
         {
             Contract.Requires(config != null);
 

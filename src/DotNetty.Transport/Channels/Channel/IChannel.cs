@@ -5,11 +5,10 @@ using DotNetty.Common.Utilities;
 
 namespace DotNetty.Transport.Channels
 {
-    public interface IChannel : IAttributeMap, IConstantTransfer, IComparable<IChannel>
+    public interface IChannel : IAttributeMap, IConstantTransfer
     {
         IChannelId Id { get; }
         IEventLoop EventLoop { get; }
-        IChannel Parent { get; }
         bool Open { get; }
         bool Active { get; }
         bool Registered { get; }

@@ -9,7 +9,7 @@ namespace DotNetty.Transport.Channels
     {
         private static readonly ChannelMetadata METADATA = new ChannelMetadata(false, 16);
 
-        protected AbstractServerChannel() : base(null)
+        protected AbstractServerChannel() : base()
         {
         }
 

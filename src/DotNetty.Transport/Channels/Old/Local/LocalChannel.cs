@@ -49,7 +49,7 @@ namespace DotNetty.Transport.Channels.Local
         {
         }
 
-        internal LocalChannel(LocalServerChannel parent, LocalChannel peer) : base(parent)
+        internal LocalChannel(LocalServerChannel parent, LocalChannel peer) : base()
         {
             //this.Configuration.Allocator(new PreferHeapByteBufAllocator(config.getAllocator()));
             this.peer = peer;

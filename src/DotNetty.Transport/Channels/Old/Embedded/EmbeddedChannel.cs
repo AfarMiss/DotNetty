@@ -80,7 +80,7 @@ namespace DotNetty.Transport.Channels.Embedded
         { }
 
         public EmbeddedChannel(IChannelId id, bool hasDisconnect, bool register, params IChannelHandler[] handlers)
-            : base(null, id)
+            : base(id)
         {
             this.Metadata = GetMetadata(hasDisconnect);
             this.Configuration = new DefaultChannelConfiguration(this);
@@ -89,7 +89,7 @@ namespace DotNetty.Transport.Channels.Embedded
 
         public EmbeddedChannel(IChannelId id, bool hasDisconnect, IChannelConfiguration config, 
             params IChannelHandler[] handlers)
-            : base(null, id)
+            : base(id)
         {
             Contract.Requires(config != null);
 

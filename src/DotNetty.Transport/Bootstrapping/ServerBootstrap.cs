@@ -13,24 +13,10 @@ namespace DotNetty.Transport.Bootstrapping
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ServerBootstrap>();
 
-        private readonly ConstantMap childOptions;
-        private readonly ConstantMap childAttrs;
+        private readonly ConstantMap childOptions = new ConstantMap();
+        private readonly ConstantMap childAttrs = new ConstantMap();
         private volatile IEventLoopGroup childGroup;
         private volatile IChannelHandler childHandler;
-
-        public ServerBootstrap()
-        {
-           this.childOptions = new ConstantMap();
-            this.childAttrs = new ConstantMap();
-        }
-
-        private ServerBootstrap(ServerBootstrap bootstrap) : base(bootstrap)
-        {
-            this.childGroup = bootstrap.childGroup;
-            this.childHandler = bootstrap.childHandler;
-            this.childOptions = new ConstantMap(bootstrap.childOptions);
-            this.childAttrs = new ConstantMap(bootstrap.childAttrs);
-        }
 
         public override ServerBootstrap SetGroup(IEventLoopGroup group) => this.SetGroup(group, group);
 
@@ -189,7 +175,5 @@ namespace DotNetty.Transport.Bootstrapping
                 ctx.FireExceptionCaught(cause);
             }
         }
-
-        public override ServerBootstrap Clone() => new ServerBootstrap(this);
     }
 }

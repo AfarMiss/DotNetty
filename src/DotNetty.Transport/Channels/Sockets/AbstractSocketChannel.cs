@@ -39,7 +39,7 @@ namespace DotNetty.Transport.Channels.Sockets
         private TaskCompletionSource connectPromise;
         private IScheduledTask connectCancellationTask;
 
-        protected AbstractSocketChannel(IChannel parent, Socket socket) : base(parent)
+        protected AbstractSocketChannel(IChannel parent, Socket socket) : base()
         {
             this.Socket = socket;
             this.state = StateFlags.Open;
